@@ -18,13 +18,13 @@
 	<Reference name="System.Xml"/>
 	<Reference name="System.Web"/>
 	<Reference name="System.Data"/>
-	<Reference name="SilverSim.Types" localCopy="false"/>
-	<Reference name="SilverSim.ServiceInterfaces" localCopy="false"/>
-	<Reference name="SilverSim.Scene.Types" localCopy="false"/>
-	<Reference name="SilverSim.Scene.ServiceInterfaces" localCopy="false"/>
-	<Reference name="SilverSim.Main.Common" localCopy="false"/>
-	<Reference name="SilverSim.Scripting.Common" localCopy="false"/>
-	<Reference name="SilverSim.LL.Messages" localCopy="false"/>
+	<Reference name="SilverSim.Types" path="../../bin/" localCopy="false"/>
+	<Reference name="SilverSim.ServiceInterfaces" path="../../bin/" localCopy="false"/>
+	<Reference name="SilverSim.Scene.Types" path="../../bin/" localCopy="false"/>
+	<Reference name="SilverSim.Scene.ServiceInterfaces" path="../../bin/" localCopy="false"/>
+	<Reference name="SilverSim.Main.Common" path="../../bin/" localCopy="false"/>
+	<Reference name="SilverSim.Scripting.Common" path="../../bin/" localCopy="false"/>
+	<Reference name="SilverSim.LL.Messages" path="../../bin/" localCopy="false"/>
 	<Reference name="MySql.Data" path="../../bin/" localCopy="false"/>
 	<Reference name="ThreadedClasses" path="../../bin/" localCopy="false"/>
 	<Reference name="Nini" path="../../bin/" localCopy="false"/>
