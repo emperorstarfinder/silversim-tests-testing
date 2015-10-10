@@ -2,6 +2,7 @@
 <project name="Test Collecton" default="runtests" basedir=".">
 	<target name="runtests">
 		<property name="failedtests" value=""/>
+		<mkdir dir="../testresults"/>
 		<foreach item="File" property="testconfig">
 			<in>
 				<items>
