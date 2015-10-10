@@ -73,14 +73,14 @@ namespace SilverSim.Tests.Assets
 
             #region testing exists function
             m_Log.Info("Testing non-existence of Asset 1");
-            if(!m_AssetService.exists(Asset1ID))
+            if(m_AssetService.exists(Asset1ID))
             { 
                 m_Log.Fatal("Failed to detect non-existence of asset 1");
                 return false;
             }
 
             m_Log.Info("Testing non-existence of Asset 2");
-            if(!m_AssetService.exists(Asset2ID))
+            if(m_AssetService.exists(Asset2ID))
             { 
                 m_Log.Fatal("Failed to detect non-existence of asset 2");
                 return false;

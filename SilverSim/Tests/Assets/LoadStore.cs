@@ -80,7 +80,7 @@ namespace SilverSim.Tests.Assets
             }
 
             m_Log.Info("Testing non-existence of Asset 2");
-            if(!m_AssetService.exists(Asset2ID))
+            if(m_AssetService.exists(Asset2ID))
             {
                 m_Log.Fatal("Failed to detect non-existence of asset 2");
                 return false;
