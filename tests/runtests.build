@@ -13,7 +13,7 @@
 				<echo message="Running ${testfile}"/>
 				<trycatch>
 					<try>
-						<exec program="SilverSim.Main.exe" basedir="../bin" workingdir="../bin">
+						<exec program="SilverSim.Main.exe" basedir="../bin" workingdir="../bin" managed="true">
 							<arg value="-m=testing"/>
 							<arg value="-c"/>
 							<arg path="../tests/${testfile}"/>
