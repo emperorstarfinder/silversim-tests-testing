@@ -24,7 +24,7 @@
 	<Reference name="SilverSim.Scene.ServiceInterfaces" path="../../bin/" localCopy="false"/>
 	<Reference name="SilverSim.Main.Common" path="../../bin/" localCopy="false"/>
 	<Reference name="SilverSim.Scripting.Common" path="../../bin/" localCopy="false"/>
-	<Reference name="SilverSim.LL.Messages" path="../../bin/" localCopy="false"/>
+	<Reference name="SilverSim.Viewer.Messages" path="../../bin/" localCopy="false"/>
 	<Reference name="MySql.Data" path="../../bin/" localCopy="false"/>
 	<Reference name="ThreadedClasses" path="../../bin/" localCopy="false"/>
 	<Reference name="Nini" path="../../bin/" localCopy="false"/>
