@@ -26,6 +26,6 @@ ${testfile}"/>
 				</trycatch>
 			</do>
 		</foreach>
-		<echo message="Failed tests:${failedtests}"/>
+		<fail message="Failed tests:${failedtests}" if="${failedtests!=''}"/>
 	</target>
 </project>
