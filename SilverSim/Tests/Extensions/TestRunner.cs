@@ -8,7 +8,9 @@ using SilverSim.Main.Common.CmdIO;
 using SilverSim.Scene.ServiceInterfaces.RegionLoader;
 using System;
 using System.Collections.Generic;
+using System.Text;
 using System.Threading;
+using System.Xml;
 
 namespace SilverSim.Tests.Extensions
 {
@@ -18,10 +20,22 @@ namespace SilverSim.Tests.Extensions
         private static readonly ILog m_Log = LogManager.GetLogger("TEST RUNNER");
         List<ITest> m_Tests = new List<ITest>();
         TTY m_Console;
-
-        public TestRunner()
+        string m_TestName = string.Empty;
+        string m_XmlResultFileName = string.Empty;
+        struct TestResult
         {
+            public string Name;
+            public bool Result;
+            public int RunTime;
+            public string Message;
+        }
 
+        List<TestResult> TestResults = new List<TestResult>();
+
+        public TestRunner(string testName, string xmlResultFileName)
+        {
+            m_TestName = testName;
+            m_XmlResultFileName = xmlResultFileName;
         }
 
         public void Startup(ConfigurationLoader loader)
@@ -43,6 +57,9 @@ namespace SilverSim.Tests.Extensions
             bool failed = false;
             foreach(ITest test in m_Tests)
             {
+                TestResult tr = new TestResult();
+                tr.Name = test.GetType().FullName;
+                tr.RunTime = Environment.TickCount;
                 m_Log.Info("********************************************************************************");
                 m_Log.InfoFormat("Executing test {0}", test.GetType().FullName);
                 m_Log.Info("********************************************************************************");
@@ -53,6 +70,8 @@ namespace SilverSim.Tests.Extensions
                         m_Log.Info("********************************************************************************");
                         m_Log.InfoFormat("Executed test {0} with SUCCESS", test.GetType().FullName);
                         m_Log.Info("********************************************************************************");
+                        tr.Result = true;
+                        tr.Message = "Success";
                     }
                     else
                     {
@@ -60,6 +79,8 @@ namespace SilverSim.Tests.Extensions
                         m_Log.ErrorFormat("Executed test {0} with FAILURE", test.GetType().FullName);
                         m_Log.Info("********************************************************************************");
                         failed = true;
+                        tr.Message = "Failure";
+                        tr.Result = false;
                     }
                 }
                 catch(Exception e)
@@ -69,8 +90,57 @@ namespace SilverSim.Tests.Extensions
                     m_Log.ErrorFormat("Exception {0}: {1}\n{2}", e.GetType().FullName, e.ToString(), e.StackTrace.ToString());
                     m_Log.Info("********************************************************************************");
                     failed = true;
+                    tr.Message = string.Format("Exception {0}: {1}\n{2}", e.GetType().FullName, e.ToString(), e.StackTrace.ToString());
+                    tr.Result = false;
                 }
+                tr.RunTime = Environment.TickCount - tr.RunTime;
+                TestResults.Add(tr);
             }
+
+            if (!string.IsNullOrEmpty(m_XmlResultFileName))
+            {
+                XmlTextWriter xmlTestResults = new XmlTextWriter(m_XmlResultFileName, new UTF8Encoding(false));
+                xmlTestResults.WriteStartElement("testsuite");
+                xmlTestResults.WriteAttributeString("name", m_TestName);
+                int num_failures = 0;
+                int num_tests = 0;
+                foreach (TestResult tr in TestResults)
+                {
+                    if (!tr.Result)
+                    {
+                        ++num_failures;
+                    }
+                    ++num_tests;
+                }
+                xmlTestResults.WriteAttributeString("tests", num_tests.ToString());
+                xmlTestResults.WriteAttributeString("errors", "0");
+                xmlTestResults.WriteAttributeString("failures", num_failures.ToString());
+                xmlTestResults.WriteAttributeString("skip", "0");
+                foreach (TestResult re in TestResults)
+                {
+                    xmlTestResults.WriteStartElement("testcase");
+                    xmlTestResults.WriteAttributeString("name", re.Name);
+                    xmlTestResults.WriteAttributeString("time", (re.RunTime / 1000f).ToString());
+                    {
+                        if (re.Result)
+                        {
+                            xmlTestResults.WriteStartElement("success");
+                        }
+                        else
+                        {
+                            xmlTestResults.WriteStartElement("failure");
+                        }
+                        xmlTestResults.WriteAttributeString("classname", re.Name);
+                        xmlTestResults.WriteAttributeString("name", re.Name);
+                        xmlTestResults.WriteValue(re.Message);
+                        xmlTestResults.WriteEndElement();
+                    }
+                    xmlTestResults.WriteEndElement();
+                }
+                xmlTestResults.WriteEndElement();
+                xmlTestResults.Close();
+            }
+
             if(failed)
             {
                 Thread.Sleep(100);
@@ -116,7 +186,7 @@ namespace SilverSim.Tests.Extensions
 
         public IPlugin Initialize(ConfigurationLoader loader, IConfig ownSection)
         {
-            return new TestRunner();
+            return new TestRunner(ownSection.GetString("Name", ""), ownSection.GetString("XUnitResultsFile", ""));
         }
     }
     #endregion
