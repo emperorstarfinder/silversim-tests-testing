@@ -16,7 +16,7 @@
 						<exec program="SilverSim.Main.exe" basedir="../bin" workingdir="../bin">
 							<arg value="-m=testing"/>
 							<arg value="-c"/>
-							<arg value="..\tests\${testfile}"/>
+							<arg path="../tests/${testfile}"/>
 						</exec>
 					</try>
 					<catch>
