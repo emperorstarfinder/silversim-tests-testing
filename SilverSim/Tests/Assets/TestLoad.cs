@@ -36,6 +36,16 @@ namespace SilverSim.Tests.Assets
             }
         }
 
+        public void Setup()
+        {
+
+        }
+
+        public void Cleanup()
+        {
+
+        }
+
         public bool Run()
         {
             bool success = true;

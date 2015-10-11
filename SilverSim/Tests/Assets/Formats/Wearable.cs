@@ -17,6 +17,16 @@ namespace SilverSim.Tests.Assets.Formats
     {
         private static readonly ILog m_Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
+        public void Setup()
+        {
+
+        }
+
+        public void Cleanup()
+        {
+
+        }
+
         public bool Run()
         {
             Wearable wearable;

@@ -25,6 +25,16 @@ namespace SilverSim.Tests.Avatar
             m_UserID = config.GetString("UserID");
         }
 
+        public void Setup()
+        {
+
+        }
+
+        public void Cleanup()
+        {
+
+        }
+
         public bool Run()
         {
             m_Log.Info("Testing that we get an empty set");

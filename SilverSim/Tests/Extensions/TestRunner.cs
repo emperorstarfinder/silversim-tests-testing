@@ -65,6 +65,8 @@ namespace SilverSim.Tests.Extensions
                 m_Log.Info("********************************************************************************");
                 try
                 {
+                    test.Setup();
+
                     if (test.Run())
                     {
                         m_Log.Info("********************************************************************************");
@@ -93,7 +95,23 @@ namespace SilverSim.Tests.Extensions
                     tr.Message = string.Format("Exception {0}: {1}\n{2}", e.GetType().FullName, e.ToString(), e.StackTrace.ToString());
                     tr.Result = false;
                 }
+
+                try
+                {
+                    test.Cleanup();
+                }
+                catch(Exception e)
+                {
+                    m_Log.Info("********************************************************************************");
+                    m_Log.InfoFormat("Executed test {0} with FAILURE (Cleanup)", test.GetType().FullName);
+                    m_Log.ErrorFormat("Exception {0}: {1}\n{2}", e.GetType().FullName, e.ToString(), e.StackTrace.ToString());
+                    m_Log.Info("********************************************************************************");
+                    failed = true;
+                    tr.Message = string.Format("Exception {0}: {1}\n{2}", e.GetType().FullName, e.ToString(), e.StackTrace.ToString());
+                    tr.Result = false;
+                }
                 tr.RunTime = Environment.TickCount - tr.RunTime;
+
                 TestResults.Add(tr);
             }
 

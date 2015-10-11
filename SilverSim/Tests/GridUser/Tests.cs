@@ -83,6 +83,16 @@ namespace SilverSim.Tests.GridUser
             return result;
         }
 
+        public void Setup()
+        {
+
+        }
+
+        public void Cleanup()
+        {
+
+        }
+
         public bool Run()
         {
             UUI hgUUI = new UUI(UUID.Parse("11223344-1122-1122-1122-112233445566"), "First", "Last", new Uri("http://example.com/"));

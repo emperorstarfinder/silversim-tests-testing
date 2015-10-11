@@ -63,6 +63,16 @@ namespace SilverSim.Tests.Assets
                 return true;
         }
 
+        public void Setup()
+        {
+
+        }
+
+        public void Cleanup()
+        {
+
+        }
+
         public bool Run()
         {
             AssetData asset = new AssetData();

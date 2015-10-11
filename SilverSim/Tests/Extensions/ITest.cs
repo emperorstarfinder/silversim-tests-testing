@@ -7,6 +7,8 @@ namespace SilverSim.Tests.Extensions
 {
     public interface ITest : IPlugin
     {
+        void Setup();
         bool Run();
+        void Cleanup();
     }
 }

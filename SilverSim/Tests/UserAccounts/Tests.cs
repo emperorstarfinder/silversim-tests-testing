@@ -66,6 +66,17 @@ namespace SilverSim.Tests.UserAccounts
 
             return result;
         }
+
+        public void Setup()
+        {
+
+        }
+
+        public void Cleanup()
+        {
+
+        }
+
         public bool Run()
         {
             m_Log.Info("Setting up test data");

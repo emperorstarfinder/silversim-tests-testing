@@ -9,6 +9,16 @@ namespace SilverSim.Tests.Assets
 {
     public class References : ITest
     {
+        public void Setup()
+        {
+
+        }
+
+        public void Cleanup()
+        {
+
+        }
+
         public bool Run()
         {
             Notecard notecard = new Notecard();

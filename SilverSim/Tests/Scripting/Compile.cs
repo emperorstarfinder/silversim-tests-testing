@@ -35,6 +35,16 @@ namespace SilverSim.Tests.Scripting
             CompilerRegistry.ScriptCompilers.DefaultCompilerName = config.GetString("DefaultCompiler");
         }
 
+        public void Setup()
+        {
+
+        }
+
+        public void Cleanup()
+        {
+
+        }
+
         public bool Run()
         {
             bool success = true;

@@ -38,6 +38,16 @@ namespace SilverSim.Tests.Scripting
             WriteParserResult = config.GetBoolean("WriteParserResult", false);
         }
 
+        public void Setup()
+        {
+
+        }
+
+        public void Cleanup()
+        {
+
+        }
+
         public bool Run()
         {
             bool success = true;

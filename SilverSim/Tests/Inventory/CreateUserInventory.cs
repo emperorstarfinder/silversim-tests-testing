@@ -27,6 +27,16 @@ namespace SilverSim.Tests.Inventory
             m_UserID = config.GetString("UserID");
         }
 
+        public void Setup()
+        {
+
+        }
+
+        public void Cleanup()
+        {
+
+        }
+
         public bool Run()
         {
             AssetType[] foldersToTest = new AssetType[] 
