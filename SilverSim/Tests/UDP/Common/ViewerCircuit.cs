@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using ThreadedClasses;
 
 namespace SilverSim.Tests.UDP.Common
 {
@@ -20,8 +21,8 @@ namespace SilverSim.Tests.UDP.Common
 
         private static readonly ILog m_Log = LogManager.GetLogger("VIEWER CIRCUIT");
         private static readonly UDPPacketDecoder m_PacketDecoder = new UDPPacketDecoder(true);
-
-        public event Action<Message> OnReceivedMessage;
+        public readonly BlockingQueue<Message> ReceiveQueue = new BlockingQueue<Message>();
+        public bool EnableReceiveQueue = false;
 
         public ViewerCircuit(
             UDPCircuitsManager server,
@@ -54,6 +55,48 @@ namespace SilverSim.Tests.UDP.Common
         {
         }
 
+        public Dictionary<string, Action<Message>> GenericMessageRouting
+        {
+            get
+            {
+                return m_GenericMessageRouting;
+            }
+        }
+
+        public Dictionary<SilverSim.Types.IM.GridInstantMessageDialog, Action<Message>> IMMessageRouting
+        {
+            get
+            {
+                return m_IMMessageRouting;
+            }
+        }
+
+        public Dictionary<MessageType, Action<Message>> MessageRouting
+        {
+            get
+            {
+                return m_MessageRouting;
+            }
+        }
+
+        public Message Receive(int timeout)
+        {
+            if (!EnableReceiveQueue)
+            {
+                throw new Exception("Receive queue not enabled");
+            }
+            return ReceiveQueue.Dequeue(timeout);
+        }
+
+        public Message Receive()
+        {
+            if(!EnableReceiveQueue)
+            {
+                throw new Exception("Receive queue not enabled");
+            }
+            return ReceiveQueue.Dequeue();
+        }
+
         protected override void OnCircuitSpecificPacketReceived(MessageType mType, UDPPacket pck)
         {
             UDPPacketDecoder.PacketDecoderDelegate del;
@@ -78,13 +121,43 @@ namespace SilverSim.Tests.UDP.Common
                 /* we keep the circuit relatively dumb so that we have no other logic than how to send and receive messages to the remote sim.
                     * It merely collects delegates to other objects as well to call specific functions.
                     */
-                var ev = OnReceivedMessage;
-                if (null != ev)
+                Action<Message> mdel;
+                if (m_MessageRouting.TryGetValue(m.Number, out mdel))
                 {
-                    foreach (Action<Message> mdel in ev.GetInvocationList())
+                    mdel(m);
+                }
+                else if (m.Number == MessageType.ImprovedInstantMessage)
+                {
+                    ImprovedInstantMessage im = (ImprovedInstantMessage)m;
+                    if (im.CircuitAgentID != im.AgentID ||
+                        im.CircuitSessionID != im.SessionID)
                     {
-                        mdel.Invoke(m);
+                        return;
                     }
+                    if (m_IMMessageRouting.TryGetValue(im.Dialog, out mdel))
+                    {
+                        mdel(m);
+                    }
+                    else if (EnableReceiveQueue)
+                    {
+                        ReceiveQueue.Enqueue(m);
+                    }
+                }
+                else if (m.Number == MessageType.GenericMessage)
+                {
+                    SilverSim.Viewer.Messages.Generic.GenericMessage genMsg = (SilverSim.Viewer.Messages.Generic.GenericMessage)m;
+                    if (m_GenericMessageRouting.TryGetValue(genMsg.Method, out mdel))
+                    {
+                        mdel(m);
+                    }
+                    else if (EnableReceiveQueue)
+                    {
+                        ReceiveQueue.Enqueue(m);
+                    }
+                }
+                else if (EnableReceiveQueue)
+                {
+                    ReceiveQueue.Enqueue(m);
                 }
             }
             else
