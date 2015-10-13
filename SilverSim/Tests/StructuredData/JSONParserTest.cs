@@ -27,7 +27,7 @@ namespace SilverSim.Tests.StructuredData
 
         public bool Run()
         {
-            IValue iv = JSON.Deserialize(new MemoryStream(UTF8NoBOM.GetBytes(JSONInput)));
+            JSON.Deserialize(new MemoryStream(UTF8NoBOM.GetBytes(JSONInput)));
             return true;
         }
 

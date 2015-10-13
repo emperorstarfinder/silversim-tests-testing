@@ -29,7 +29,7 @@ namespace SilverSim.Tests.StructuredData
 
         public bool Run()
         {
-            IValue iv = JSON20RPC.DeserializeResponse(new MemoryStream(UTF8NoBOM.GetBytes(JSONInput)));
+            JSON20RPC.DeserializeResponse(new MemoryStream(UTF8NoBOM.GetBytes(JSONInput)));
             return true;
         }
 

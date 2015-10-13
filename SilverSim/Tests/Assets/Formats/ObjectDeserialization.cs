@@ -43,10 +43,9 @@ namespace SilverSim.Tests.Assets.Formats
             {
                 m_Log.InfoFormat("Testing decoder with asset {0}", manifest);
                 Stream resource = GetType().Assembly.GetManifestResourceStream(manifest);
-                List<ObjectGroup> objgroup;
                 try
                 {
-                    objgroup = ObjectXML.fromXml(resource, UUI.Unknown);
+                    ObjectXML.fromXml(resource, UUI.Unknown);
                 }
                 catch (Exception e)
                 {
