@@ -83,14 +83,14 @@ namespace SilverSim.Tests.Assets
 
             #region testing exists function
             m_Log.Info("Testing non-existence of Asset 1");
-            if(m_AssetService.exists(Asset1ID))
+            if(m_AssetService.Exists(Asset1ID))
             { 
                 m_Log.Fatal("Failed to detect non-existence of asset 1");
                 return false;
             }
 
             m_Log.Info("Testing non-existence of Asset 2");
-            if(m_AssetService.exists(Asset2ID))
+            if(m_AssetService.Exists(Asset2ID))
             {
                 m_Log.Fatal("Failed to detect non-existence of asset 2");
                 return false;
@@ -100,7 +100,7 @@ namespace SilverSim.Tests.Assets
             try
             {
                 Dictionary<UUID, bool> assetExists = new Dictionary<UUID, bool>();
-                assetExists = m_AssetService.exists(new List<UUID> { Asset1ID, Asset2ID });
+                assetExists = m_AssetService.Exists(new List<UUID> { Asset1ID, Asset2ID });
                 if(assetExists[Asset1ID])
                 {
                     m_Log.Fatal("Failed to detect non-existence of asset 1 via multiple exist");
@@ -146,7 +146,7 @@ namespace SilverSim.Tests.Assets
             try
             {
                 Dictionary<UUID, bool> assetExists = new Dictionary<UUID, bool>();
-                assetExists = m_AssetService.exists(new List<UUID> { Asset1ID, Asset2ID });
+                assetExists = m_AssetService.Exists(new List<UUID> { Asset1ID, Asset2ID });
                 if (!assetExists[Asset1ID])
                 {
                     m_Log.Fatal("Failed to detect existence of asset 1 via multiple exist");
@@ -166,7 +166,7 @@ namespace SilverSim.Tests.Assets
             try
             {
                 Dictionary<UUID, bool> assetExists = new Dictionary<UUID, bool>();
-                assetExists = m_AssetService.exists(new List<UUID> { Asset2ID, Asset1ID });
+                assetExists = m_AssetService.Exists(new List<UUID> { Asset2ID, Asset1ID });
                 if (!assetExists[Asset1ID])
                 {
                     m_Log.Fatal("Failed to detect existence of asset 1 via multiple exist");
@@ -196,14 +196,14 @@ namespace SilverSim.Tests.Assets
 
             #region testing exists function
             m_Log.Info("Testing existence of Asset 1");
-            if(!m_AssetService.exists(Asset1ID))
+            if(!m_AssetService.Exists(Asset1ID))
             {
                 m_Log.Fatal("Failed to detect existence of asset 1");
                 return false;
             }
 
             m_Log.Info("Testing existence of Asset 2");
-            if(!m_AssetService.exists(Asset2ID))
+            if(!m_AssetService.Exists(Asset2ID))
             {
                 m_Log.Fatal("Failed to detect existence of asset 2");
                 return false;
@@ -213,7 +213,7 @@ namespace SilverSim.Tests.Assets
             try
             {
                 Dictionary<UUID, bool> assetExists = new Dictionary<UUID, bool>();
-                assetExists = m_AssetService.exists(new List<UUID> { Asset1ID, Asset2ID });
+                assetExists = m_AssetService.Exists(new List<UUID> { Asset1ID, Asset2ID });
                 if (!assetExists[Asset1ID])
                 {
                     m_Log.Fatal("Failed to detect existence of asset 1 via multiple exist");
