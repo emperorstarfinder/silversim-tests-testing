@@ -93,7 +93,7 @@ namespace SilverSim.Tests.Preconditions
                 {
                     log.FatalFormat("[MYSQL CONFIG]: Parameter 'Database' missing in [{0}]", config.Name);
                 }
-                throw new ConfigurationLoader.ConfigurationError();
+                throw new ConfigurationLoader.ConfigurationErrorException();
             }
             return string.Format("Server={0};Uid={1};Pwd={2};Database={3};",
                 config.GetString("Server"),

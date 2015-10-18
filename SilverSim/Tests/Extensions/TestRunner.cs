@@ -162,7 +162,7 @@ namespace SilverSim.Tests.Extensions
             if(failed)
             {
                 Thread.Sleep(100);
-                throw new ConfigurationLoader.TestingError();
+                throw new ConfigurationLoader.TestingErrorException();
             }
             else
             {
@@ -176,7 +176,7 @@ namespace SilverSim.Tests.Extensions
             if(config == null)
             {
                 m_Log.Fatal("Nothing to test");
-                throw new ConfigurationLoader.TestingError();
+                throw new ConfigurationLoader.TestingErrorException();
             }
 
             foreach(string testname in config.GetKeys())
@@ -185,7 +185,7 @@ namespace SilverSim.Tests.Extensions
                 if(t == null)
                 {
                     m_Log.FatalFormat("Missing test {0}", testname);
-                    throw new ConfigurationLoader.TestingError();
+                    throw new ConfigurationLoader.TestingErrorException();
                 }
                 loader.AddPlugin(testname, (IPlugin)Activator.CreateInstance(t));
             }
