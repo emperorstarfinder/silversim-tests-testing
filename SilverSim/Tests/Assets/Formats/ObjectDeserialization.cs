@@ -45,7 +45,7 @@ namespace SilverSim.Tests.Assets.Formats
                 Stream resource = GetType().Assembly.GetManifestResourceStream(manifest);
                 try
                 {
-                    ObjectXML.fromXml(resource, UUI.Unknown);
+                    ObjectXML.FromXml(resource, UUI.Unknown);
                 }
                 catch (Exception e)
                 {

@@ -79,7 +79,7 @@ namespace SilverSim.Tests.Inventory
             m_Log.Info("Create User Inventory");
             try
             {
-                m_InventoryService.checkInventory(m_UserID);
+                m_InventoryService.CheckInventory(m_UserID);
             }
             catch
             {
