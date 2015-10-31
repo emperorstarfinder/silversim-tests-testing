@@ -2,7 +2,7 @@
 // GNU Affero General Public License v3
 
 using SilverSim.Main.Common;
-using SilverSim.StructuredData.JSON;
+using SilverSim.Types.StructuredData.Json;
 using SilverSim.Tests.Extensions;
 using SilverSim.Types;
 using System.IO;
@@ -27,7 +27,7 @@ namespace SilverSim.Tests.StructuredData
 
         public bool Run()
         {
-            JSON.Deserialize(new MemoryStream(UTF8NoBOM.GetBytes(JSONInput)));
+            Json.Deserialize(new MemoryStream(UTF8NoBOM.GetBytes(JSONInput)));
             return true;
         }
 
