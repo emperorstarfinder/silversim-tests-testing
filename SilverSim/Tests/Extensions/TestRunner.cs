@@ -15,7 +15,7 @@ using System.Xml;
 namespace SilverSim.Tests.Extensions
 {
     #region Implementation
-    class TestRunner : IPlugin, IRegionLoaderInterface, IPluginSubFactory
+    public class TestRunner : IPlugin, IRegionLoaderInterface, IPluginSubFactory
     {
         private static readonly ILog m_Log = LogManager.GetLogger("TEST RUNNER");
         List<ITest> m_Tests = new List<ITest>();
@@ -31,6 +31,7 @@ namespace SilverSim.Tests.Extensions
         }
 
         List<TestResult> TestResults = new List<TestResult>();
+        public bool OtherThreadResult = true; /* storage for tests running over multiple threads */
 
         public TestRunner(string testName, string xmlResultFileName)
         {
