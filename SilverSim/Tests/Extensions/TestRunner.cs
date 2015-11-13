@@ -15,7 +15,7 @@ using System.Xml;
 namespace SilverSim.Tests.Extensions
 {
     #region Implementation
-    public class TestRunner : IPlugin, IRegionLoaderInterface, IPluginSubFactory
+    public class TestRunner : IPlugin, IPostLoadStep, IPluginSubFactory
     {
         private static readonly ILog m_Log = LogManager.GetLogger("TEST RUNNER");
         List<ITest> m_Tests = new List<ITest>();
@@ -49,11 +49,7 @@ namespace SilverSim.Tests.Extensions
             m_Tests = loader.GetServicesByValue<ITest>();
         }
 
-        public void LoadRegions()
-        {
-        }
-
-        public void AllRegionsLoaded()
+        public void PostLoad()
         {
             bool failed = false;
             foreach(ITest test in m_Tests)

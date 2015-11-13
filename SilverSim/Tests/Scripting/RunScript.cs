@@ -83,7 +83,6 @@ namespace SilverSim.Tests.Scripting
 
             if(success)
             {
-
             }
             return success;
         }
