@@ -20,6 +20,7 @@
   <Reference name="SilverSim.Types" path="../../bin/" localCopy="false"/>
   <Reference name="SilverSim.ServiceInterfaces" path="../../bin/" localCopy="false"/>
   <Reference name="SilverSim.Scene.Types" path="../../bin/" localCopy="false"/>
+  <Reference name="SilverSim.Scene.Management" path="../../bin/" localCopy="false"/>
   <Reference name="SilverSim.Scene.ServiceInterfaces" path="../../bin/" localCopy="false"/>
   <Reference name="SilverSim.Main.Common" path="../../bin/" localCopy="false"/>
   <Reference name="SilverSim.Scripting.Common" path="../../bin/" localCopy="false"/>
