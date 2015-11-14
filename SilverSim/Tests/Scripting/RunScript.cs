@@ -5,9 +5,11 @@ using log4net;
 using Nini.Config;
 using SilverSim.Main.Common;
 using SilverSim.Scene.Management.Scene;
+using SilverSim.Scene.ServiceInterfaces.Chat;
 using SilverSim.Scene.Types.Object;
 using SilverSim.Scene.Types.Scene;
 using SilverSim.Scene.Types.Script;
+using SilverSim.Scene.Types.Script.Events;
 using SilverSim.Scripting.Common;
 using SilverSim.Tests.Extensions;
 using SilverSim.Types;
@@ -23,6 +25,8 @@ namespace SilverSim.Tests.Scripting
     public class RunScript : ITest, IPluginShutdown
     {
         private static readonly ILog m_Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog m_PublicChatLog = LogManager.GetLogger("PUBLIC_CHANNEL");
+        private static readonly ILog m_DebugChatLog = LogManager.GetLogger("DEBUG_CHANNEL");
 
         UUID m_AssetID;
         string m_ScriptFile;
@@ -208,6 +212,12 @@ namespace SilverSim.Tests.Scripting
                     item.Permissions.NextOwner = m_ScriptPermissionsNext;
 
                     scene.Add(grp);
+                    ChatServiceInterface chatService = scene.GetService<ChatServiceInterface>();
+                    if(null != chatService)
+                    {
+                        chatService.AddRegionListener(PUBLIC_CHANNEL, string.Empty, UUID.Zero, "", GetUUID, PublicChannelLog);
+                        chatService.AddRegionListener(DEBUG_CHANNEL, string.Empty, UUID.Zero, "", GetUUID, DebugChannelLog);
+                    }
                     ScriptInstance scriptInstance = scriptAssembly.Instantiate(part, item);
                     item.ScriptInstance = scriptInstance;
                     item.ScriptInstance.IsRunning = true;
@@ -217,6 +227,24 @@ namespace SilverSim.Tests.Scripting
                 return m_Runner.OtherThreadResult;
             }
             return success;
+        }
+
+        UUID GetUUID()
+        {
+            return UUID.Zero;
+        }
+
+        const int PUBLIC_CHANNEL = 0;
+        const int DEBUG_CHANNEL = 0x7FFFFFFF;
+
+        void DebugChannelLog(ListenEvent ev)
+        {
+            m_DebugChatLog.InfoFormat("{0} ({1}, {2}): {3}: {4}", ev.Name, ev.ID, ev.SourceType.ToString(), ev.Type.ToString(), ev.Message);
+        }
+
+        void PublicChannelLog(ListenEvent ev)
+        {
+            m_PublicChatLog.InfoFormat("{0} ({1}, {2}): {3}: {4}", ev.Name, ev.ID, ev.SourceType.ToString(), ev.Type.ToString(), ev.Message);
         }
 
         public void Shutdown()
