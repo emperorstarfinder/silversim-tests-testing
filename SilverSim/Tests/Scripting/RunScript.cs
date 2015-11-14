@@ -8,18 +8,15 @@ using SilverSim.Scene.Management.Scene;
 using SilverSim.Scene.Types.Object;
 using SilverSim.Scene.Types.Scene;
 using SilverSim.Scene.Types.Script;
-using SilverSim.Scene.Types.Script.Events;
 using SilverSim.Scripting.Common;
 using SilverSim.Tests.Extensions;
 using SilverSim.Types;
 using SilverSim.Types.Asset;
 using SilverSim.Types.Inventory;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Threading;
-using System.Timers;
 
 namespace SilverSim.Tests.Scripting
 {
@@ -213,9 +210,8 @@ namespace SilverSim.Tests.Scripting
                     scene.Add(grp);
                     ScriptInstance scriptInstance = scriptAssembly.Instantiate(part, item);
                     item.ScriptInstance = scriptInstance;
-                    item.ScriptInstance.ThreadPool = scene.ScriptThreadPool;
                     item.ScriptInstance.IsRunning = true;
-                    item.ScriptInstance.PostEvent(new ResetScriptEvent());
+                    item.ScriptInstance.Reset();
                 }
                 m_RunTimeoutEvent.WaitOne(m_TimeoutMs);
                 return m_Runner.OtherThreadResult;
