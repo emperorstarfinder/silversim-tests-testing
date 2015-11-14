@@ -214,6 +214,7 @@ namespace SilverSim.Tests.Scripting
                     ScriptInstance scriptInstance = scriptAssembly.Instantiate(part, item);
                     item.ScriptInstance = scriptInstance;
                     item.ScriptInstance.ThreadPool = scene.ScriptThreadPool;
+                    item.ScriptInstance.IsRunning = true;
                     item.ScriptInstance.PostEvent(new ResetScriptEvent());
                 }
                 m_RunTimeoutEvent.WaitOne(m_TimeoutMs);
