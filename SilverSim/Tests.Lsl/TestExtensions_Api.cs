@@ -58,7 +58,7 @@ namespace SilverSim.Tests.Lsl
         {
             lock (instance)
             {
-                m_TestRunner.OtherThreadResult = result == 0;
+                m_TestRunner.OtherThreadResult = (result != 0);
             }
         }
 
