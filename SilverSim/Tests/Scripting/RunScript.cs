@@ -8,6 +8,7 @@ using SilverSim.Scene.Management.Scene;
 using SilverSim.Scene.Types.Object;
 using SilverSim.Scene.Types.Scene;
 using SilverSim.Scene.Types.Script;
+using SilverSim.Scene.Types.Script.Events;
 using SilverSim.Scripting.Common;
 using SilverSim.Tests.Extensions;
 using SilverSim.Types;
@@ -180,6 +181,7 @@ namespace SilverSim.Tests.Scripting
                     ObjectPart part = new ObjectPart();
                     part.ID = UUID.Random;
                     grp.Add(1, part.ID, part);
+                    part.ObjectGroup = grp;
                     grp.Owner = m_ObjectOwner;
                     grp.LastOwner = m_ObjectLastOwner;
                     part.Creator = m_ObjectCreator;
@@ -211,6 +213,8 @@ namespace SilverSim.Tests.Scripting
                     scene.Add(grp);
                     ScriptInstance scriptInstance = scriptAssembly.Instantiate(part, item);
                     item.ScriptInstance = scriptInstance;
+                    item.ScriptInstance.ThreadPool = scene.ScriptThreadPool;
+                    item.ScriptInstance.PostEvent(new ResetScriptEvent());
                 }
                 m_RunTimeoutEvent.WaitOne(m_TimeoutMs);
                 return m_Runner.OtherThreadResult;
