@@ -239,12 +239,12 @@ namespace SilverSim.Tests.Scripting
 
         void DebugChannelLog(ListenEvent ev)
         {
-            m_DebugChatLog.InfoFormat("{0} ({1}, {2}): {3}: {4}", ev.Name, ev.ID, ev.SourceType.ToString(), ev.Type.ToString(), ev.Message);
+            m_DebugChatLog.InfoFormat("{0} ({1}, {2} at {5}): {3}: {4}", ev.Name, ev.ID, ev.SourceType.ToString(), ev.Type.ToString(), ev.Message, ev.GlobalPosition.ToString());
         }
 
         void PublicChannelLog(ListenEvent ev)
         {
-            m_PublicChatLog.InfoFormat("{0} ({1}, {2}): {3}: {4}", ev.Name, ev.ID, ev.SourceType.ToString(), ev.Type.ToString(), ev.Message);
+            m_PublicChatLog.InfoFormat("{0} ({1}, {2} at {5}): {3}: {4}", ev.Name, ev.ID, ev.SourceType.ToString(), ev.Type.ToString(), ev.Message, ev.GlobalPosition.ToString());
         }
 
         public void Shutdown()
