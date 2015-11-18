@@ -12,6 +12,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
+using System.Text;
 
 namespace SilverSim.Tests.Scripting
 {
@@ -56,7 +57,7 @@ namespace SilverSim.Tests.Scripting
                 m_Log.InfoFormat("Testing compilation of {1} ({0})", file.Key, file.Value);
                 try
                 {
-                    using(TextReader reader = new StreamReader(file.Value))
+                    using (TextReader reader = new StreamReader(file.Value, new UTF8Encoding(false)))
                     {
                         CompilerRegistry.ScriptCompilers.Compile(AppDomain.CurrentDomain, UUI.Unknown, file.Key, reader);
                     }

@@ -18,6 +18,7 @@ using SilverSim.Types.Inventory;
 using System;
 using System.IO;
 using System.Reflection;
+using System.Text;
 using System.Threading;
 
 namespace SilverSim.Tests.Scripting
@@ -148,7 +149,7 @@ namespace SilverSim.Tests.Scripting
             IScriptAssembly scriptAssembly = null;
             try
             {
-                using (TextReader reader = new StreamReader(m_ScriptFile))
+                using (TextReader reader = new StreamReader(m_ScriptFile, new UTF8Encoding(false)))
                 {
                     scriptAssembly = CompilerRegistry.ScriptCompilers.Compile(AppDomain.CurrentDomain, UUI.Unknown, m_AssetID, reader);
                 }

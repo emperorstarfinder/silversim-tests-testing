@@ -59,7 +59,7 @@ namespace SilverSim.Tests.Scripting
                 m_Log.InfoFormat("Testing syntax of {1} ({0})", file.Key, file.Value);
                 try
                 {
-                    using(TextReader reader = new StreamReader(file.Value))
+                    using (TextReader reader = new StreamReader(file.Value, new UTF8Encoding(false)))
                     {
                         if (WriteParserResult)
                         {
