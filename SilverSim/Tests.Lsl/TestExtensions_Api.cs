@@ -22,15 +22,15 @@ namespace SilverSim.Tests.Lsl
         ConfigurationLoader m_Loader;
         TestRunner m_TestRunner;
 
-        [APIExtension("Testing", APILevel.KeepCsName)]
+        [APIExtension("Testing")]
         public const int LOG_INFO = 0;
-        [APIExtension("Testing", APILevel.KeepCsName)]
+        [APIExtension("Testing")]
         public const int LOG_WARN = 1;
-        [APIExtension("Testing", APILevel.KeepCsName)]
+        [APIExtension("Testing")]
         public const int LOG_ERROR = 2;
-        [APIExtension("Testing", APILevel.KeepCsName)]
+        [APIExtension("Testing")]
         public const int LOG_FATAL = 3;
-        [APIExtension("Testing", APILevel.KeepCsName)]
+        [APIExtension("Testing")]
         public const int LOG_DEBUG = 4;
 
         public TestExtensions_Api()
