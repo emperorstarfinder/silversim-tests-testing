@@ -15,13 +15,14 @@ using System.Xml;
 namespace SilverSim.Tests.Extensions
 {
     #region Implementation
-    public class TestRunner : IPlugin, IPostLoadStep, IPluginSubFactory
+    public class TestRunner : IPlugin, IPostLoadStep, IPluginSubFactory, IPluginShutdown
     {
         private static readonly ILog m_Log = LogManager.GetLogger("TEST RUNNER");
         List<ITest> m_Tests = new List<ITest>();
         TTY m_Console;
         string m_TestName = string.Empty;
         string m_XmlResultFileName = string.Empty;
+        ConfigurationLoader m_Loader;
         struct TestResult
         {
             public string Name;
@@ -33,6 +34,14 @@ namespace SilverSim.Tests.Extensions
         List<TestResult> TestResults = new List<TestResult>();
         public bool OtherThreadResult = true; /* storage for tests running over multiple threads */
 
+        public ShutdownOrder ShutdownOrder
+        {
+            get
+            {
+                return ShutdownOrder.Any;
+            }
+        }
+
         public TestRunner(string testName, string xmlResultFileName)
         {
             m_TestName = testName;
@@ -41,6 +50,7 @@ namespace SilverSim.Tests.Extensions
 
         public void Startup(ConfigurationLoader loader)
         {
+            m_Loader = loader;
             m_Console = loader.GetServicesByValue<TTY>()[0];
             if(loader.GetServicesByValue<TestRunner>().Count != 1)
             {
@@ -163,7 +173,8 @@ namespace SilverSim.Tests.Extensions
             }
             else
             {
-                CommandRegistry.ExecuteCommand(new List<string> {"shutdown"}, m_Console);
+                m_Loader.TriggerShutdown();
+                m_Loader = null;
             }
         }
 
@@ -186,6 +197,11 @@ namespace SilverSim.Tests.Extensions
                 }
                 loader.AddPlugin(testname, (IPlugin)Activator.CreateInstance(t));
             }
+        }
+
+        public void Shutdown()
+        {
+            m_Loader = null;
         }
     }
     #endregion
