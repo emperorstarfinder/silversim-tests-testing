@@ -2,15 +2,13 @@
 // GNU Affero General Public License v3
 
 using log4net;
+using SilverSim.Threading;
 using SilverSim.Types;
 using SilverSim.Viewer.Core;
 using SilverSim.Viewer.Messages;
 using SilverSim.Viewer.Messages.IM;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using ThreadedClasses;
 
 namespace SilverSim.Tests.UDP.Common
 {
