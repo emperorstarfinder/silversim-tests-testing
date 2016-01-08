@@ -5,7 +5,6 @@ using log4net;
 using Nini.Config;
 using SilverSim.Main.Common;
 using SilverSim.Main.Common.CmdIO;
-using SilverSim.Scene.ServiceInterfaces.RegionLoader;
 using System;
 using System.Collections.Generic;
 using System.Text;
