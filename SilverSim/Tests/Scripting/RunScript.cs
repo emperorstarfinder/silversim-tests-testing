@@ -6,14 +6,17 @@ using Nini.Config;
 using SilverSim.Main.Common;
 using SilverSim.Scene.Management.Scene;
 using SilverSim.Scene.ServiceInterfaces.Chat;
+using SilverSim.Scene.ServiceInterfaces.Scene;
 using SilverSim.Scene.Types.Object;
 using SilverSim.Scene.Types.Scene;
 using SilverSim.Scene.Types.Script;
 using SilverSim.Scene.Types.Script.Events;
 using SilverSim.Scripting.Common;
+using SilverSim.ServiceInterfaces.Grid;
 using SilverSim.Tests.Extensions;
 using SilverSim.Types;
 using SilverSim.Types.Asset;
+using SilverSim.Types.Grid;
 using SilverSim.Types.Inventory;
 using System;
 using System.IO;
@@ -35,6 +38,7 @@ namespace SilverSim.Tests.Scripting
         UUID m_RegionID;
         ManualResetEvent m_RunTimeoutEvent = new ManualResetEvent(false);
         TestRunner m_Runner;
+        UUI m_RegionOwner;
         UUI m_ObjectOwner;
         UUI m_ObjectLastOwner;
         UUI m_ObjectCreator;
@@ -47,6 +51,9 @@ namespace SilverSim.Tests.Scripting
         string m_ScriptDescription;
         Vector3 m_Position;
         Quaternion m_Rotation;
+        int m_RegionPort;
+        GridServiceInterface m_RegionStorage;
+        SceneFactoryInterface m_SceneFactory;
         
         InventoryPermissionsMask m_ObjectPermissionsBase = InventoryPermissionsMask.All;
         InventoryPermissionsMask m_ObjectPermissionsOwner = InventoryPermissionsMask.All;
@@ -76,6 +83,8 @@ namespace SilverSim.Tests.Scripting
 
             m_TimeoutMs = config.GetInt("RunTimeout", 1000);
             m_RegionID = UUID.Parse(config.GetString("RegionID"));
+            m_RegionOwner = new UUI(config.GetString("RegionOwner"));
+            m_RegionPort = config.GetInt("RegionPort", 9300);
             m_Runner = loader.GetServicesByValue<TestRunner>()[0];
             m_Position = Vector3.Parse(config.GetString("Position", "<128, 128, 23>"));
             m_Rotation = Quaternion.Parse(config.GetString("Rotation", "<0,0,0,1>"));
@@ -85,6 +94,9 @@ namespace SilverSim.Tests.Scripting
 
             m_ObjectDescription = config.GetString("ObjectDescription", "");
             m_ScriptDescription = config.GetString("ScriptDescription", "");
+
+            m_RegionStorage = loader.GetService<GridServiceInterface>("RegionStorage");
+            m_SceneFactory = loader.GetService<SceneFactoryInterface>("DefaultSceneImplementation");
 
             m_ObjectOwner = new UUI(config.GetString("ObjectOwner"));
             if (config.Contains("ObjectCreator"))
@@ -169,11 +181,32 @@ namespace SilverSim.Tests.Scripting
                 success = false;
             }
 
-            SceneInterface scene = null;
-            if(success && !SceneManager.Scenes.TryGetValue(m_RegionID, out scene))
+            RegionInfo rInfo = new RegionInfo();
+            rInfo.ID = m_RegionID;
+            rInfo.Location.GridX = 10000;
+            rInfo.Location.GridY = 10000;
+            rInfo.ProductName = "Mainland";
+            rInfo.ServerPort = (uint)m_RegionPort;
+            rInfo.Owner = m_RegionOwner;
+            rInfo.Flags = RegionFlags.RegionOnline;
+            m_RegionStorage.RegisterRegion(rInfo);
+
+            SceneInterface scene;
+            try
             {
-                m_Log.ErrorFormat("Running of {1} ({0}) failed: Region ID {2} not found", m_AssetID, m_ScriptFile, m_RegionID);
+                scene = m_SceneFactory.Instantiate(rInfo);
+            }
+            catch
+            {
+                m_Log.ErrorFormat("Running of {1} ({0}) failed: Failed to start region ID {2}", m_AssetID, m_ScriptFile, m_RegionID);
                 success = false;
+                scene = null;
+            }
+
+            if (success)
+            {
+                SceneManager.Scenes.Add(scene);
+                scene.LoadSceneAsync();
             }
 
             if(success)
