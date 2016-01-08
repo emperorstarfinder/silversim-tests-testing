@@ -196,9 +196,9 @@ namespace SilverSim.Tests.Scripting
             {
                 scene = m_SceneFactory.Instantiate(rInfo);
             }
-            catch
+            catch(Exception e)
             {
-                m_Log.ErrorFormat("Running of {1} ({0}) failed: Failed to start region ID {2}", m_AssetID, m_ScriptFile, m_RegionID);
+                m_Log.ErrorFormat("Running of {1} ({0}) failed: Failed to start region ID {2}: {3}: {4}\n{5}", m_AssetID, m_ScriptFile, m_RegionID, e.GetType().FullName, e.Message, e.StackTrace);
                 success = false;
                 scene = null;
             }
