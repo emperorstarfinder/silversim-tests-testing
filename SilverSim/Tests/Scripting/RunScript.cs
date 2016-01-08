@@ -206,7 +206,7 @@ namespace SilverSim.Tests.Scripting
             if (success)
             {
                 SceneManager.Scenes.Add(scene);
-                scene.LoadSceneAsync();
+                scene.LoadSceneSync();
             }
 
             if(success)
