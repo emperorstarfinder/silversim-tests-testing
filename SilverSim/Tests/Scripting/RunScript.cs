@@ -12,10 +12,12 @@ using SilverSim.Scene.Types.Scene;
 using SilverSim.Scene.Types.Script;
 using SilverSim.Scene.Types.Script.Events;
 using SilverSim.Scripting.Common;
+using SilverSim.ServiceInterfaces.Estate;
 using SilverSim.ServiceInterfaces.Grid;
 using SilverSim.Tests.Extensions;
 using SilverSim.Types;
 using SilverSim.Types.Asset;
+using SilverSim.Types.Estate;
 using SilverSim.Types.Grid;
 using SilverSim.Types.Inventory;
 using System;
@@ -45,15 +47,20 @@ namespace SilverSim.Tests.Scripting
         UUI m_ScriptOwner;
         UUI m_ScriptLastOwner;
         UUI m_ScriptCreator;
+        UUI m_EstateOwner;
+        string m_RegionName;
         string m_ObjectName;
         string m_ObjectDescription;
         string m_ScriptName;
         string m_ScriptDescription;
+        string m_EstateName;
+        uint m_EstateID;
         Vector3 m_Position;
         Quaternion m_Rotation;
         int m_RegionPort;
         GridServiceInterface m_RegionStorage;
         SceneFactoryInterface m_SceneFactory;
+        EstateServiceInterface m_EstateService;
         
         InventoryPermissionsMask m_ObjectPermissionsBase = InventoryPermissionsMask.All;
         InventoryPermissionsMask m_ObjectPermissionsOwner = InventoryPermissionsMask.All;
@@ -84,6 +91,11 @@ namespace SilverSim.Tests.Scripting
             m_TimeoutMs = config.GetInt("RunTimeout", 1000);
             m_RegionID = UUID.Parse(config.GetString("RegionID"));
             m_RegionOwner = new UUI(config.GetString("RegionOwner"));
+            m_EstateOwner = new UUI(config.GetString("EstateOwner", m_RegionOwner.ToString()));
+            m_EstateID = (uint)config.GetInt("EstateID", 100);
+            m_EstateName = config.GetString("EstateName", "My Estate");
+
+            m_RegionName = config.GetString("RegionName", "Testing Region");
             m_RegionPort = config.GetInt("RegionPort", 9300);
             m_Runner = loader.GetServicesByValue<TestRunner>()[0];
             m_Position = Vector3.Parse(config.GetString("Position", "<128, 128, 23>"));
@@ -97,6 +109,7 @@ namespace SilverSim.Tests.Scripting
 
             m_RegionStorage = loader.GetService<GridServiceInterface>("RegionStorage");
             m_SceneFactory = loader.GetService<SceneFactoryInterface>("DefaultSceneImplementation");
+            m_EstateService = loader.GetService<EstateServiceInterface>("EstateService");
 
             m_ObjectOwner = new UUI(config.GetString("ObjectOwner"));
             if (config.Contains("ObjectCreator"))
@@ -181,7 +194,16 @@ namespace SilverSim.Tests.Scripting
                 success = false;
             }
 
+            EstateInfo estate = new EstateInfo();
+            estate.ParentEstateID = 1;
+            estate.ID = m_EstateID;
+            estate.Owner = m_EstateOwner;
+            estate.Name = m_EstateName;
+            m_EstateService.Add(estate);
+            m_EstateService.RegionMap[m_RegionID] = m_EstateID;
+
             RegionInfo rInfo = new RegionInfo();
+            rInfo.Name = m_RegionName;
             rInfo.ID = m_RegionID;
             rInfo.Location.GridX = 10000;
             rInfo.Location.GridY = 10000;
