@@ -67,7 +67,7 @@ namespace SilverSim.Tests.Assets.Formats
             ncitem.AssetType = AssetType.CallingCard;
             ncitem.Creator = theCreator;
             ncitem.Description = "Item Description";
-            ncitem.Flags = 1;
+            ncitem.Flags = (InventoryFlags)1;
             ncitem.Group = UGI.Unknown;
             ncitem.ID = UUID.Random;
             ncitem.InventoryType = InventoryType.CallingCard;
