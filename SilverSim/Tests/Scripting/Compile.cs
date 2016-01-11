@@ -36,6 +36,7 @@ namespace SilverSim.Tests.Scripting
             }
             CompilerRegistry.ScriptCompilers.DefaultCompilerName = config.GetString("DefaultCompiler");
             m_Runner = loader.GetServicesByValue<TestRunner>()[0];
+            m_Runner.ExcludeSummaryCount = true;
         }
 
         public void Setup()

@@ -32,6 +32,7 @@ namespace SilverSim.Tests.Extensions
 
         public List<TestResult> TestResults = new List<TestResult>();
         public bool OtherThreadResult = true; /* storage for tests running over multiple threads */
+        public bool ExcludeSummaryCount;
 
         public ShutdownOrder ShutdownOrder
         {
@@ -116,7 +117,15 @@ namespace SilverSim.Tests.Extensions
                     tr.Message = string.Format("Exception {0}: {1}\n{2}", e.GetType().FullName, e.ToString(), e.StackTrace.ToString());
                     tr.Result = false;
                 }
-                tr.RunTime = Environment.TickCount - tr.RunTime;
+
+                if (ExcludeSummaryCount)
+                {
+                    tr.RunTime = 0;
+                }
+                else
+                {
+                    tr.RunTime = Environment.TickCount - tr.RunTime;
+                }
 
                 TestResults.Add(tr);
             }
