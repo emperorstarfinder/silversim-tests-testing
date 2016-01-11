@@ -22,7 +22,7 @@ namespace SilverSim.Tests.Extensions
         string m_TestName = string.Empty;
         string m_XmlResultFileName = string.Empty;
         ConfigurationLoader m_Loader;
-        struct TestResult
+        public struct TestResult
         {
             public string Name;
             public bool Result;
@@ -30,7 +30,7 @@ namespace SilverSim.Tests.Extensions
             public string Message;
         }
 
-        List<TestResult> TestResults = new List<TestResult>();
+        public List<TestResult> TestResults = new List<TestResult>();
         public bool OtherThreadResult = true; /* storage for tests running over multiple threads */
 
         public ShutdownOrder ShutdownOrder
