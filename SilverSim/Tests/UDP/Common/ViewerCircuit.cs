@@ -4,6 +4,7 @@
 using log4net;
 using SilverSim.Threading;
 using SilverSim.Types;
+using SilverSim.Types.IM;
 using SilverSim.Viewer.Core;
 using SilverSim.Viewer.Messages;
 using SilverSim.Viewer.Messages.IM;
@@ -21,6 +22,11 @@ namespace SilverSim.Tests.UDP.Common
         private static readonly UDPPacketDecoder m_PacketDecoder = new UDPPacketDecoder(true);
         public readonly BlockingQueue<Message> ReceiveQueue = new BlockingQueue<Message>();
         public bool EnableReceiveQueue = false;
+
+        readonly Dictionary<MessageType, Action<Message>> m_MessageRouting = new Dictionary<MessageType, Action<Message>>();
+        readonly Dictionary<string, Action<Message>> m_GenericMessageRouting = new Dictionary<string, Action<Message>>();
+        readonly Dictionary<string, Action<Message>> m_GodlikeMessageRouting = new Dictionary<string, Action<Message>>();
+        readonly Dictionary<GridInstantMessageDialog, Action<Message>> m_IMMessageRouting = new Dictionary<GridInstantMessageDialog, Action<Message>>();
 
         public ViewerCircuit(
             UDPCircuitsManager server,
@@ -142,6 +148,18 @@ namespace SilverSim.Tests.UDP.Common
                 {
                     SilverSim.Viewer.Messages.Generic.GenericMessage genMsg = (SilverSim.Viewer.Messages.Generic.GenericMessage)m;
                     if (m_GenericMessageRouting.TryGetValue(genMsg.Method, out mdel))
+                    {
+                        mdel(m);
+                    }
+                    else if (EnableReceiveQueue)
+                    {
+                        ReceiveQueue.Enqueue(m);
+                    }
+                }
+                else if (m.Number == MessageType.GodlikeMessage)
+                {
+                    SilverSim.Viewer.Messages.Generic.GodlikeMessage genMsg = (SilverSim.Viewer.Messages.Generic.GodlikeMessage)m;
+                    if (m_GodlikeMessageRouting.TryGetValue(genMsg.Method, out mdel))
                     {
                         mdel(m);
                     }
