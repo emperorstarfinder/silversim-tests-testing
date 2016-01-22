@@ -49,7 +49,7 @@ namespace SilverSim.Tests.Lsl
         {
             lock (instance)
             {
-                m_Loader.Shutdown();
+                m_Loader.TriggerShutdown();
             }
         }
 
