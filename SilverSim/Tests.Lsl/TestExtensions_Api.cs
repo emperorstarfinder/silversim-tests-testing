@@ -7,6 +7,7 @@ using SilverSim.Main.Common;
 using SilverSim.Scene.Types.Script;
 using SilverSim.Scripting.Lsl;
 using SilverSim.Tests.Extensions;
+using SilverSim.Tests.Scripting;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,6 +22,7 @@ namespace SilverSim.Tests.Lsl
         private static readonly ILog m_Log = LogManager.GetLogger("SCRIPT");
         ConfigurationLoader m_Loader;
         TestRunner m_TestRunner;
+        RunScript m_ScriptRunner;
 
         [APIExtension("Testing")]
         public const int LOG_INFO = 0;
@@ -42,6 +44,11 @@ namespace SilverSim.Tests.Lsl
         {
             m_Loader = loader;
             m_TestRunner = m_Loader.GetServicesByValue<TestRunner>()[0];
+            List<RunScript> scriptrunners = m_Loader.GetServicesByValue<RunScript>();
+            if(scriptrunners.Count > 0)
+            {
+                m_ScriptRunner = scriptrunners[0];
+            }
         }
 
         [APIExtension("Testing", "_test_Shutdown")]
@@ -51,7 +58,10 @@ namespace SilverSim.Tests.Lsl
             {
                 m_Log.Info("Shutdown triggered by script");
                 m_Loader.TriggerShutdown();
-                m_TestRunner.Shutdown();
+                if (null != m_ScriptRunner)
+                {
+                    m_ScriptRunner.Shutdown();
+                }
             }
         }
 

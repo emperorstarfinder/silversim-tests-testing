@@ -174,15 +174,18 @@ namespace SilverSim.Tests.Extensions
                 xmlTestResults.Close();
             }
 
-            if(failed)
+            if (failed)
             {
                 Thread.Sleep(100);
                 throw new ConfigurationLoader.TestingErrorException();
             }
             else
             {
-                m_Loader.TriggerShutdown();
-                m_Loader = null;
+                ConfigurationLoader loader = m_Loader;
+                if (null != loader)
+                {
+                    loader.TriggerShutdown();
+                }
             }
         }
 
