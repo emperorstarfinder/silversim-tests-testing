@@ -25,6 +25,7 @@ using System.IO;
 using System.Reflection;
 using System.Text;
 using System.Threading;
+using System.Timers;
 
 namespace SilverSim.Tests.Scripting
 {
@@ -38,7 +39,6 @@ namespace SilverSim.Tests.Scripting
         string m_ScriptFile;
         int m_TimeoutMs;
         UUID m_RegionID;
-        ManualResetEvent m_RunTimeoutEvent = new ManualResetEvent(false);
         TestRunner m_Runner;
         UUI m_RegionOwner;
         UUI m_ObjectOwner;
@@ -61,6 +61,7 @@ namespace SilverSim.Tests.Scripting
         GridServiceInterface m_RegionStorage;
         SceneFactoryInterface m_SceneFactory;
         EstateServiceInterface m_EstateService;
+        ConfigurationLoader m_Loader;
         
         InventoryPermissionsMask m_ObjectPermissionsBase = InventoryPermissionsMask.All;
         InventoryPermissionsMask m_ObjectPermissionsOwner = InventoryPermissionsMask.All;
@@ -76,6 +77,7 @@ namespace SilverSim.Tests.Scripting
 
         public void Startup(ConfigurationLoader loader)
         {
+            m_Loader = loader;
             IConfig config = loader.Config.Configs[GetType().FullName];
 
             /* we use same asset id keying here so to make them compatible with the other scripts */
@@ -162,7 +164,6 @@ namespace SilverSim.Tests.Scripting
 
         public void Cleanup()
         {
-
         }
 
         public bool Run()
@@ -233,7 +234,11 @@ namespace SilverSim.Tests.Scripting
 
             if(success)
             {
+                using (System.Timers.Timer runTimeoutTimer = new System.Timers.Timer(m_TimeoutMs))
                 {
+                    runTimeoutTimer.Elapsed += delegate (object o, ElapsedEventArgs args) { m_Loader.TriggerShutdown(); };
+                    runTimeoutTimer.AutoReset = false;
+                    runTimeoutTimer.Enabled = true;
                     ObjectGroup grp = new ObjectGroup();
                     ObjectPart part = new ObjectPart();
                     part.ID = UUID.Random;
@@ -269,7 +274,7 @@ namespace SilverSim.Tests.Scripting
 
                     scene.Add(grp);
                     ChatServiceInterface chatService = scene.GetService<ChatServiceInterface>();
-                    if(null != chatService)
+                    if (null != chatService)
                     {
                         chatService.AddRegionListener(PUBLIC_CHANNEL, string.Empty, UUID.Zero, "", GetUUID, PublicChannelLog);
                         chatService.AddRegionListener(DEBUG_CHANNEL, string.Empty, UUID.Zero, "", GetUUID, DebugChannelLog);
@@ -279,7 +284,6 @@ namespace SilverSim.Tests.Scripting
                     item.ScriptInstance.IsRunning = true;
                     item.ScriptInstance.Reset();
                 }
-                m_RunTimeoutEvent.WaitOne(m_TimeoutMs);
                 return m_Runner.OtherThreadResult;
             }
             return success;
@@ -305,7 +309,6 @@ namespace SilverSim.Tests.Scripting
 
         public void Shutdown()
         {
-            m_RunTimeoutEvent.Set();
         }
 
         public ShutdownOrder ShutdownOrder
