@@ -49,6 +49,7 @@ namespace SilverSim.Tests.Lsl
         {
             lock (instance)
             {
+                m_Log.Info("Shutdown triggered by script");
                 m_Loader.TriggerShutdown();
             }
         }
