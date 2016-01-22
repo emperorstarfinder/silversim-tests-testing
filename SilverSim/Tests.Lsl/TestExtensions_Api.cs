@@ -51,6 +51,7 @@ namespace SilverSim.Tests.Lsl
             {
                 m_Log.Info("Shutdown triggered by script");
                 m_Loader.TriggerShutdown();
+                m_TestRunner.Shutdown();
             }
         }
 
