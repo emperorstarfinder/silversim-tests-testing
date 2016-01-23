@@ -160,8 +160,8 @@ namespace SilverSim.Database.Memory.SimulationData
                 }
             }
 
-            objpart.IsPassCollisions = map["IsPassCollisions"].AsBoolean;
-            objpart.IsPassTouches = map["IsPassTouches"].AsBoolean;
+            objpart.PassCollisionMode = (PassEventMode)map["PassCollisionMode"].AsInt;
+            objpart.PassTouchMode = (PassEventMode)map["PassTouchMode"].AsInt;
             objpart.Velocity = map["Velocity"].AsVector3;
             objpart.AngularVelocity = map["AngularVelocity"].AsVector3;
             objpart.IsSoundQueueing = map["IsSoundQueueing"].AsBoolean;

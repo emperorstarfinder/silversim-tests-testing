@@ -311,8 +311,8 @@ namespace SilverSim.Database.Memory.SimulationData
                     data.Add("DynAttrs", new BinaryData(ms.GetBuffer()));
                 }
 
-                data.Add("IsPassCollisions", objpart.IsPassCollisions);
-                data.Add("IsPassTouches", objpart.IsPassTouches);
+                data.Add("PassCollisionMode", (int)objpart.PassCollisionMode);
+                data.Add("PassTouchMode", (int)objpart.PassTouchMode);
                 data.Add("Velocity", objpart.Velocity);
                 data.Add("IsSoundQueueing", objpart.IsSoundQueueing);
                 data.Add("IsAllowedDrop", objpart.IsAllowedDrop);
