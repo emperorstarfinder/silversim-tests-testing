@@ -185,13 +185,13 @@ namespace SilverSim.Tests.Scripting
             {
                 m_Log.ErrorFormat("Compilation of {1} ({0}) failed: {2}", m_AssetID, m_ScriptFile, e.Message);
                 m_Log.WarnFormat("Stack Trace:\n{0}", e.StackTrace.ToString());
-                success = false;
+                return false;
             }
             catch (Exception e)
             {
                 m_Log.ErrorFormat("Compilation of {1} ({0}) failed: {2}", m_AssetID, m_ScriptFile, e.Message);
                 m_Log.WarnFormat("Stack Trace:\n{0}", e.StackTrace.ToString());
-                success = false;
+                return false;
             }
 
             EstateInfo estate = new EstateInfo();
