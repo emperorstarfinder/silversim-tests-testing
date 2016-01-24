@@ -18,7 +18,6 @@ namespace SilverSim.Tests.Extensions
     {
         private static readonly ILog m_Log = LogManager.GetLogger("TEST RUNNER");
         List<ITest> m_Tests = new List<ITest>();
-        TTY m_Console;
         string m_TestName = string.Empty;
         string m_XmlResultFileName = string.Empty;
         ConfigurationLoader m_Loader;
@@ -51,7 +50,6 @@ namespace SilverSim.Tests.Extensions
         public void Startup(ConfigurationLoader loader)
         {
             m_Loader = loader;
-            m_Console = loader.GetServicesByValue<TTY>()[0];
             if(loader.GetServicesByValue<TestRunner>().Count != 1)
             {
                 throw new Exception("Too many TestRunner instances");
