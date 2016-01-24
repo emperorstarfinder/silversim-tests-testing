@@ -8,6 +8,7 @@ using SilverSim.Scene.ServiceInterfaces.SimulationData;
 using SilverSim.Types;
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
+using System;
 
 namespace SilverSim.Database.Memory.SimulationData
 {
@@ -26,6 +27,7 @@ namespace SilverSim.Database.Memory.SimulationData
         readonly MemorySimulationDataRegionSettingsStorage m_RegionSettingsStorage;
         readonly MemorySimulationDataSpawnPointStorage m_SpawnPointStorage;
         readonly MemorySimulationDataLightShareStorage m_LightShareStorage;
+        readonly MemorySimulationDataEnvControllerStorage m_EnvironmentControllerStorage;
 
         #region Constructor
         public MemorySimulationDataStorage()
@@ -38,6 +40,7 @@ namespace SilverSim.Database.Memory.SimulationData
             m_RegionSettingsStorage = new MemorySimulationDataRegionSettingsStorage();
             m_SpawnPointStorage = new MemorySimulationDataSpawnPointStorage();
             m_LightShareStorage = new MemorySimulationDataLightShareStorage();
+            m_EnvironmentControllerStorage = new MemorySimulationDataEnvControllerStorage();
         }
 
         public void Startup(ConfigurationLoader loader)
@@ -47,6 +50,14 @@ namespace SilverSim.Database.Memory.SimulationData
         #endregion
 
         #region Properties
+        public override SimulationDataEnvControllerStorageInterface EnvironmentController
+        {
+            get
+            {
+                return m_EnvironmentControllerStorage;
+            }
+        }
+
         public override SimulationDataLightShareStorageInterface LightShare
         {
             get
@@ -111,13 +122,6 @@ namespace SilverSim.Database.Memory.SimulationData
         }
         #endregion
 
-        static readonly string[] Tables = new string[]
-        {
-            "primitems",
-            "prims",
-            "objects",
-        };
-
         public override void RemoveRegion(UUID regionID)
         {
             m_ScriptStateStorage.RemoveAllInRegion(regionID);
@@ -127,6 +131,8 @@ namespace SilverSim.Database.Memory.SimulationData
             m_EnvironmentStorage.Remove(regionID);
             m_LightShareStorage.Remove(regionID);
             m_SpawnPointStorage.Remove(regionID);
+            m_EnvironmentStorage.Remove(regionID);
+            m_ObjectStorage.RemoveRegion(regionID);
         }
     }
     #endregion

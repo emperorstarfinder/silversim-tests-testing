@@ -36,6 +36,13 @@ namespace SilverSim.Database.Memory.SimulationData
         {
         }
 
+        public void RemoveRegion(UUID key)
+        {
+            m_PrimItems.Remove(key);
+            m_Primitives.Remove(key);
+            m_Objects.Remove(key);
+        }
+
         #region Objects and Prims within a region by UUID
         public override List<UUID> ObjectsInRegion(UUID key)
         {
