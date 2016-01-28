@@ -42,6 +42,7 @@ namespace SilverSim.Database.Memory.UserAccounts
             if(m_Data.TryGetValue(accountID, out account) && (scopeID == UUID.Zero || account.ScopeID == scopeID))
             {
                 account = new UserAccount(account);
+                account.IsLocalToGrid = true;
                 return true;
             }
             return false;
@@ -57,6 +58,8 @@ namespace SilverSim.Database.Memory.UserAccounts
                 {
                     throw new UserAccountNotFoundException();
                 }
+                account = new UserAccount(account);
+                account.IsLocalToGrid = true;
                 return account;
             }
         }
@@ -84,6 +87,7 @@ namespace SilverSim.Database.Memory.UserAccounts
             foreach(UserAccount acc in result)
             {
                 account = new UserAccount(acc);
+                account.IsLocalToGrid = true;
                 return true;
             }
             account = default(UserAccount);
@@ -128,7 +132,8 @@ namespace SilverSim.Database.Memory.UserAccounts
                                        select accountdata;
             foreach (UserAccount acc in result)
             {
-                account = acc;
+                account = new UserAccount(acc);
+                account.IsLocalToGrid = true;
                 return true;
             }
 
@@ -173,12 +178,16 @@ namespace SilverSim.Database.Memory.UserAccounts
 
         public override void Add(UserAccount userAccount)
         {
-            m_Data.Add(userAccount.Principal.ID, new UserAccount(userAccount));
+            UserAccount uac = new UserAccount(userAccount);
+            uac.IsLocalToGrid = true;
+            m_Data.Add(userAccount.Principal.ID, uac);
         }
 
         public override void Update(UserAccount userAccount)
         {
-            m_Data[userAccount.Principal.ID] = new UserAccount(userAccount);
+            UserAccount uac = new UserAccount(userAccount);
+            uac.IsLocalToGrid = true;
+            m_Data[userAccount.Principal.ID] = uac;
         }
 
         public override void Remove(UUID scopeID, UUID accountID)

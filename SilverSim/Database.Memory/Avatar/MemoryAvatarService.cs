@@ -40,8 +40,15 @@ namespace SilverSim.Database.Memory.Avatar
             }
             set
             {
-                RwLockedDictionary<string, string> data = new RwLockedDictionary<string, string>(value);
-                m_Data[avatarID] = data;
+                if (null == value)
+                {
+                    m_Data.Remove(avatarID);
+                }
+                else
+                {
+                    RwLockedDictionary<string, string> data = new RwLockedDictionary<string, string>(value);
+                    m_Data[avatarID] = data;
+                }
             }
         }
 
