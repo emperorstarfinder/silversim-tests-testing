@@ -153,7 +153,7 @@ namespace SilverSim.Database.Memory.Asset
                     internalAsset.Flags = asset.Flags;
                     internalAsset.Temporary = asset.Temporary;
 
-                    m_Assets[asset.ID] = internalAsset;
+                    m_Assets[internalAsset.ID] = internalAsset;
                 }
             }
             else
@@ -170,7 +170,7 @@ namespace SilverSim.Database.Memory.Asset
                 internalAsset.Flags = asset.Flags;
                 internalAsset.Temporary = asset.Temporary;
 
-                m_Assets.Add(asset.ID, asset);
+                m_Assets.Add(internalAsset.ID, internalAsset);
             }
         }
         #endregion
