@@ -4,7 +4,6 @@
 using log4net;
 using Nini.Config;
 using SilverSim.Main.Common;
-using SilverSim.Main.Common.CmdIO;
 using System;
 using System.Collections.Generic;
 using System.Text;

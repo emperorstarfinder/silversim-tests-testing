@@ -13,19 +13,15 @@ namespace SilverSim.Database.Memory.Inventory
 {
     sealed class MemoryInventoryItemService : InventoryItemServiceInterface
     {
-        readonly RwLockedDictionaryAutoAdd<UUID, RwLockedDictionary<UUID, InventoryItem>> m_Items;
-        readonly RwLockedDictionaryAutoAdd<UUID, RwLockedDictionary<UUID, InventoryFolder>> m_Folders;
-
-        public MemoryInventoryItemService(RwLockedDictionaryAutoAdd<UUID, RwLockedDictionary<UUID, InventoryItem>> items,
-            RwLockedDictionaryAutoAdd<UUID, RwLockedDictionary<UUID, InventoryFolder>> folders)
+        readonly MemoryInventoryService m_Service;
+        public MemoryInventoryItemService(MemoryInventoryService service)
         {
-            m_Items = items;
-            m_Folders = folders;
+            m_Service = service;
         }
 
         public override bool ContainsKey(UUID key)
         {
-            foreach(RwLockedDictionary<UUID, InventoryItem> dict in m_Items.Values)
+            foreach(RwLockedDictionary<UUID, InventoryItem> dict in m_Service.m_Items.Values)
             {
                 if(dict.ContainsKey(key))
                 {
@@ -38,7 +34,7 @@ namespace SilverSim.Database.Memory.Inventory
 
         public override bool TryGetValue(UUID key, out InventoryItem item)
         {
-            foreach (RwLockedDictionary<UUID, InventoryItem> dict in m_Items.Values)
+            foreach (RwLockedDictionary<UUID, InventoryItem> dict in m_Service.m_Items.Values)
             {
                 if (dict.TryGetValue(key, out item))
                 {
@@ -66,14 +62,14 @@ namespace SilverSim.Database.Memory.Inventory
         public override bool ContainsKey(UUID principalID, UUID key)
         {
             RwLockedDictionary<UUID, InventoryItem> dict;
-            return m_Items.TryGetValue(principalID, out dict) && dict.ContainsKey(key);
+            return m_Service.m_Items.TryGetValue(principalID, out dict) && dict.ContainsKey(key);
         }
 
         public override bool TryGetValue(UUID principalID, UUID key, out InventoryItem item)
         {
             RwLockedDictionary<UUID, InventoryItem> dict;
             item = default(InventoryItem);
-            if(m_Items.TryGetValue(principalID, out dict) && dict.TryGetValue(key, out item))
+            if(m_Service.m_Items.TryGetValue(principalID, out dict) && dict.TryGetValue(key, out item))
             {
                 item = new InventoryItem(item);
                 return true;
@@ -97,7 +93,7 @@ namespace SilverSim.Database.Memory.Inventory
 
         public override void Add(InventoryItem item)
         {
-            m_Items[item.Owner.ID].Add(item.ID, new InventoryItem(item));
+            m_Service.m_Items[item.Owner.ID].Add(item.ID, new InventoryItem(item));
             IncrementVersion(item.Owner.ID, item.ParentFolderID);
         }
 
@@ -105,7 +101,7 @@ namespace SilverSim.Database.Memory.Inventory
         {
             RwLockedDictionary<UUID, InventoryItem> itemSet;
             InventoryItem storedItem;
-            if(m_Items.TryGetValue(item.Owner.ID, out itemSet) &&
+            if(m_Service.m_Items.TryGetValue(item.Owner.ID, out itemSet) &&
                 itemSet.TryGetValue(item.ID, out storedItem))
             {
                 storedItem.AssetID = item.AssetID;
@@ -126,7 +122,7 @@ namespace SilverSim.Database.Memory.Inventory
         {
             InventoryItem item;
             RwLockedDictionary<UUID, InventoryItem> itemSet;
-            if (m_Items.TryGetValue(principalID, out itemSet) &&
+            if (m_Service.m_Items.TryGetValue(principalID, out itemSet) &&
                 itemSet.Remove(id, out item))
             {
                 IncrementVersion(principalID, item.ParentFolderID);
@@ -139,7 +135,7 @@ namespace SilverSim.Database.Memory.Inventory
         {
             InventoryItem item;
             RwLockedDictionary<UUID, InventoryItem> itemSet;
-            if (m_Items.TryGetValue(principalID, out itemSet) &&
+            if (m_Service.m_Items.TryGetValue(principalID, out itemSet) &&
                 itemSet.TryGetValue(id, out item))
             {
                 UUID oldFolderID = item.ParentFolderID;
@@ -157,7 +153,7 @@ namespace SilverSim.Database.Memory.Inventory
         {
             RwLockedDictionary<UUID, InventoryFolder> folderSet;
             InventoryFolder folder;
-            if(m_Folders.TryGetValue(principalID, out folderSet) &&
+            if(m_Service.m_Folders.TryGetValue(principalID, out folderSet) &&
                 folderSet.TryGetValue(folderID, out folder))
             {
                 Interlocked.Increment(ref folder.Version);

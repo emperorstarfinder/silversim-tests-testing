@@ -16,19 +16,16 @@ namespace SilverSim.Database.Memory.Inventory
 {
     public class MemoryInventoryFolderService : InventoryFolderServiceInterface
     {
-        readonly RwLockedDictionaryAutoAdd<UUID, RwLockedDictionary<UUID, InventoryItem>> m_Items;
-        readonly RwLockedDictionaryAutoAdd<UUID, RwLockedDictionary<UUID, InventoryFolder>> m_Folders;
+        readonly MemoryInventoryService m_Service;
 
-        public MemoryInventoryFolderService(RwLockedDictionaryAutoAdd<UUID, RwLockedDictionary<UUID, InventoryItem>> items,
-            RwLockedDictionaryAutoAdd<UUID, RwLockedDictionary<UUID, InventoryFolder>> folders)
+        public MemoryInventoryFolderService(MemoryInventoryService service)
         {
-            m_Items = items;
-            m_Folders = folders;
+            m_Service = service;
         }
 
         public override bool TryGetValue(UUID key, out InventoryFolder folder)
         {
-            foreach(RwLockedDictionary<UUID, InventoryFolder> dict in m_Folders.Values)
+            foreach(RwLockedDictionary<UUID, InventoryFolder> dict in m_Service.m_Folders.Values)
             {
                 if(dict.TryGetValue(key, out folder))
                 {
@@ -42,7 +39,7 @@ namespace SilverSim.Database.Memory.Inventory
 
         public override bool ContainsKey(UUID key)
         {
-            foreach (RwLockedDictionary<UUID, InventoryFolder> dict in m_Folders.Values)
+            foreach (RwLockedDictionary<UUID, InventoryFolder> dict in m_Service.m_Folders.Values)
             {
                 if (dict.ContainsKey(key))
                 {
@@ -68,7 +65,7 @@ namespace SilverSim.Database.Memory.Inventory
         public override bool TryGetValue(UUID principalID, UUID key, out InventoryFolder folder)
         {
             RwLockedDictionary<UUID, InventoryFolder> folderSet;
-            if(m_Folders.TryGetValue(principalID, out folderSet) &&
+            if(m_Service.m_Folders.TryGetValue(principalID, out folderSet) &&
                 folderSet.TryGetValue(key, out folder))
             {
                 folder = new InventoryFolder(folder);
@@ -82,7 +79,7 @@ namespace SilverSim.Database.Memory.Inventory
         public override bool ContainsKey(UUID principalID, UUID key)
         {
             RwLockedDictionary<UUID, InventoryFolder> folderSet;
-            return m_Folders.TryGetValue(principalID, out folderSet) && folderSet.ContainsKey(key);
+            return m_Service.m_Folders.TryGetValue(principalID, out folderSet) && folderSet.ContainsKey(key);
         }
 
         [SuppressMessage("Gendarme.Rules.Design", "AvoidMultidimensionalIndexerRule")]
@@ -102,7 +99,7 @@ namespace SilverSim.Database.Memory.Inventory
         public override bool ContainsKey(UUID principalID, AssetType type)
         {
             RwLockedDictionary<UUID, InventoryFolder> folderSet;
-            if(m_Folders.TryGetValue(principalID, out folderSet))
+            if(m_Service.m_Folders.TryGetValue(principalID, out folderSet))
             {
                 if(type == AssetType.RootFolder)
                 {
@@ -133,7 +130,7 @@ namespace SilverSim.Database.Memory.Inventory
         public override bool TryGetValue(UUID principalID, AssetType type, out InventoryFolder folder)
         {
             RwLockedDictionary<UUID, InventoryFolder> folderSet;
-            if (m_Folders.TryGetValue(principalID, out folderSet))
+            if (m_Service.m_Folders.TryGetValue(principalID, out folderSet))
             {
                 if (type == AssetType.RootFolder)
                 {
@@ -183,7 +180,7 @@ namespace SilverSim.Database.Memory.Inventory
         public override List<InventoryFolder> GetFolders(UUID principalID, UUID key)
         {
             RwLockedDictionary<UUID, InventoryFolder> folderSet;
-            return m_Folders.TryGetValue(principalID, out folderSet) ?
+            return m_Service.m_Folders.TryGetValue(principalID, out folderSet) ?
                 new List<InventoryFolder>(from folder in folderSet.Values where folder.ParentFolderID == key select new InventoryFolder(folder)) :
                 new List<InventoryFolder>();
         }
@@ -191,7 +188,7 @@ namespace SilverSim.Database.Memory.Inventory
         public override List<InventoryFolder> GetInventorySkeleton(UUID principalID)
         {
             RwLockedDictionary<UUID, InventoryFolder> folderSet;
-            return m_Folders.TryGetValue(principalID, out folderSet) ?
+            return m_Service.m_Folders.TryGetValue(principalID, out folderSet) ?
                 new List<InventoryFolder>(from folder in folderSet.Values where true select new InventoryFolder(folder)) :
                 new List<InventoryFolder>();
         }
@@ -199,7 +196,7 @@ namespace SilverSim.Database.Memory.Inventory
         public override List<InventoryItem> GetItems(UUID principalID, UUID key)
         {
             RwLockedDictionary<UUID, InventoryItem> itemSet;
-            return m_Items.TryGetValue(principalID, out itemSet) ?
+            return m_Service.m_Items.TryGetValue(principalID, out itemSet) ?
                 new List<InventoryItem>(from item in itemSet.Values where item.ParentFolderID == key select new InventoryItem(item)) :
                 new List<InventoryItem>();
         }
@@ -207,7 +204,7 @@ namespace SilverSim.Database.Memory.Inventory
         [SuppressMessage("Gendarme.Rules.Exceptions", "DoNotSwallowErrorsCatchingNonSpecificExceptionsRule")]
         public override void Add(InventoryFolder folder)
         {
-            m_Folders[folder.Owner.ID].Add(folder.ID, new InventoryFolder(folder));
+            m_Service.m_Folders[folder.Owner.ID].Add(folder.ID, new InventoryFolder(folder));
 
             if (folder.ParentFolderID != UUID.Zero)
             {
@@ -220,7 +217,7 @@ namespace SilverSim.Database.Memory.Inventory
         {
             RwLockedDictionary<UUID, InventoryFolder> folderSet;
             InventoryFolder internFolder;
-            if(m_Folders.TryGetValue(folder.Owner.ID, out folderSet) &&
+            if(m_Service.m_Folders.TryGetValue(folder.Owner.ID, out folderSet) &&
                 folderSet.TryGetValue(folder.ID, out internFolder))
             {
                 lock(internFolder)
@@ -240,7 +237,7 @@ namespace SilverSim.Database.Memory.Inventory
             }
             RwLockedDictionary<UUID, InventoryFolder> folderSet;
             InventoryFolder internFolder;
-            if (m_Folders.TryGetValue(principalID, out folderSet) &&
+            if (m_Service.m_Folders.TryGetValue(principalID, out folderSet) &&
                 folderSet.TryGetValue(folderID, out internFolder))
             {
                 UUID oldFolderID = internFolder.ParentFolderID;
@@ -298,7 +295,7 @@ namespace SilverSim.Database.Memory.Inventory
                 }
             }
 
-            RwLockedDictionary<UUID, InventoryItem> itemSet = m_Items[principalID];
+            RwLockedDictionary<UUID, InventoryItem> itemSet = m_Service.m_Items[principalID];
             foreach(InventoryItem item in itemSet.Values)
             {
                 if(folders.Contains(item.ParentFolderID))
@@ -309,7 +306,7 @@ namespace SilverSim.Database.Memory.Inventory
 
             foreach (UUID folder in folders)
             {
-                m_Folders.Remove(folder);
+                m_Service.m_Folders.Remove(folder);
             }
 
             IncrementVersionNoExcept(principalID, folderID);
@@ -318,7 +315,7 @@ namespace SilverSim.Database.Memory.Inventory
         List<UUID> GetFolderIDs(UUID principalID, UUID key)
         {
             RwLockedDictionary<UUID, InventoryFolder> folderSet;
-            return m_Folders.TryGetValue(principalID, out folderSet) ?
+            return m_Service.m_Folders.TryGetValue(principalID, out folderSet) ?
                 new List<UUID>(from folder in folderSet.Values where folder.ParentFolderID == key select folder.ID) :
                 new List<UUID>();
         }
@@ -329,7 +326,7 @@ namespace SilverSim.Database.Memory.Inventory
         {
             RwLockedDictionary<UUID, InventoryFolder> folderSet;
             InventoryFolder folder;
-            if(m_Folders.TryGetValue(principalID, out folderSet) &&
+            if(m_Service.m_Folders.TryGetValue(principalID, out folderSet) &&
                 folderSet.TryGetValue(folderID, out folder))
             {
                 Interlocked.Increment(ref folder.Version);
@@ -344,7 +341,7 @@ namespace SilverSim.Database.Memory.Inventory
         {
             RwLockedDictionary<UUID, InventoryFolder> folderSet;
             InventoryFolder folder;
-            if (m_Folders.TryGetValue(principalID, out folderSet) &&
+            if (m_Service.m_Folders.TryGetValue(principalID, out folderSet) &&
                 folderSet.TryGetValue(folderID, out folder))
             {
                 Interlocked.Increment(ref folder.Version);

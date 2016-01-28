@@ -24,13 +24,15 @@ namespace SilverSim.Database.Memory.Inventory
         readonly MemoryInventoryItemService m_InventoryItemService;
         readonly MemoryInventoryFolderService m_InventoryFolderService;
 
-        readonly RwLockedDictionaryAutoAdd<UUID, RwLockedDictionary<UUID, InventoryFolder>> m_Folders = new RwLockedDictionaryAutoAdd<UUID, RwLockedDictionary<UUID, InventoryFolder>>(delegate () { return new RwLockedDictionary<UUID, InventoryFolder>(); });
-        readonly RwLockedDictionaryAutoAdd<UUID, RwLockedDictionary<UUID, InventoryItem>> m_Items = new RwLockedDictionaryAutoAdd<UUID, RwLockedDictionary<UUID, InventoryItem>>(delegate () { return new RwLockedDictionary<UUID, InventoryItem>(); });
+        internal readonly RwLockedDictionaryAutoAdd<UUID, RwLockedDictionary<UUID, InventoryFolder>> m_Folders;
+        internal readonly RwLockedDictionaryAutoAdd<UUID, RwLockedDictionary<UUID, InventoryItem>> m_Items;
 
         public MemoryInventoryService()
         {
-            m_InventoryItemService = new MemoryInventoryItemService(m_Items, m_Folders);
-            m_InventoryFolderService = new MemoryInventoryFolderService(m_Items, m_Folders);
+            m_Folders = new RwLockedDictionaryAutoAdd<UUID, RwLockedDictionary<UUID, InventoryFolder>>(delegate () { return new RwLockedDictionary<UUID, InventoryFolder>(); });
+            m_Items = new RwLockedDictionaryAutoAdd<UUID, RwLockedDictionary<UUID, InventoryItem>>(delegate () { return new RwLockedDictionary<UUID, InventoryItem>(); });
+            m_InventoryItemService = new MemoryInventoryItemService(this);
+            m_InventoryFolderService = new MemoryInventoryFolderService(this);
         }
 
         [SuppressMessage("Gendarme.Rules.Design", "AvoidMultidimensionalIndexerRule")]
