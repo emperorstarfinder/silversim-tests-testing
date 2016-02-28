@@ -61,6 +61,11 @@ namespace SilverSim.Tests.UDP
                     UDPPacket p = new UDPPacket();
                     Buffer.BlockCopy(data.Value, 0, p.Data, 0, data.Value.Length);
                     p.DataLength = data.Value.Length;
+                    if(p.HasAckFlag)
+                    {
+                        List<uint> acks = p.Acks;
+                        m_Log.InfoFormat("Packet has {0} ack numbers", acks.Count);
+                    }
                     MessageType mType = p.ReadMessageType();
                     Func<UDPPacket, Message> m = decoder.PacketTypes[mType];
                     Message res = m(p);
