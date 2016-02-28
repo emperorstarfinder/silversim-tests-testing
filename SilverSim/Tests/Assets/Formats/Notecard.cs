@@ -52,7 +52,7 @@ namespace SilverSim.Tests.Assets.Formats
                 return false;
             }
 
-            if (ncserialized.Inventory!= null)
+            if (ncserialized.Inventory.Count != 0)
             {
                 m_Log.Fatal("Notecard Inventory Count is not identical");
                 return false;
