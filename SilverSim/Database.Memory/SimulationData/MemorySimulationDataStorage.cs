@@ -19,28 +19,9 @@ namespace SilverSim.Database.Memory.SimulationData
     {
         private static readonly ILog m_Log = LogManager.GetLogger("MEMORY SIMULATION STORAGE");
 
-        readonly MemorySimulationDataObjectStorage m_ObjectStorage;
-        readonly MemorySimulationDataParcelStorage m_ParcelStorage;
-        readonly MemorySimulationDataScriptStateStorage m_ScriptStateStorage;
-        readonly MemorySimulationDataTerrainStorage m_TerrainStorage;
-        readonly MemorySimulationDataEnvSettingsStorage m_EnvironmentStorage;
-        readonly MemorySimulationDataRegionSettingsStorage m_RegionSettingsStorage;
-        readonly MemorySimulationDataSpawnPointStorage m_SpawnPointStorage;
-        readonly MemorySimulationDataLightShareStorage m_LightShareStorage;
-        readonly MemorySimulationDataEnvControllerStorage m_EnvironmentControllerStorage;
-
         #region Constructor
         public MemorySimulationDataStorage()
         {
-            m_ObjectStorage = new MemorySimulationDataObjectStorage();
-            m_ParcelStorage = new MemorySimulationDataParcelStorage();
-            m_TerrainStorage = new MemorySimulationDataTerrainStorage();
-            m_ScriptStateStorage = new MemorySimulationDataScriptStateStorage();
-            m_EnvironmentStorage = new MemorySimulationDataEnvSettingsStorage();
-            m_RegionSettingsStorage = new MemorySimulationDataRegionSettingsStorage();
-            m_SpawnPointStorage = new MemorySimulationDataSpawnPointStorage();
-            m_LightShareStorage = new MemorySimulationDataLightShareStorage();
-            m_EnvironmentControllerStorage = new MemorySimulationDataEnvControllerStorage();
         }
 
         public void Startup(ConfigurationLoader loader)
@@ -50,89 +31,89 @@ namespace SilverSim.Database.Memory.SimulationData
         #endregion
 
         #region Properties
-        public override SimulationDataEnvControllerStorageInterface EnvironmentController
+        public override ISimulationDataEnvControllerStorageInterface EnvironmentController
         {
             get
             {
-                return m_EnvironmentControllerStorage;
+                return this;
             }
         }
 
-        public override SimulationDataLightShareStorageInterface LightShare
+        public override ISimulationDataLightShareStorageInterface LightShare
         {
             get
             {
-                return m_LightShareStorage;
+                return this;
             }
         }
 
-        public override SimulationDataSpawnPointStorageInterface Spawnpoints
+        public override ISimulationDataSpawnPointStorageInterface Spawnpoints
         {
             get
             {
-                return m_SpawnPointStorage;
+                return this;
             }
         }
 
-        public override SimulationDataEnvSettingsStorageInterface EnvironmentSettings
+        public override ISimulationDataEnvSettingsStorageInterface EnvironmentSettings
         {
             get 
             {
-                return m_EnvironmentStorage;
+                return this;
             }
         }
 
-        public override SimulationDataObjectStorageInterface Objects
+        public override ISimulationDataObjectStorageInterface Objects
         {
             get
             {
-                return m_ObjectStorage;
+                return this;
             }
         }
 
-        public override SimulationDataParcelStorageInterface Parcels
+        public override ISimulationDataParcelStorageInterface Parcels
         {
             get
             {
-                return m_ParcelStorage;
+                return this;
             }
         }
-        public override SimulationDataScriptStateStorageInterface ScriptStates
+        public override ISimulationDataScriptStateStorageInterface ScriptStates
         {
             get 
             {
-                return m_ScriptStateStorage;
+                return this;
             }
         }
 
-        public override SimulationDataTerrainStorageInterface Terrains
+        public override ISimulationDataTerrainStorageInterface Terrains
         {
             get 
             {
-                return m_TerrainStorage;
+                return this;
             }
         }
 
-        public override SimulationDataRegionSettingsStorageInterface RegionSettings
+        public override ISimulationDataRegionSettingsStorageInterface RegionSettings
         {
             get
             {
-                return m_RegionSettingsStorage;
+                return this;
             }
         }
         #endregion
 
         public override void RemoveRegion(UUID regionID)
         {
-            m_ScriptStateStorage.RemoveAllInRegion(regionID);
-            m_RegionSettingsStorage.Remove(regionID);
-            m_TerrainStorage.Remove(regionID);
-            m_ParcelStorage.RemoveAllInRegion(regionID);
-            m_EnvironmentStorage.Remove(regionID);
-            m_LightShareStorage.Remove(regionID);
-            m_SpawnPointStorage.Remove(regionID);
-            m_EnvironmentStorage.Remove(regionID);
-            m_ObjectStorage.RemoveRegion(regionID);
+            RemoveAllScriptStatesInRegion(regionID);
+            RegionSettings.Remove(regionID);
+            RemoveTerrain(regionID);
+            RemoveAllParcelsInRegion(regionID);
+            EnvironmentController.Remove(regionID);
+            LightShare.Remove(regionID);
+            Spawnpoints.Remove(regionID);
+            EnvironmentSettings.Remove(regionID);
+            RemoveAllObjectsInRegion(regionID);
         }
     }
     #endregion

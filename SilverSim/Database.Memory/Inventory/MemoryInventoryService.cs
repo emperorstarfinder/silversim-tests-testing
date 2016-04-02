@@ -19,37 +19,43 @@ namespace SilverSim.Database.Memory.Inventory
 {
     #region Service Implementation
     [Description("Memory Inventory Backend")]
-    public sealed class MemoryInventoryService : InventoryServiceInterface, IPlugin, IUserAccountDeleteServiceInterface
+    public sealed partial class MemoryInventoryService : InventoryServiceInterface, IPlugin, IUserAccountDeleteServiceInterface
     {
-        readonly MemoryInventoryItemService m_InventoryItemService;
-        readonly MemoryInventoryFolderService m_InventoryFolderService;
+        readonly DefaultInventoryFolderContentService m_ContentService;
 
         internal readonly RwLockedDictionaryAutoAdd<UUID, RwLockedDictionary<UUID, InventoryFolder>> m_Folders;
         internal readonly RwLockedDictionaryAutoAdd<UUID, RwLockedDictionary<UUID, InventoryItem>> m_Items;
 
         public MemoryInventoryService()
         {
+            m_ContentService = new DefaultInventoryFolderContentService(this);
             m_Folders = new RwLockedDictionaryAutoAdd<UUID, RwLockedDictionary<UUID, InventoryFolder>>(delegate () { return new RwLockedDictionary<UUID, InventoryFolder>(); });
             m_Items = new RwLockedDictionaryAutoAdd<UUID, RwLockedDictionary<UUID, InventoryItem>>(delegate () { return new RwLockedDictionary<UUID, InventoryItem>(); });
-            m_InventoryItemService = new MemoryInventoryItemService(this);
-            m_InventoryFolderService = new MemoryInventoryFolderService(this);
         }
 
-        [SuppressMessage("Gendarme.Rules.Design", "AvoidMultidimensionalIndexerRule")]
-        public override InventoryFolderServiceInterface Folder
+        IInventoryFolderContentServiceInterface IInventoryFolderServiceInterface.Content
         {
             get
             {
-                return m_InventoryFolderService;
+                return m_ContentService;
             }
         }
 
         [SuppressMessage("Gendarme.Rules.Design", "AvoidMultidimensionalIndexerRule")]
-        public override InventoryItemServiceInterface Item
+        public override IInventoryFolderServiceInterface Folder
+        {
+            get
+            {
+                return this;
+            }
+        }
+
+        [SuppressMessage("Gendarme.Rules.Design", "AvoidMultidimensionalIndexerRule")]
+        public override IInventoryItemServiceInterface Item
         {
             get 
             {
-                return m_InventoryItemService;
+                return this;
             }
         }
 

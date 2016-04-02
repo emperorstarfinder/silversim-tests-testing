@@ -176,7 +176,7 @@ namespace SilverSim.Database.Memory.SimulationData
                             {
                                 if (!items.ContainsKey(itemID))
                                 {
-                                    m_PrimItems[req.Part.ObjectGroup.Scene.ID].Remove(MemorySimulationDataObjectStorage.GenItemKey(partID, itemID.ToString()));
+                                    m_PrimItems[req.Part.ObjectGroup.Scene.ID].Remove(GenItemKey(partID, itemID.ToString()));
                                 }
                             }
 
@@ -184,7 +184,7 @@ namespace SilverSim.Database.Memory.SimulationData
                             {
                                 Map data = GenerateUpdateObjectPartInventoryItem(req.Part.ID, kvp.Value);
                                 data["RegionID"] = req.Part.ObjectGroup.Scene.ID;
-                                m_PrimItems[req.Part.ObjectGroup.Scene.ID][MemorySimulationDataObjectStorage.GenItemKey(req.Part.ID, kvp.Key)] = data;
+                                m_PrimItems[req.Part.ObjectGroup.Scene.ID][GenItemKey(req.Part.ID, kvp.Key)] = data;
                             }
                         }
                         else
@@ -193,7 +193,7 @@ namespace SilverSim.Database.Memory.SimulationData
                             {
                                 Map data = GenerateUpdateObjectPartInventoryItem(req.Part.ID, kvp.Value);
                                 data["RegionID"] = req.Part.ObjectGroup.Scene.ID;
-                                m_PrimItems[req.Part.ObjectGroup.Scene.ID][MemorySimulationDataObjectStorage.GenItemKey(req.Part.ID, kvp.Key)] = data;
+                                m_PrimItems[req.Part.ObjectGroup.Scene.ID][GenItemKey(req.Part.ID, kvp.Key)] = data;
                             }
                         }
                         knownInventories[req.Part.LocalID] = new List<UUID>(items.Keys);
@@ -327,7 +327,7 @@ namespace SilverSim.Database.Memory.SimulationData
 
         public override SceneListener GetSceneListener(UUID regionID)
         {
-            return new MemorySceneListener(m_ObjectStorage.m_Objects, m_ObjectStorage.m_Primitives, m_ObjectStorage.m_PrimItems, regionID);
+            return new MemorySceneListener(m_Objects, m_Primitives, m_PrimItems, regionID);
         }
     }
 }

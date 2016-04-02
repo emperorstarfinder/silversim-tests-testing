@@ -9,17 +9,13 @@ using System.Linq;
 
 namespace SilverSim.Database.Memory.Estate
 {
-    public sealed class MemoryEstateOwnerService : IEstateOwnerServiceInterface
+    public partial class MemoryEstateService : IEstateOwnerServiceInterface
     {
-        readonly RwLockedDictionary<uint, UUI> m_Data = new RwLockedDictionary<uint, UUI>();
+        readonly RwLockedDictionary<uint, UUI> m_EstateOwnerData = new RwLockedDictionary<uint, UUI>();
 
-        public MemoryEstateOwnerService()
+        bool IEstateOwnerServiceInterface.TryGetValue(uint estateID, out UUI uui)
         {
-        }
-
-        public bool TryGetValue(uint estateID, out UUI uui)
-        {
-            if(m_Data.TryGetValue(estateID, out uui))
+            if(m_EstateOwnerData.TryGetValue(estateID, out uui))
             {
                 uui = new UUI(uui);
                 return true;
@@ -28,20 +24,20 @@ namespace SilverSim.Database.Memory.Estate
             return false;
         }
 
-        public List<uint> this[UUI owner]
+        List<uint> IEstateOwnerServiceInterface.this[UUI owner]
         {
             get
             {
-                return new List<uint>(from data in m_Data where data.Value.EqualsGrid(owner) select data.Key);
+                return new List<uint>(from data in m_EstateOwnerData where data.Value.EqualsGrid(owner) select data.Key);
             }
         }
 
-        public UUI this[uint estateID]
+        UUI IEstateOwnerServiceInterface.this[uint estateID]
         {
             get
             {
                 UUI uui;
-                if(!TryGetValue(estateID, out uui))
+                if(!EstateOwner.TryGetValue(estateID, out uui))
                 {
                     throw new KeyNotFoundException();
                 }
@@ -49,7 +45,7 @@ namespace SilverSim.Database.Memory.Estate
             }
             set
             {
-                m_Data[estateID] = new UUI(value);
+                m_EstateOwnerData[estateID] = new UUI(value);
             }
         }
     }

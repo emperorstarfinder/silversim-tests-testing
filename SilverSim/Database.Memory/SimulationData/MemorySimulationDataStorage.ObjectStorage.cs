@@ -19,10 +19,8 @@ using System.IO;
 
 namespace SilverSim.Database.Memory.SimulationData
 {
-    public class MemorySimulationDataObjectStorage : SimulationDataObjectStorageInterface
+    public partial class MemorySimulationDataStorage : ISimulationDataObjectStorageInterface
     {
-        private static readonly ILog m_Log = LogManager.GetLogger("MYSQL SIMULATION STORAGE");
-
         internal readonly RwLockedDictionaryAutoAdd<UUID, RwLockedDictionary<UUID, Map>> m_Objects = new RwLockedDictionaryAutoAdd<UUID, RwLockedDictionary<UUID, Map>>(delegate () { return new RwLockedDictionary<UUID, Map>(); });
         internal readonly RwLockedDictionaryAutoAdd<UUID, RwLockedDictionary<UUID, Map>> m_Primitives = new RwLockedDictionaryAutoAdd<UUID, RwLockedDictionary<UUID, Map>>(delegate () { return new RwLockedDictionary<UUID, Map>(); });
         internal readonly RwLockedDictionaryAutoAdd<UUID, RwLockedDictionary<string, Map>> m_PrimItems = new RwLockedDictionaryAutoAdd<UUID, RwLockedDictionary<string, Map>>(delegate () { return new RwLockedDictionary<string, Map>(); });
@@ -32,11 +30,7 @@ namespace SilverSim.Database.Memory.SimulationData
             return primID.ToString() + ":" + itemID.ToString();
         }
 
-        public MemorySimulationDataObjectStorage()
-        {
-        }
-
-        public void RemoveRegion(UUID key)
+        void RemoveAllObjectsInRegion(UUID key)
         {
             m_PrimItems.Remove(key);
             m_Primitives.Remove(key);
@@ -44,7 +38,7 @@ namespace SilverSim.Database.Memory.SimulationData
         }
 
         #region Objects and Prims within a region by UUID
-        public override List<UUID> ObjectsInRegion(UUID key)
+        List<UUID> ISimulationDataObjectStorageInterface.ObjectsInRegion(UUID key)
         {
             RwLockedDictionary<UUID, Map> objects;
             if(m_Objects.TryGetValue(key, out objects))
@@ -54,7 +48,7 @@ namespace SilverSim.Database.Memory.SimulationData
             return new List<UUID>();
         }
 
-        public override List<UUID> PrimitivesInRegion(UUID key)
+        List<UUID> ISimulationDataObjectStorageInterface.PrimitivesInRegion(UUID key)
         {
             RwLockedDictionary<UUID, Map> objects;
             if (m_Primitives.TryGetValue(key, out objects))
@@ -228,7 +222,7 @@ namespace SilverSim.Database.Memory.SimulationData
 
         #region Load all object groups of a single region
         [SuppressMessage("Gendarme.Rules.Exceptions", "DoNotSwallowErrorsCatchingNonSpecificExceptionsRule")]
-        public override List<ObjectGroup> this[UUID regionID]
+        List<ObjectGroup> ISimulationDataObjectStorageInterface.this[UUID regionID]
         {
             get
             {

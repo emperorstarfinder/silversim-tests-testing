@@ -8,26 +8,22 @@ using System.Collections.Generic;
 
 namespace SilverSim.Database.Memory.Estate
 {
-    public sealed class MemoryEstateRegionMapInterface : IEstateRegionMapServiceInterface
+    public partial class MemoryEstateService : IEstateRegionMapServiceInterface
     {
-        readonly RwLockedDictionaryAutoAdd<uint, RwLockedList<UUID>> m_Data = new RwLockedDictionaryAutoAdd<uint, RwLockedList<UUID>>(delegate () { return new RwLockedList<UUID>(); });
+        readonly RwLockedDictionaryAutoAdd<uint, RwLockedList<UUID>> m_RegionMapData = new RwLockedDictionaryAutoAdd<uint, RwLockedList<UUID>>(delegate () { return new RwLockedList<UUID>(); });
 
-        public MemoryEstateRegionMapInterface()
-        {
-        }
-
-        public List<UUID> this[uint estateID]
+        List<UUID> IEstateRegionMapServiceInterface.this[uint estateID]
         {
             get 
             {
                 RwLockedList<UUID> regions;
-                return (m_Data.TryGetValue(estateID, out regions)) ? new List<UUID>(regions) : new List<UUID>();
+                return (m_RegionMapData.TryGetValue(estateID, out regions)) ? new List<UUID>(regions) : new List<UUID>();
             }
         }
 
-        public bool TryGetValue(UUID regionID, out uint estateID)
+        bool IEstateRegionMapServiceInterface.TryGetValue(UUID regionID, out uint estateID)
         {
-            foreach(KeyValuePair<uint, RwLockedList<UUID>> kvp in m_Data)
+            foreach(KeyValuePair<uint, RwLockedList<UUID>> kvp in m_RegionMapData)
             {
                 if(kvp.Value.Contains(regionID))
                 {
@@ -39,10 +35,10 @@ namespace SilverSim.Database.Memory.Estate
             return false;
         }
 
-        public bool Remove(UUID regionID)
+        bool IEstateRegionMapServiceInterface.Remove(UUID regionID)
         {
             bool found = false;
-            foreach (KeyValuePair<uint, RwLockedList<UUID>> kvp in m_Data)
+            foreach (KeyValuePair<uint, RwLockedList<UUID>> kvp in m_RegionMapData)
             {
                 kvp.Value.Remove(regionID);
                 found = true;
@@ -50,12 +46,12 @@ namespace SilverSim.Database.Memory.Estate
             return found;
         }
 
-        public uint this[UUID regionID]
+        uint IEstateRegionMapServiceInterface.this[UUID regionID]
         {
             get
             {
                 uint estateID;
-                if(!TryGetValue(regionID, out estateID))
+                if(!RegionMap.TryGetValue(regionID, out estateID))
                 {
                     throw new KeyNotFoundException();
                 }
@@ -63,9 +59,9 @@ namespace SilverSim.Database.Memory.Estate
             }
             set
             {
-                if(!m_Data[value].Contains(regionID))
+                if(!m_RegionMapData[value].Contains(regionID))
                 {
-                    m_Data[value].Add(regionID);
+                    m_RegionMapData[value].Add(regionID);
                 }
             }
         }

@@ -2,6 +2,7 @@
 // GNU Affero General Public License v3
 
 using SilverSim.Scene.ServiceInterfaces.SimulationData;
+using SilverSim.Scene.Types.Scene;
 using SilverSim.Threading;
 using SilverSim.Types;
 using SilverSim.Types.Parcel;
@@ -10,24 +11,24 @@ using System.Linq;
 
 namespace SilverSim.Database.Memory.SimulationData
 {
-    public class MemorySimulationDataParcelAccessListStorage : SimulationDataParcelAccessListStorageInterface
+    public class MemorySimulationDataParcelAccessListStorage : ISimulationDataParcelAccessListStorageInterface
     {
         RwLockedDictionaryAutoAdd<string, RwLockedDictionary<UUI, ParcelAccessEntry>> m_Data = new RwLockedDictionaryAutoAdd<string, RwLockedDictionary<UUI, ParcelAccessEntry>>(delegate() { return new RwLockedDictionary<UUI, ParcelAccessEntry>(); });
         public MemorySimulationDataParcelAccessListStorage()
         {
         }
 
-        string GenKey(UUID regionID, UUID parcelID)
+        string GenParcelAccessListKey(UUID regionID, UUID parcelID)
         {
             return regionID.ToString() + ":" + parcelID.ToString();
         }
 
-        public override bool this[UUID regionID, UUID parcelID, UUI accessor]
+        bool IParcelAccessList.this[UUID regionID, UUID parcelID, UUI accessor]
         {
             get
             {
                 RwLockedDictionary<UUI, ParcelAccessEntry> list;
-                if(m_Data.TryGetValue(GenKey(regionID, parcelID), out list))
+                if(m_Data.TryGetValue(GenParcelAccessListKey(regionID, parcelID), out list))
                 {
                     IEnumerable<ParcelAccessEntry> en = from entry in list.Values where entry.Accessor.EqualsGrid(accessor) select entry;
                     return en.GetEnumerator().MoveNext();
@@ -36,24 +37,24 @@ namespace SilverSim.Database.Memory.SimulationData
             }
         }
 
-        public override List<ParcelAccessEntry> this[UUID regionID, UUID parcelID]
+        List<ParcelAccessEntry> IParcelAccessList.this[UUID regionID, UUID parcelID]
         {
             get
             {
                 RwLockedDictionary<UUI, ParcelAccessEntry> list;
-                return (m_Data.TryGetValue(GenKey(regionID, parcelID), out list)) ?
+                return (m_Data.TryGetValue(GenParcelAccessListKey(regionID, parcelID), out list)) ?
                     new List<ParcelAccessEntry>(from entry in list.Values where true select new ParcelAccessEntry(entry)) :
                     new List<ParcelAccessEntry>();
             }
         }
 
-        public override void Store(ParcelAccessEntry entry)
+        void IParcelAccessList.Store(ParcelAccessEntry entry)
         {
-            string key = GenKey(entry.RegionID, entry.ParcelID);
+            string key = GenParcelAccessListKey(entry.RegionID, entry.ParcelID);
             m_Data[key][entry.Accessor] = new ParcelAccessEntry(entry);
         }
 
-        public override bool RemoveAllFromRegion(UUID regionID)
+        bool ISimulationDataParcelAccessListStorageInterface.RemoveAllFromRegion(UUID regionID)
         {
             bool found = false;
             List<string> keys = new List<string>(from key in m_Data.Keys where key.StartsWith(regionID.ToString()) select key);
@@ -64,15 +65,15 @@ namespace SilverSim.Database.Memory.SimulationData
             return found;
         }
 
-        public override bool Remove(UUID regionID, UUID parcelID)
+        public bool Remove(UUID regionID, UUID parcelID)
         {
-            return m_Data.Remove(GenKey(regionID, parcelID));
+            return m_Data.Remove(GenParcelAccessListKey(regionID, parcelID));
         }
 
-        public override bool Remove(UUID regionID, UUID parcelID, UUI accessor)
+        public bool Remove(UUID regionID, UUID parcelID, UUI accessor)
         {
             RwLockedDictionary<UUI, ParcelAccessEntry> list;
-            return m_Data.TryGetValue(GenKey(regionID, parcelID), out list) && list.Remove(accessor);
+            return m_Data.TryGetValue(GenParcelAccessListKey(regionID, parcelID), out list) && list.Remove(accessor);
         }
     }
 }

@@ -11,17 +11,11 @@ using System.Threading;
 
 namespace SilverSim.Database.Memory.Inventory
 {
-    sealed class MemoryInventoryItemService : InventoryItemServiceInterface
+    public partial class MemoryInventoryService : IInventoryItemServiceInterface
     {
-        readonly MemoryInventoryService m_Service;
-        public MemoryInventoryItemService(MemoryInventoryService service)
+        bool IInventoryItemServiceInterface.ContainsKey(UUID key)
         {
-            m_Service = service;
-        }
-
-        public override bool ContainsKey(UUID key)
-        {
-            foreach(RwLockedDictionary<UUID, InventoryItem> dict in m_Service.m_Items.Values)
+            foreach(RwLockedDictionary<UUID, InventoryItem> dict in m_Items.Values)
             {
                 if(dict.ContainsKey(key))
                 {
@@ -32,9 +26,9 @@ namespace SilverSim.Database.Memory.Inventory
             return false;
         }
 
-        public override bool TryGetValue(UUID key, out InventoryItem item)
+        bool IInventoryItemServiceInterface.TryGetValue(UUID key, out InventoryItem item)
         {
-            foreach (RwLockedDictionary<UUID, InventoryItem> dict in m_Service.m_Items.Values)
+            foreach (RwLockedDictionary<UUID, InventoryItem> dict in m_Items.Values)
             {
                 if (dict.TryGetValue(key, out item))
                 {
@@ -46,12 +40,12 @@ namespace SilverSim.Database.Memory.Inventory
             return false;
         }
 
-        public override InventoryItem this[UUID key]
+        InventoryItem IInventoryItemServiceInterface.this[UUID key]
         {
             get
             {
                 InventoryItem item;
-                if(!TryGetValue(key, out item))
+                if(!Item.TryGetValue(key, out item))
                 {
                     throw new KeyNotFoundException();
                 }
@@ -59,17 +53,40 @@ namespace SilverSim.Database.Memory.Inventory
             }
         }
 
-        public override bool ContainsKey(UUID principalID, UUID key)
+
+        [SuppressMessage("Gendarme.Rules.Exceptions", "DoNotSwallowErrorsCatchingNonSpecificExceptionsRule")]
+        List<InventoryItem> IInventoryItemServiceInterface.this[UUID principalID, List<UUID> keys]
         {
-            RwLockedDictionary<UUID, InventoryItem> dict;
-            return m_Service.m_Items.TryGetValue(principalID, out dict) && dict.ContainsKey(key);
+            get
+            {
+                List<InventoryItem> res = new List<InventoryItem>();
+                foreach (UUID key in keys)
+                {
+                    try
+                    {
+                        res.Add(Item[principalID, key]);
+                    }
+                    catch
+                    {
+                        /* nothing to do here */
+                    }
+                }
+
+                return res;
+            }
         }
 
-        public override bool TryGetValue(UUID principalID, UUID key, out InventoryItem item)
+        bool IInventoryItemServiceInterface.ContainsKey(UUID principalID, UUID key)
+        {
+            RwLockedDictionary<UUID, InventoryItem> dict;
+            return m_Items.TryGetValue(principalID, out dict) && dict.ContainsKey(key);
+        }
+
+        bool IInventoryItemServiceInterface.TryGetValue(UUID principalID, UUID key, out InventoryItem item)
         {
             RwLockedDictionary<UUID, InventoryItem> dict;
             item = default(InventoryItem);
-            if(m_Service.m_Items.TryGetValue(principalID, out dict) && dict.TryGetValue(key, out item))
+            if(m_Items.TryGetValue(principalID, out dict) && dict.TryGetValue(key, out item))
             {
                 item = new InventoryItem(item);
                 return true;
@@ -78,12 +95,12 @@ namespace SilverSim.Database.Memory.Inventory
         }
 
         [SuppressMessage("Gendarme.Rules.Design", "AvoidMultidimensionalIndexerRule")]
-        public override InventoryItem this[UUID principalID, UUID key]
+        InventoryItem IInventoryItemServiceInterface.this[UUID principalID, UUID key]
         {
             get 
             {
                 InventoryItem item;
-                if(!TryGetValue(principalID, key, out item))
+                if(!Item.TryGetValue(principalID, key, out item))
                 {
                     throw new KeyNotFoundException();
                 }
@@ -91,17 +108,17 @@ namespace SilverSim.Database.Memory.Inventory
             }
         }
 
-        public override void Add(InventoryItem item)
+        void IInventoryItemServiceInterface.Add(InventoryItem item)
         {
-            m_Service.m_Items[item.Owner.ID].Add(item.ID, new InventoryItem(item));
+            m_Items[item.Owner.ID].Add(item.ID, new InventoryItem(item));
             IncrementVersion(item.Owner.ID, item.ParentFolderID);
         }
 
-        public override void Update(InventoryItem item)
+        void IInventoryItemServiceInterface.Update(InventoryItem item)
         {
             RwLockedDictionary<UUID, InventoryItem> itemSet;
             InventoryItem storedItem;
-            if(m_Service.m_Items.TryGetValue(item.Owner.ID, out itemSet) &&
+            if(m_Items.TryGetValue(item.Owner.ID, out itemSet) &&
                 itemSet.TryGetValue(item.ID, out storedItem))
             {
                 storedItem.AssetID = item.AssetID;
@@ -118,11 +135,11 @@ namespace SilverSim.Database.Memory.Inventory
             }
         }
 
-        public override void Delete(UUID principalID, UUID id)
+        void IInventoryItemServiceInterface.Delete(UUID principalID, UUID id)
         {
             InventoryItem item;
             RwLockedDictionary<UUID, InventoryItem> itemSet;
-            if (m_Service.m_Items.TryGetValue(principalID, out itemSet) &&
+            if (m_Items.TryGetValue(principalID, out itemSet) &&
                 itemSet.Remove(id, out item))
             {
                 IncrementVersion(principalID, item.ParentFolderID);
@@ -131,11 +148,11 @@ namespace SilverSim.Database.Memory.Inventory
             throw new InventoryItemNotFoundException(id);
         }
 
-        public override void Move(UUID principalID, UUID id, UUID toFolderID)
+        void IInventoryItemServiceInterface.Move(UUID principalID, UUID id, UUID toFolderID)
         {
             InventoryItem item;
             RwLockedDictionary<UUID, InventoryItem> itemSet;
-            if (m_Service.m_Items.TryGetValue(principalID, out itemSet) &&
+            if (m_Items.TryGetValue(principalID, out itemSet) &&
                 itemSet.TryGetValue(id, out item))
             {
                 UUID oldFolderID = item.ParentFolderID;
@@ -153,12 +170,30 @@ namespace SilverSim.Database.Memory.Inventory
         {
             RwLockedDictionary<UUID, InventoryFolder> folderSet;
             InventoryFolder folder;
-            if(m_Service.m_Folders.TryGetValue(principalID, out folderSet) &&
+            if(m_Folders.TryGetValue(principalID, out folderSet) &&
                 folderSet.TryGetValue(folderID, out folder))
             {
                 Interlocked.Increment(ref folder.Version);
             }
         }
 
+        [SuppressMessage("Gendarme.Rules.Exceptions", "DoNotSwallowErrorsCatchingNonSpecificExceptionsRule")]
+        List<UUID> IInventoryItemServiceInterface.Delete(UUID principalID, List<UUID> itemids)
+        {
+            List<UUID> deleted = new List<UUID>();
+            foreach (UUID id in itemids)
+            {
+                try
+                {
+                    Item.Delete(principalID, id);
+                    deleted.Add(id);
+                }
+                catch
+                {
+                    /* nothing else to do */
+                }
+            }
+            return deleted;
+        }
     }
 }

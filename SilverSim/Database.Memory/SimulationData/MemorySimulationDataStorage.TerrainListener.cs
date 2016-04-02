@@ -52,7 +52,7 @@ namespace SilverSim.Database.Memory.SimulationData
 
         public override TerrainListener GetTerrainListener(UUID regionID)
         {
-            return new MemoryTerrainListener(m_TerrainStorage.m_Data, regionID);
+            return new MemoryTerrainListener(m_TerrainData, regionID);
         }
     }
 }

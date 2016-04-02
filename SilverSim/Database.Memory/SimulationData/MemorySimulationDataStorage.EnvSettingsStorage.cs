@@ -2,7 +2,7 @@
 // GNU Affero General Public License v3
 
 using SilverSim.Scene.ServiceInterfaces.SimulationData;
-using SilverSim.Scene.Types.WindLight;
+using WindLightSettings = SilverSim.Scene.Types.WindLight.EnvironmentSettings;
 using SilverSim.Threading;
 using SilverSim.Types;
 using System.Collections.Generic;
@@ -10,22 +10,18 @@ using System.IO;
 
 namespace SilverSim.Database.Memory.SimulationData
 {
-    public class MemorySimulationDataEnvSettingsStorage : SimulationDataEnvSettingsStorageInterface
+    public partial class MemorySimulationDataStorage : ISimulationDataEnvSettingsStorageInterface
     {
-        readonly RwLockedDictionary<UUID, byte[]> m_Data = new RwLockedDictionary<UUID, byte[]>();
+        readonly RwLockedDictionary<UUID, byte[]> m_EnvSettingsData = new RwLockedDictionary<UUID, byte[]>();
 
-        public MemorySimulationDataEnvSettingsStorage()
-        {
-        }
-
-        public override bool TryGetValue(UUID regionID, out EnvironmentSettings settings)
+        bool ISimulationDataEnvSettingsStorageInterface.TryGetValue(UUID regionID, out WindLightSettings settings)
         {
             byte[] data;
-            if(m_Data.TryGetValue(regionID, out data))
+            if(m_EnvSettingsData.TryGetValue(regionID, out data))
             { 
                 using (MemoryStream ms = new MemoryStream(data))
                 {
-                    settings = EnvironmentSettings.Deserialize(ms);
+                    settings = WindLightSettings.Deserialize(ms);
                     return true;
                 }
             }
@@ -34,12 +30,12 @@ namespace SilverSim.Database.Memory.SimulationData
         }
 
         /* setting value to null will delete the entry */
-        public override EnvironmentSettings this[UUID regionID]
+        WindLightSettings ISimulationDataEnvSettingsStorageInterface.this[UUID regionID]
         {
             get
             {
-                EnvironmentSettings settings;
-                if (!TryGetValue(regionID, out settings))
+                WindLightSettings settings;
+                if (!EnvironmentSettings.TryGetValue(regionID, out settings))
                 {
                     throw new KeyNotFoundException();
                 }
@@ -49,7 +45,7 @@ namespace SilverSim.Database.Memory.SimulationData
             {
                 if(value == null)
                 {
-                    m_Data.Remove(regionID);
+                    m_EnvSettingsData.Remove(regionID);
                 }
 
                 else
@@ -57,15 +53,15 @@ namespace SilverSim.Database.Memory.SimulationData
                     using(MemoryStream ms = new MemoryStream())
                     {
                         value.Serialize(ms, regionID);
-                        m_Data[regionID] = ms.GetBuffer();
+                        m_EnvSettingsData[regionID] = ms.GetBuffer();
                     }
                 }
             }
         }
 
-        public override bool Remove(UUID regionID)
+        bool ISimulationDataEnvSettingsStorageInterface.Remove(UUID regionID)
         {
-            return m_Data.Remove(regionID);
+            return m_EnvSettingsData.Remove(regionID);
         }
     }
 }

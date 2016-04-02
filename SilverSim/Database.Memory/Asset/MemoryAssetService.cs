@@ -12,24 +12,21 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
+using System.IO;
 
 namespace SilverSim.Database.Memory.Asset
 {
     #region Service Implementation
     [SuppressMessage("Gendarme.Rules.Maintainability", "AvoidLackOfCohesionOfMethodsRule")]
     [Description("Memory Asset Backend")]
-    public class MemoryAssetService : AssetServiceInterface, IPlugin
+    public class MemoryAssetService : AssetServiceInterface, IPlugin, IAssetMetadataServiceInterface, IAssetDataServiceInterface
     {
-        readonly MemoryAssetMetadataService m_MetadataService;
         readonly DefaultAssetReferencesService m_ReferencesService;
-        readonly MemoryAssetDataService m_DataService;
         readonly RwLockedDictionary<UUID, AssetData> m_Assets = new RwLockedDictionary<UUID, AssetData>();
 
         #region Constructor
         public MemoryAssetService()
         {
-            m_MetadataService = new MemoryAssetMetadataService(m_Assets);
-            m_DataService = new MemoryAssetDataService(m_Assets);
             m_ReferencesService = new DefaultAssetReferencesService(this);
         }
 
@@ -103,13 +100,51 @@ namespace SilverSim.Database.Memory.Asset
         #endregion
 
         #region Metadata interface
-        public override AssetMetadataServiceInterface Metadata
+        public override IAssetMetadataServiceInterface Metadata
         {
             get
             {
-                return m_MetadataService;
+                return this;
             }
         }
+
+        AssetMetadata IAssetMetadataServiceInterface.this[UUID key]
+        {
+            get
+            {
+                AssetMetadata metadata;
+                if (!Metadata.TryGetValue(key, out metadata))
+                {
+                    throw new AssetNotFoundException(key);
+                }
+                return metadata;
+            }
+        }
+
+        bool IAssetMetadataServiceInterface.TryGetValue(UUID key, out AssetMetadata metadata)
+        {
+            AssetData data;
+            if (m_Assets.TryGetValue(key, out data))
+            {
+                metadata = new AssetMetadata();
+                metadata = new AssetData();
+                metadata.ID = data.ID;
+                metadata.Type = data.Type;
+                metadata.Name = data.Name;
+                metadata.CreateTime = data.CreateTime;
+                metadata.AccessTime = data.AccessTime;
+                metadata.Creator = data.Creator;
+                metadata.Flags = data.Flags;
+                metadata.Temporary = data.Temporary;
+                return true;
+            }
+            else
+            {
+                metadata = null;
+                return false;
+            }
+        }
+
         #endregion
 
         #region References interface
@@ -123,11 +158,40 @@ namespace SilverSim.Database.Memory.Asset
         #endregion
 
         #region Data interface
-        public override AssetDataServiceInterface Data
+        public override IAssetDataServiceInterface Data
         {
             get
             {
-                return m_DataService;
+                return this;
+            }
+        }
+
+        [SuppressMessage("Gendarme.Rules.Correctness", "EnsureLocalDisposalRule")]
+        Stream IAssetDataServiceInterface.this[UUID key]
+        {
+            get
+            {
+                Stream s;
+                if (!Data.TryGetValue(key, out s))
+                {
+                    throw new AssetNotFoundException(key);
+                }
+                return s;
+            }
+        }
+
+        bool IAssetDataServiceInterface.TryGetValue(UUID key, out Stream s)
+        {
+            AssetData data;
+            if (m_Assets.TryGetValue(key, out data))
+            {
+                s = data.InputStream;
+                return true;
+            }
+            else
+            {
+                s = null;
+                return false;
             }
         }
         #endregion

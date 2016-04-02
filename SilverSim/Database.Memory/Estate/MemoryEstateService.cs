@@ -16,26 +16,13 @@ namespace SilverSim.Database.Memory.Estate
     #region Service Implementation
     [SuppressMessage("Gendarme.Rules.Maintainability", "AvoidLackOfCohesionOfMethodsRule")]
     [Description("Memory Estate Backend")]
-    public sealed class MemoryEstateService : EstateServiceInterface, IPlugin
+    public sealed partial class MemoryEstateService : EstateServiceInterface, IPlugin
     {
         readonly RwLockedDictionary<uint, EstateInfo> m_Data = new RwLockedDictionary<uint, EstateInfo>();
-
-        readonly MemoryEstateOwnerService m_EstateOwnerService;
-        readonly MemoryEstateManagerService m_EstateManagerService;
-        readonly MemoryEstateAccessInterface m_EstateAccessService;
-        readonly MemoryEstateBanServiceInterface m_EstateBanService;
-        readonly MemoryEstateGroupsService m_EstateGroupsService;
-        readonly MemoryEstateRegionMapInterface m_EstateRegionMapService;
 
         #region Constructor
         public MemoryEstateService()
         {
-            m_EstateOwnerService = new MemoryEstateOwnerService();
-            m_EstateManagerService = new MemoryEstateManagerService();
-            m_EstateAccessService = new MemoryEstateAccessInterface();
-            m_EstateBanService = new MemoryEstateBanServiceInterface();
-            m_EstateGroupsService = new MemoryEstateGroupsService();
-            m_EstateRegionMapService = new MemoryEstateRegionMapInterface();
         }
 
         public void Startup(ConfigurationLoader loader)
@@ -134,11 +121,11 @@ namespace SilverSim.Database.Memory.Estate
             }
         }
 
-        public override EstateManagerServiceInterface EstateManager
+        public override IEstateManagerServiceInterface EstateManager
         {
             get
             {
-                return m_EstateManagerService;
+                return this;
             }
         }
 
@@ -146,31 +133,31 @@ namespace SilverSim.Database.Memory.Estate
         {
             get 
             {
-                return m_EstateOwnerService;
+                return this;
             }
         }
 
-        public override EstateAccessServiceInterface EstateAccess
+        public override IEstateAccessServiceInterface EstateAccess
         {
             get 
             {
-                return m_EstateAccessService;
+                return this;
             }
         }
 
-        public override EstateBanServiceInterface EstateBans
+        public override IEstateBanServiceInterface EstateBans
         {
             get
             {
-                return m_EstateBanService;
+                return this;
             }
         }
 
-        public override EstateGroupsServiceInterface EstateGroup
+        public override IEstateGroupsServiceInterface EstateGroup
         {
             get 
             {
-                return m_EstateGroupsService;
+                return this;
             }
         }
 
@@ -178,7 +165,7 @@ namespace SilverSim.Database.Memory.Estate
         {
             get 
             {
-                return m_EstateRegionMapService;
+                return this;
             }
         }
     }

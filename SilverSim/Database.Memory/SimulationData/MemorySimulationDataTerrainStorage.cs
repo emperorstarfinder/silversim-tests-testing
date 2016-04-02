@@ -9,21 +9,17 @@ using System.Collections.Generic;
 
 namespace SilverSim.Database.Memory.SimulationData
 {
-    public class MemorySimulationDataTerrainStorage : SimulationDataTerrainStorageInterface
+    public partial class MemorySimulationDataStorage : ISimulationDataTerrainStorageInterface
     {
-        internal readonly RwLockedDictionaryAutoAdd<UUID, RwLockedDictionary<uint, byte[]>> m_Data = new RwLockedDictionaryAutoAdd<UUID, RwLockedDictionary<uint, byte[]>>(delegate() { return new RwLockedDictionary<uint, byte[]>(); } );
+        internal readonly RwLockedDictionaryAutoAdd<UUID, RwLockedDictionary<uint, byte[]>> m_TerrainData = new RwLockedDictionaryAutoAdd<UUID, RwLockedDictionary<uint, byte[]>>(delegate() { return new RwLockedDictionary<uint, byte[]>(); } );
 
-        public MemorySimulationDataTerrainStorage()
-        {
-        }
-
-        public override List<LayerPatch> this[UUID regionID]
+        List<LayerPatch> ISimulationDataTerrainStorageInterface.this[UUID regionID]
         {
             get
             {
                 RwLockedDictionary<uint, byte[]> patchesData;
                 List<LayerPatch> patches = new List<LayerPatch>();
-                if (m_Data.TryGetValue(regionID, out patchesData))
+                if (m_TerrainData.TryGetValue(regionID, out patchesData))
                 {
                     foreach(KeyValuePair<uint, byte[]> kvp in patchesData)
                     {
@@ -37,9 +33,9 @@ namespace SilverSim.Database.Memory.SimulationData
             }
         }
 
-        public void Remove(UUID regionID)
+        void RemoveTerrain(UUID regionID)
         {
-            m_Data.Remove(regionID);
+            m_TerrainData.Remove(regionID);
         }
     }
 }
