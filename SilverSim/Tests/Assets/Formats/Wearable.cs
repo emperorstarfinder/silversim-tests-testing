@@ -5,6 +5,7 @@ using log4net;
 using SilverSim.Main.Common;
 using SilverSim.Tests.Extensions;
 using SilverSim.Types;
+using SilverSim.Types.Agent;
 using SilverSim.Types.Asset;
 using SilverSim.Types.Asset.Format;
 using System;
@@ -51,9 +52,9 @@ namespace SilverSim.Tests.Assets.Formats
             wearable.Params.Add(4, 4);
             wearable.Params.Add(8, 8);
             wearable.Params.Add(16, 16);
-            wearable.Textures.Add(1, UUID.Random);
-            wearable.Textures.Add(2, UUID.Random);
-            wearable.Textures.Add(3, UUID.Random);
+            wearable.Textures.Add(AvatarTextureIndex.UpperShirt, UUID.Random);
+            wearable.Textures.Add(AvatarTextureIndex.LowerPants, UUID.Random);
+            wearable.Textures.Add(AvatarTextureIndex.EyesIris, UUID.Random);
 
             m_Log.Info("Testing Serialization");
             assetdata = wearable.Asset();
@@ -114,7 +115,7 @@ namespace SilverSim.Tests.Assets.Formats
                     return false;
                 }
             }
-            foreach (KeyValuePair<uint, UUID> kvp in wearable.Textures)
+            foreach (KeyValuePair<AvatarTextureIndex, UUID> kvp in wearable.Textures)
             {
                 if (kvp.Value != wearableserialized.Textures[kvp.Key])
                 {
@@ -131,21 +132,21 @@ namespace SilverSim.Tests.Assets.Formats
                 return false;
             }
 
-            if(!refs.Contains(wearable.Textures[1]))
+            if(!refs.Contains(wearable.Textures[AvatarTextureIndex.UpperShirt]))
             {
-                m_Log.Fatal("Wearable references miss texture 1");
+                m_Log.Fatal("Wearable references miss texture UpperShirt");
                 return false;
             }
 
-            if (!refs.Contains(wearable.Textures[2]))
+            if (!refs.Contains(wearable.Textures[AvatarTextureIndex.LowerPants]))
             {
-                m_Log.Fatal("Wearable references miss texture 2");
+                m_Log.Fatal("Wearable references miss texture LowerPants");
                 return false;
             }
 
-            if (!refs.Contains(wearable.Textures[3]))
+            if (!refs.Contains(wearable.Textures[AvatarTextureIndex.EyesIris]))
             {
-                m_Log.Fatal("Wearable references miss texture 3");
+                m_Log.Fatal("Wearable references miss texture EyesIris");
                 return false;
             }
             return true;
