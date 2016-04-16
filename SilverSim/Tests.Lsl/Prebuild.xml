@@ -23,7 +23,7 @@
   <Reference name="SilverSim.Scene.ServiceInterfaces" path="../../bin/" localCopy="false"/>
   <Reference name="SilverSim.Main.Common" path="../../bin/" localCopy="false"/>
   <Reference name="SilverSim.Scripting.Common" path="../../bin/" localCopy="false"/>
-  <Reference name="SilverSim.Scripting.Lsl" path="../../bin/" localCopy="false"/>
+  <Reference name="SilverSim.Scripting.Lsl" path="../../bin/plugins/" localCopy="false"/>
   <Reference name="SilverSim.Viewer.Messages" path="../../bin/" localCopy="false"/>
   <Reference name="SilverSim.Viewer.Core" path="../../bin/" localCopy="false"/>
   <Reference name="SilverSim.Tests" path="../../bin/" localCopy="false"/>

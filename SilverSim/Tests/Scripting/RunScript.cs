@@ -61,6 +61,7 @@ namespace SilverSim.Tests.Scripting
         GridServiceInterface m_RegionStorage;
         SceneFactoryInterface m_SceneFactory;
         EstateServiceInterface m_EstateService;
+        SceneList m_Scenes;
         
         InventoryPermissionsMask m_ObjectPermissionsBase = InventoryPermissionsMask.All;
         InventoryPermissionsMask m_ObjectPermissionsOwner = InventoryPermissionsMask.All;
@@ -76,6 +77,7 @@ namespace SilverSim.Tests.Scripting
 
         public void Startup(ConfigurationLoader loader)
         {
+            m_Scenes = loader.Scenes;
             IConfig config = loader.Config.Configs[GetType().FullName];
 
             /* we use same asset id keying here so to make them compatible with the other scripts */
@@ -227,7 +229,7 @@ namespace SilverSim.Tests.Scripting
 
             if (success)
             {
-                SceneManager.Scenes.Add(scene);
+                m_Scenes.Add(scene);
                 scene.LoadSceneSync();
             }
 
