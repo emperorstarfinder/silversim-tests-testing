@@ -92,6 +92,24 @@ namespace SilverSim.Database.Memory.ServerParam
             return false;
         }
 
+        public override bool Contains(UUID regionID, string parameter)
+        {
+            RwLockedDictionary<string, string> regParams;
+            if (m_Parameters.TryGetValue(regionID, out regParams) &&
+                regParams.ContainsKey(parameter))
+            {
+                return true;
+            }
+
+            if (UUID.Zero != regionID &&
+                Contains(UUID.Zero, parameter))
+            {
+                return true;
+            }
+
+            return false;
+        }
+
         protected override void Store(UUID regionID, string parameter, string value)
         {
             m_Parameters[regionID][parameter] = value;
