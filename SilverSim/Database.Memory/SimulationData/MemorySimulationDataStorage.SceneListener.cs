@@ -308,7 +308,7 @@ namespace SilverSim.Database.Memory.SimulationData
                 using (MemoryStream ms = new MemoryStream())
                 {
                     LlsdBinary.Serialize(objpart.DynAttrs, ms);
-                    data.Add("DynAttrs", new BinaryData(ms.GetBuffer()));
+                    data.Add("DynAttrs", new BinaryData(ms.ToArray()));
                 }
 
                 data.Add("PassCollisionMode", (int)objpart.PassCollisionMode);

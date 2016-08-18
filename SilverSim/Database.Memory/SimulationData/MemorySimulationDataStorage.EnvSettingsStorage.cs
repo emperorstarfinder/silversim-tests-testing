@@ -53,7 +53,7 @@ namespace SilverSim.Database.Memory.SimulationData
                     using(MemoryStream ms = new MemoryStream())
                     {
                         value.Serialize(ms, regionID);
-                        m_EnvSettingsData[regionID] = ms.GetBuffer();
+                        m_EnvSettingsData[regionID] = ms.ToArray();
                     }
                 }
             }
