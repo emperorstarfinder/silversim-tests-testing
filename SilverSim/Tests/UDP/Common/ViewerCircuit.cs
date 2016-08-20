@@ -105,7 +105,6 @@ namespace SilverSim.Tests.UDP.Common
             {
                 Message m = del(pck);
                 /* we got a decoder, so we can make use of it */
-                m.ReceivedOnCircuitCode = CircuitCode;
                 m.CircuitAgentID = AgentID;
                 try
                 {
