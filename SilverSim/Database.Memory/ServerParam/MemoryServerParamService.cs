@@ -9,6 +9,7 @@ using SilverSim.Threading;
 using SilverSim.Types;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System;
 
 namespace SilverSim.Database.Memory.ServerParam
 {
@@ -19,6 +20,22 @@ namespace SilverSim.Database.Memory.ServerParam
         private static readonly ILog m_Log = LogManager.GetLogger("NULL SERVER PARAM SERVICE");
 
         readonly RwLockedDictionaryAutoAdd<UUID, RwLockedDictionary<string, string>> m_Parameters = new RwLockedDictionaryAutoAdd<UUID, RwLockedDictionary<string, string>>(delegate() { return new RwLockedDictionary<string, string>(); });
+
+        public override List<KeyValuePair<UUID, string>> KnownParameters
+        {
+            get
+            {
+                List<KeyValuePair<UUID, string>> result = new List<KeyValuePair<UUID, string>>();
+                foreach(KeyValuePair<UUID, RwLockedDictionary<string, string>> kvp in m_Parameters)
+                {
+                    foreach(string parameter in kvp.Value.Keys)
+                    {
+                        result.Add(new KeyValuePair<UUID, string>(kvp.Key, parameter));
+                    }
+                }
+                return result;
+            }
+        }
 
         #region Constructor
         public MemoryServerParamService()
