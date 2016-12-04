@@ -2,6 +2,7 @@
 // GNU Affero General Public License v3
 
 using SilverSim.Main.Common;
+using SilverSim.ServiceInterfaces.PortControl;
 using SilverSim.Tests.Extensions;
 using SilverSim.Viewer.Core;
 using System;
@@ -24,7 +25,7 @@ namespace SilverSim.Tests.UDP.Common
 
         public void Setup()
         {
-            ClientUDP = new UDPCircuitsManager(new System.Net.IPAddress(0), 0, null, null, null);
+            ClientUDP = new UDPCircuitsManager(new System.Net.IPAddress(0), 0, null, null, null, new List<IPortControlServiceInterface>());
         }
 
         public void Cleanup()
