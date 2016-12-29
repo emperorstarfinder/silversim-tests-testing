@@ -16,6 +16,7 @@
   <Reference name="System.Core"/>
   <Reference name="System.Xml"/>
   <Reference name="System.Web"/>
+  <Reference name="System.Http"/>
   <Reference name="System.Data"/>
   <Reference name="SilverSim.Types" path="../../bin/" localCopy="false"/>
   <Reference name="SilverSim.ServiceInterfaces" path="../../bin/" localCopy="false"/>
