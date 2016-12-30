@@ -23,11 +23,21 @@ namespace SilverSim.Tests.Http
             {
                 testdata[i] = (byte)(i % 256);
             }
+            if(!RunTestData(testdata))
+            {
+                return false;
+            }
+            testdata = new byte[500];
+            for (int i = 0; i < testdata.Length; ++i)
+            {
+                testdata[i] = (byte)(i % 256);
+            }
             return RunTestData(testdata);
         }
 
         bool RunTestData(byte[] data)
         {
+            m_Log.InfoFormat("Testing {0} bytes of data", data.Length);
             byte[] encoded;
             byte[] decoded = new byte[data.Length];
             using (MemoryStream ms = new MemoryStream())
