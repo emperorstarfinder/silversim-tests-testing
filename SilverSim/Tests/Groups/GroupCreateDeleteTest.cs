@@ -381,8 +381,15 @@ namespace SilverSim.Tests.Groups
                 return false;
             }
 
-            m_Log.Info("Delete group");
-            m_GroupsService.Groups.Delete(m_Founder, testGroupInfo.ID);
+            try
+            {
+                m_Log.Info("Delete group");
+                m_GroupsService.Groups.Delete(m_Founder, testGroupInfo.ID);
+            }
+            catch(NotSupportedException)
+            {
+                return true;
+            }
 
             m_Log.Info("Checking for group non-existence 1");
             try
