@@ -22,8 +22,10 @@ namespace SilverSim.Tests.Groups
     {
         private static readonly ILog m_Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         string m_GroupsServiceName;
+        string m_BackendGroupsServiceName;
         string m_AvatarNameServiceName;
         GroupsServiceInterface m_GroupsService;
+        GroupsServiceInterface m_BackendGroupsService;
         AvatarNameServiceInterface m_AvatarNameService;
         UUI m_Founder = new UUI("11111111-2222-3333-4444-555555555555", "Group", "Creator");
         UUID m_GroupID = new UUID("11223344-1122-1122-1122-112233445566");
@@ -37,9 +39,11 @@ namespace SilverSim.Tests.Groups
         {
             IConfig config = loader.Config.Configs[GetType().FullName];
             m_GroupsServiceName = config.GetString("GroupsService");
+            m_BackendGroupsServiceName = config.GetString("BackendGroupsService", m_GroupsServiceName);
             m_AvatarNameServiceName = config.GetString("AvatarNameService");
 
             m_GroupsService = loader.GetService<GroupsServiceInterface>(m_GroupsServiceName);
+            m_BackendGroupsService = loader.GetService<GroupsServiceInterface>(m_BackendGroupsServiceName);
             m_AvatarNameService = loader.GetService<AvatarNameServiceInterface>(m_AvatarNameServiceName);
         }
 
@@ -280,6 +284,7 @@ namespace SilverSim.Tests.Groups
 
             m_Log.Info("Creating group");
             testGroupInfo = m_GroupsService.CreateGroup(m_Founder, gInfo, GroupPowers.DefaultEveryonePowers, GroupPowers.OwnerPowers);
+            m_GroupID = testGroupInfo.ID.ID;
 
             m_Log.Info("Checking for group existence 1");
             gInfo = m_GroupsService.Groups[m_Founder, "Test Group"];
@@ -384,7 +389,7 @@ namespace SilverSim.Tests.Groups
             try
             {
                 m_Log.Info("Delete group");
-                m_GroupsService.Groups.Delete(m_Founder, testGroupInfo.ID);
+                m_BackendGroupsService.Groups.Delete(m_Founder, testGroupInfo.ID);
             }
             catch(NotSupportedException)
             {
@@ -448,7 +453,7 @@ namespace SilverSim.Tests.Groups
         {
             try
             {
-                m_GroupsService.Groups.Delete(m_Founder, new UGI(m_GroupID));
+                m_BackendGroupsService.Groups.Delete(m_Founder, new UGI(m_GroupID));
             }
             catch
             {
