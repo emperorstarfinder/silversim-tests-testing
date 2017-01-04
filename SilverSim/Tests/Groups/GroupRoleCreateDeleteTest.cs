@@ -46,8 +46,7 @@ namespace SilverSim.Tests.Groups
 
         public void Setup()
         {
-            /* intentionally left empty */
-            m_AvatarNameService[m_Founder.ID] = m_Founder;
+            m_AvatarNameService.Store(m_Founder);
         }
 
         bool CheckEveryoneRole(GroupRole role, UGI group)
