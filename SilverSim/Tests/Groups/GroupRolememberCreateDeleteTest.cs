@@ -15,7 +15,7 @@ using System.Reflection;
 
 namespace SilverSim.Tests.Groups
 {
-    public class GroupInviteCreateDeleteTest : ITest
+    public class GroupRolememberCreateDeleteTest : ITest
     {
         private static readonly ILog m_Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         string m_GroupsServiceName;
@@ -29,7 +29,7 @@ namespace SilverSim.Tests.Groups
         UUID m_GroupID = new UUID("11223344-1122-1122-1122-112233445566");
         UUID m_InsigniaID = new UUID("11223344-1122-1122-1122-112233445577");
 
-        public GroupInviteCreateDeleteTest()
+        public GroupRolememberCreateDeleteTest()
         {
 
         }
@@ -98,7 +98,7 @@ namespace SilverSim.Tests.Groups
                 invite = m_GroupsService.Invites[m_Founder, inviteID];
                 return false;
             }
-            catch(KeyNotFoundException)
+            catch (KeyNotFoundException)
             {
                 /* intentionally ignored */
             }
@@ -111,7 +111,7 @@ namespace SilverSim.Tests.Groups
                     return false;
                 }
             }
-            catch(NotSupportedException)
+            catch (NotSupportedException)
             {
                 m_Log.Info("not supported");
             }
@@ -151,7 +151,7 @@ namespace SilverSim.Tests.Groups
             m_GroupsService.Invites.Add(m_Founder, testinvite);
 
             m_Log.Info("Testing existence of invite 1");
-            if(!m_GroupsService.Invites.ContainsKey(m_Founder, inviteID))
+            if (!m_GroupsService.Invites.ContainsKey(m_Founder, inviteID))
             {
                 return false;
             }

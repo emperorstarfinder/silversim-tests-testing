@@ -326,6 +326,84 @@ namespace SilverSim.Tests.Groups
                 return false;
             }
 
+            m_Log.Info("Testing role Test existence");
+            if (!m_GroupsService.Roles.TryGetValue(m_Founder, new UGI(m_GroupID), testrole.ID, out role))
+            {
+                return false;
+            }
+
+            {
+                List<string> unequal = new List<string>();
+                if (role.Group != testrole.Group)
+                {
+                    unequal.Add("Group");
+                }
+                if (role.ID != testrole.ID)
+                {
+                    unequal.Add("ID");
+                }
+                if (role.Name != testrole.Name)
+                {
+                    unequal.Add("Name");
+                }
+                if (role.Description != testrole.Description)
+                {
+                    unequal.Add("Description");
+                }
+                if (role.Powers != testrole.Powers)
+                {
+                    unequal.Add("Powers");
+                }
+                if (role.Title != testrole.Title)
+                {
+                    unequal.Add("Title");
+                }
+                if (unequal.Count != 0)
+                {
+                    m_Log.InfoFormat("Data mismatch: {0}", string.Join(" ", unequal));
+                    return false;
+                }
+            }
+
+            m_Log.Info("Testing role Everyone existence 1");
+            if (!m_GroupsService.Roles.TryGetValue(m_Founder, new UGI(m_GroupID), UUID.Zero, out role))
+            {
+                return false;
+            }
+            if (!CheckEveryoneRole(role, testGroupInfo.ID))
+            {
+                return false;
+            }
+
+            m_Log.Info("Testing role Owners existence 1");
+            if (!m_GroupsService.Roles.TryGetValue(m_Founder, new UGI(m_GroupID), testGroupInfo.OwnerRoleID, out role))
+            {
+                return false;
+            }
+            if (!CheckOwnersRole(role, testGroupInfo.ID, testGroupInfo.OwnerRoleID))
+            {
+                return false;
+            }
+
+            m_Log.Info("Check group for role count");
+            if (!m_GroupsService.Groups.TryGetValue(m_Founder, new UGI(m_GroupID), out compareInfo))
+            {
+                return false;
+            }
+
+            if (compareInfo.RoleCount != 3)
+            {
+                m_Log.Info("New role test is not seen as part of RoleCount");
+                return false;
+            }
+
+            m_Log.Info("Updating role Test");
+            testrole.Name = "Test Role 2";
+            testrole.Description = "Test Description 2";
+            testrole.Title = "Test Title 2";
+            testrole.Powers |= GroupPowers.AssignMember;
+            m_GroupsService.Roles.Add(m_Founder, testrole);
+
             m_Log.Info("Deleting role Test");
             m_GroupsService.Roles.Delete(m_Founder, new UGI(m_GroupID), testrole.ID);
 
