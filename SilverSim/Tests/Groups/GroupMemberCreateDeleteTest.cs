@@ -77,7 +77,7 @@ namespace SilverSim.Tests.Groups
             }
             if(mem1.Principal != mem2.Principal)
             {
-                unequal.Add("Principal");
+                unequal.Add(string.Format("Principal {0}!={1}", mem1.Principal.ToString(), mem2.Principal.ToString()));
             }
             if(mem1.SelectedRoleID != mem2.SelectedRoleID)
             {
