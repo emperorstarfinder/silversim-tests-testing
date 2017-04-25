@@ -26,10 +26,7 @@ using SilverSim.Scene.Types.Script;
 using SilverSim.Scripting.Lsl;
 using SilverSim.Tests.Extensions;
 using SilverSim.Tests.Scripting;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace SilverSim.Tests.Lsl
 {

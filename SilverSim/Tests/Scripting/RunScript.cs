@@ -80,6 +80,7 @@ namespace SilverSim.Tests.Scripting
         SceneFactoryInterface m_SceneFactory;
         EstateServiceInterface m_EstateService;
         SceneList m_Scenes;
+        Timer m_KillTimer;
         
         InventoryPermissionsMask m_ObjectPermissionsBase = InventoryPermissionsMask.All;
         InventoryPermissionsMask m_ObjectPermissionsOwner = InventoryPermissionsMask.All;
@@ -299,10 +300,16 @@ namespace SilverSim.Tests.Scripting
                     item.ScriptInstance.IsRunning = true;
                     item.ScriptInstance.Reset();
                 }
+                m_KillTimer = new Timer(KillTimerCbk, null, m_TimeoutMs + 5000, Timeout.Infinite);
                 m_RunTimeoutEvent.WaitOne(m_TimeoutMs);
                 return m_Runner.OtherThreadResult;
             }
             return success;
+        }
+
+        void KillTimerCbk(object o)
+        {
+            Environment.Exit(3);
         }
 
         UUID GetUUID()
