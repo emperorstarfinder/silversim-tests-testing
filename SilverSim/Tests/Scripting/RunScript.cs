@@ -81,6 +81,7 @@ namespace SilverSim.Tests.Scripting
         EstateServiceInterface m_EstateService;
         SceneList m_Scenes;
         Timer m_KillTimer;
+        int m_StartParameter;
         
         InventoryPermissionsMask m_ObjectPermissionsBase = InventoryPermissionsMask.All;
         InventoryPermissionsMask m_ObjectPermissionsOwner = InventoryPermissionsMask.All;
@@ -167,6 +168,8 @@ namespace SilverSim.Tests.Scripting
             {
                 m_ScriptLastOwner = m_ScriptOwner;
             }
+
+            m_StartParameter = config.GetInt("StartParameter", 0);
 
             if(string.IsNullOrEmpty(m_ScriptFile))
             {
@@ -297,8 +300,7 @@ namespace SilverSim.Tests.Scripting
                     }
                     ScriptInstance scriptInstance = scriptAssembly.Instantiate(part, item);
                     item.ScriptInstance = scriptInstance;
-                    item.ScriptInstance.IsRunning = true;
-                    item.ScriptInstance.Reset();
+                    item.ScriptInstance.Start(m_StartParameter);
                 }
                 m_KillTimer = new Timer(KillTimerCbk, null, m_TimeoutMs + 5000, Timeout.Infinite);
                 m_RunTimeoutEvent.WaitOne(m_TimeoutMs);
