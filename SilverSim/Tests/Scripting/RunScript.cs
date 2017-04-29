@@ -231,6 +231,8 @@ namespace SilverSim.Tests.Scripting
             rInfo.ID = m_RegionID;
             rInfo.Location.GridX = 10000;
             rInfo.Location.GridY = 10000;
+            rInfo.Size.X = 256;
+            rInfo.Size.Y = 256;
             rInfo.ProductName = "Mainland";
             rInfo.ServerPort = (uint)m_RegionPort;
             rInfo.Owner = m_RegionOwner;
