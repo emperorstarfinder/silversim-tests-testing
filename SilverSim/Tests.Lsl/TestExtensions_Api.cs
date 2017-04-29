@@ -26,6 +26,7 @@ using SilverSim.Scene.Types.Script;
 using SilverSim.Scripting.Lsl;
 using SilverSim.Tests.Extensions;
 using SilverSim.Tests.Scripting;
+using SilverSim.Types;
 using System.Collections.Generic;
 
 namespace SilverSim.Tests.Lsl
@@ -63,6 +64,15 @@ namespace SilverSim.Tests.Lsl
             if(scriptrunners.Count > 0)
             {
                 m_ScriptRunner = scriptrunners[0];
+            }
+        }
+
+        [APIExtension("Testing", "_test_setserverparam")]
+        public void TestSetServerParam(ScriptInstance instance, string paraname, string paravalue)
+        {
+            lock(instance)
+            {
+                m_Loader.GetServerParamStorage()[UUID.Zero, paraname] = paravalue;
             }
         }
 
