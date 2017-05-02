@@ -301,6 +301,7 @@ namespace SilverSim.Tests.Scripting
                         chatService.AddRegionListener(DEBUG_CHANNEL, string.Empty, UUID.Zero, "", GetUUID, DebugChannelLog);
                     }
                     ScriptInstance scriptInstance = scriptAssembly.Instantiate(part, item);
+                    part.Inventory.Add(item);
                     item.ScriptInstance = scriptInstance;
                     item.ScriptInstance.Start(m_StartParameter);
                 }
