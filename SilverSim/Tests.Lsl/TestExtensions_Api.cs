@@ -27,6 +27,7 @@ using SilverSim.Scripting.Lsl;
 using SilverSim.Tests.Extensions;
 using SilverSim.Tests.Scripting;
 using SilverSim.Types;
+using System;
 using System.Collections.Generic;
 
 namespace SilverSim.Tests.Lsl
@@ -127,6 +128,69 @@ namespace SilverSim.Tests.Lsl
                 default:
                     m_Log.Info(message);
                     break;
+            }
+        }
+
+        [APIExtension("Testing")]
+        public const int OSSL_THREAT_LEVEL_NONE = 0;
+        [APIExtension("Testing")]
+        public const int OSSL_THREAT_LEVEL_NUISANCE = 1;
+        [APIExtension("Testing")]
+        public const int OSSL_THREAT_LEVEL_VERYLOW = 2;
+        [APIExtension("Testing")]
+        public const int OSSL_THREAT_LEVEL_LOW = 3;
+        [APIExtension("Testing")]
+        public const int OSSL_THREAT_LEVEL_MODERATE = 4;
+        [APIExtension("Testing")]
+        public const int OSSL_THREAT_LEVEL_HIGH = 5;
+        [APIExtension("Testing")]
+        public const int OSSL_THREAT_LEVEL_VERYHIGH = 6;
+        [APIExtension("Testing")]
+        public const int OSSL_THREAT_LEVEL_SEVERE = 7;
+
+        [APIExtension("Testing", "_test_ossl_perms")]
+        public int TestOsslPerms(ScriptInstance instance, int level, string functionname)
+        {
+            lock (instance)
+            {
+                try
+                {
+                    switch (level)
+                    {
+                        case OSSL_THREAT_LEVEL_NONE:
+                            ((Script)instance).CheckThreatLevel(functionname, Script.ThreatLevelType.None);
+                            break;
+                        case OSSL_THREAT_LEVEL_NUISANCE:
+                            ((Script)instance).CheckThreatLevel(functionname, Script.ThreatLevelType.Nuisance);
+                            break;
+                        case OSSL_THREAT_LEVEL_VERYLOW:
+                            ((Script)instance).CheckThreatLevel(functionname, Script.ThreatLevelType.VeryLow);
+                            break;
+                        case OSSL_THREAT_LEVEL_LOW:
+                            ((Script)instance).CheckThreatLevel(functionname, Script.ThreatLevelType.Low);
+                            break;
+                        case OSSL_THREAT_LEVEL_MODERATE:
+                            ((Script)instance).CheckThreatLevel(functionname, Script.ThreatLevelType.Moderate);
+                            break;
+                        case OSSL_THREAT_LEVEL_HIGH:
+                            ((Script)instance).CheckThreatLevel(functionname, Script.ThreatLevelType.High);
+                            break;
+                        case OSSL_THREAT_LEVEL_VERYHIGH:
+                            ((Script)instance).CheckThreatLevel(functionname, Script.ThreatLevelType.VeryHigh);
+                            break;
+                        case OSSL_THREAT_LEVEL_SEVERE:
+                            ((Script)instance).CheckThreatLevel(functionname, Script.ThreatLevelType.Severe);
+                            break;
+
+                        default:
+                            return 0;
+                    }
+                    return 1;
+                }
+                catch
+                {
+                    return 0;
+                }
             }
         }
     }
