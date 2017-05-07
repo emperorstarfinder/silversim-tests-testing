@@ -28,8 +28,9 @@ using SilverSim.Viewer.Messages;
 using SilverSim.Viewer.Messages.IM;
 using System;
 using System.Collections.Generic;
+using System.Net;
 
-namespace SilverSim.Tests.UDP.Common
+namespace SilverSim.Tests.Viewer.UDP
 {
     public class ViewerCircuit : Circuit
     {
@@ -50,9 +51,11 @@ namespace SilverSim.Tests.UDP.Common
             UDPCircuitsManager server,
             UInt32 circuitcode,
             UUID sessionID,
-            UUID agentID)
+            UUID agentID,
+            EndPoint remoteEndPoint)
             : base(server, circuitcode)
         {
+            RemoteEndPoint = remoteEndPoint;
             SessionID = sessionID;
             AgentID = agentID;
         }

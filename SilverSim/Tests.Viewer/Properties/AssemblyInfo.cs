@@ -19,40 +19,8 @@
 // obligated to do so. If you do not wish to do so, delete this
 // exception statement from your version.
 
-using SilverSim.Main.Common;
-using SilverSim.ServiceInterfaces.PortControl;
-using SilverSim.Tests.Extensions;
-using SilverSim.Viewer.Core;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Reflection;
 
-namespace SilverSim.Tests.UDP.Common
-{
-    public abstract class ViewerCircuitTest : ITest
-    {
-        protected UDPCircuitsManager ClientUDP;
-
-        public ViewerCircuitTest()
-        {
-
-        }
-
-        public abstract bool Run();
-
-        public void Setup()
-        {
-            ClientUDP = new UDPCircuitsManager(new System.Net.IPAddress(0), 0, null, null, null, new List<IPortControlServiceInterface>());
-        }
-
-        public void Cleanup()
-        {
-            ClientUDP.Shutdown();
-        }
-
-        public virtual void Startup(ConfigurationLoader loader)
-        {
-        }
-    }
-}
+[assembly: AssemblyTitle("Test Lsl Viewer Extensions")]
+[assembly: AssemblyDescription("")]
+[assembly: AssemblyConfiguration("")]
