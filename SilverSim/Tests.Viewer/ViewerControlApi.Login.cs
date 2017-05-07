@@ -35,6 +35,7 @@ using SilverSim.Viewer.Messages;
 using SilverSim.Viewer.Messages.Circuit;
 using System;
 using System.Net;
+using System.Net.Sockets;
 
 namespace SilverSim.Tests.Viewer
 {
@@ -121,7 +122,23 @@ namespace SilverSim.Tests.Viewer
                 IPAddress[] addresses;
                 addresses = DnsNameCache.GetHostAddresses(externalHostName);
 
+                string clientIP = string.Empty;
+
                 if (addresses.Length == 0)
+                {
+                    m_Log.InfoFormat("ExternalHostName \"{0}\" does not resolve", externalHostName);
+                    return string.Empty;
+                }
+
+                foreach(IPAddress addr in addresses)
+                {
+                    if(addr.AddressFamily == AddressFamily.InterNetwork)
+                    {
+                        clientIP = addr.ToString();
+                    }
+                }
+
+                if(string.IsNullOrEmpty(clientIP))
                 {
                     m_Log.InfoFormat("ExternalHostName \"{0}\" does not resolve", externalHostName);
                     return string.Empty;
@@ -135,7 +152,7 @@ namespace SilverSim.Tests.Viewer
                     return string.Empty;
                 }
                 ClientInfo clientInfo = new ClientInfo();
-                clientInfo.ClientIP = addresses[0].ToString();
+                clientInfo.ClientIP = clientIP;
                 clientInfo.Channel = viewerChannel;
                 clientInfo.ClientVersion = viewerVersion;
                 clientInfo.ID0 = id0;
@@ -203,6 +220,7 @@ namespace SilverSim.Tests.Viewer
                     return string.Empty;
                 }
                 IPEndPoint ep = new IPEndPoint(ipAddr, 0);
+                IPEndPoint regionEndPoint = new IPEndPoint(ipAddr, (int)scene.RegionPort);
                 AgentCircuit circuit = new AgentCircuit(
                     m_Commands,
                     agent,
@@ -272,7 +290,7 @@ namespace SilverSim.Tests.Viewer
                 useCircuit.SessionID = sessionId.AsUUID;
                 useCircuit.CircuitCode = (uint)circuitCode;
 
-                ViewerCircuit viewerCircuit = new ViewerCircuit(m_ClientUDP, (uint)circuitCode, sessionId.AsUUID, agentId, ep);
+                ViewerCircuit viewerCircuit = new ViewerCircuit(m_ClientUDP, (uint)circuitCode, sessionId.AsUUID, agentId, regionEndPoint);
                 m_ClientUDP.AddCircuit(viewerCircuit);
                 viewerCircuit.SendMessage(useCircuit);
                 viewerCircuit.MessageRouting.Add(MessageType.LogoutReply, delegate (Message m)

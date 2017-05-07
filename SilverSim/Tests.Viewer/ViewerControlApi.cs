@@ -84,6 +84,7 @@ namespace SilverSim.Tests.Viewer
         CommandRegistry m_Commands;
         CapsHttpRedirector m_CapsRedirector;
         List<IProtocolExtender> m_PacketHandlerPlugins = new List<IProtocolExtender>();
+        readonly int m_ClientPort;
 
         public ShutdownOrder ShutdownOrder
         {
@@ -113,6 +114,7 @@ namespace SilverSim.Tests.Viewer
             m_GridServiceName = ownSection.GetString("GridService");
             m_OfflineIMServiceName = ownSection.GetString("OfflineIMService", string.Empty);
             m_UserAccountServiceName = ownSection.GetString("UserAccountService");
+            m_ClientPort = ownSection.GetInt("ClientPort", 9400);
         }
 
         sealed class LocalUserAgentService : UserAgentServiceInterface, IDisplayNameAccessor
@@ -249,7 +251,7 @@ namespace SilverSim.Tests.Viewer
             m_CapsRedirector = loader.CapsRedirector;
             m_PacketHandlerPlugins = loader.GetServicesByValue<IProtocolExtender>();
 
-            m_ClientUDP = new UDPCircuitsManager(new System.Net.IPAddress(0), 0, null, null, null, new List<IPortControlServiceInterface>());
+            m_ClientUDP = new UDPCircuitsManager(new System.Net.IPAddress(0), m_ClientPort, null, null, null, new List<IPortControlServiceInterface>());
         }
     }
 
