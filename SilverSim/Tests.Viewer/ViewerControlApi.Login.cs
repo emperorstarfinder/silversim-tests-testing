@@ -219,7 +219,10 @@ namespace SilverSim.Tests.Viewer
                     m_Log.InfoFormat("Invalid IP address for agent {0}", userAccount.Principal.FullName);
                     return string.Empty;
                 }
-                IPEndPoint ep = new IPEndPoint(ipAddr, 0);
+
+                ViewerConnection vc = AddAgent(userAccount.Principal.ID);
+
+                IPEndPoint ep = new IPEndPoint(ipAddr, vc.ClientUDP.LocalPort);
                 IPEndPoint regionEndPoint = new IPEndPoint(ipAddr, (int)scene.RegionPort);
                 AgentCircuit circuit = new AgentCircuit(
                     m_Commands,
@@ -290,30 +293,32 @@ namespace SilverSim.Tests.Viewer
                 useCircuit.SessionID = sessionId.AsUUID;
                 useCircuit.CircuitCode = (uint)circuitCode;
 
-                ViewerCircuit viewerCircuit = new ViewerCircuit(m_ClientUDP, (uint)circuitCode, sessionId.AsUUID, agentId, regionEndPoint);
-                m_ClientUDP.AddCircuit(viewerCircuit);
+                ViewerCircuit viewerCircuit = new ViewerCircuit(vc.ClientUDP, (uint)circuitCode, sessionId.AsUUID, agentId, regionEndPoint);
+                vc.ClientUDP.AddCircuit(viewerCircuit);
                 viewerCircuit.SendMessage(useCircuit);
                 viewerCircuit.MessageRouting.Add(MessageType.LogoutReply, delegate (Message m)
                 {
                     ViewerCircuit removeCircuit;
-                    if (m_ViewerCircuits.TryGetValue((uint)circuitCode, out removeCircuit))
+                    if (vc.ViewerCircuits.TryGetValue((uint)circuitCode, out removeCircuit))
                     {
                         removeCircuit.Stop();
-                        m_ClientUDP.RemoveCircuit(removeCircuit);
+                        vc.ClientUDP.RemoveCircuit(removeCircuit);
                     }
                 });
-                m_ViewerCircuits.Add((uint)circuitCode, viewerCircuit);
+                vc.ViewerCircuits.Add((uint)circuitCode, viewerCircuit);
                 return capsPath;
             }
         }
 
         [APIExtension("ViewerControl", "vcLogoutAgent")]
-        public void LogoutAgent(ScriptInstance instance, int circuitCode)
+        public void LogoutAgent(ScriptInstance instance, LSLKey agentId, int circuitCode)
         {
             lock (instance)
             {
+                ViewerConnection vc;
                 ViewerCircuit viewerCircuit;
-                if (m_ViewerCircuits.TryGetValue((uint)circuitCode, out viewerCircuit))
+                if (m_Clients.TryGetValue(agentId.AsUUID, out vc) &&
+                    vc.ViewerCircuits.TryGetValue((uint)circuitCode, out viewerCircuit))
                 {
                     LogoutReply logoutreq = new LogoutReply();
                     logoutreq.AgentID = viewerCircuit.AgentID;
