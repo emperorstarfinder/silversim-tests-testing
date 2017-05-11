@@ -99,6 +99,19 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
+        [APIExtension("ViewerControl", "vcSetAgentLimit")]
+        public void SetAgentLimit(
+            ScriptInstance instance,
+            int agentlimit)
+        {
+            lock(instance)
+            {
+                SceneInterface scene = instance.Part.ObjectGroup.Scene;
+                scene.RegionSettings.AgentLimit = agentlimit;
+                scene.TriggerRegionSettingsChanged();
+            }
+        }
+
         [APIExtension("ViewerControl", "vcLoginAgent")]
         public string LoginAgent(
             ScriptInstance instance,
