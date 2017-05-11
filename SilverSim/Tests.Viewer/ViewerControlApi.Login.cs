@@ -145,7 +145,7 @@ namespace SilverSim.Tests.Viewer
                 }
 
                 UUID capsId = UUID.Random;
-                string capsPath = m_CapsRedirector.ServerURI + "/CAPS/" + capsId.ToString() + "0000/";
+                string capsPath = m_CapsRedirector.ServerURI + "CAPS/" + capsId.ToString() + "0000/";
                 SceneInterface scene;
                 if (!m_Scenes.TryGetValue(regionId, out scene))
                 {
