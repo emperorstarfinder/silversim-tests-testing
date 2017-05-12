@@ -71,6 +71,7 @@ namespace SilverSim.Tests.Viewer
                 foreach (ViewerCircuit circuit in ViewerCircuits.Values)
                 {
                     ClientUDP.RemoveCircuit(circuit);
+                    circuit.Stop();
                 }
                 ClientUDP.Shutdown();
             }
@@ -118,7 +119,7 @@ namespace SilverSim.Tests.Viewer
         {
             get
             {
-                return ShutdownOrder.LogoutRegion;
+                return ShutdownOrder.BeforeLogoutAgents;
             }
         }
 
