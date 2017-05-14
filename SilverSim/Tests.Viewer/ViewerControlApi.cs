@@ -326,11 +326,6 @@ namespace SilverSim.Tests.Viewer
     [PluginName("ViewerControl")]
     public class ViewerControlApiFactory : IPluginFactory
     {
-        public ViewerControlApiFactory()
-        {
-
-        }
-
         public IPlugin Initialize(ConfigurationLoader loader, IConfig ownSection)
         {
             return new ViewerControlApi(ownSection);
