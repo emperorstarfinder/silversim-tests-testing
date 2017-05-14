@@ -315,7 +315,6 @@ namespace SilverSim.Tests.Viewer
                     SessionID = sessionId.AsUUID,
                     CircuitCode = (uint)circuitCode
                 };
-                useCircuit.OnSendCompletion += delegate (bool success) { m_Log.InfoFormat("UseCircuitCode sent " + success.ToString()); };
 
                 ViewerCircuit viewerCircuit = new ViewerCircuit(vc.ClientUDP, (uint)circuitCode, sessionId.AsUUID, agentId, regionEndPoint);
                 vc.ClientUDP.AddCircuit(viewerCircuit);
