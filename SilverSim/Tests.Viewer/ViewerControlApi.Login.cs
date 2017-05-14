@@ -296,14 +296,13 @@ namespace SilverSim.Tests.Viewer
 
                 try
                 {
-                    PresenceInfo pinfo = new PresenceInfo()
+                    m_PresenceService[agent.SessionID, agent.ID, PresenceServiceInterface.SetType.Report] = new PresenceInfo()
                     {
                         UserID = agent.Owner,
                         SessionID = agent.SessionID,
                         SecureSessionID = secureSessionId.AsUUID,
                         RegionID = scene.ID
                     };
-                    m_PresenceService[agent.SessionID, agent.ID, PresenceServiceInterface.SetType.Report] = pinfo;
                 }
                 catch (Exception e)
                 {
