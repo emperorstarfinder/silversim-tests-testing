@@ -25,7 +25,10 @@ using SilverSim.Main.Common;
 using SilverSim.Main.Common.Caps;
 using SilverSim.Main.Common.CmdIO;
 using SilverSim.Scene.Management.Scene;
+using SilverSim.Scene.Types.Object;
+using SilverSim.Scene.Types.Scene;
 using SilverSim.Scene.Types.Script;
+using SilverSim.Scene.Types.Script.Events;
 using SilverSim.Scripting.Lsl;
 using SilverSim.ServiceInterfaces.Account;
 using SilverSim.ServiceInterfaces.Asset;
@@ -45,6 +48,8 @@ using SilverSim.Types.Account;
 using SilverSim.Types.Grid;
 using SilverSim.Types.ServerURIs;
 using SilverSim.Viewer.Core;
+using SilverSim.Viewer.Messages;
+using SilverSim.Viewer.Messages.Region;
 using System;
 using System.Collections.Generic;
 
@@ -59,10 +64,21 @@ namespace SilverSim.Tests.Viewer
         public class ViewerConnection
         {
             public readonly RwLockedDictionary<uint, ViewerCircuit> ViewerCircuits = new RwLockedDictionary<uint, ViewerCircuit>();
-            public UDPCircuitsManager ClientUDP;
+            public readonly UDPCircuitsManager ClientUDP;
+            readonly SceneList m_Scenes;
+            readonly UUID AgentID;
+            readonly UUID m_SceneID;
+            readonly UUID m_PartID;
+            readonly UUID m_ItemID;
 
-            public ViewerConnection()
+            public ViewerConnection(SceneList scenes, UUID agentID, UUID sceneID, UUID partID, UUID itemID)
             {
+                m_Scenes = scenes;
+                AgentID = agentID;
+                m_SceneID = sceneID;
+                m_PartID = partID;
+                m_ItemID = itemID;
+
                 ClientUDP = new UDPCircuitsManager(new System.Net.IPAddress(0), 0, null, null, null, new List<IPortControlServiceInterface>());
             }
 
@@ -75,14 +91,41 @@ namespace SilverSim.Tests.Viewer
                 }
                 ClientUDP.Shutdown();
             }
+
+            public void HandleRegionHandshake(Message m)
+            {
+                RegionHandshake msg = (RegionHandshake)m;
+                RegionHandshakeReceivedEvent ev = new RegionHandshakeReceivedEvent(AgentID, msg.RegionID);
+                PostEvent(ev);
+            }
+
+            public void PostEvent(IScriptEvent ev)
+            {
+                SceneInterface scene;
+                ObjectPart part;
+                ObjectPartInventoryItem item;
+                ScriptInstance instance;
+                if(m_Scenes.TryGetValue(m_SceneID, out scene) &&
+                    scene.Primitives.TryGetValue(m_PartID, out part) &&
+                    part.Inventory.TryGetValue(m_ItemID, out item))
+                {
+                    instance = item.ScriptInstance;
+                    if(null != instance)
+                    {
+                        instance.PostEvent(ev);
+                    }
+                }
+            }
         }
 
-        ViewerConnection AddAgent(UUID agentId)
+        ViewerConnection AddAgent(ScriptInstance instance, UUID agentId)
         {
             ViewerConnection vc;
+            ObjectPart part = instance.Part;
+            SceneInterface scene = part.ObjectGroup.Scene;
             if(!m_Clients.TryGetValue(agentId, out vc))
             {
-                vc = new ViewerConnection();
+                vc = new ViewerConnection(m_Scenes, agentId, scene.ID, part.ID, instance.Item.ID);
                 m_Clients.Add(agentId, vc);
             }
             return vc;

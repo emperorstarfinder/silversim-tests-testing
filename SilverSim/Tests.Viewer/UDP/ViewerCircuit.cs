@@ -22,10 +22,13 @@
 using log4net;
 using SilverSim.Threading;
 using SilverSim.Types;
+using SilverSim.Types.Estate;
+using SilverSim.Types.Grid;
 using SilverSim.Types.IM;
 using SilverSim.Viewer.Core;
 using SilverSim.Viewer.Messages;
 using SilverSim.Viewer.Messages.IM;
+using SilverSim.Viewer.Messages.Region;
 using System;
 using System.Collections.Generic;
 using System.Net;
@@ -47,6 +50,85 @@ namespace SilverSim.Tests.Viewer.UDP
         readonly Dictionary<string, Action<Message>> m_GodlikeMessageRouting = new Dictionary<string, Action<Message>>();
         readonly Dictionary<GridInstantMessageDialog, Action<Message>> m_IMMessageRouting = new Dictionary<GridInstantMessageDialog, Action<Message>>();
 
+        public class RegionHandshakeData
+        {
+            public RegionOptionFlags RegionFlags;
+            public RegionAccess SimAccess;
+            public string SimName = string.Empty;
+            public UUID SimOwner = UUID.Zero;
+            public bool IsEstateManager;
+            public double WaterHeight;
+            public double BillableFactor;
+            public UUID CacheID = UUID.Zero;
+            public UUID TerrainBase0 = UUID.Zero;
+            public UUID TerrainBase1 = UUID.Zero;
+            public UUID TerrainBase2 = UUID.Zero;
+            public UUID TerrainBase3 = UUID.Zero;
+            public UUID TerrainDetail0 = UUID.Zero;
+            public UUID TerrainDetail1 = UUID.Zero;
+            public UUID TerrainDetail2 = UUID.Zero;
+            public UUID TerrainDetail3 = UUID.Zero;
+            public double TerrainStartHeight00;
+            public double TerrainStartHeight01;
+            public double TerrainStartHeight10;
+            public double TerrainStartHeight11;
+            public double TerrainHeightRange00;
+            public double TerrainHeightRange01;
+            public double TerrainHeightRange10;
+            public double TerrainHeightRange11;
+
+            public UUID RegionID = UUID.Zero;
+
+            public Int32 CPUClassID;
+            public Int32 CPURatio;
+            public string ColoName = string.Empty;
+            public string ProductSKU = string.Empty;
+            public string ProductName = string.Empty;
+
+            public List<RegionHandshake.RegionExtDataEntry> RegionExtData = new List<RegionHandshake.RegionExtDataEntry>();
+
+            public RegionHandshakeData()
+            {
+
+            }
+
+            public RegionHandshakeData(RegionHandshake msg)
+            {
+                RegionFlags = msg.RegionFlags;
+                SimAccess = msg.SimAccess;
+                SimName = msg.SimName;
+                IsEstateManager = msg.IsEstateManager;
+                WaterHeight = msg.WaterHeight;
+                BillableFactor = msg.BillableFactor;
+                CacheID = msg.CacheID;
+                TerrainBase0 = msg.TerrainBase0;
+                TerrainBase1 = msg.TerrainBase1;
+                TerrainBase2 = msg.TerrainBase2;
+                TerrainBase3 = msg.TerrainBase3;
+                TerrainDetail0 = msg.TerrainDetail0;
+                TerrainDetail1 = msg.TerrainDetail1;
+                TerrainDetail2 = msg.TerrainDetail2;
+                TerrainDetail3 = msg.TerrainDetail3;
+                TerrainHeightRange00 = msg.TerrainHeightRange00;
+                TerrainHeightRange01 = msg.TerrainHeightRange01;
+                TerrainHeightRange10 = msg.TerrainHeightRange10;
+                TerrainHeightRange11 = msg.TerrainHeightRange11;
+                TerrainStartHeight00 = msg.TerrainStartHeight00;
+                TerrainStartHeight01 = msg.TerrainStartHeight01;
+                TerrainStartHeight10 = msg.TerrainStartHeight10;
+                TerrainStartHeight11 = msg.TerrainStartHeight11;
+                RegionID = msg.RegionID;
+                CPUClassID = msg.CPUClassID;
+                CPURatio = msg.CPURatio;
+                ColoName = msg.ColoName;
+                ProductSKU = msg.ProductSKU;
+                ProductName = msg.ProductName;
+                RegionExtData = msg.RegionExtData;
+            }
+        }
+
+        public RegionHandshakeData RegionData { get; private set; }
+
         public ViewerCircuit(
             UDPCircuitsManager server,
             UInt32 circuitcode,
@@ -55,6 +137,7 @@ namespace SilverSim.Tests.Viewer.UDP
             EndPoint remoteEndPoint)
             : base(server, circuitcode)
         {
+            RegionData = new RegionHandshakeData();
             RemoteEndPoint = remoteEndPoint;
             SessionID = sessionID;
             AgentID = agentID;
@@ -84,7 +167,7 @@ namespace SilverSim.Tests.Viewer.UDP
             }
         }
 
-        public Dictionary<SilverSim.Types.IM.GridInstantMessageDialog, Action<Message>> IMMessageRouting
+        public Dictionary<GridInstantMessageDialog, Action<Message>> IMMessageRouting
         {
             get
             {
@@ -137,6 +220,18 @@ namespace SilverSim.Tests.Viewer.UDP
                 {
                     /* this is a specific error that happens only during logout */
                     return;
+                }
+
+                if(m.Number == MessageType.RegionHandshake)
+                {
+                    RegionData = new RegionHandshakeData((RegionHandshake)m);
+                    RegionHandshakeReply reply = new RegionHandshakeReply()
+                    {
+                        SessionID = SessionID,
+                        AgentID = AgentID,
+                        Flags = 0
+                    };
+                    SendMessage(reply);
                 }
 
                 /* we keep the circuit relatively dumb so that we have no other logic than how to send and receive messages to the remote sim.

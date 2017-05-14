@@ -164,13 +164,14 @@ namespace SilverSim.Tests.Viewer
                 {
                     return string.Empty;
                 }
-                ClientInfo clientInfo = new ClientInfo();
-                clientInfo.ClientIP = clientIP;
-                clientInfo.Channel = viewerChannel;
-                clientInfo.ClientVersion = viewerVersion;
-                clientInfo.ID0 = id0;
-                clientInfo.Mac = mac;
-
+                ClientInfo clientInfo = new ClientInfo()
+                {
+                    ClientIP = clientIP,
+                    Channel = viewerChannel,
+                    ClientVersion = viewerVersion,
+                    ID0 = id0,
+                    Mac = mac
+                };
                 UserAccount userAccount;
                 if (!m_UserAccountService.TryGetValue(UUID.Zero, agentId, out userAccount))
                 {
@@ -178,24 +179,27 @@ namespace SilverSim.Tests.Viewer
                     return string.Empty;
                 }
 
-                PresenceInfo presenceInfo = new PresenceInfo();
-                presenceInfo.RegionID = regionId;
-                presenceInfo.SecureSessionID = secureSessionId;
-                presenceInfo.SessionID = sessionId;
-                presenceInfo.UserID = userAccount.Principal;
-
-                AgentServiceList serviceList = new AgentServiceList();
-                serviceList.Add(m_AgentAssetService);
-                serviceList.Add(m_AgentInventoryService);
+                PresenceInfo presenceInfo = new PresenceInfo()
+                {
+                    RegionID = regionId,
+                    SecureSessionID = secureSessionId,
+                    SessionID = sessionId,
+                    UserID = userAccount.Principal
+                };
+                AgentServiceList serviceList = new AgentServiceList
+                {
+                    m_AgentAssetService,
+                    m_AgentInventoryService,
+                    m_AgentFriendsService,
+                    m_AgentUserAgentService,
+                    m_PresenceService,
+                    m_GridUserService,
+                    m_GridService
+                };
                 if (m_AgentProfileService != null)
                 {
                     serviceList.Add(m_AgentProfileService);
                 }
-                serviceList.Add(m_AgentFriendsService);
-                serviceList.Add(m_AgentUserAgentService);
-                serviceList.Add(m_PresenceService);
-                serviceList.Add(m_GridUserService);
-                serviceList.Add(m_GridService);
                 if (m_OfflineIMService != null)
                 {
                     serviceList.Add(m_OfflineIMService);
@@ -233,7 +237,7 @@ namespace SilverSim.Tests.Viewer
                     return string.Empty;
                 }
 
-                ViewerConnection vc = AddAgent(userAccount.Principal.ID);
+                ViewerConnection vc = AddAgent(instance, userAccount.Principal.ID);
 
                 IPEndPoint ep = new IPEndPoint(ipAddr, vc.ClientUDP.LocalPort);
                 IPEndPoint regionEndPoint = new IPEndPoint(ipAddr, (int)scene.RegionPort);
@@ -247,11 +251,14 @@ namespace SilverSim.Tests.Viewer
                     agent.ServiceURLs,
                     string.Empty,
                     m_PacketHandlerPlugins,
-                    ep);
-                circuit.LastTeleportFlags = (TeleportFlags)teleportFlags;
-                circuit.Agent = agent;
-                circuit.AgentID = userAccount.Principal.ID;
-                circuit.SessionID = sessionId.AsUUID;
+                    ep)
+                {
+                    LastTeleportFlags = (TeleportFlags)teleportFlags,
+                    Agent = agent,
+                    AgentID = userAccount.Principal.ID,
+                    SessionID = sessionId.AsUUID,
+                    ForceUseCircuitCode = true
+                };
                 agent.Circuits.Add(circuit.Scene.ID, circuit);
 
                 try
@@ -289,11 +296,13 @@ namespace SilverSim.Tests.Viewer
 
                 try
                 {
-                    PresenceInfo pinfo = new PresenceInfo();
-                    pinfo.UserID = agent.Owner;
-                    pinfo.SessionID = agent.SessionID;
-                    pinfo.SecureSessionID = secureSessionId.AsUUID;
-                    pinfo.RegionID = scene.ID;
+                    PresenceInfo pinfo = new PresenceInfo()
+                    {
+                        UserID = agent.Owner,
+                        SessionID = agent.SessionID,
+                        SecureSessionID = secureSessionId.AsUUID,
+                        RegionID = scene.ID
+                    };
                     m_PresenceService[agent.SessionID, agent.ID, PresenceServiceInterface.SetType.Report] = pinfo;
                 }
                 catch (Exception e)
@@ -301,19 +310,25 @@ namespace SilverSim.Tests.Viewer
                     m_Log.Warn("Could not contact PresenceService", e);
                 }
                 circuit.LogIncomingAgent(m_Log, false);
-                UseCircuitCode useCircuit = new UseCircuitCode();
-                useCircuit.AgentID = agentId;
-                useCircuit.SessionID = sessionId.AsUUID;
-                useCircuit.CircuitCode = (uint)circuitCode;
+                UseCircuitCode useCircuit = new UseCircuitCode()
+                {
+                    AgentID = agentId,
+                    SessionID = sessionId.AsUUID,
+                    CircuitCode = (uint)circuitCode
+                };
+                useCircuit.OnSendCompletion += delegate (bool success) { m_Log.InfoFormat("UseCircuitCode sent " + success.ToString()); };
 
                 ViewerCircuit viewerCircuit = new ViewerCircuit(vc.ClientUDP, (uint)circuitCode, sessionId.AsUUID, agentId, regionEndPoint);
                 vc.ClientUDP.AddCircuit(viewerCircuit);
+                viewerCircuit.Start();
+                viewerCircuit.MessageRouting.Add(MessageType.RegionHandshake, vc.HandleRegionHandshake);
                 viewerCircuit.SendMessage(useCircuit);
                 viewerCircuit.MessageRouting.Add(MessageType.LogoutReply, delegate (Message m)
                 {
                     ViewerCircuit removeCircuit;
                     if (vc.ViewerCircuits.TryGetValue((uint)circuitCode, out removeCircuit))
                     {
+                        vc.PostEvent(new LogoutReplyReceivedEvent(removeCircuit.AgentID, removeCircuit.RegionData.RegionID, (int)removeCircuit.CircuitCode));
                         removeCircuit.Stop();
                         vc.ClientUDP.RemoveCircuit(removeCircuit);
                     }
@@ -333,9 +348,11 @@ namespace SilverSim.Tests.Viewer
                 if (m_Clients.TryGetValue(agentId.AsUUID, out vc) &&
                     vc.ViewerCircuits.TryGetValue((uint)circuitCode, out viewerCircuit))
                 {
-                    LogoutReply logoutreq = new LogoutReply();
-                    logoutreq.AgentID = viewerCircuit.AgentID;
-                    logoutreq.SessionID = viewerCircuit.SessionID;
+                    LogoutRequest logoutreq = new LogoutRequest()
+                    {
+                        AgentID = viewerCircuit.AgentID,
+                        SessionID = viewerCircuit.SessionID
+                    };
                     viewerCircuit.SendMessage(logoutreq);
                 }
             }
