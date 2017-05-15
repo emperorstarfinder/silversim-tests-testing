@@ -80,6 +80,7 @@ namespace SilverSim.Tests.Viewer
                 m_ItemID = itemID;
 
                 ClientUDP = new UDPCircuitsManager(new System.Net.IPAddress(0), 0, null, null, null, new List<IPortControlServiceInterface>());
+                ClientUDP.Start();
             }
 
             public void Shutdown()

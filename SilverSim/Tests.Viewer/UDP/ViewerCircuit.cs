@@ -205,6 +205,7 @@ namespace SilverSim.Tests.Viewer.UDP
         {
 
             Func<UDPPacket, Message> del;
+            m_Log.DebugFormat("Message type received {0}", mType.ToString());
             if (m_PacketDecoder.PacketTypes.TryGetValue(mType, out del))
             {
                 Message m = del(pck);
