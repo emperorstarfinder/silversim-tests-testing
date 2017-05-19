@@ -32,6 +32,7 @@ using SilverSim.Viewer.Messages.Region;
 using System;
 using System.Collections.Generic;
 using System.Net;
+using SilverSim.Viewer.Messages.Generic;
 
 namespace SilverSim.Tests.Viewer.UDP
 {
@@ -43,7 +44,7 @@ namespace SilverSim.Tests.Viewer.UDP
         private static readonly ILog m_Log = LogManager.GetLogger("VIEWER CIRCUIT");
         private static readonly UDPPacketDecoder m_PacketDecoder = new UDPPacketDecoder(true);
         public readonly BlockingQueue<Message> ReceiveQueue = new BlockingQueue<Message>();
-        public bool EnableReceiveQueue = false;
+        public bool EnableReceiveQueue;
 
         readonly Dictionary<MessageType, Action<Message>> m_MessageRouting = new Dictionary<MessageType, Action<Message>>();
         readonly Dictionary<string, Action<Message>> m_GenericMessageRouting = new Dictionary<string, Action<Message>>();
@@ -205,7 +206,6 @@ namespace SilverSim.Tests.Viewer.UDP
         {
 
             Func<UDPPacket, Message> del;
-            m_Log.DebugFormat("Message type received {0}", mType.ToString());
             if (m_PacketDecoder.PacketTypes.TryGetValue(mType, out del))
             {
                 Message m = del(pck);
@@ -262,7 +262,7 @@ namespace SilverSim.Tests.Viewer.UDP
                 }
                 else if (m.Number == MessageType.GenericMessage)
                 {
-                    SilverSim.Viewer.Messages.Generic.GenericMessage genMsg = (SilverSim.Viewer.Messages.Generic.GenericMessage)m;
+                    GenericMessage genMsg = (GenericMessage)m;
                     if (m_GenericMessageRouting.TryGetValue(genMsg.Method, out mdel))
                     {
                         mdel(m);
@@ -274,7 +274,7 @@ namespace SilverSim.Tests.Viewer.UDP
                 }
                 else if (m.Number == MessageType.GodlikeMessage)
                 {
-                    SilverSim.Viewer.Messages.Generic.GodlikeMessage genMsg = (SilverSim.Viewer.Messages.Generic.GodlikeMessage)m;
+                    var genMsg = (GodlikeMessage)m;
                     if (m_GodlikeMessageRouting.TryGetValue(genMsg.Method, out mdel))
                     {
                         mdel(m);

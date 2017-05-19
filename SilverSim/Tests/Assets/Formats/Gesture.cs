@@ -61,10 +61,10 @@ namespace SilverSim.Tests.Assets.Formats
             UUID soundID = UUID.Random;
 
             gesture = new Gesture();
-            gesture.Sequence.Add(new Gesture.StepAnimation("Animation", animID, true));
-            gesture.Sequence.Add(new Gesture.StepChat("Hello"));
-            gesture.Sequence.Add(new Gesture.StepSound("Sound", soundID));
-            gesture.Sequence.Add(new Gesture.StepWait(1, true, true));
+            gesture.Sequence.Add(new Gesture.StepAnimation { Name = "Animation", AssetID = animID, AnimationStart = true });
+            gesture.Sequence.Add(new Gesture.StepChat { Text = "Hello" });
+            gesture.Sequence.Add(new Gesture.StepSound { Name = "Sound", AssetID = soundID });
+            gesture.Sequence.Add(new Gesture.StepWait { WaitTime = 1, WaitForTime = true, WaitForAnimation = true });
             gesture.Sequence.Add(new Gesture.StepEndOfGesture());
 
             assetdata = gesture.Asset();
