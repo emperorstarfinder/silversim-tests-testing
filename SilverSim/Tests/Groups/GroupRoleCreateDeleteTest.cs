@@ -45,11 +45,6 @@ namespace SilverSim.Tests.Groups
         UUID m_GroupID = new UUID("11223344-1122-1122-1122-112233445566");
         UUID m_InsigniaID = new UUID("11223344-1122-1122-1122-112233445577");
 
-        public GroupRoleCreateDeleteTest()
-        {
-
-        }
-
         public void Startup(ConfigurationLoader loader)
         {
             IConfig config = loader.Config.Configs[GetType().FullName];
@@ -69,7 +64,7 @@ namespace SilverSim.Tests.Groups
 
         bool CheckEveryoneRole(GroupRole role, UGI group)
         {
-            List<string> unequal = new List<string>();
+            var unequal = new List<string>();
             if (role.ID != UUID.Zero)
             {
                 unequal.Add("ID");
@@ -115,7 +110,7 @@ namespace SilverSim.Tests.Groups
 
         bool CheckOwnersRole(GroupRole role, UGI group, UUID roleID)
         {
-            List<string> unequal = new List<string>();
+            var unequal = new List<string>();
             if (role.ID != roleID)
             {
                 unequal.Add("ID");
@@ -216,18 +211,18 @@ namespace SilverSim.Tests.Groups
                 return false;
             }
 
-            gInfo = new GroupInfo();
-            gInfo.Charter = "Charter";
-            gInfo.Founder = m_Founder;
-            gInfo.ID.ID = m_GroupID;
-            gInfo.ID.GroupName = "Test Group";
-            gInfo.InsigniaID = m_InsigniaID;
-            gInfo.IsAllowPublish = true;
-            gInfo.IsMaturePublish = false;
-            gInfo.IsOpenEnrollment = true;
-            gInfo.IsShownInList = false;
-            gInfo.MembershipFee = 10;
-
+            gInfo = new GroupInfo()
+            {
+                Charter = "Charter",
+                Founder = m_Founder,
+                ID = new UGI { ID = m_GroupID, GroupName = "Test Group" },
+                InsigniaID = m_InsigniaID,
+                IsAllowPublish = true,
+                IsMaturePublish = false,
+                IsOpenEnrollment = true,
+                IsShownInList = false,
+                MembershipFee = 10
+            };
             m_Log.Info("Creating group");
             testGroupInfo = m_GroupsService.CreateGroup(m_Founder, gInfo, GroupPowers.DefaultEveryonePowers, GroupPowers.OwnerPowers);
             m_GroupID = testGroupInfo.ID.ID;
@@ -255,14 +250,15 @@ namespace SilverSim.Tests.Groups
                 return false;
             }
 
-            GroupRole testrole = new GroupRole();
-            testrole.Group = testGroupInfo.ID;
-            testrole.Name = "Test Role";
-            testrole.Description = "Test Description";
-            testrole.ID = UUID.Random;
-            testrole.Title = "Test";
-            testrole.Powers = GroupPowers.DefaultEveryonePowers;
-
+            var testrole = new GroupRole()
+            {
+                Group = testGroupInfo.ID,
+                Name = "Test Role",
+                Description = "Test Description",
+                ID = UUID.Random,
+                Title = "Test",
+                Powers = GroupPowers.DefaultEveryonePowers
+            };
             m_Log.Info("Testing role Test non-existence");
             if (m_GroupsService.Roles.ContainsKey(m_Founder, new UGI(m_GroupID), testrole.ID))
             {
@@ -279,7 +275,7 @@ namespace SilverSim.Tests.Groups
             }
 
             {
-                List<string> unequal = new List<string>();
+                var unequal = new List<string>();
                 if(role.Group != testrole.Group)
                 {
                     unequal.Add("Group");
@@ -351,7 +347,7 @@ namespace SilverSim.Tests.Groups
             }
 
             {
-                List<string> unequal = new List<string>();
+                var unequal = new List<string>();
                 if (role.Group != testrole.Group)
                 {
                     unequal.Add("Group");

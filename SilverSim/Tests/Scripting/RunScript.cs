@@ -198,7 +198,7 @@ namespace SilverSim.Tests.Scripting
             IScriptAssembly scriptAssembly = null;
             try
             {
-                using (TextReader reader = new StreamReader(m_ScriptFile, new UTF8Encoding(false)))
+                using (var reader = new StreamReader(m_ScriptFile, new UTF8Encoding(false)))
                 {
                     scriptAssembly = CompilerRegistry.ScriptCompilers.Compile(AppDomain.CurrentDomain, UUI.Unknown, m_AssetID, reader);
                 }
@@ -218,25 +218,27 @@ namespace SilverSim.Tests.Scripting
                 return false;
             }
 
-            EstateInfo estate = new EstateInfo();
-            estate.ParentEstateID = 1;
-            estate.ID = m_EstateID;
-            estate.Owner = m_EstateOwner;
-            estate.Name = m_EstateName;
+            var estate = new EstateInfo()
+            {
+                ParentEstateID = 1,
+                ID = m_EstateID,
+                Owner = m_EstateOwner,
+                Name = m_EstateName
+            };
             m_EstateService.Add(estate);
             m_EstateService.RegionMap[m_RegionID] = m_EstateID;
 
-            RegionInfo rInfo = new RegionInfo();
-            rInfo.Name = m_RegionName;
-            rInfo.ID = m_RegionID;
-            rInfo.Location.GridX = 10000;
-            rInfo.Location.GridY = 10000;
-            rInfo.Size.X = 256;
-            rInfo.Size.Y = 256;
-            rInfo.ProductName = "Mainland";
-            rInfo.ServerPort = (uint)m_RegionPort;
-            rInfo.Owner = m_RegionOwner;
-            rInfo.Flags = RegionFlags.RegionOnline;
+            var rInfo = new RegionInfo()
+            {
+                Name = m_RegionName,
+                ID = m_RegionID,
+                Location = new GridVector { GridX = 10000, GridY = 10000 },
+                Size = new GridVector { X = 256, Y = 256 },
+                ProductName = "Mainland",
+                ServerPort = (uint)m_RegionPort,
+                Owner = m_RegionOwner,
+                Flags = RegionFlags.RegionOnline
+            };
             m_RegionStorage.RegisterRegion(rInfo);
 
             SceneInterface scene;
@@ -260,8 +262,8 @@ namespace SilverSim.Tests.Scripting
             if(success)
             {
                 {
-                    ObjectGroup grp = new ObjectGroup();
-                    ObjectPart part = new ObjectPart();
+                    var grp = new ObjectGroup();
+                    var part = new ObjectPart();
                     part.ID = UUID.Random;
                     grp.Add(1, part.ID, part);
                     part.ObjectGroup = grp;
@@ -278,15 +280,17 @@ namespace SilverSim.Tests.Scripting
                     part.EveryoneMask = m_ObjectPermissionsEveryone;
                     part.GroupMask = m_ObjectPermissionsGroup;
 
-                    ObjectPartInventoryItem item = new ObjectPartInventoryItem();
-                    item.AssetType = AssetType.LSLText;
-                    item.AssetID = UUID.Random;
-                    item.InventoryType = InventoryType.LSLText;
-                    item.LastOwner = m_ScriptLastOwner;
-                    item.Creator = m_ScriptCreator;
-                    item.Owner = m_ScriptOwner;
-                    item.Name = m_ScriptName;
-                    item.Description = m_ScriptDescription;
+                    var item = new ObjectPartInventoryItem()
+                    {
+                        AssetType = AssetType.LSLText,
+                        AssetID = UUID.Random,
+                        InventoryType = InventoryType.LSLText,
+                        LastOwner = m_ScriptLastOwner,
+                        Creator = m_ScriptCreator,
+                        Owner = m_ScriptOwner,
+                        Name = m_ScriptName,
+                        Description = m_ScriptDescription
+                    };
                     item.Permissions.Base = m_ScriptPermissionsBase;
                     item.Permissions.Current = m_ScriptPermissionsOwner;
                     item.Permissions.EveryOne = m_ScriptPermissionsEveryone;
@@ -317,10 +321,7 @@ namespace SilverSim.Tests.Scripting
             Environment.Exit(3);
         }
 
-        UUID GetUUID()
-        {
-            return UUID.Zero;
-        }
+        UUID GetUUID() => UUID.Zero;
 
         const int PUBLIC_CHANNEL = 0;
         const int DEBUG_CHANNEL = 0x7FFFFFFF;
@@ -340,12 +341,6 @@ namespace SilverSim.Tests.Scripting
             m_RunTimeoutEvent.Set();
         }
 
-        public ShutdownOrder ShutdownOrder
-        {
-            get 
-            {
-                return ShutdownOrder.LogoutAgents;
-            }
-        }
+        public ShutdownOrder ShutdownOrder => ShutdownOrder.LogoutAgents;
     }
 }

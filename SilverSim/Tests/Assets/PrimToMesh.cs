@@ -131,20 +131,22 @@ namespace SilverSim.Tests.Assets
                     throw new ConfigurationLoader.ConfigurationErrorException("SculptMap parameter not present");
                 }
                 byte[] data;
-                using (FileStream fs = new FileStream(config.GetString("SculptMapFile"), FileMode.Open))
+                using (var fs = new FileStream(config.GetString("SculptMapFile"), FileMode.Open))
                 {
-                    int fileLength = (int)fs.Length;
+                    var fileLength = (int)fs.Length;
                     data = new byte[fileLength];
                     if(fileLength != fs.Read(data, 0, fileLength))
                     {
                         throw new ConfigurationLoader.ConfigurationErrorException("Failed to load file");
                     }
                 }
-                AssetData assetdata = new AssetData();
-                assetdata.Data = data;
-                assetdata.Type = m_Shape.SculptType == PrimitiveSculptType.Mesh ? AssetType.Mesh : AssetType.Texture;
-                assetdata.ID = m_Shape.SculptMap;
-                assetdata.Name = "PrimToMesh imported";
+                var assetdata = new AssetData()
+                {
+                    Data = data,
+                    Type = m_Shape.SculptType == PrimitiveSculptType.Mesh ? AssetType.Mesh : AssetType.Texture,
+                    ID = m_Shape.SculptMap,
+                    Name = "PrimToMesh imported"
+                };
                 m_AssetService.Store(assetdata);
             }
 
@@ -247,7 +249,7 @@ namespace SilverSim.Tests.Assets
             MeshLOD mesh = m_Shape.ToMesh(m_AssetService);
 
             /* write a blender .raw */
-            using (StreamWriter w = new StreamWriter(m_OutputFileName))
+            using (var w = new StreamWriter(m_OutputFileName))
             {
                 foreach(Triangle tri in mesh.Triangles)
                 {

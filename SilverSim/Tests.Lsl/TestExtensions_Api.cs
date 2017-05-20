@@ -52,11 +52,6 @@ namespace SilverSim.Tests.Lsl
         [APIExtension("Testing")]
         public const int LOG_DEBUG = 4;
 
-        public TestExtensions_Api()
-        {
-
-        }
-
         public void Startup(ConfigurationLoader loader)
         {
             m_Loader = loader;
@@ -113,7 +108,7 @@ namespace SilverSim.Tests.Lsl
                     break;
 
                 case LOG_ERROR:
-                    m_Log.Warn(message);
+                    m_Log.Error(message);
                     break;
 
                 case LOG_FATAL:
@@ -198,14 +193,6 @@ namespace SilverSim.Tests.Lsl
     [PluginName("Testing")]
     public class TestExtensionsFactory : IPluginFactory
     {
-        public TestExtensionsFactory()
-        {
-
-        }
-
-        public IPlugin Initialize(ConfigurationLoader loader, IConfig ownConfig)
-        {
-            return new TestExtensions_Api();
-        }
+        public IPlugin Initialize(ConfigurationLoader loader, IConfig ownConfig) => new TestExtensions_Api();
     }
 }

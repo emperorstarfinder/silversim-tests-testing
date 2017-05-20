@@ -79,9 +79,11 @@ namespace SilverSim.Tests.Extensions
             bool failed = false;
             foreach(ITest test in m_Tests)
             {
-                TestResult tr = new TestResult();
-                tr.Name = test.GetType().FullName;
-                tr.RunTime = Environment.TickCount;
+                var tr = new TestResult()
+                {
+                    Name = test.GetType().FullName,
+                    RunTime = Environment.TickCount
+                };
                 m_Log.Info("********************************************************************************");
                 m_Log.InfoFormat("Executing test {0}", test.GetType().FullName);
                 m_Log.Info("********************************************************************************");
@@ -147,7 +149,7 @@ namespace SilverSim.Tests.Extensions
 
             if (!string.IsNullOrEmpty(m_XmlResultFileName))
             {
-                XmlTextWriter xmlTestResults = new XmlTextWriter(m_XmlResultFileName, new UTF8Encoding(false));
+                var xmlTestResults = new XmlTextWriter(m_XmlResultFileName, new UTF8Encoding(false));
                 xmlTestResults.WriteStartElement("testsuite");
                 xmlTestResults.WriteAttributeString("name", m_TestName);
                 int num_failures = 0;
@@ -236,15 +238,8 @@ namespace SilverSim.Tests.Extensions
     [PluginName("TestRunner")]
     class TestRunnerFactory : IPluginFactory
     {
-        public TestRunnerFactory()
-        {
-
-        }
-
-        public IPlugin Initialize(ConfigurationLoader loader, IConfig ownSection)
-        {
-            return new TestRunner(ownSection.GetString("Name", ""), ownSection.GetString("XUnitResultsFile", ""));
-        }
+        public IPlugin Initialize(ConfigurationLoader loader, IConfig ownSection) =>
+            new TestRunner(ownSection.GetString("Name", ""), ownSection.GetString("XUnitResultsFile", ""));
     }
     #endregion
 }

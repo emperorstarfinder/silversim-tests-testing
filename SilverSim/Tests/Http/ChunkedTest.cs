@@ -39,7 +39,7 @@ namespace SilverSim.Tests.Http
 
         public bool Run()
         {
-            byte[] testdata = new byte[131072];
+            var testdata = new byte[131072];
             for(int i = 0; i < testdata.Length; ++i)
             {
                 testdata[i] = (byte)(i % 256);
@@ -60,28 +60,27 @@ namespace SilverSim.Tests.Http
         {
             m_Log.InfoFormat("Testing {0} bytes of data", data.Length);
             byte[] encoded;
-            byte[] decoded = new byte[data.Length];
-            using (MemoryStream ms = new MemoryStream())
+            var decoded = new byte[data.Length];
+            using (var ms = new MemoryStream())
             {
-                using (HttpWriteChunkedBodyStream write = new HttpWriteChunkedBodyStream(ms))
+                using (var write = new HttpWriteChunkedBodyStream(ms))
                 {
                     write.Write(data, 0, data.Length);
                 }
                 encoded = ms.ToArray();
             }
 
-            using (MemoryStream ms = new MemoryStream(encoded))
+            using (var ms = new MemoryStream(encoded))
             {
-                using (HttpReadChunkedBodyStream read = new HttpReadChunkedBodyStream(ms))
+                using (var read = new HttpReadChunkedBodyStream(ms))
                 {
-                    int rcvdbytes = 0;
-                    rcvdbytes = read.Read(decoded, 0, data.Length);
+                    int rcvdbytes = read.Read(decoded, 0, data.Length);
                     if (data.Length != rcvdbytes)
                     {
                         m_Log.ErrorFormat("chunked stream does not contain all input bytes ({0}!={1})", data.Length, rcvdbytes);
                         return false;
                     }
-                    byte[] t = new byte[1];
+                    var t = new byte[1];
                     if (read.Read(t, 0, 1) != 0)
                     {
                         m_Log.Error("chunked stream does not end with last byte");

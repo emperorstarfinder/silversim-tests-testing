@@ -64,19 +64,21 @@ namespace SilverSim.Tests.UDP
             bool success = true;
             int count = 0;
             int successcnt = 0;
-            UDPPacketDecoder decoder = new UDPPacketDecoder(true);
+            var decoder = new UDPPacketDecoder(true);
             foreach (KeyValuePair<string, byte[]> data in DataBlocks)
             {
                 ++count;
-                TestRunner.TestResult tr = new TestRunner.TestResult();
-                tr.Name = "UDP Packet " + data.Key;
-                tr.Result = false;
-                tr.Message = string.Empty;
+                var tr = new TestRunner.TestResult()
+                {
+                    Name = "UDP Packet " + data.Key,
+                    Result = false,
+                    Message = string.Empty
+                };
                 int startTime = Environment.TickCount;
                 m_Log.InfoFormat("Testing decoding of {0}", data.Key);
                 try
                 {
-                    UDPPacket p = new UDPPacket();
+                    var p = new UDPPacket();
                     Buffer.BlockCopy(data.Value, 0, p.Data, 0, data.Value.Length);
                     p.DataLength = data.Value.Length;
                     if(p.HasAckFlag)

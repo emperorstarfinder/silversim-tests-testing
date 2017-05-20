@@ -39,7 +39,7 @@ namespace SilverSim.Tests.Assets
 
         public bool Run()
         {
-            Notecard notecard = new Notecard();
+            var notecard = new Notecard();
             return true;
         }
 

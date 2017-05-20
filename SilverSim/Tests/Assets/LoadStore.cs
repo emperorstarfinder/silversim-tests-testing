@@ -93,10 +93,9 @@ namespace SilverSim.Tests.Assets
 
         public bool Run()
         {
-            AssetData asset = new AssetData();
             AssetMetadata assetmetadata;
             byte[] data;
-            byte[] nopdata = new byte[1];
+            var nopdata = new byte[1];
             Stream assetstream;
 
             #region testing exists function
@@ -117,7 +116,7 @@ namespace SilverSim.Tests.Assets
             m_Log.Info("Testing multiple non-existence");
             try
             {
-                Dictionary<UUID, bool> assetExists = new Dictionary<UUID, bool>();
+                var assetExists = new Dictionary<UUID, bool>();
                 assetExists = m_AssetService.Exists(new List<UUID> { Asset1ID, Asset2ID });
                 if(assetExists[Asset1ID])
                 {
@@ -137,33 +136,38 @@ namespace SilverSim.Tests.Assets
             }
             #endregion
 
-            UUI theCreator1 = new UUI();
-            theCreator1.ID = UUID.Random;
-            theCreator1.HomeURI = new Uri("http://1.example.com/");
-            theCreator1.FirstName = "The";
-            theCreator1.LastName = "Creator";
-
-            UUI theCreator2 = new UUI();
-            theCreator2.ID = UUID.Random;
-            theCreator2.HomeURI = new Uri("http://2.example.com/");
-            theCreator2.FirstName = "The";
-            theCreator2.LastName = "Creator";
-
+            var theCreator1 = new UUI()
+            {
+                ID = UUID.Random,
+                HomeURI = new Uri("http://1.example.com/"),
+                FirstName = "The",
+                LastName = "Creator"
+            };
+            var theCreator2 = new UUI()
+            {
+                ID = UUID.Random,
+                HomeURI = new Uri("http://2.example.com/"),
+                FirstName = "The",
+                LastName = "Creator"
+            };
             m_Log.Info("Storing asset 1");
-            asset.Name = "Asset 1";
-            asset.ID = Asset1ID;
-            asset.Type = AssetType.CallingCard;
-            asset.Data = Asset1Data;
-            asset.Creator = theCreator1;
-            asset.Temporary = false;
-            asset.Flags = AssetFlags.Normal;
+            var asset = new AssetData()
+            {
+                Name = "Asset 1",
+                ID = Asset1ID,
+                Type = AssetType.CallingCard,
+                Data = Asset1Data,
+                Creator = theCreator1,
+                Temporary = false,
+                Flags = AssetFlags.Normal
+            };
             m_AssetService.Store(asset);
 
             m_Log.Info("Testing multiple exist (1 exists, 2 missing)");
             m_Log.Info("Testing multiple non-existence");
             try
             {
-                Dictionary<UUID, bool> assetExists = new Dictionary<UUID, bool>();
+                var assetExists = new Dictionary<UUID, bool>();
                 assetExists = m_AssetService.Exists(new List<UUID> { Asset1ID, Asset2ID });
                 if (!assetExists[Asset1ID])
                 {
@@ -183,7 +187,7 @@ namespace SilverSim.Tests.Assets
             }
             try
             {
-                Dictionary<UUID, bool> assetExists = new Dictionary<UUID, bool>();
+                var assetExists = new Dictionary<UUID, bool>();
                 assetExists = m_AssetService.Exists(new List<UUID> { Asset2ID, Asset1ID });
                 if (!assetExists[Asset1ID])
                 {
@@ -203,13 +207,16 @@ namespace SilverSim.Tests.Assets
             }
 
             m_Log.Info("Storing asset 2");
-            asset.Name = "Asset 2";
-            asset.ID = Asset2ID;
-            asset.Type = AssetType.Mesh;
-            asset.Data = Asset2Data;
-            asset.Creator = theCreator2;
-            asset.Temporary = false;
-            asset.Flags = AssetFlags.Maptile;
+            asset = new AssetData()
+            {
+                Name = "Asset 2",
+                ID = Asset2ID,
+                Type = AssetType.Mesh,
+                Data = Asset2Data,
+                Creator = theCreator2,
+                Temporary = false,
+                Flags = AssetFlags.Maptile
+            };
             m_AssetService.Store(asset);
 
             #region testing exists function
@@ -230,7 +237,7 @@ namespace SilverSim.Tests.Assets
             m_Log.Info("Testing multiple existence of Asset 1 and Asset 2");
             try
             {
-                Dictionary<UUID, bool> assetExists = new Dictionary<UUID, bool>();
+                var assetExists = new Dictionary<UUID, bool>();
                 assetExists = m_AssetService.Exists(new List<UUID> { Asset1ID, Asset2ID });
                 if (!assetExists[Asset1ID])
                 {

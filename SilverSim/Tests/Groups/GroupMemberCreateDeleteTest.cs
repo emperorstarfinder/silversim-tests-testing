@@ -46,11 +46,6 @@ namespace SilverSim.Tests.Groups
         UUID m_GroupID = new UUID("11223344-1122-1122-1122-112233445566");
         UUID m_InsigniaID = new UUID("11223344-1122-1122-1122-112233445577");
 
-        public GroupMemberCreateDeleteTest()
-        {
-
-        }
-
         public void Startup(ConfigurationLoader loader)
         {
             IConfig config = loader.Config.Configs[GetType().FullName];
@@ -72,7 +67,7 @@ namespace SilverSim.Tests.Groups
 
         bool CheckEquality(GroupMember mem1, GroupMember mem2)
         {
-            List<string> unequal = new List<string>();
+            var unequal = new List<string>();
             if(mem1.AccessToken != mem2.AccessToken)
             {
                 unequal.Add("AccessToken");
@@ -112,21 +107,20 @@ namespace SilverSim.Tests.Groups
 
         public bool Run()
         {
-            GroupInfo gInfo;
             GroupInfo testGroupInfo;
 
-            gInfo = new GroupInfo();
-            gInfo.Charter = "Charter";
-            gInfo.Founder = m_Founder;
-            gInfo.ID.ID = m_GroupID;
-            gInfo.ID.GroupName = "Test Group";
-            gInfo.InsigniaID = m_InsigniaID;
-            gInfo.IsAllowPublish = true;
-            gInfo.IsMaturePublish = false;
-            gInfo.IsOpenEnrollment = true;
-            gInfo.IsShownInList = false;
-            gInfo.MembershipFee = 10;
-
+            var gInfo = new GroupInfo()
+            {
+                Charter = "Charter",
+                Founder = m_Founder,
+                ID = new UGI { ID = m_GroupID, GroupName = "Test Group" },
+                InsigniaID = m_InsigniaID,
+                IsAllowPublish = true,
+                IsMaturePublish = false,
+                IsOpenEnrollment = true,
+                IsShownInList = false,
+                MembershipFee = 10
+            };
             m_Log.Info("Creating group");
             testGroupInfo = m_GroupsService.CreateGroup(m_Founder, gInfo, GroupPowers.DefaultEveryonePowers, GroupPowers.OwnerPowers);
             m_GroupID = testGroupInfo.ID.ID;

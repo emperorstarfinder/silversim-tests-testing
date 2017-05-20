@@ -160,29 +160,11 @@ namespace SilverSim.Tests.Viewer.UDP
         {
         }
 
-        public Dictionary<string, Action<Message>> GenericMessageRouting
-        {
-            get
-            {
-                return m_GenericMessageRouting;
-            }
-        }
+        public Dictionary<string, Action<Message>> GenericMessageRouting => m_GenericMessageRouting;
 
-        public Dictionary<GridInstantMessageDialog, Action<Message>> IMMessageRouting
-        {
-            get
-            {
-                return m_IMMessageRouting;
-            }
-        }
+        public Dictionary<GridInstantMessageDialog, Action<Message>> IMMessageRouting => m_IMMessageRouting;
 
-        public Dictionary<MessageType, Action<Message>> MessageRouting
-        {
-            get
-            {
-                return m_MessageRouting;
-            }
-        }
+        public Dictionary<MessageType, Action<Message>> MessageRouting => m_MessageRouting;
 
         public Message Receive(int timeout)
         {
@@ -226,7 +208,7 @@ namespace SilverSim.Tests.Viewer.UDP
                 if(m.Number == MessageType.RegionHandshake)
                 {
                     RegionData = new RegionHandshakeData((RegionHandshake)m);
-                    RegionHandshakeReply reply = new RegionHandshakeReply()
+                    var reply = new RegionHandshakeReply()
                     {
                         SessionID = SessionID,
                         AgentID = AgentID,
@@ -245,7 +227,7 @@ namespace SilverSim.Tests.Viewer.UDP
                 }
                 else if (m.Number == MessageType.ImprovedInstantMessage)
                 {
-                    ImprovedInstantMessage im = (ImprovedInstantMessage)m;
+                    var im = (ImprovedInstantMessage)m;
                     if (im.CircuitAgentID != im.AgentID ||
                         im.CircuitSessionID != im.SessionID)
                     {
@@ -262,7 +244,7 @@ namespace SilverSim.Tests.Viewer.UDP
                 }
                 else if (m.Number == MessageType.GenericMessage)
                 {
-                    GenericMessage genMsg = (GenericMessage)m;
+                    var genMsg = (GenericMessage)m;
                     if (m_GenericMessageRouting.TryGetValue(genMsg.Method, out mdel))
                     {
                         mdel(m);

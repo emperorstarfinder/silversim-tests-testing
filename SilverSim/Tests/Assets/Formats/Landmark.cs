@@ -50,11 +50,12 @@ namespace SilverSim.Tests.Assets.Formats
             AssetData assetdata;
 
             m_Log.Info("Serializing grid-local landmark variant");
-            landmark = new Landmark();
-            landmark.LocalPos = new Vector3(1, 2, 4);
-            landmark.Location = new GridVector(1000, 2000);
-            landmark.RegionID = UUID.Random;
-
+            landmark = new Landmark()
+            {
+                LocalPos = new Vector3(1, 2, 4),
+                Location = new GridVector(1000, 2000),
+                RegionID = UUID.Random
+            };
             assetdata = landmark.Asset();
             landmarkserialized = new Landmark(assetdata);
 
@@ -83,12 +84,13 @@ namespace SilverSim.Tests.Assets.Formats
             }
 
             m_Log.Info("Serializing HG landmark variant");
-            landmark = new Landmark();
-            landmark.GatekeeperURI = new URI("http://gatekeeper.example.com/");
-            landmark.LocalPos = new Vector3(1, 2, 4);
-            landmark.Location = new GridVector(1000, 2000);
-            landmark.RegionID = UUID.Random;
-
+            landmark = new Landmark()
+            {
+                GatekeeperURI = new URI("http://gatekeeper.example.com/"),
+                LocalPos = new Vector3(1, 2, 4),
+                Location = new GridVector(1000, 2000),
+                RegionID = UUID.Random
+            };
             assetdata = landmark.Asset();
             landmarkserialized = new Landmark(assetdata);
 

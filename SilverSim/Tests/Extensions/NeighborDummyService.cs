@@ -45,14 +45,6 @@ namespace SilverSim.Tests.Extensions
     [PluginName("DummyNeighbor")]
     public class NeighborDummyServiceFactory : IPluginFactory
     {
-        public NeighborDummyServiceFactory()
-        {
-
-        }
-
-        public IPlugin Initialize(ConfigurationLoader loader, IConfig ownSection)
-        {
-            return new NeighborDummyService();
-        }
+        public IPlugin Initialize(ConfigurationLoader loader, IConfig ownSection) => new NeighborDummyService();
     }
 }

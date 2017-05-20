@@ -95,9 +95,8 @@ namespace SilverSim.Tests.Viewer
 
             public void HandleRegionHandshake(Message m)
             {
-                RegionHandshake msg = (RegionHandshake)m;
-                RegionHandshakeReceivedEvent ev = new RegionHandshakeReceivedEvent(AgentID, msg.RegionID);
-                PostEvent(ev);
+                var msg = (RegionHandshake)m;
+                PostEvent(new RegionHandshakeReceivedEvent(AgentID, msg.RegionID));
             }
 
             public void PostEvent(IScriptEvent ev)
@@ -159,13 +158,7 @@ namespace SilverSim.Tests.Viewer
         CapsHttpRedirector m_CapsRedirector;
         List<IProtocolExtender> m_PacketHandlerPlugins = new List<IProtocolExtender>();
 
-        public ShutdownOrder ShutdownOrder
-        {
-            get
-            {
-                return ShutdownOrder.BeforeLogoutAgents;
-            }
-        }
+        public ShutdownOrder ShutdownOrder => ShutdownOrder.BeforeLogoutAgents;
 
         public void Shutdown()
         {
@@ -210,10 +203,8 @@ namespace SilverSim.Tests.Viewer
                 return false;
             }
 
-            bool IDisplayNameAccessor.ContainsKey(UUI agent)
-            {
-                return false;
-            }
+            bool IDisplayNameAccessor.ContainsKey(UUI agent) => false;
+
             string IDisplayNameAccessor.this[UUI agent]
             {
                 get
@@ -253,12 +244,14 @@ namespace SilverSim.Tests.Viewer
                 {
                     throw new KeyNotFoundException();
                 }
-                UserInfo info = new UserInfo();
-                info.FirstName = account.Principal.FirstName;
-                info.LastName = account.Principal.LastName;
-                info.UserCreated = account.Created;
-                info.UserFlags = account.UserFlags;
-                info.UserTitle = account.UserTitle;
+                var info = new UserInfo()
+                {
+                    FirstName = account.Principal.FirstName,
+                    LastName = account.Principal.LastName,
+                    UserCreated = account.Created,
+                    UserFlags = account.UserFlags,
+                    UserTitle = account.UserTitle
+                };
                 return info;
             }
 
@@ -327,9 +320,7 @@ namespace SilverSim.Tests.Viewer
     [PluginName("ViewerControl")]
     public class ViewerControlApiFactory : IPluginFactory
     {
-        public IPlugin Initialize(ConfigurationLoader loader, IConfig ownSection)
-        {
-            return new ViewerControlApi(ownSection);
-        }
+        public IPlugin Initialize(ConfigurationLoader loader, IConfig ownSection) =>
+            new ViewerControlApi(ownSection);
     }
 }

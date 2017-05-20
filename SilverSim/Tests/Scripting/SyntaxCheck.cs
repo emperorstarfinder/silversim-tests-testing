@@ -77,11 +77,11 @@ namespace SilverSim.Tests.Scripting
                 m_Log.InfoFormat("Testing syntax of {1} ({0})", file.Key, file.Value);
                 try
                 {
-                    using (TextReader reader = new StreamReader(file.Value, new UTF8Encoding(false)))
+                    using (var reader = new StreamReader(file.Value, new UTF8Encoding(false)))
                     {
                         if (WriteParserResult)
                         {
-                            using (FileStream st = new FileStream(file.Value + ".dump.txt", FileMode.Create))
+                            using (var st = new FileStream(file.Value + ".dump.txt", FileMode.Create))
                             {
                                 CompilerRegistry.ScriptCompilers.SyntaxCheckAndDump(st, UUI.Unknown, file.Key, reader);
                             }

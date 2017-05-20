@@ -75,10 +75,12 @@ namespace SilverSim.Tests.Scripting
             foreach (KeyValuePair<UUID, string> file in Files)
             {
                 ++count;
-                TestRunner.TestResult tr = new TestRunner.TestResult();
-                tr.Name = "Script " + file.Key + "(" + file.Value + ")";
-                tr.Result = false;
-                tr.Message = string.Empty;
+                var tr = new TestRunner.TestResult()
+                {
+                    Name = "Script " + file.Key + "(" + file.Value + ")",
+                    Result = false,
+                    Message = string.Empty
+                };
                 int startTime = Environment.TickCount;
                 m_Log.InfoFormat("Testing compilation of {1} ({0})", file.Key, file.Value);
                 try

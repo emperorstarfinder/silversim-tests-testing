@@ -48,19 +48,21 @@ namespace SilverSim.Tests.Assets.Formats
 
         public bool Run()
         {
-            UUI theCreator = new UUI();
             Notecard notecard;
             Notecard ncserialized;
             AssetData asset;
-            theCreator.HomeURI = new Uri("http://example.com/");
-            theCreator.ID = UUID.Random;
-            theCreator.FirstName = "The";
-            theCreator.LastName = "Creator";
-
+            var theCreator = new UUI()
+            {
+                HomeURI = new Uri("http://example.com/"),
+                ID = UUID.Random,
+                FirstName = "The",
+                LastName = "Creator"
+            };
             m_Log.Info("Testing Notecard without Inventory");
-            notecard = new Notecard();
-            notecard.Text = "The Notecard";
-
+            notecard = new Notecard()
+            {
+                Text = "The Notecard"
+            };
             asset = notecard.Asset();
             ncserialized = new Notecard(asset);
 
@@ -78,33 +80,38 @@ namespace SilverSim.Tests.Assets.Formats
 
 
             m_Log.Info("Testing Notecard with Inventory");
-            notecard = new Notecard();
-            notecard.Text = "The Notecard";
-            NotecardInventoryItem ncitem = new NotecardInventoryItem();
-            ncitem.AssetID = UUID.Random;
-            ncitem.AssetType = AssetType.CallingCard;
-            ncitem.Creator = theCreator;
-            ncitem.Description = "Item Description";
-            ncitem.Flags = (InventoryFlags)1;
-            ncitem.Group = UGI.Unknown;
-            ncitem.ID = UUID.Random;
-            ncitem.InventoryType = InventoryType.CallingCard;
-            ncitem.IsGroupOwned = true;
-            ncitem.LastOwner = theCreator;
-            ncitem.Name = "Item Name";
-            ncitem.Owner = theCreator;
-            ncitem.ParentFolderID = UUID.Random;
+            notecard = new Notecard()
+            {
+                Text = "The Notecard"
+            };
+            var ncitem = new NotecardInventoryItem()
+            {
+                AssetID = UUID.Random,
+                AssetType = AssetType.CallingCard,
+                Creator = theCreator,
+                Description = "Item Description",
+                Flags = (InventoryFlags)1,
+                Group = UGI.Unknown,
+                ID = UUID.Random,
+                InventoryType = InventoryType.CallingCard,
+                IsGroupOwned = true,
+                LastOwner = theCreator,
+                Name = "Item Name",
+                Owner = theCreator,
+                ParentFolderID = UUID.Random,
+                ExtCharIndex = 1
+            };
+            ncitem.SaleInfo.Price = 10;
+            ncitem.SaleInfo.Type = InventoryItem.SaleInfoData.SaleType.Copy;
             ncitem.Permissions.Base = InventoryPermissionsMask.All;
             ncitem.Permissions.Current = InventoryPermissionsMask.All;
             ncitem.Permissions.EveryOne = InventoryPermissionsMask.All;
             ncitem.Permissions.Group = InventoryPermissionsMask.All;
             ncitem.Permissions.NextOwner = InventoryPermissionsMask.All;
-            ncitem.SaleInfo.Price = 10;
-            ncitem.SaleInfo.Type = InventoryItem.SaleInfoData.SaleType.Copy;
-            ncitem.ExtCharIndex = 1;
-            notecard.Inventory = new NotecardInventory();
-            notecard.Inventory.Add(UUID.Random, ncitem);
-
+            notecard.Inventory = new NotecardInventory
+            {
+                { UUID.Random, ncitem }
+            };
             asset = notecard.Asset();
             ncserialized = new Notecard(asset);
 

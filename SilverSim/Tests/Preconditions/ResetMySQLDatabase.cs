@@ -85,10 +85,6 @@ namespace SilverSim.Tests.Preconditions
     class ResetMySQLDatabaseFactory : IPluginFactory
     {
         private static readonly ILog m_Log = LogManager.GetLogger("MYSQL DATABASE RESET");
-        public ResetMySQLDatabaseFactory()
-        {
-
-        }
 
         #region Connection String Creator
         string BuildConnectionString(IConfig config, ILog log)
@@ -121,10 +117,8 @@ namespace SilverSim.Tests.Preconditions
         }
         #endregion
 
-        public IPlugin Initialize(ConfigurationLoader loader, IConfig ownSection)
-        {
-            return new ResetMySQLDatabase(BuildConnectionString(ownSection, m_Log));
-        }
+        public IPlugin Initialize(ConfigurationLoader loader, IConfig ownSection) =>
+            new ResetMySQLDatabase(BuildConnectionString(ownSection, m_Log));
     }
     #endregion
 }

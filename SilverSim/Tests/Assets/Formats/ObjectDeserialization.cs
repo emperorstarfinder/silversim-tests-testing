@@ -48,7 +48,7 @@ namespace SilverSim.Tests.Assets.Formats
 
         public bool Run()
         {
-            List<string> manifests = new List<string>();
+            var manifests = new List<string>();
             foreach(string manifest in GetType().Assembly.GetManifestResourceNames())
             {
                 if(manifest.StartsWith("SilverSim.Tests.Resources.Objects.") && manifest.EndsWith(".xml"))
@@ -71,7 +71,7 @@ namespace SilverSim.Tests.Assets.Formats
                     return false;
                 }
 
-                List<UUID> reflist = new List<UUID>();
+                var reflist = new List<UUID>();
                 resource = GetType().Assembly.GetManifestResourceStream(manifest);
                 ObjectReferenceDecoder.GetReferences(resource, "", reflist);
                 m_Log.InfoFormat("Found {0} references", reflist.Count);

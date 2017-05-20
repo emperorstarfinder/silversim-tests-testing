@@ -51,20 +51,23 @@ namespace SilverSim.Tests.Assets.Formats
             Wearable wearable;
             Wearable wearableserialized;
             AssetData assetdata;
-            UUI theCreator = new UUI();
-            theCreator.ID = UUID.Random;
-            theCreator.HomeURI = new Uri("http://example.com/");
-            theCreator.FirstName = "The";
-            theCreator.LastName = "Creator";
-
-            wearable = new Wearable();
-            wearable.Type = WearableType.Shape;
-            wearable.Creator = theCreator;
-            wearable.Description = "Wearable Description";
-            wearable.Name = "Wearable Name";
-            wearable.Group = UGI.Unknown;
-            wearable.LastOwner = theCreator;
-            wearable.Owner = theCreator;
+            var theCreator = new UUI()
+            {
+                ID = UUID.Random,
+                HomeURI = new Uri("http://example.com/"),
+                FirstName = "The",
+                LastName = "Creator"
+            };
+            wearable = new Wearable()
+            {
+                Type = WearableType.Shape,
+                Creator = theCreator,
+                Description = "Wearable Description",
+                Name = "Wearable Name",
+                Group = UGI.Unknown,
+                LastOwner = theCreator,
+                Owner = theCreator
+            };
             wearable.Params.Add(1, 1);
             wearable.Params.Add(2, 2);
             wearable.Params.Add(4, 4);

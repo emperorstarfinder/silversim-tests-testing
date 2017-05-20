@@ -73,21 +73,20 @@ namespace SilverSim.Tests.Groups
 
         public bool Run()
         {
-            GroupInfo gInfo;
             GroupInfo testGroupInfo;
 
-            gInfo = new GroupInfo();
-            gInfo.Charter = "Charter";
-            gInfo.Founder = m_Founder;
-            gInfo.ID.ID = m_GroupID;
-            gInfo.ID.GroupName = "Test Group";
-            gInfo.InsigniaID = m_InsigniaID;
-            gInfo.IsAllowPublish = true;
-            gInfo.IsMaturePublish = false;
-            gInfo.IsOpenEnrollment = true;
-            gInfo.IsShownInList = false;
-            gInfo.MembershipFee = 10;
-
+            var gInfo = new GroupInfo()
+            {
+                Charter = "Charter",
+                Founder = m_Founder,
+                ID = new UGI { ID = m_GroupID, GroupName = "Test Group" },
+                InsigniaID = m_InsigniaID,
+                IsAllowPublish = true,
+                IsMaturePublish = false,
+                IsOpenEnrollment = true,
+                IsShownInList = false,
+                MembershipFee = 10
+            };
             m_Log.Info("Creating group");
             testGroupInfo = m_GroupsService.CreateGroup(m_Founder, gInfo, GroupPowers.DefaultEveryonePowers, GroupPowers.OwnerPowers);
             m_GroupID = testGroupInfo.ID.ID;
@@ -161,11 +160,13 @@ namespace SilverSim.Tests.Groups
             }
 
             m_Log.Info("Creating invite");
-            GroupInvite testinvite = new GroupInvite();
-            testinvite.ID = inviteID;
-            testinvite.Principal = m_Invitee;
-            testinvite.RoleID = gInfo.OwnerRoleID;
-            testinvite.Group = new UGI(m_GroupID);
+            var testinvite = new GroupInvite()
+            {
+                ID = inviteID,
+                Principal = m_Invitee,
+                RoleID = gInfo.OwnerRoleID,
+                Group = new UGI(m_GroupID)
+            };
             m_GroupsService.Invites.Add(m_Founder, testinvite);
 
             m_Log.Info("Testing existence of invite 1");

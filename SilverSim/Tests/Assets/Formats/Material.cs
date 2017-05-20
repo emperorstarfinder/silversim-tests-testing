@@ -52,25 +52,26 @@ namespace SilverSim.Tests.Assets.Formats
             AssetData assetdata;
 
             m_Log.Info("Testing Material serialization");
-            material = new Material();
-            material.AlphaMaskCutoff = 1;
-            material.DiffuseAlphaMode = 2;
-            material.EnvIntensity = 3;
-            material.NormMap = UUID.Random;
-            material.NormOffsetX = 4;
-            material.NormOffsetY = 8;
-            material.NormRepeatX = 16;
-            material.NormRepeatY = 32;
-            material.NormRotation = 64;
-            material.SpecColor = new ColorAlpha(1, 1, 1, 1);
-            material.SpecExp = 1;
-            material.SpecMap = UUID.Random;
-            material.SpecOffsetX = 1;
-            material.SpecOffsetY = 2;
-            material.SpecRepeatX = 4;
-            material.SpecRepeatY = 8;
-            material.SpecRotation = 16;
-
+            material = new Material()
+            {
+                AlphaMaskCutoff = 1,
+                DiffuseAlphaMode = 2,
+                EnvIntensity = 3,
+                NormMap = UUID.Random,
+                NormOffsetX = 4,
+                NormOffsetY = 8,
+                NormRepeatX = 16,
+                NormRepeatY = 32,
+                NormRotation = 64,
+                SpecColor = new ColorAlpha(1, 1, 1, 1),
+                SpecExp = 1,
+                SpecMap = UUID.Random,
+                SpecOffsetX = 1,
+                SpecOffsetY = 2,
+                SpecRepeatX = 4,
+                SpecRepeatY = 8,
+                SpecRotation = 16
+            };
             assetdata = material.Asset();
             materialserialized = new Material(assetdata);
 
@@ -208,8 +209,10 @@ namespace SilverSim.Tests.Assets.Formats
             }
 
             m_Log.Info("Testing NormMap only");
-            material = new Material();
-            material.NormMap = UUID.Random;
+            material = new Material()
+            {
+                NormMap = UUID.Random
+            };
             refs = material.References;
             if (refs.Count != 1)
             {
@@ -224,8 +227,10 @@ namespace SilverSim.Tests.Assets.Formats
             }
 
             m_Log.Info("Testing SpecMap only");
-            material = new Material();
-            material.SpecMap = UUID.Random;
+            material = new Material()
+            {
+                SpecMap = UUID.Random
+            };
             refs = material.References;
             if (refs.Count != 1)
             {

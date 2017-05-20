@@ -39,7 +39,7 @@ namespace SilverSim.Tests.Viewer
         {
             byte[] post;
 
-            using (MemoryStream ms = new MemoryStream())
+            using (var ms = new MemoryStream())
             {
                 LlsdXml.Serialize(elements, ms);
                 post = ms.ToArray();
@@ -67,7 +67,7 @@ namespace SilverSim.Tests.Viewer
                 return new AnArray();
             }
 
-            AnArray result = new AnArray();
+            var result = new AnArray();
             foreach(KeyValuePair<string, IValue> kvp in resdata)
             {
                 result.Add(kvp.Key);

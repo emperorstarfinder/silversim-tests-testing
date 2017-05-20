@@ -33,10 +33,10 @@ namespace SilverSim.Tests.Viewer
         public class RegionHandshakeReceivedEvent : IScriptEvent
         {
             [TranslatedScriptEventParameter(0)]
-            public LSLKey AgentID { get; private set; }
+            public LSLKey AgentID { get; }
 
             [TranslatedScriptEventParameter(1)]
-            public LSLKey RegionID { get; private set; }
+            public LSLKey RegionID { get; }
 
             public RegionHandshakeReceivedEvent(LSLKey agentID, LSLKey regionID)
             {
@@ -59,13 +59,13 @@ namespace SilverSim.Tests.Viewer
         public class LogoutReplyReceivedEvent : IScriptEvent
         {
             [TranslatedScriptEventParameter(0)]
-            public LSLKey AgentID { get; private set; }
+            public LSLKey AgentID { get; }
 
             [TranslatedScriptEventParameter(1)]
-            public LSLKey RegionID { get; private set; }
+            public LSLKey RegionID { get; }
 
             [TranslatedScriptEventParameter(2)]
-            public int CircuitCode { get; private set; }
+            public int CircuitCode { get; }
 
             public LogoutReplyReceivedEvent(LSLKey agentID, LSLKey regionID, int circuitcode)
             {

@@ -56,7 +56,7 @@ namespace SilverSim.Tests.ServerParams
         public bool Run()
         {
             m_Log.Info("Testing default value facilities");
-            UUID regionID = new UUID("11223344-1122-1122-1122-112233445566");
+            var regionID = new UUID("11223344-1122-1122-1122-112233445566");
             string test1 = m_Service[regionID, "Param1", "test"];
             string test2 = m_Service[regionID, "Param1", "test"];
             if(test1 != "test")

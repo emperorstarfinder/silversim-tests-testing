@@ -51,12 +51,13 @@ namespace SilverSim.Tests.Assets.Formats
             Gesture gestureserialized;
             Gesture gesture;
 
-            UUI theCreator = new UUI();
-            theCreator.ID = UUID.Random;
-            theCreator.HomeURI = new Uri("http://example.com/");
-            theCreator.FirstName = "The";
-            theCreator.LastName = "Creator";
-
+            var theCreator = new UUI()
+            {
+                ID = UUID.Random,
+                HomeURI = new Uri("http://example.com/"),
+                FirstName = "The",
+                LastName = "Creator"
+            };
             UUID animID = UUID.Random;
             UUID soundID = UUID.Random;
 
@@ -86,8 +87,8 @@ namespace SilverSim.Tests.Assets.Formats
 
                 if(gesture.Sequence[i] is Gesture.StepAnimation)
                 {
-                    Gesture.StepAnimation anim1 = (Gesture.StepAnimation)gesture.Sequence[i];
-                    Gesture.StepAnimation anim2 = (Gesture.StepAnimation)gestureserialized.Sequence[i];
+                    var anim1 = (Gesture.StepAnimation)gesture.Sequence[i];
+                    var anim2 = (Gesture.StepAnimation)gestureserialized.Sequence[i];
                     if(anim1.AnimationStart != anim2.AnimationStart)
                     {
                         m_Log.Fatal("Gesture sequence item Animation not identical");
@@ -106,8 +107,8 @@ namespace SilverSim.Tests.Assets.Formats
                 }
                 if (gesture.Sequence[i] is Gesture.StepChat)
                 {
-                    Gesture.StepChat chat1 = (Gesture.StepChat)gesture.Sequence[i];
-                    Gesture.StepChat chat2 = (Gesture.StepChat)gestureserialized.Sequence[i];
+                    var chat1 = (Gesture.StepChat)gesture.Sequence[i];
+                    var chat2 = (Gesture.StepChat)gestureserialized.Sequence[i];
 
                     if(chat1.Text != chat2.Text)
                     {
@@ -117,8 +118,8 @@ namespace SilverSim.Tests.Assets.Formats
                 }
                 if (gesture.Sequence[i] is Gesture.StepSound)
                 {
-                    Gesture.StepSound sound1 = (Gesture.StepSound)gesture.Sequence[i];
-                    Gesture.StepSound sound2 = (Gesture.StepSound)gestureserialized.Sequence[i];
+                    var sound1 = (Gesture.StepSound)gesture.Sequence[i];
+                    var sound2 = (Gesture.StepSound)gestureserialized.Sequence[i];
 
                     if (sound1.AssetID != sound2.AssetID)
                     {
@@ -133,8 +134,8 @@ namespace SilverSim.Tests.Assets.Formats
                 }
                 if (gesture.Sequence[i] is Gesture.StepWait)
                 {
-                    Gesture.StepWait wait1 = (Gesture.StepWait)gesture.Sequence[i];
-                    Gesture.StepWait wait2 = (Gesture.StepWait)gestureserialized.Sequence[i];
+                    var wait1 = (Gesture.StepWait)gesture.Sequence[i];
+                    var wait2 = (Gesture.StepWait)gestureserialized.Sequence[i];
 
                     if (wait1.WaitTime != wait2.WaitTime)
                     {

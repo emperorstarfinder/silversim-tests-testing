@@ -98,14 +98,14 @@ namespace SilverSim.Tests.UserAccounts
         public bool Run()
         {
             m_Log.Info("Setting up test data");
-            UserAccount ua = new UserAccount();
             UUID userID = UUID.Parse("22334455-1122-1122-1122-112233445566");
             UUID scopeID = UUID.Parse("33445566-1122-1122-1122-112233445566");
-            ua.Principal.ID = userID;
-            ua.Principal.FirstName = "First";
-            ua.Principal.LastName = "Last";
-            ua.Email = "email@example.com";
-            ua.ScopeID = scopeID;
+            var ua = new UserAccount()
+            {
+                Principal = new UUI { ID = userID, FirstName = "First", LastName = "Last" },
+                Email = "email@example.com",
+                ScopeID = scopeID
+            };
             /* DO NOT test HomeURI or ServiceURLs here, these are generated in a completely different code location */
 
             m_Backend.Add(ua);

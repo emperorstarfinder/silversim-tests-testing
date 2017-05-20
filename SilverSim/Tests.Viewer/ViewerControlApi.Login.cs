@@ -90,10 +90,10 @@ namespace SilverSim.Tests.Viewer
         {
             lock(instance)
             {
-                UserAccount acc = new UserAccount();
-                acc.Principal.ID = UUID.Random;
-                acc.Principal.FirstName = firstName;
-                acc.Principal.LastName = lastName;
+                var acc = new UserAccount()
+                {
+                    Principal = new UUI { ID = UUID.Random, FirstName = firstName, LastName = lastName }
+                };
                 m_UserAccountService.Add(acc);
                 return acc.Principal.ID;
             }
@@ -132,8 +132,7 @@ namespace SilverSim.Tests.Viewer
             lock (instance)
             {
                 string externalHostName = m_CapsRedirector.ExternalHostName;
-                IPAddress[] addresses;
-                addresses = DnsNameCache.GetHostAddresses(externalHostName);
+                IPAddress[] addresses = DnsNameCache.GetHostAddresses(externalHostName);
 
                 string clientIP = string.Empty;
 
@@ -164,7 +163,7 @@ namespace SilverSim.Tests.Viewer
                 {
                     return string.Empty;
                 }
-                ClientInfo clientInfo = new ClientInfo()
+                var clientInfo = new ClientInfo()
                 {
                     ClientIP = clientIP,
                     Channel = viewerChannel,
@@ -179,14 +178,14 @@ namespace SilverSim.Tests.Viewer
                     return string.Empty;
                 }
 
-                PresenceInfo presenceInfo = new PresenceInfo()
+                var presenceInfo = new PresenceInfo()
                 {
                     RegionID = regionId,
                     SecureSessionID = secureSessionId,
                     SessionID = sessionId,
                     UserID = userAccount.Principal
                 };
-                AgentServiceList serviceList = new AgentServiceList
+                var serviceList = new AgentServiceList
                 {
                     m_AgentAssetService,
                     m_AgentInventoryService,
@@ -205,7 +204,7 @@ namespace SilverSim.Tests.Viewer
                     serviceList.Add(m_OfflineIMService);
                 }
 
-                ViewerAgent agent = new ViewerAgent(
+                var agent = new ViewerAgent(
                     m_Scenes,
                     agentId,
                     userAccount.Principal.FirstName,
@@ -228,7 +227,7 @@ namespace SilverSim.Tests.Viewer
                     return string.Empty;
                 }
 
-                UDPCircuitsManager udpServer = (UDPCircuitsManager)scene.UDPServer;
+                var udpServer = (UDPCircuitsManager)scene.UDPServer;
 
                 IPAddress ipAddr;
                 if (!IPAddress.TryParse(clientInfo.ClientIP, out ipAddr))
@@ -239,9 +238,9 @@ namespace SilverSim.Tests.Viewer
 
                 ViewerConnection vc = AddAgent(instance, userAccount.Principal.ID);
 
-                IPEndPoint ep = new IPEndPoint(ipAddr, vc.ClientUDP.LocalPort);
-                IPEndPoint regionEndPoint = new IPEndPoint(ipAddr, (int)scene.RegionPort);
-                AgentCircuit circuit = new AgentCircuit(
+                var ep = new IPEndPoint(ipAddr, vc.ClientUDP.LocalPort);
+                var regionEndPoint = new IPEndPoint(ipAddr, (int)scene.RegionPort);
+                var circuit = new AgentCircuit(
                     m_Commands,
                     agent,
                     udpServer,
@@ -316,7 +315,7 @@ namespace SilverSim.Tests.Viewer
                     CircuitCode = (uint)circuitCode
                 };
 
-                ViewerCircuit viewerCircuit = new ViewerCircuit(vc.ClientUDP, (uint)circuitCode, sessionId.AsUUID, agentId, regionEndPoint);
+                var viewerCircuit = new ViewerCircuit(vc.ClientUDP, (uint)circuitCode, sessionId.AsUUID, agentId, regionEndPoint);
                 vc.ClientUDP.AddCircuit(viewerCircuit);
                 viewerCircuit.Start();
                 viewerCircuit.MessageRouting.Add(MessageType.RegionHandshake, vc.HandleRegionHandshake);
@@ -346,7 +345,7 @@ namespace SilverSim.Tests.Viewer
                 if (m_Clients.TryGetValue(agentId.AsUUID, out vc) &&
                     vc.ViewerCircuits.TryGetValue((uint)circuitCode, out viewerCircuit))
                 {
-                    LogoutRequest logoutreq = new LogoutRequest()
+                    var logoutreq = new LogoutRequest()
                     {
                         AgentID = viewerCircuit.AgentID,
                         SessionID = viewerCircuit.SessionID

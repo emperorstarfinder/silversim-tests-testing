@@ -57,7 +57,7 @@ namespace SilverSim.Tests.Inventory
 
         public bool Run()
         {
-            AssetType[] foldersToTest = new AssetType[] 
+            var foldersToTest = new AssetType[]
             {
                 AssetType.RootFolder,
                 AssetType.Animation,
@@ -136,7 +136,7 @@ namespace SilverSim.Tests.Inventory
                 return false;
             }
 
-            UUID[] folders = new UUID[] 
+            var folders = new UUID[]
             {
                 UUID.Random,
                 UUID.Random,
