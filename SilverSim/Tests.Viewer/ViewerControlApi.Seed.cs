@@ -29,7 +29,7 @@ using System.IO;
 
 namespace SilverSim.Tests.Viewer
 {
-    partial class ViewerControlApi
+    public partial class ViewerControlApi
     {
         [APIExtension("ViewerControl", "vcSeedRequest")]
         public AnArray SeedRequest(
@@ -37,43 +37,46 @@ namespace SilverSim.Tests.Viewer
             string seedCaps,
             AnArray elements)
         {
-            byte[] post;
-
-            using (var ms = new MemoryStream())
+            lock (instance)
             {
-                LlsdXml.Serialize(elements, ms);
-                post = ms.ToArray();
-            }
+                byte[] post;
 
-            Map resdata;
-
-            try
-            {
-                using (Stream res = HttpClient.DoStreamRequest("POST", seedCaps, null, "application/llsd+xml", post.Length, delegate (Stream req)
-                     {
-                         req.Write(post, 0, post.Length);
-                     }, false, 20000, null))
+                using (var ms = new MemoryStream())
                 {
-                    resdata = LlsdXml.Deserialize(res) as Map;
+                    LlsdXml.Serialize(elements, ms);
+                    post = ms.ToArray();
                 }
-            }
-            catch
-            {
-                return new AnArray();
-            }
 
-            if(null == resdata)
-            {
-                return new AnArray();
-            }
+                Map resdata;
 
-            var result = new AnArray();
-            foreach(KeyValuePair<string, IValue> kvp in resdata)
-            {
-                result.Add(kvp.Key);
-                result.Add(kvp.Value.ToString());
+                try
+                {
+                    using (Stream res = HttpClient.DoStreamRequest("POST", seedCaps, null, "application/llsd+xml", post.Length, delegate (Stream req)
+                         {
+                             req.Write(post, 0, post.Length);
+                         }, false, 20000, null))
+                    {
+                        resdata = LlsdXml.Deserialize(res) as Map;
+                    }
+                }
+                catch
+                {
+                    return new AnArray();
+                }
+
+                if (null == resdata)
+                {
+                    return new AnArray();
+                }
+
+                var result = new AnArray();
+                foreach (KeyValuePair<string, IValue> kvp in resdata)
+                {
+                    result.Add(kvp.Key);
+                    result.Add(kvp.Value.ToString());
+                }
+                return result;
             }
-            return result;
         }
     }
 }

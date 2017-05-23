@@ -22,17 +22,19 @@
 using log4net;
 using SilverSim.Threading;
 using SilverSim.Types;
+using SilverSim.Types.Economy;
 using SilverSim.Types.Estate;
 using SilverSim.Types.Grid;
 using SilverSim.Types.IM;
 using SilverSim.Viewer.Core;
 using SilverSim.Viewer.Messages;
+using SilverSim.Viewer.Messages.Economy;
+using SilverSim.Viewer.Messages.Generic;
 using SilverSim.Viewer.Messages.IM;
 using SilverSim.Viewer.Messages.Region;
 using System;
 using System.Collections.Generic;
 using System.Net;
-using SilverSim.Viewer.Messages.Generic;
 
 namespace SilverSim.Tests.Viewer.UDP
 {
@@ -45,11 +47,6 @@ namespace SilverSim.Tests.Viewer.UDP
         private static readonly UDPPacketDecoder m_PacketDecoder = new UDPPacketDecoder(true);
         public readonly BlockingQueue<Message> ReceiveQueue = new BlockingQueue<Message>();
         public bool EnableReceiveQueue;
-
-        readonly Dictionary<MessageType, Action<Message>> m_MessageRouting = new Dictionary<MessageType, Action<Message>>();
-        readonly Dictionary<string, Action<Message>> m_GenericMessageRouting = new Dictionary<string, Action<Message>>();
-        readonly Dictionary<string, Action<Message>> m_GodlikeMessageRouting = new Dictionary<string, Action<Message>>();
-        readonly Dictionary<GridInstantMessageDialog, Action<Message>> m_IMMessageRouting = new Dictionary<GridInstantMessageDialog, Action<Message>>();
 
         public class RegionHandshakeData
         {
@@ -129,6 +126,7 @@ namespace SilverSim.Tests.Viewer.UDP
         }
 
         public RegionHandshakeData RegionData { get; private set; }
+        public EconomyInfo EconomyInfo { get; private set; }
 
         public ViewerCircuit(
             UDPCircuitsManager server,
@@ -160,11 +158,13 @@ namespace SilverSim.Tests.Viewer.UDP
         {
         }
 
-        public Dictionary<string, Action<Message>> GenericMessageRouting => m_GenericMessageRouting;
+        public Dictionary<string, Action<Message>> GenericMessageRouting { get; } = new Dictionary<string, Action<Message>>();
 
-        public Dictionary<GridInstantMessageDialog, Action<Message>> IMMessageRouting => m_IMMessageRouting;
+        public Dictionary<string, Action<Message>> GodlikeMessageRouting { get; } = new Dictionary<string, Action<Message>>();
 
-        public Dictionary<MessageType, Action<Message>> MessageRouting => m_MessageRouting;
+        public Dictionary<GridInstantMessageDialog, Action<Message>> IMMessageRouting { get; } = new Dictionary<GridInstantMessageDialog, Action<Message>>();
+
+        public Dictionary<MessageType, Action<Message>> MessageRouting { get; } = new Dictionary<MessageType, Action<Message>>();
 
         public Message Receive(int timeout)
         {
@@ -216,12 +216,36 @@ namespace SilverSim.Tests.Viewer.UDP
                     };
                     SendMessage(reply);
                 }
+                else if(m.Number == MessageType.EconomyData)
+                {
+                    var ed = (EconomyData)m;
+                    EconomyInfo = new EconomyInfo()
+                    {
+                        ObjectCapacity = ed.ObjectCapacity,
+                        ObjectCount = ed.ObjectCount,
+                        PriceEnergyUnit = ed.PriceEnergyUnit,
+                        PriceObjectClaim = ed.PriceObjectClaim,
+                        PricePublicObjectDecay = ed.PricePublicObjectDecay,
+                        PricePublicObjectDelete = ed.PricePublicObjectDelete,
+                        PriceParcelClaim = ed.PriceParcelClaim,
+                        PriceParcelClaimFactor = ed.PriceParcelClaimFactor,
+                        PriceUpload = ed.PriceUpload,
+                        PriceRentLight = ed.PriceRentLight,
+                        TeleportMinPrice = ed.TeleportMinPrice,
+                        TeleportPriceExponent = ed.TeleportPriceExponent,
+                        EnergyEfficiency = ed.EnergyEfficiency,
+                        PriceObjectRent = ed.PriceObjectRent,
+                        PriceObjectScaleFactor = ed.PriceObjectScaleFactor,
+                        PriceParcelRent = ed.PriceParcelRent,
+                        PriceGroupCreate = ed.PriceGroupCreate
+                    };
+                }
 
                 /* we keep the circuit relatively dumb so that we have no other logic than how to send and receive messages to the remote sim.
                     * It merely collects delegates to other objects as well to call specific functions.
                     */
                 Action<Message> mdel;
-                if (m_MessageRouting.TryGetValue(m.Number, out mdel))
+                if (MessageRouting.TryGetValue(m.Number, out mdel))
                 {
                     mdel(m);
                 }
@@ -233,7 +257,7 @@ namespace SilverSim.Tests.Viewer.UDP
                     {
                         return;
                     }
-                    if (m_IMMessageRouting.TryGetValue(im.Dialog, out mdel))
+                    if (IMMessageRouting.TryGetValue(im.Dialog, out mdel))
                     {
                         mdel(m);
                     }
@@ -245,7 +269,7 @@ namespace SilverSim.Tests.Viewer.UDP
                 else if (m.Number == MessageType.GenericMessage)
                 {
                     var genMsg = (GenericMessage)m;
-                    if (m_GenericMessageRouting.TryGetValue(genMsg.Method, out mdel))
+                    if (GenericMessageRouting.TryGetValue(genMsg.Method, out mdel))
                     {
                         mdel(m);
                     }
@@ -257,7 +281,7 @@ namespace SilverSim.Tests.Viewer.UDP
                 else if (m.Number == MessageType.GodlikeMessage)
                 {
                     var genMsg = (GodlikeMessage)m;
-                    if (m_GodlikeMessageRouting.TryGetValue(genMsg.Method, out mdel))
+                    if (GodlikeMessageRouting.TryGetValue(genMsg.Method, out mdel))
                     {
                         mdel(m);
                     }

@@ -33,13 +33,15 @@ using SilverSim.Types.Presence;
 using SilverSim.Viewer.Core;
 using SilverSim.Viewer.Messages;
 using SilverSim.Viewer.Messages.Circuit;
+using SilverSim.Viewer.Messages.Telehub;
+using SilverSim.Viewer.Messages.Teleport;
 using System;
 using System.Net;
 using System.Net.Sockets;
 
 namespace SilverSim.Tests.Viewer
 {
-    partial class ViewerControlApi
+    public partial class ViewerControlApi
     {
         [APIExtension("ViewerControl")]
         public const int TELEPORT_FLAGS_SETHOMETOTARGET = 1;
@@ -142,15 +144,15 @@ namespace SilverSim.Tests.Viewer
                     return string.Empty;
                 }
 
-                foreach(IPAddress addr in addresses)
+                foreach (IPAddress addr in addresses)
                 {
-                    if(addr.AddressFamily == AddressFamily.InterNetwork)
+                    if (addr.AddressFamily == AddressFamily.InterNetwork)
                     {
                         clientIP = addr.ToString();
                     }
                 }
 
-                if(string.IsNullOrEmpty(clientIP))
+                if (string.IsNullOrEmpty(clientIP))
                 {
                     m_Log.InfoFormat("ExternalHostName \"{0}\" does not resolve", externalHostName);
                     return string.Empty;
@@ -308,7 +310,7 @@ namespace SilverSim.Tests.Viewer
                     m_Log.Warn("Could not contact PresenceService", e);
                 }
                 circuit.LogIncomingAgent(m_Log, false);
-                UseCircuitCode useCircuit = new UseCircuitCode()
+                var useCircuit = new UseCircuitCode()
                 {
                     AgentID = agentId,
                     SessionID = sessionId.AsUUID,
@@ -320,19 +322,98 @@ namespace SilverSim.Tests.Viewer
                 viewerCircuit.Start();
                 viewerCircuit.MessageRouting.Add(MessageType.RegionHandshake, vc.HandleRegionHandshake);
                 viewerCircuit.SendMessage(useCircuit);
-                viewerCircuit.MessageRouting.Add(MessageType.LogoutReply, delegate (Message m)
-                {
-                    ViewerCircuit removeCircuit;
-                    if (vc.ViewerCircuits.TryGetValue((uint)circuitCode, out removeCircuit))
-                    {
-                        vc.PostEvent(new LogoutReplyReceivedEvent(removeCircuit.AgentID, removeCircuit.RegionData.RegionID, (int)removeCircuit.CircuitCode));
-                        removeCircuit.Stop();
-                        vc.ClientUDP.RemoveCircuit(removeCircuit);
-                    }
-                });
+                viewerCircuit.MessageRouting.Add(MessageType.LogoutReply, (Message m) => HandleLogoutReply((uint)circuitCode, vc));
+                viewerCircuit.MessageRouting.Add(MessageType.TelehubInfo, (Message m) => HandleTelehubInfo((TelehubInfo)m, vc));
+                viewerCircuit.MessageRouting.Add(MessageType.TeleportLocal, (Message m) => HandleTeleportLocal((TeleportLocal)m, vc));
+                viewerCircuit.MessageRouting.Add(MessageType.EconomyData, (Message m) => vc.PostEvent(new EconomyDataReceivedEvent { AgentID = m.CircuitAgentID, RegionID = m.CircuitSceneID }));
+                viewerCircuit.MessageRouting.Add(MessageType.TeleportProgress, (Message m) => HandleTeleportProgress(m, vc));
+                viewerCircuit.MessageRouting.Add(MessageType.TeleportStart, (Message m) => HandleTeleportStart(m, vc));
+                viewerCircuit.MessageRouting.Add(MessageType.TeleportFailed, (Message m) => HandleTeleportFailed(m, vc));
                 vc.ViewerCircuits.Add((uint)circuitCode, viewerCircuit);
                 return capsPath;
             }
+        }
+
+        private void HandleTeleportFailed(Message m, ViewerConnection vc)
+        {
+            var res = (TeleportFailed)m;
+            var ev = new TeleportFailedReceivedEvent
+            {
+                AgentID = res.CircuitAgentID,
+                RegionID = res.CircuitSceneID,
+                Reason = res.Reason
+            };
+
+            foreach(TeleportFailed.AlertInfoEntry e in res.AlertInfo)
+            {
+                ev.AlertInfo.Add(e.Message);
+                ev.AlertInfo.Add(e.ExtraParams);
+            }
+            vc.PostEvent(ev);
+        }
+
+        private void HandleTeleportStart(Message m, ViewerConnection vc)
+        {
+            var res = (TeleportStart)m;
+            vc.PostEvent(new TeleportStartReceivedEvent
+            {
+                AgentID = res.CircuitAgentID,
+                RegionID = res.CircuitSceneID,
+                TeleportFlags = (int)res.TeleportFlags
+            });
+        }
+
+        private void HandleTeleportProgress(Message m, ViewerConnection vc)
+        {
+            var res = (TeleportProgress)m;
+            vc.PostEvent(new TeleportProgressReceivedEvent
+            {
+                AgentID = res.CircuitAgentID,
+                RegionID = res.CircuitSceneID,
+                TeleportFlags = (int)res.TeleportFlags,
+                Message = res.Message
+            });
+        }
+
+        private void HandleLogoutReply(uint circuitCode, ViewerConnection vc)
+        {
+            ViewerCircuit removeCircuit;
+            if (vc.ViewerCircuits.TryGetValue(circuitCode, out removeCircuit))
+            {
+                vc.PostEvent(new LogoutReplyReceivedEvent(removeCircuit.AgentID, removeCircuit.RegionData.RegionID, (int)removeCircuit.CircuitCode));
+                removeCircuit.Stop();
+                vc.ClientUDP.RemoveCircuit(removeCircuit);
+            }
+        }
+
+        private void HandleTelehubInfo(TelehubInfo m, ViewerConnection vc)
+        {
+            var ev = new TelehubInfoReceivedEvent
+            {
+                AgentID = m.CircuitAgentID,
+                RegionID = m.CircuitSceneID,
+                ObjectID = m.ObjectID,
+                ObjectName = m.ObjectName,
+                TelehubPos = m.TelehubPos,
+                TelehubRot = m.TelehubRot
+            };
+            foreach (Vector3 v in m.SpawnPoints)
+            {
+                ev.SpawnPointPos.Add(v);
+            }
+            vc.PostEvent(ev);
+        }
+
+        private void HandleTeleportLocal(TeleportLocal m, ViewerConnection vc)
+        {
+            vc.PostEvent(new TeleportLocalReceivedEvent
+            {
+                AgentID = m.CircuitAgentID,
+                RegionID = m.CircuitSceneID,
+                Position = m.Position,
+                LookAt = m.LookAt,
+                TeleportFlags = (int)m.TeleportFlags
+            });
         }
 
         [APIExtension("ViewerControl", "vcLogoutAgent")]

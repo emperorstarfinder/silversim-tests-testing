@@ -118,7 +118,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        ViewerConnection AddAgent(ScriptInstance instance, UUID agentId)
+        private ViewerConnection AddAgent(ScriptInstance instance, UUID agentId)
         {
             ViewerConnection vc;
             ObjectPart part = instance.Part;
