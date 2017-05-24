@@ -26,13 +26,9 @@ using SilverSim.Types.Grid;
 
 namespace SilverSim.Tests.Extensions
 {
+    [PluginName("DummyNeighbor")]
     public class NeighborDummyService : NeighborServiceInterface, IPlugin
     {
-        public NeighborDummyService()
-        {
-
-        }
-
         public void Startup(ConfigurationLoader loader)
         {
         }
@@ -40,11 +36,5 @@ namespace SilverSim.Tests.Extensions
         public override void NotifyNeighborStatus(RegionInfo fromRegion)
         {
         }
-    }
-
-    [PluginName("DummyNeighbor")]
-    public class NeighborDummyServiceFactory : IPluginFactory
-    {
-        public IPlugin Initialize(ConfigurationLoader loader, IConfig ownSection) => new NeighborDummyService();
     }
 }

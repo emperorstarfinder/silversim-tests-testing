@@ -28,15 +28,39 @@ using System.Collections.Generic;
 
 namespace SilverSim.Tests.Preconditions
 {
-    #region Precondition Implementation
-    class ResetMySQLDatabase : IPlugin, IDBServiceInterface
+    [PluginName("ResetMySQLDatabase")]
+    public class ResetMySQLDatabase : IPlugin, IDBServiceInterface
     {
         private static readonly ILog m_Log = LogManager.GetLogger("MYSQL DATABASE RESET");
         string m_ConnectionString;
 
-        public ResetMySQLDatabase(string connectionString)
+        public ResetMySQLDatabase(IConfig config)
         {
-            m_ConnectionString = connectionString;
+            if (!(config.Contains("Server") && config.Contains("Username") && config.Contains("Password") && config.Contains("Database")))
+            {
+                if (!config.Contains("Server"))
+                {
+                    m_Log.FatalFormat("[MYSQL CONFIG]: Parameter 'Server' missing in [{0}]", config.Name);
+                }
+                if (!config.Contains("Username"))
+                {
+                    m_Log.FatalFormat("[MYSQL CONFIG]: Parameter 'Username' missing in [{0}]", config.Name);
+                }
+                if (!config.Contains("Password"))
+                {
+                    m_Log.FatalFormat("[MYSQL CONFIG]: Parameter 'Password' missing in [{0}]", config.Name);
+                }
+                if (!config.Contains("Database"))
+                {
+                    m_Log.FatalFormat("[MYSQL CONFIG]: Parameter 'Database' missing in [{0}]", config.Name);
+                }
+                throw new ConfigurationLoader.ConfigurationErrorException();
+            }
+            m_ConnectionString = string.Format("Server={0};Uid={1};Pwd={2};Database={3};",
+                config.GetString("Server"),
+                config.GetString("Username"),
+                config.GetString("Password"),
+                config.GetString("Database"));
         }
 
         public void Startup(ConfigurationLoader loader)
@@ -45,13 +69,13 @@ namespace SilverSim.Tests.Preconditions
 
         public void VerifyConnection()
         {
-            List<string> tables = new List<string>();
+            var tables = new List<string>();
 
-            using (MySqlConnection connection = new MySqlConnection(m_ConnectionString))
+            using (var connection = new MySqlConnection(m_ConnectionString))
             {
                 connection.Open();
                 m_Log.Info("Executing reset database");
-                using(MySqlCommand cmd = new MySqlCommand("SHOW TABLES", connection))
+                using(var cmd = new MySqlCommand("SHOW TABLES", connection))
                 {
                     using(MySqlDataReader reader = cmd.ExecuteReader())
                     {
@@ -78,47 +102,4 @@ namespace SilverSim.Tests.Preconditions
         {
         }
     }
-    #endregion
-
-    #region Factory
-    [PluginName("ResetMySQLDatabase")]
-    class ResetMySQLDatabaseFactory : IPluginFactory
-    {
-        private static readonly ILog m_Log = LogManager.GetLogger("MYSQL DATABASE RESET");
-
-        #region Connection String Creator
-        string BuildConnectionString(IConfig config, ILog log)
-        {
-            if (!(config.Contains("Server") && config.Contains("Username") && config.Contains("Password") && config.Contains("Database")))
-            {
-                if (!config.Contains("Server"))
-                {
-                    log.FatalFormat("[MYSQL CONFIG]: Parameter 'Server' missing in [{0}]", config.Name);
-                }
-                if (!config.Contains("Username"))
-                {
-                    log.FatalFormat("[MYSQL CONFIG]: Parameter 'Username' missing in [{0}]", config.Name);
-                }
-                if (!config.Contains("Password"))
-                {
-                    log.FatalFormat("[MYSQL CONFIG]: Parameter 'Password' missing in [{0}]", config.Name);
-                }
-                if (!config.Contains("Database"))
-                {
-                    log.FatalFormat("[MYSQL CONFIG]: Parameter 'Database' missing in [{0}]", config.Name);
-                }
-                throw new ConfigurationLoader.ConfigurationErrorException();
-            }
-            return string.Format("Server={0};Uid={1};Pwd={2};Database={3};",
-                config.GetString("Server"),
-                config.GetString("Username"),
-                config.GetString("Password"),
-                config.GetString("Database"));
-        }
-        #endregion
-
-        public IPlugin Initialize(ConfigurationLoader loader, IConfig ownSection) =>
-            new ResetMySQLDatabase(BuildConnectionString(ownSection, m_Log));
-    }
-    #endregion
 }

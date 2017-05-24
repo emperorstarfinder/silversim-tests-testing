@@ -34,6 +34,7 @@ namespace SilverSim.Tests.Lsl
 {
     [LSLImplementation]
     [ScriptApiName("TestExtensions")]
+    [PluginName("Testing")]
     public class TestExtensions_Api : IScriptApi, IPlugin
     {
         private static readonly ILog m_Log = LogManager.GetLogger("SCRIPT");
@@ -188,11 +189,5 @@ namespace SilverSim.Tests.Lsl
                 }
             }
         }
-    }
-
-    [PluginName("Testing")]
-    public class TestExtensionsFactory : IPluginFactory
-    {
-        public IPlugin Initialize(ConfigurationLoader loader, IConfig ownConfig) => new TestExtensions_Api();
     }
 }

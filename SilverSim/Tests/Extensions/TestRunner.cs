@@ -30,7 +30,7 @@ using System.Xml;
 
 namespace SilverSim.Tests.Extensions
 {
-    #region Implementation
+    [PluginName("TestRunner")]
     public class TestRunner : IPlugin, IPostLoadStep, IPluginSubFactory, IPluginShutdown
     {
         private static readonly ILog m_Log = LogManager.GetLogger("TEST RUNNER");
@@ -50,18 +50,12 @@ namespace SilverSim.Tests.Extensions
         public bool OtherThreadResult = true; /* storage for tests running over multiple threads */
         public bool ExcludeSummaryCount;
 
-        public ShutdownOrder ShutdownOrder
-        {
-            get
-            {
-                return ShutdownOrder.Any;
-            }
-        }
+        public ShutdownOrder ShutdownOrder => ShutdownOrder.Any;
 
-        public TestRunner(string testName, string xmlResultFileName)
+        public TestRunner(IConfig ownSection)
         {
-            m_TestName = testName;
-            m_XmlResultFileName = xmlResultFileName;
+            m_TestName = ownSection.GetString("Name", "");
+            m_XmlResultFileName = ownSection.GetString("XUnitResultsFile", "");
         }
 
         public void Startup(ConfigurationLoader loader)
@@ -232,14 +226,4 @@ namespace SilverSim.Tests.Extensions
             m_Loader = null;
         }
     }
-    #endregion
-
-    #region Factory
-    [PluginName("TestRunner")]
-    class TestRunnerFactory : IPluginFactory
-    {
-        public IPlugin Initialize(ConfigurationLoader loader, IConfig ownSection) =>
-            new TestRunner(ownSection.GetString("Name", ""), ownSection.GetString("XUnitResultsFile", ""));
-    }
-    #endregion
 }

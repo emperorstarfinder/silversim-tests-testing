@@ -57,6 +57,7 @@ namespace SilverSim.Tests.Viewer
 {
     [LSLImplementation]
     [ScriptApiName("ViewerControl")]
+    [PluginName("ViewerControl")]
     public partial class ViewerControlApi : IScriptApi, IPlugin, IPluginShutdown
     {
         static readonly ILog m_Log = LogManager.GetLogger("VIEWER CONTROL");
@@ -315,12 +316,5 @@ namespace SilverSim.Tests.Viewer
             m_CapsRedirector = loader.CapsRedirector;
             m_PacketHandlerPlugins = loader.GetServicesByValue<IProtocolExtender>();
         }
-    }
-
-    [PluginName("ViewerControl")]
-    public class ViewerControlApiFactory : IPluginFactory
-    {
-        public IPlugin Initialize(ConfigurationLoader loader, IConfig ownSection) =>
-            new ViewerControlApi(ownSection);
     }
 }
