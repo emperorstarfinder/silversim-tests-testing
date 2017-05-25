@@ -152,7 +152,7 @@ namespace SilverSim.Tests.Viewer
                     }
                 }
 
-                if (clientIP?.Length == 0)
+                if (string.IsNullOrEmpty(clientIP))
                 {
                     m_Log.InfoFormat("ExternalHostName \"{0}\" does not resolve", externalHostName);
                     return string.Empty;

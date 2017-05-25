@@ -171,7 +171,7 @@ namespace SilverSim.Tests.Scripting
 
             m_StartParameter = config.GetInt("StartParameter", 0);
 
-            if(m_ScriptFile?.Length == 0)
+            if(string.IsNullOrEmpty(m_ScriptFile))
             {
                 throw new ArgumentException("Script filename and UUID missing");
             }
