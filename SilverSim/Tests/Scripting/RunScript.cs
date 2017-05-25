@@ -52,48 +52,48 @@ namespace SilverSim.Tests.Scripting
         private static readonly ILog m_PublicChatLog = LogManager.GetLogger("PUBLIC_CHANNEL");
         private static readonly ILog m_DebugChatLog = LogManager.GetLogger("DEBUG_CHANNEL");
 
-        UUID m_AssetID;
-        string m_ScriptFile;
-        int m_TimeoutMs;
-        UUID m_RegionID;
-        ManualResetEvent m_RunTimeoutEvent = new ManualResetEvent(false);
-        TestRunner m_Runner;
-        UUI m_RegionOwner;
-        UUI m_ObjectOwner;
-        UUI m_ObjectLastOwner;
-        UUI m_ObjectCreator;
-        UUI m_ScriptOwner;
-        UUI m_ScriptLastOwner;
-        UUI m_ScriptCreator;
-        UUI m_EstateOwner;
-        string m_RegionName;
-        string m_ObjectName;
-        string m_ObjectDescription;
-        string m_ScriptName;
-        string m_ScriptDescription;
-        string m_EstateName;
-        uint m_EstateID;
-        Vector3 m_Position;
-        Quaternion m_Rotation;
-        int m_RegionPort;
-        GridServiceInterface m_RegionStorage;
-        SceneFactoryInterface m_SceneFactory;
-        EstateServiceInterface m_EstateService;
-        SceneList m_Scenes;
-        Timer m_KillTimer;
-        int m_StartParameter;
-        
-        InventoryPermissionsMask m_ObjectPermissionsBase = InventoryPermissionsMask.All;
-        InventoryPermissionsMask m_ObjectPermissionsOwner = InventoryPermissionsMask.All;
-        InventoryPermissionsMask m_ObjectPermissionsGroup = InventoryPermissionsMask.All;
-        InventoryPermissionsMask m_ObjectPermissionsNext = InventoryPermissionsMask.All;
-        InventoryPermissionsMask m_ObjectPermissionsEveryone = InventoryPermissionsMask.All;
+        private UUID m_AssetID;
+        private string m_ScriptFile;
+        private int m_TimeoutMs;
+        private UUID m_RegionID;
+        private readonly ManualResetEvent m_RunTimeoutEvent = new ManualResetEvent(false);
+        private TestRunner m_Runner;
+        private UUI m_RegionOwner;
+        private UUI m_ObjectOwner;
+        private UUI m_ObjectLastOwner;
+        private UUI m_ObjectCreator;
+        private UUI m_ScriptOwner;
+        private UUI m_ScriptLastOwner;
+        private UUI m_ScriptCreator;
+        private UUI m_EstateOwner;
+        private string m_RegionName;
+        private string m_ObjectName;
+        private string m_ObjectDescription;
+        private string m_ScriptName;
+        private string m_ScriptDescription;
+        private string m_EstateName;
+        private uint m_EstateID;
+        private Vector3 m_Position;
+        private Quaternion m_Rotation;
+        private int m_RegionPort;
+        private GridServiceInterface m_RegionStorage;
+        private SceneFactoryInterface m_SceneFactory;
+        private EstateServiceInterface m_EstateService;
+        private SceneList m_Scenes;
+        private Timer m_KillTimer;
+        private int m_StartParameter;
 
-        InventoryPermissionsMask m_ScriptPermissionsBase = InventoryPermissionsMask.All;
-        InventoryPermissionsMask m_ScriptPermissionsOwner = InventoryPermissionsMask.All;
-        InventoryPermissionsMask m_ScriptPermissionsGroup = InventoryPermissionsMask.All;
-        InventoryPermissionsMask m_ScriptPermissionsNext = InventoryPermissionsMask.All;
-        InventoryPermissionsMask m_ScriptPermissionsEveryone = InventoryPermissionsMask.All;
+        private InventoryPermissionsMask m_ObjectPermissionsBase = InventoryPermissionsMask.All;
+        private InventoryPermissionsMask m_ObjectPermissionsOwner = InventoryPermissionsMask.All;
+        private InventoryPermissionsMask m_ObjectPermissionsGroup = InventoryPermissionsMask.All;
+        private InventoryPermissionsMask m_ObjectPermissionsNext = InventoryPermissionsMask.All;
+        private InventoryPermissionsMask m_ObjectPermissionsEveryone = InventoryPermissionsMask.All;
+
+        private InventoryPermissionsMask m_ScriptPermissionsBase = InventoryPermissionsMask.All;
+        private InventoryPermissionsMask m_ScriptPermissionsOwner = InventoryPermissionsMask.All;
+        private InventoryPermissionsMask m_ScriptPermissionsGroup = InventoryPermissionsMask.All;
+        private InventoryPermissionsMask m_ScriptPermissionsNext = InventoryPermissionsMask.All;
+        private InventoryPermissionsMask m_ScriptPermissionsEveryone = InventoryPermissionsMask.All;
 
         public void Startup(ConfigurationLoader loader)
         {
@@ -171,7 +171,7 @@ namespace SilverSim.Tests.Scripting
 
             m_StartParameter = config.GetInt("StartParameter", 0);
 
-            if(string.IsNullOrEmpty(m_ScriptFile))
+            if(m_ScriptFile?.Length == 0)
             {
                 throw new ArgumentException("Script filename and UUID missing");
             }
@@ -218,28 +218,37 @@ namespace SilverSim.Tests.Scripting
                 return false;
             }
 
-            var estate = new EstateInfo()
+            RegionInfo rInfo;
+            try
             {
-                ParentEstateID = 1,
-                ID = m_EstateID,
-                Owner = m_EstateOwner,
-                Name = m_EstateName
-            };
-            m_EstateService.Add(estate);
-            m_EstateService.RegionMap[m_RegionID] = m_EstateID;
+                var estate = new EstateInfo()
+                {
+                    ParentEstateID = 1,
+                    ID = m_EstateID,
+                    Owner = m_EstateOwner,
+                    Name = m_EstateName
+                };
+                m_EstateService.Add(estate);
+                m_EstateService.RegionMap[m_RegionID] = m_EstateID;
 
-            var rInfo = new RegionInfo()
+                rInfo = new RegionInfo()
+                {
+                    Name = m_RegionName,
+                    ID = m_RegionID,
+                    Location = new GridVector { GridX = 10000, GridY = 10000 },
+                    Size = new GridVector { X = 256, Y = 256 },
+                    ProductName = "Mainland",
+                    ServerPort = (uint)m_RegionPort,
+                    Owner = m_RegionOwner,
+                    Flags = RegionFlags.RegionOnline
+                };
+                m_RegionStorage.RegisterRegion(rInfo);
+            }
+            catch(Exception e)
             {
-                Name = m_RegionName,
-                ID = m_RegionID,
-                Location = new GridVector { GridX = 10000, GridY = 10000 },
-                Size = new GridVector { X = 256, Y = 256 },
-                ProductName = "Mainland",
-                ServerPort = (uint)m_RegionPort,
-                Owner = m_RegionOwner,
-                Flags = RegionFlags.RegionOnline
-            };
-            m_RegionStorage.RegisterRegion(rInfo);
+                m_Log.Error("Registration of region failed", e);
+                return false;
+            }
 
             SceneInterface scene;
             try
@@ -253,85 +262,101 @@ namespace SilverSim.Tests.Scripting
                 scene = null;
             }
 
-            if (success)
+            try
             {
-                m_Scenes.Add(scene);
-                scene.LoadSceneSync();
+                if (success)
+                {
+                    m_Scenes.Add(scene);
+                    scene.LoadSceneSync();
+                }
+            }
+            catch(Exception e)
+            {
+                m_Log.Error("Starting region failed", e);
+                return false;
             }
 
-            if(success)
+            try
             {
+                if (success)
                 {
-                    var grp = new ObjectGroup();
-                    var part = new ObjectPart();
-                    part.ID = UUID.Random;
-                    grp.Add(1, part.ID, part);
-                    part.ObjectGroup = grp;
-                    grp.Owner = m_ObjectOwner;
-                    grp.LastOwner = m_ObjectLastOwner;
-                    part.Creator = m_ObjectCreator;
-                    part.Name = m_ObjectName;
-                    part.Description = m_ObjectDescription;
-                    part.GlobalPosition = m_Position;
-                    part.GlobalRotation = m_Rotation;
-                    part.BaseMask = m_ObjectPermissionsBase;
-                    part.OwnerMask = m_ObjectPermissionsOwner;
-                    part.NextOwnerMask = m_ObjectPermissionsNext;
-                    part.EveryoneMask = m_ObjectPermissionsEveryone;
-                    part.GroupMask = m_ObjectPermissionsGroup;
-
-                    var item = new ObjectPartInventoryItem()
                     {
-                        AssetType = AssetType.LSLText,
-                        AssetID = UUID.Random,
-                        InventoryType = InventoryType.LSLText,
-                        LastOwner = m_ScriptLastOwner,
-                        Creator = m_ScriptCreator,
-                        Owner = m_ScriptOwner,
-                        Name = m_ScriptName,
-                        Description = m_ScriptDescription
-                    };
-                    item.Permissions.Base = m_ScriptPermissionsBase;
-                    item.Permissions.Current = m_ScriptPermissionsOwner;
-                    item.Permissions.EveryOne = m_ScriptPermissionsEveryone;
-                    item.Permissions.Group = m_ScriptPermissionsGroup;
-                    item.Permissions.NextOwner = m_ScriptPermissionsNext;
+                        var grp = new ObjectGroup();
+                        var part = new ObjectPart();
+                        part.ID = UUID.Random;
+                        grp.Add(1, part.ID, part);
+                        part.ObjectGroup = grp;
+                        grp.Owner = m_ObjectOwner;
+                        grp.LastOwner = m_ObjectLastOwner;
+                        part.Creator = m_ObjectCreator;
+                        part.Name = m_ObjectName;
+                        part.Description = m_ObjectDescription;
+                        part.GlobalPosition = m_Position;
+                        part.GlobalRotation = m_Rotation;
+                        part.BaseMask = m_ObjectPermissionsBase;
+                        part.OwnerMask = m_ObjectPermissionsOwner;
+                        part.NextOwnerMask = m_ObjectPermissionsNext;
+                        part.EveryoneMask = m_ObjectPermissionsEveryone;
+                        part.GroupMask = m_ObjectPermissionsGroup;
 
-                    scene.Add(grp);
-                    ChatServiceInterface chatService = scene.GetService<ChatServiceInterface>();
-                    if(null != chatService)
-                    {
-                        chatService.AddRegionListener(PUBLIC_CHANNEL, string.Empty, UUID.Zero, "", GetUUID, PublicChannelLog);
-                        chatService.AddRegionListener(DEBUG_CHANNEL, string.Empty, UUID.Zero, "", GetUUID, DebugChannelLog);
+                        var item = new ObjectPartInventoryItem()
+                        {
+                            AssetType = AssetType.LSLText,
+                            AssetID = UUID.Random,
+                            InventoryType = InventoryType.LSLText,
+                            LastOwner = m_ScriptLastOwner,
+                            Creator = m_ScriptCreator,
+                            Owner = m_ScriptOwner,
+                            Name = m_ScriptName,
+                            Description = m_ScriptDescription
+                        };
+                        item.Permissions.Base = m_ScriptPermissionsBase;
+                        item.Permissions.Current = m_ScriptPermissionsOwner;
+                        item.Permissions.EveryOne = m_ScriptPermissionsEveryone;
+                        item.Permissions.Group = m_ScriptPermissionsGroup;
+                        item.Permissions.NextOwner = m_ScriptPermissionsNext;
+
+                        scene.Add(grp);
+                        ChatServiceInterface chatService = scene.GetService<ChatServiceInterface>();
+                        if (null != chatService)
+                        {
+                            chatService.AddRegionListener(PUBLIC_CHANNEL, string.Empty, UUID.Zero, "", GetUUID, PublicChannelLog);
+                            chatService.AddRegionListener(DEBUG_CHANNEL, string.Empty, UUID.Zero, "", GetUUID, DebugChannelLog);
+                        }
+                        ScriptInstance scriptInstance = scriptAssembly.Instantiate(part, item);
+                        part.Inventory.Add(item);
+                        item.ScriptInstance = scriptInstance;
+                        item.ScriptInstance.Start(m_StartParameter);
                     }
-                    ScriptInstance scriptInstance = scriptAssembly.Instantiate(part, item);
-                    part.Inventory.Add(item);
-                    item.ScriptInstance = scriptInstance;
-                    item.ScriptInstance.Start(m_StartParameter);
+                    m_KillTimer = new Timer(KillTimerCbk, null, m_TimeoutMs + 5000, Timeout.Infinite);
+                    m_RunTimeoutEvent.WaitOne(m_TimeoutMs);
+                    return m_Runner.OtherThreadResult;
                 }
-                m_KillTimer = new Timer(KillTimerCbk, null, m_TimeoutMs + 5000, Timeout.Infinite);
-                m_RunTimeoutEvent.WaitOne(m_TimeoutMs);
-                return m_Runner.OtherThreadResult;
+            }
+            catch(Exception e)
+            {
+                m_Log.Error("Starting script failed", e);
+                return false;
             }
             return success;
         }
 
-        void KillTimerCbk(object o)
+        private void KillTimerCbk(object o)
         {
             Environment.Exit(3);
         }
 
-        UUID GetUUID() => UUID.Zero;
+        private UUID GetUUID() => UUID.Zero;
 
-        const int PUBLIC_CHANNEL = 0;
-        const int DEBUG_CHANNEL = 0x7FFFFFFF;
+        private const int PUBLIC_CHANNEL = 0;
+        private const int DEBUG_CHANNEL = 0x7FFFFFFF;
 
-        void DebugChannelLog(ListenEvent ev)
+        private void DebugChannelLog(ListenEvent ev)
         {
             m_DebugChatLog.InfoFormat("{0} ({1}, {2} at {5}): {3}: {4}", ev.Name, ev.ID, ev.SourceType.ToString(), ev.Type.ToString(), ev.Message, ev.GlobalPosition.ToString());
         }
 
-        void PublicChannelLog(ListenEvent ev)
+        private void PublicChannelLog(ListenEvent ev)
         {
             m_PublicChatLog.InfoFormat("{0} ({1}, {2} at {5}): {3}: {4}", ev.Name, ev.ID, ev.SourceType.ToString(), ev.Type.ToString(), ev.Message, ev.GlobalPosition.ToString());
         }

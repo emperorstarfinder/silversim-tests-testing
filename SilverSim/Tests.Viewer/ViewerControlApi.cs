@@ -296,7 +296,7 @@ namespace SilverSim.Tests.Viewer
         {
             m_AgentInventoryService = loader.GetService<InventoryServiceInterface>(m_AgentInventoryServiceName);
             m_AgentAssetService = loader.GetService<AssetServiceInterface>(m_AgentAssetServiceName);
-            if (!string.IsNullOrEmpty(m_AgentProfileServiceName))
+            if (m_AgentProfileServiceName?.Length != 0)
             {
                 m_AgentProfileService = loader.GetService<ProfileServiceInterface>(m_AgentProfileServiceName);
             }
@@ -304,7 +304,7 @@ namespace SilverSim.Tests.Viewer
             m_PresenceService = loader.GetService<PresenceServiceInterface>(m_PresenceServiceName);
             m_GridUserService = loader.GetService<GridUserServiceInterface>(m_GridUserServiceName);
             m_GridService = loader.GetService<GridServiceInterface>(m_GridServiceName);
-            if (!string.IsNullOrEmpty(m_OfflineIMServiceName))
+            if (m_OfflineIMServiceName?.Length != 0)
             {
                 m_OfflineIMService = loader.GetService<OfflineIMServiceInterface>(m_OfflineIMServiceName);
             }

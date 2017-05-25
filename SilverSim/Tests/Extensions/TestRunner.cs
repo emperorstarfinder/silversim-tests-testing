@@ -141,7 +141,7 @@ namespace SilverSim.Tests.Extensions
                 TestResults.Add(tr);
             }
 
-            if (!string.IsNullOrEmpty(m_XmlResultFileName))
+            if (m_XmlResultFileName?.Length != 0)
             {
                 var xmlTestResults = new XmlTextWriter(m_XmlResultFileName, new UTF8Encoding(false));
                 xmlTestResults.WriteStartElement("testsuite");
