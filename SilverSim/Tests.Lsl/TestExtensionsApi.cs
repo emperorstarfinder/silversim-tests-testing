@@ -20,14 +20,12 @@
 // exception statement from your version.
 
 using log4net;
-using Nini.Config;
 using SilverSim.Main.Common;
 using SilverSim.Scene.Types.Script;
 using SilverSim.Scripting.Lsl;
 using SilverSim.Tests.Extensions;
 using SilverSim.Tests.Scripting;
 using SilverSim.Types;
-using System;
 using System.Collections.Generic;
 
 namespace SilverSim.Tests.Lsl
@@ -35,7 +33,7 @@ namespace SilverSim.Tests.Lsl
     [LSLImplementation]
     [ScriptApiName("TestExtensions")]
     [PluginName("Testing")]
-    public class TestExtensions_Api : IScriptApi, IPlugin
+    public class TestExtensionsApi : IScriptApi, IPlugin
     {
         private static readonly ILog m_Log = LogManager.GetLogger("SCRIPT");
         ConfigurationLoader m_Loader;

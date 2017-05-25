@@ -22,6 +22,7 @@
   <Reference name="System.Xml"/>
   <Reference name="System.Web"/>
   <Reference name="System.Data"/>
+  <Reference name="System.Drawing"/>
   <Reference name="SilverSim.Types" localCopy="false"/>
   <Reference name="SilverSim.ServiceInterfaces" localCopy="false"/>
   <Reference name="SilverSim.Scene.Types" localCopy="false"/>
@@ -35,6 +36,7 @@
   <Reference name="MySql.Data" localCopy="false"/>
   <Reference name="SilverSim.Threading" localCopy="false"/>
   <Reference name="Nini" localCopy="false"/>
+  <Reference name="CSJ2K" localCopy="false"/>
   <Files>
     <Match pattern="*.cs" recurse="true">
       <Exclude pattern="TemporaryGeneratedFile"/>
