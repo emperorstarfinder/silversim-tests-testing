@@ -22,6 +22,7 @@
 using SilverSim.Http.Client;
 using SilverSim.Scene.Types.Script;
 using SilverSim.Scripting.Lsl;
+using SilverSim.Scripting.Lsl.Api.Hashtable;
 using SilverSim.Types;
 using SilverSim.Types.StructuredData.Llsd;
 using System.Collections.Generic;
@@ -32,7 +33,7 @@ namespace SilverSim.Tests.Viewer
     public partial class ViewerControlApi
     {
         [APIExtension("ViewerControl", "vcSeedRequest")]
-        public AnArray SeedRequest(
+        public HashtableApi.Hashtable SeedRequest(
             ScriptInstance instance,
             string seedCaps,
             AnArray elements)
@@ -61,19 +62,18 @@ namespace SilverSim.Tests.Viewer
                 }
                 catch
                 {
-                    return new AnArray();
+                    return new HashtableApi.Hashtable();
                 }
 
                 if (null == resdata)
                 {
-                    return new AnArray();
+                    return new HashtableApi.Hashtable();
                 }
 
-                var result = new AnArray();
+                var result = new HashtableApi.Hashtable();
                 foreach (KeyValuePair<string, IValue> kvp in resdata)
                 {
-                    result.Add(kvp.Key);
-                    result.Add(kvp.Value.ToString());
+                    result.Add(kvp.Key, kvp.Value);
                 }
                 return result;
             }
