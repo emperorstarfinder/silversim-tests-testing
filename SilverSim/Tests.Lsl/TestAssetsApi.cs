@@ -30,6 +30,8 @@ using SilverSim.Types.Asset.Format.Mesh;
 using System.IO;
 using CSJ2K;
 using log4net;
+using System.Drawing;
+using System;
 
 namespace SilverSim.Tests.Lsl
 {
@@ -58,6 +60,48 @@ namespace SilverSim.Tests.Lsl
                     {
                         fs.Write(asset.Data, 0, asset.Data.Length);
                     }
+                }
+            }
+        }
+
+        [APIExtension("Testing", "_test_comparetexturetoimage")]
+        public double CompareTextureToImage(ScriptInstance instance, LSLKey assetId, string imagefilename)
+        {
+            lock(instance)
+            {
+                AssetServiceInterface assetService = instance.Part.ObjectGroup.AssetService;
+                AssetData asset;
+                if (assetService.TryGetValue(assetId.AsUUID, out asset) && asset.Type == AssetType.Texture)
+                {
+                    using (Stream img1input = asset.InputStream)
+                    using (Image img1 = Image.FromStream(asset.InputStream))
+                    using (Image img2 = Image.FromFile(imagefilename))
+                    using (var bmp1 = new Bitmap(img1))
+                    using (var bmp2 = new Bitmap(img2))
+                    {
+                        if (img1.Width != img2.Width || img1.Height != img2.Height)
+                        {
+                            return 0;
+                        }
+
+                        long diff = 0;
+                        for (int y = 0; y < img1.Height; ++y)
+                        {
+                            for (int x = 0; x < img1.Width; ++x)
+                            {
+                                Color a = bmp1.GetPixel(x, y);
+                                Color b = bmp2.GetPixel(x, y);
+                                diff += Math.Abs(a.R - b.R);
+                                diff += Math.Abs(a.G - b.G);
+                                diff += Math.Abs(a.B - b.B);
+                            }
+                        }
+                        return (double)diff / ((long)img1.Width * img1.Height * 3 * 255);
+                    }
+                }
+                else
+                {
+                    return -1;
                 }
             }
         }
