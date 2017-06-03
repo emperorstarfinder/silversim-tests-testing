@@ -36,7 +36,6 @@
   <Reference name="SilverSim.Viewer.Core" localCopy="false"/>
   <Reference name="SilverSim.Tests" localCopy="false"/>
   <Reference name="SilverSim.Http" localCopy="false"/>
-  <Reference name="MySql.Data" localCopy="false"/>
   <Reference name="SilverSim.Threading" localCopy="false"/>
   <Reference name="Nini" localCopy="false"/>
   <Files>
