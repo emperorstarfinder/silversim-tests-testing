@@ -1,6 +1,7 @@
 <?xml version="1.0"?>
 <package>
 	<name>SilverSim.Tests.Viewer</name>
+	<skip-delivery>true</skip-delivery>
 	<files>
 		<file name="bin/plugins/SilverSim.Tests.Viewer.dll"/>
 	</files>
