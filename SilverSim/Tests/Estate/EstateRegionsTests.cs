@@ -113,7 +113,7 @@ namespace SilverSim.Tests.Estate
                 return false;
             }
 
-            m_Log.Info("exchange estates between owners");
+            m_Log.Info("exchange regions between estates");
             m_EstateService.RegionMap[m_EstateRegion1] = 102;
             m_EstateService.RegionMap[m_EstateRegion2] = 101;
 
