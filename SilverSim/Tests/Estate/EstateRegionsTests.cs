@@ -26,17 +26,23 @@ using SilverSim.ServiceInterfaces.Estate;
 using SilverSim.Tests.Extensions;
 using SilverSim.Types;
 using SilverSim.Types.Estate;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace SilverSim.Tests.Estate
 {
-    public sealed class EstateOwnerTests : ITest
+    public sealed class EstateRegionsTests : ITest
     {
         private static readonly ILog m_Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         EstateServiceInterface m_EstateService;
         UUI m_EstateOwner1;
         UUI m_EstateOwner2;
+        UUID m_EstateRegion1;
+        UUID m_EstateRegion2;
 
         public void Startup(ConfigurationLoader loader)
         {
@@ -44,6 +50,8 @@ namespace SilverSim.Tests.Estate
             m_EstateService = loader.GetService<EstateServiceInterface>(config.GetString("EstateService"));
             m_EstateOwner1 = new UUI(config.GetString("EstateOwner1"));
             m_EstateOwner2 = new UUI(config.GetString("EstateOwner2"));
+            m_EstateRegion1 = new UUID(config.GetString("EstateRegion1"));
+            m_EstateRegion2 = new UUID(config.GetString("EstateRegion2"));
         }
 
         public void Setup()
@@ -75,68 +83,62 @@ namespace SilverSim.Tests.Estate
             };
             m_EstateService.Add(info2);
 
-            m_Log.Info("Test that owner 1 has estate 101 on list");
-            List<uint> infoList1 = m_EstateService.EstateOwner[m_EstateOwner1];
-            if (infoList1.Count != 1 || !infoList1.Contains(101))
+            m_Log.Info("Adding regions");
+            m_EstateService.RegionMap[m_EstateRegion1] = 101;
+            m_EstateService.RegionMap[m_EstateRegion2] = 102;
+
+            m_Log.Info("Test that estate 101 has region 1 on list");
+            List<UUID> infoList1 = m_EstateService.RegionMap[101];
+            if (infoList1.Count != 1 || !infoList1.Contains(m_EstateRegion1))
             {
                 return false;
             }
 
-            m_Log.Info("Test that owner 1 has estate 101 on explicit");
-            if (!m_EstateService.EstateOwner[info1.ID].EqualsGrid(m_EstateOwner1))
+            m_Log.Info("Test that estate 101 has region 1 on explicit");
+            if (m_EstateService.RegionMap[m_EstateRegion1] != 101)
             {
                 return false;
             }
 
-            m_Log.Info("Test that owner 2 has estate 102");
-            List<uint> infoList2 = m_EstateService.EstateOwner[m_EstateOwner2];
-            if (infoList2.Count != 1 || !infoList2.Contains(102))
+            m_Log.Info("Test that estate 102 has region 2");
+            List<UUID> infoList2 = m_EstateService.RegionMap[102];
+            if (infoList2.Count != 1 || !infoList2.Contains(m_EstateRegion2))
             {
                 return false;
             }
 
-            m_Log.Info("Test that owner 2 has estate 102 on explicit");
-            if (!m_EstateService.EstateOwner[info2.ID].EqualsGrid(m_EstateOwner2))
+            m_Log.Info("Test that estate 102 has region 2 on explicit");
+            if (m_EstateService.RegionMap[m_EstateRegion2] != 102)
             {
                 return false;
             }
 
             m_Log.Info("exchange estates between owners");
-            m_EstateService.EstateOwner[101] = m_EstateOwner2;
-            m_EstateService.EstateOwner[102] = m_EstateOwner1;
+            m_EstateService.RegionMap[m_EstateRegion1] = 102;
+            m_EstateService.RegionMap[m_EstateRegion2] = 101;
 
-            m_Log.Info("check that owner changes on EstateInfo");
-            if(!m_EstateService[101].Owner.EqualsGrid(m_EstateOwner2))
-            {
-                return false;
-            }
-            if (!m_EstateService[102].Owner.EqualsGrid(m_EstateOwner1))
-            {
-                return false;
-            }
-
-            m_Log.Info("Test that owner 1 has estate 102 on list");
-            infoList1 = m_EstateService.EstateOwner[m_EstateOwner1];
-            if (infoList1.Count != 1 || !infoList1.Contains(102))
+            m_Log.Info("Test that estate 101 has region 2 on list");
+            infoList1 = m_EstateService.RegionMap[101];
+            if (infoList1.Count != 1 || !infoList1.Contains(m_EstateRegion2))
             {
                 return false;
             }
 
-            m_Log.Info("Test that owner 1 has estate 102 on explicit");
-            if (!m_EstateService.EstateOwner[info2.ID].EqualsGrid(m_EstateOwner1))
+            m_Log.Info("Test that estate 101 has region 2 on explicit");
+            if (m_EstateService.RegionMap[m_EstateRegion2] != 101)
             {
                 return false;
             }
 
-            m_Log.Info("Test that owner 2 has estate 101");
-            infoList2 = m_EstateService.EstateOwner[m_EstateOwner2];
-            if (infoList2.Count != 1 || !infoList2.Contains(101))
+            m_Log.Info("Test that estate 102 has region 1");
+            infoList2 = m_EstateService.RegionMap[102];
+            if (infoList2.Count != 1 || !infoList2.Contains(m_EstateRegion1))
             {
                 return false;
             }
 
-            m_Log.Info("Test that owner 2 has estate 101 on explicit");
-            if (!m_EstateService.EstateOwner[info1.ID].EqualsGrid(m_EstateOwner2))
+            m_Log.Info("Test that estate 102 has region 1 on explicit");
+            if (m_EstateService.RegionMap[m_EstateRegion2] != 101)
             {
                 return false;
             }
