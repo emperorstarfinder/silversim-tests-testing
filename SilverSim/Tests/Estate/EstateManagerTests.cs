@@ -80,6 +80,12 @@ namespace SilverSim.Tests.Estate
                 return false;
             }
 
+            m_Log.Info("Testing returned entries to match");
+            if (m_EstateService.EstateManager.All[info.ID].Count != 0)
+            {
+                return false;
+            }
+
             m_Log.Info("Enabling Estate Manager 1");
             m_EstateService.EstateManager[info.ID, m_EstateManager1] = true;
 
@@ -91,6 +97,12 @@ namespace SilverSim.Tests.Estate
 
             m_Log.Info("Testing non-existence of Estate Manager 2");
             if (m_EstateService.EstateManager[info.ID, m_EstateManager2])
+            {
+                return false;
+            }
+
+            m_Log.Info("Testing returned entries to match");
+            if (m_EstateService.EstateManager.All[info.ID].Count != 1)
             {
                 return false;
             }
@@ -110,6 +122,12 @@ namespace SilverSim.Tests.Estate
                 return false;
             }
 
+            m_Log.Info("Testing returned entries to match");
+            if (m_EstateService.EstateManager.All[info.ID].Count != 2)
+            {
+                return false;
+            }
+
             m_Log.Info("Disabling Estate Manager 1");
             m_EstateService.EstateManager[info.ID, m_EstateManager1] = false;
 
@@ -125,6 +143,12 @@ namespace SilverSim.Tests.Estate
                 return false;
             }
 
+            m_Log.Info("Testing returned entries to match");
+            if (m_EstateService.EstateManager.All[info.ID].Count != 1)
+            {
+                return false;
+            }
+
             m_Log.Info("Disabling Estate Manager 2");
             m_EstateService.EstateManager[info.ID, m_EstateManager2] = false;
 
@@ -136,6 +160,12 @@ namespace SilverSim.Tests.Estate
 
             m_Log.Info("Testing non-existence of Estate Manager 2");
             if (m_EstateService.EstateManager[info.ID, m_EstateManager2])
+            {
+                return false;
+            }
+
+            m_Log.Info("Testing returned entries to match");
+            if (m_EstateService.EstateManager.All[info.ID].Count != 0)
             {
                 return false;
             }

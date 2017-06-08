@@ -30,21 +30,21 @@ using System.Reflection;
 
 namespace SilverSim.Tests.Estate
 {
-    public sealed class EstateGroupsTests : ITest
+    public sealed class EstateAccessTests : ITest
     {
         private static readonly ILog m_Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         EstateServiceInterface m_EstateService;
         UUI m_EstateOwner;
-        UGI m_EstateGroup1;
-        UGI m_EstateGroup2;
+        UUI m_EstateAccessor1;
+        UUI m_EstateAccessor2;
 
         public void Startup(ConfigurationLoader loader)
         {
             IConfig config = loader.Config.Configs[GetType().FullName];
             m_EstateService = loader.GetService<EstateServiceInterface>(config.GetString("EstateService"));
             m_EstateOwner = new UUI(config.GetString("EstateOwner"));
-            m_EstateGroup1 = new UGI(config.GetString("EstateGroup1"));
-            m_EstateGroup2 = new UGI(config.GetString("EstateGroup2"));
+            m_EstateAccessor1 = new UUI(config.GetString("EstateAccessor1"));
+            m_EstateAccessor2 = new UUI(config.GetString("EstateAccessor2"));
         }
 
         public void Setup()
@@ -68,104 +68,104 @@ namespace SilverSim.Tests.Estate
             };
             m_EstateService.Add(info);
 
-            m_Log.Info("Testing non-existence of Estate Group 1");
-            if (m_EstateService.EstateGroup[info.ID, m_EstateGroup1])
+            m_Log.Info("Testing non-existence of Estate Accessor 1");
+            if (m_EstateService.EstateAccess[info.ID, m_EstateAccessor1])
             {
                 return false;
             }
 
-            m_Log.Info("Testing non-existence of Estate Group 2");
-            if (m_EstateService.EstateGroup[info.ID, m_EstateGroup2])
-            {
-                return false;
-            }
-
-            m_Log.Info("Testing returned entries to match");
-            if (m_EstateService.EstateGroup.All[info.ID].Count != 0)
-            {
-                return false;
-            }
-
-            m_Log.Info("Enabling Estate Group 1");
-            m_EstateService.EstateGroup[info.ID, m_EstateGroup1] = true;
-
-            m_Log.Info("Testing existence of Estate Group 1");
-            if (!m_EstateService.EstateGroup[info.ID, m_EstateGroup1])
-            {
-                return false;
-            }
-
-            m_Log.Info("Testing non-existence of Estate Group 2");
-            if (m_EstateService.EstateGroup[info.ID, m_EstateGroup2])
+            m_Log.Info("Testing non-existence of Estate Accessor 2");
+            if (m_EstateService.EstateAccess[info.ID, m_EstateAccessor2])
             {
                 return false;
             }
 
             m_Log.Info("Testing returned entries to match");
-            if (m_EstateService.EstateGroup.All[info.ID].Count != 1)
+            if (m_EstateService.EstateAccess.All[info.ID].Count != 0)
             {
                 return false;
             }
 
-            m_Log.Info("Enabling Estate Group 2");
-            m_EstateService.EstateGroup[info.ID, m_EstateGroup2] = true;
+            m_Log.Info("Enabling Estate Accessor 1");
+            m_EstateService.EstateAccess[info.ID, m_EstateAccessor1] = true;
 
-            m_Log.Info("Testing existence of Estate Group 1");
-            if (!m_EstateService.EstateGroup[info.ID, m_EstateGroup1])
+            m_Log.Info("Testing existence of Estate Accessor 1");
+            if (!m_EstateService.EstateAccess[info.ID, m_EstateAccessor1])
             {
                 return false;
             }
 
-            m_Log.Info("Testing existence of Estate Group 2");
-            if (!m_EstateService.EstateGroup[info.ID, m_EstateGroup2])
-            {
-                return false;
-            }
-
-            m_Log.Info("Testing returned entries to match");
-            if (m_EstateService.EstateGroup.All[info.ID].Count != 2)
-            {
-                return false;
-            }
-
-            m_Log.Info("Disabling Estate Group 1");
-            m_EstateService.EstateGroup[info.ID, m_EstateGroup1] = false;
-
-            m_Log.Info("Testing non-existence of Estate Group 1");
-            if (m_EstateService.EstateGroup[info.ID, m_EstateGroup1])
-            {
-                return false;
-            }
-
-            m_Log.Info("Testing existence of Estate Group 2");
-            if (!m_EstateService.EstateGroup[info.ID, m_EstateGroup2])
+            m_Log.Info("Testing non-existence of Estate Accessor 2");
+            if (m_EstateService.EstateAccess[info.ID, m_EstateAccessor2])
             {
                 return false;
             }
 
             m_Log.Info("Testing returned entries to match");
-            if (m_EstateService.EstateGroup.All[info.ID].Count != 1)
+            if (m_EstateService.EstateAccess.All[info.ID].Count != 1)
             {
                 return false;
             }
 
-            m_Log.Info("Disabling Estate Group 2");
-            m_EstateService.EstateGroup[info.ID, m_EstateGroup2] = false;
+            m_Log.Info("Enabling Estate Accessor 2");
+            m_EstateService.EstateAccess[info.ID, m_EstateAccessor2] = true;
 
-            m_Log.Info("Testing non-existence of Estate Group 1");
-            if (m_EstateService.EstateGroup[info.ID, m_EstateGroup1])
+            m_Log.Info("Testing existence of Estate Accessor 1");
+            if (!m_EstateService.EstateAccess[info.ID, m_EstateAccessor1])
             {
                 return false;
             }
 
-            m_Log.Info("Testing non-existence of Estate Group 2");
-            if (m_EstateService.EstateGroup[info.ID, m_EstateGroup2])
+            m_Log.Info("Testing existence of Estate Accessor 2");
+            if (!m_EstateService.EstateAccess[info.ID, m_EstateAccessor2])
             {
                 return false;
             }
 
             m_Log.Info("Testing returned entries to match");
-            if (m_EstateService.EstateGroup.All[info.ID].Count != 0)
+            if (m_EstateService.EstateAccess.All[info.ID].Count != 2)
+            {
+                return false;
+            }
+
+            m_Log.Info("Disabling Estate Accessor 1");
+            m_EstateService.EstateAccess[info.ID, m_EstateAccessor1] = false;
+
+            m_Log.Info("Testing non-existence of Estate Accessor 1");
+            if (m_EstateService.EstateAccess[info.ID, m_EstateAccessor1])
+            {
+                return false;
+            }
+
+            m_Log.Info("Testing existence of Estate Accessor 2");
+            if (!m_EstateService.EstateAccess[info.ID, m_EstateAccessor2])
+            {
+                return false;
+            }
+
+            m_Log.Info("Testing returned entries to match");
+            if (m_EstateService.EstateAccess.All[info.ID].Count != 1)
+            {
+                return false;
+            }
+
+            m_Log.Info("Disabling Estate Accessor 2");
+            m_EstateService.EstateAccess[info.ID, m_EstateAccessor2] = false;
+
+            m_Log.Info("Testing non-existence of Estate Accessor 1");
+            if (m_EstateService.EstateAccess[info.ID, m_EstateAccessor1])
+            {
+                return false;
+            }
+
+            m_Log.Info("Testing non-existence of Estate Accessor 2");
+            if (m_EstateService.EstateAccess[info.ID, m_EstateAccessor2])
+            {
+                return false;
+            }
+
+            m_Log.Info("Testing returned entries to match");
+            if (m_EstateService.EstateAccess.All[info.ID].Count != 0)
             {
                 return false;
             }
