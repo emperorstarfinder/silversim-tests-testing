@@ -26,25 +26,30 @@ using SilverSim.ServiceInterfaces.Estate;
 using SilverSim.Tests.Extensions;
 using SilverSim.Types;
 using SilverSim.Types.Estate;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace SilverSim.Tests.Estate
 {
-    public sealed class EstateManagerTests : ITest
+    public sealed class EstateGroupsTests : ITest
     {
         private static readonly ILog m_Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         EstateServiceInterface m_EstateService;
         UUI m_EstateOwner;
-        UUI m_EstateManager1;
-        UUI m_EstateManager2;
+        UGI m_EstateGroup1;
+        UGI m_EstateGroup2;
 
         public void Startup(ConfigurationLoader loader)
         {
             IConfig config = loader.Config.Configs[GetType().FullName];
             m_EstateService = loader.GetService<EstateServiceInterface>(config.GetString("EstateService"));
             m_EstateOwner = new UUI(config.GetString("EstateOwner"));
-            m_EstateManager1 = new UUI(config.GetString("EstateManager1"));
-            m_EstateManager2 = new UUI(config.GetString("EstateManager2"));
+            m_EstateGroup1 = new UGI(config.GetString("EstateGroup1"));
+            m_EstateGroup2 = new UGI(config.GetString("EstateGroup2"));
         }
 
         public void Setup()
@@ -68,74 +73,74 @@ namespace SilverSim.Tests.Estate
             };
             m_EstateService.Add(info);
 
-            m_Log.Info("Testing non-existence of Estate Manager 1");
-            if(m_EstateService.EstateManager[info.ID, m_EstateManager1])
+            m_Log.Info("Testing non-existence of Estate Group 1");
+            if (m_EstateService.EstateGroup[info.ID, m_EstateGroup1])
             {
                 return false;
             }
 
-            m_Log.Info("Testing non-existence of Estate Manager 2");
-            if (m_EstateService.EstateManager[info.ID, m_EstateManager2])
+            m_Log.Info("Testing non-existence of Estate Group 2");
+            if (m_EstateService.EstateGroup[info.ID, m_EstateGroup2])
             {
                 return false;
             }
 
-            m_Log.Info("Enabling Estate Manager 1");
-            m_EstateService.EstateManager[info.ID, m_EstateManager1] = true;
+            m_Log.Info("Enabling Estate Group 1");
+            m_EstateService.EstateGroup[info.ID, m_EstateGroup1] = true;
 
-            m_Log.Info("Testing existence of Estate Manager 1");
-            if (!m_EstateService.EstateManager[info.ID, m_EstateManager1])
+            m_Log.Info("Testing existence of Estate Group 1");
+            if (!m_EstateService.EstateGroup[info.ID, m_EstateGroup1])
             {
                 return false;
             }
 
-            m_Log.Info("Testing non-existence of Estate Manager 2");
-            if (m_EstateService.EstateManager[info.ID, m_EstateManager2])
+            m_Log.Info("Testing non-existence of Estate Group 2");
+            if (m_EstateService.EstateGroup[info.ID, m_EstateGroup2])
             {
                 return false;
             }
 
-            m_Log.Info("Enabling Estate Manager 2");
-            m_EstateService.EstateManager[info.ID, m_EstateManager2] = true;
+            m_Log.Info("Enabling Estate Group 2");
+            m_EstateService.EstateGroup[info.ID, m_EstateGroup2] = true;
 
-            m_Log.Info("Testing existence of Estate Manager 1");
-            if (!m_EstateService.EstateManager[info.ID, m_EstateManager1])
+            m_Log.Info("Testing existence of Estate Group 1");
+            if (!m_EstateService.EstateGroup[info.ID, m_EstateGroup1])
             {
                 return false;
             }
 
-            m_Log.Info("Testing existence of Estate Manager 2");
-            if (!m_EstateService.EstateManager[info.ID, m_EstateManager2])
+            m_Log.Info("Testing existence of Estate Group 2");
+            if (!m_EstateService.EstateGroup[info.ID, m_EstateGroup2])
             {
                 return false;
             }
 
-            m_Log.Info("Disabling Estate Manager 1");
-            m_EstateService.EstateManager[info.ID, m_EstateManager1] = false;
+            m_Log.Info("Disabling Estate Group 1");
+            m_EstateService.EstateGroup[info.ID, m_EstateGroup1] = false;
 
-            m_Log.Info("Testing non-existence of Estate Manager 1");
-            if (m_EstateService.EstateManager[info.ID, m_EstateManager1])
+            m_Log.Info("Testing non-existence of Estate Group 1");
+            if (m_EstateService.EstateGroup[info.ID, m_EstateGroup1])
             {
                 return false;
             }
 
-            m_Log.Info("Testing existence of Estate Manager 2");
-            if (!m_EstateService.EstateManager[info.ID, m_EstateManager2])
+            m_Log.Info("Testing existence of Estate Group 2");
+            if (!m_EstateService.EstateGroup[info.ID, m_EstateGroup2])
             {
                 return false;
             }
 
-            m_Log.Info("Disabling Estate Manager 2");
-            m_EstateService.EstateManager[info.ID, m_EstateManager2] = false;
+            m_Log.Info("Disabling Estate Group 2");
+            m_EstateService.EstateGroup[info.ID, m_EstateGroup2] = false;
 
-            m_Log.Info("Testing non-existence of Estate Manager 1");
-            if (m_EstateService.EstateManager[info.ID, m_EstateManager1])
+            m_Log.Info("Testing non-existence of Estate Group 1");
+            if (m_EstateService.EstateGroup[info.ID, m_EstateGroup1])
             {
                 return false;
             }
 
-            m_Log.Info("Testing non-existence of Estate Manager 2");
-            if (m_EstateService.EstateManager[info.ID, m_EstateManager2])
+            m_Log.Info("Testing non-existence of Estate Group 2");
+            if (m_EstateService.EstateGroup[info.ID, m_EstateGroup2])
             {
                 return false;
             }
