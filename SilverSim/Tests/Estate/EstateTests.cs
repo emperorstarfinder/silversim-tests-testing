@@ -175,7 +175,7 @@ namespace SilverSim.Tests.Estate
             info.Name = "New Test Estate";
             info.ParentEstateID = 3;
             estateName = info.Name;
-            m_EstateService[estateId] = info;
+            m_EstateService.Update(info);
 
             m_Log.Info("Testing retrieval via old name");
             if (m_EstateService.TryGetValue("Test Estate", out retrievedInfo))
@@ -219,21 +219,6 @@ namespace SilverSim.Tests.Estate
                 return false;
             }
 
-            m_Log.Info("Testing old API design");
-            m_EstateService.Add(info);
-
-            m_Log.Info("Testing deletion on old API design");
-            m_EstateService[estateId] = null;
-            m_Log.Info("Testing non-existence of estate via name");
-            if (m_EstateService.ContainsKey(estateName))
-            {
-                return false;
-            }
-            m_Log.Info("Testing non-existence of estate via id");
-            if (m_EstateService.ContainsKey(estateId))
-            {
-                return false;
-            }
             return true;
         }
 
