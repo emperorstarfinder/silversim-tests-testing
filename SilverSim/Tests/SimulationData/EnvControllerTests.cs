@@ -46,6 +46,7 @@ namespace SilverSim.Tests.SimulationData
 
             return true;
         }
+
         public override bool Run()
         {
             byte[] testData = "Hello World".ToUTF8Bytes();
