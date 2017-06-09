@@ -21,15 +21,10 @@
 
 using log4net;
 using SilverSim.Scene.Types.WindLight;
-using System;
+using SilverSim.Types;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using SilverSim.Types;
-using System.Threading.Tasks;
-using System.Xml;
 
 namespace SilverSim.Tests.SimulationData
 {
