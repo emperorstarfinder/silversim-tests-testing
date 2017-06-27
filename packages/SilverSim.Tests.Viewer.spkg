@@ -1,6 +1,12 @@
 <?xml version="1.0"?>
 <package>
 	<name>SilverSim.Tests.Viewer</name>
+	<default-configuration>
+		<source>SilverSim.Tests.Viewer:PackageConfig.ini</source>
+		<use-if-started-as>bare</use-if-started-as>
+		<use-if-started-as>simulator</use-if-started-as>
+		<use-if-started-as>standalone</use-if-started-as>
+	</default-configuration>
 	<skip-delivery>true</skip-delivery>
 	<files>
 		<file name="bin/plugins/SilverSim.Tests.Viewer.dll"/>

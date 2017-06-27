@@ -52,12 +52,14 @@ using SilverSim.Viewer.Messages;
 using SilverSim.Viewer.Messages.Region;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace SilverSim.Tests.Viewer
 {
     [LSLImplementation]
     [ScriptApiName("ViewerControl")]
     [PluginName("ViewerControl")]
+    [Description("LSL Viewer Control API")]
     public partial class ViewerControlApi : IScriptApi, IPlugin, IPluginShutdown
     {
         static readonly ILog m_Log = LogManager.GetLogger("VIEWER CONTROL");
