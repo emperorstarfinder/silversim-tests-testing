@@ -32,6 +32,8 @@ using CSJ2K;
 using log4net;
 using System.Drawing;
 using System;
+using SilverSim.Types;
+using SilverSim.Scene.Types.Agent;
 
 namespace SilverSim.Tests.Lsl
 {
@@ -64,6 +66,24 @@ namespace SilverSim.Tests.Lsl
             }
         }
 
+        [APIExtension("Testing", "_test_getagenttextures")]
+        public AnArray GetAgentTextures(ScriptInstance instance, LSLKey agentid)
+        {
+            lock(instance)
+            {
+                AnArray res = new AnArray();
+                IAgent agent;
+                if(instance.Part.ObjectGroup.Scene.RootAgents.TryGetValue(agentid.AsUUID, out agent))
+                {
+                    foreach(UUID texid in agent.Textures.All)
+                    {
+                        res.Add(texid);
+                    }
+                }
+                return res;
+            }
+        }
+
         [APIExtension("Testing", "_test_comparetexturetoimage")]
         public double CompareTextureToImage(ScriptInstance instance, LSLKey assetId, string imagefilename)
         {
@@ -89,8 +109,8 @@ namespace SilverSim.Tests.Lsl
                         {
                             for (int x = 0; x < img1.Width; ++x)
                             {
-                                Color a = bmp1.GetPixel(x, y);
-                                Color b = bmp2.GetPixel(x, y);
+                                System.Drawing.Color a = bmp1.GetPixel(x, y);
+                                System.Drawing.Color b = bmp2.GetPixel(x, y);
                                 diff += Math.Abs(a.R - b.R);
                                 diff += Math.Abs(a.G - b.G);
                                 diff += Math.Abs(a.B - b.B);
