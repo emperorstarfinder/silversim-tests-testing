@@ -92,7 +92,6 @@ namespace SilverSim.Tests.Assets.Formats
                 Description = "Item Description",
                 Flags = (InventoryFlags)1,
                 Group = UGI.Unknown,
-                ID = UUID.Random,
                 InventoryType = InventoryType.CallingCard,
                 IsGroupOwned = true,
                 LastOwner = theCreator,

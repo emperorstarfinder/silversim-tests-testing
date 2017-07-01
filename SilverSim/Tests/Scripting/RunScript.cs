@@ -283,7 +283,6 @@ namespace SilverSim.Tests.Scripting
                     {
                         var grp = new ObjectGroup();
                         var part = new ObjectPart();
-                        part.ID = UUID.Random;
                         grp.Add(1, part.ID, part);
                         part.ObjectGroup = grp;
                         grp.Owner = m_ObjectOwner;
