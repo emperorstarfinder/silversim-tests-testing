@@ -21,15 +21,16 @@
 
 using SilverSim.Main.Common;
 using SilverSim.Tests.Extensions;
-using SilverSim.Types.StructuredData.Json;
+using SilverSim.Types.StructuredData.XmlRpc;
 using System.IO;
 using System.Text;
 
 namespace SilverSim.Tests.StructuredData
 {
-    class JSON20RPCParserTest : ITest
+    public class XmlRpcParserTest : ITest
     {
-        const string JSONInput = "{\"jsonrpc\":\"2.0\",\"result\":{\"UserId\":\"11111111-2222-3333-4444-fedcba987654\",\"PartnerId\":\"00000000-0000-0000-0000-000000000000\",\"PublishProfile\":false,\"PublishMature\":false,\"WebUrl\":\"\",\"WantToMask\":0,\"WantToText\":\"\",\"SkillsMask\":0,\"SkillsText\":\"\",\"Language\":\"\",\"ImageId\":\"00000000-0000-0000-0000-000000000000\",\"AboutText\":\"\",\"FirstLifeImageId\":\"00000000-0000-0000-0000-000000000000\",\"FirstLifeText\":\"\"},\"id\":\"a96f1bd0-c079-40a4-a012-d43c845d3b99\"}";
+        const string ParserInput = "<methodCall><methodName>get_user_info</methodName><params><param><value><struct><member><name>userID</name><value><string>d09b69da-82a8-4026-b702-eef6388ed22f</string></value></member></struct></value></param></params></methodCall>";
+
 
         public void Setup()
         {
@@ -43,7 +44,7 @@ namespace SilverSim.Tests.StructuredData
 
         public bool Run()
         {
-            Json20Rpc.DeserializeResponse(new MemoryStream(UTF8NoBOM.GetBytes(JSONInput)));
+            XmlRpc.XmlRpcRequest req = XmlRpc.DeserializeRequest(new MemoryStream(UTF8NoBOM.GetBytes(ParserInput)));
             return true;
         }
 
