@@ -31,11 +31,13 @@ using SilverSim.Scene.Types.Script;
 using SilverSim.Scene.Types.Script.Events;
 using SilverSim.Scripting.Common;
 using SilverSim.ServiceInterfaces.Estate;
+using SilverSim.ServiceInterfaces.Experience;
 using SilverSim.ServiceInterfaces.Grid;
 using SilverSim.Tests.Extensions;
 using SilverSim.Types;
 using SilverSim.Types.Asset;
 using SilverSim.Types.Estate;
+using SilverSim.Types.Experience;
 using SilverSim.Types.Grid;
 using SilverSim.Types.Inventory;
 using System;
@@ -76,6 +78,8 @@ namespace SilverSim.Tests.Scripting
         private Vector3 m_Position;
         private Quaternion m_Rotation;
         private int m_RegionPort;
+        private string m_ExperienceName;
+        private UUID m_ExperienceID;
         private GridServiceInterface m_RegionStorage;
         private SceneFactoryInterface m_SceneFactory;
         private EstateServiceInterface m_EstateService;
@@ -125,6 +129,8 @@ namespace SilverSim.Tests.Scripting
 
             m_ObjectName = config.GetString("ObjectName", "Object");
             m_ScriptName = config.GetString("ScriptName", "Script");
+            m_ExperienceName = config.GetString("ExperienceName", "My Experience");
+            UUID.TryParse(config.GetString("ExperienceID", UUID.Zero.ToString()), out m_ExperienceID);
 
             m_ObjectDescription = config.GetString("ObjectDescription", "");
             m_ScriptDescription = config.GetString("ScriptDescription", "");
@@ -278,6 +284,34 @@ namespace SilverSim.Tests.Scripting
 
             try
             {
+                if(success)
+                {
+                    ExperienceServiceInterface experienceService = scene.ExperienceService;
+                    if(null != experienceService)
+                    {
+                        experienceService.Add(new ExperienceInfo
+                        {
+                            ID = m_ExperienceID,
+                            Name = m_ExperienceName,
+                            Creator = m_ScriptOwner,
+                            Owner = m_ScriptOwner,
+                            Properties = ExperiencePropertyFlags.Grid /* make this grid-wide since otherwise we have to configure a lot more */
+                        });
+                    }
+                    else
+                    {
+                        m_ExperienceID = UUID.Zero;
+                    }
+                }
+            }
+            catch(Exception e)
+            {
+                m_Log.Error("Creating experience failed", e);
+                return false;
+            }
+
+            try
+            {
                 if (success)
                 {
                     {
@@ -314,6 +348,7 @@ namespace SilverSim.Tests.Scripting
                         item.Permissions.EveryOne = m_ScriptPermissionsEveryone;
                         item.Permissions.Group = m_ScriptPermissionsGroup;
                         item.Permissions.NextOwner = m_ScriptPermissionsNext;
+                        item.ExperienceID = m_ExperienceID;
 
                         scene.Add(grp);
                         ChatServiceInterface chatService = scene.GetService<ChatServiceInterface>();
