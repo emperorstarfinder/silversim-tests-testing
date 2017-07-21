@@ -37,7 +37,6 @@ namespace SilverSim.Tests.Experience
     {
         private static readonly ILog m_Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         string m_ExperienceServiceName;
-        string m_BackendExperienceServiceName;
         ExperienceServiceInterface m_ExperienceService;
         UUID m_ExperienceID = new UUID("11112222-3333-4444-5555-666666777777");
         UUI m_Creator = new UUI("11111111-2222-3333-4444-555555555555", "Experience", "Creator");
@@ -118,7 +117,6 @@ namespace SilverSim.Tests.Experience
         {
             ExperienceInfo gInfo;
             ExperienceInfo testGInfo;
-            UGI ugi;
 
             m_Log.Info("Checking for experience non-existence 1");
             try

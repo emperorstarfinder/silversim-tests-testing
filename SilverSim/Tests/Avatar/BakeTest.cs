@@ -22,11 +22,13 @@
 using log4net;
 using Nini.Config;
 using SilverSim.Main.Common;
+using SilverSim.Scene.Types.Agent;
 using SilverSim.ServiceInterfaces.Asset;
 using SilverSim.ServiceInterfaces.Avatar;
 using SilverSim.ServiceInterfaces.Inventory;
 using SilverSim.Tests.Extensions;
 using SilverSim.Types;
+using SilverSim.Types.Agent;
 using SilverSim.Types.Asset;
 using SilverSim.Types.Asset.Format;
 using SilverSim.Types.Inventory;
@@ -54,6 +56,13 @@ namespace SilverSim.Tests.Avatar
         readonly Dictionary<UUID, string> m_InventoryFiles = new Dictionary<UUID, string>();
         readonly Dictionary<UUID, UUID> m_InventoryItemParents = new Dictionary<UUID, UUID>();
         readonly Dictionary<UUID, UUID> m_InventoryItemAssetIDs = new Dictionary<UUID, UUID>();
+        readonly Dictionary<UUID, string> m_AssetFiles = new Dictionary<UUID, string>();
+        readonly Dictionary<UUID, string> m_AssetLinkDescriptions = new Dictionary<UUID, string>();
+        string m_BakeEyesFilename;
+        string m_BakeHeadFilename;
+        string m_BakeUpperFilename;
+        string m_BakeLowerFilename;
+        string m_BakeHairFilename;
 
         public void Startup(ConfigurationLoader loader)
         {
@@ -62,7 +71,14 @@ namespace SilverSim.Tests.Avatar
             m_InventoryService = loader.GetService<InventoryServiceInterface>(config.GetString("InventoryService"));
             m_RootFolderID = new UUID(config.GetString("RootFolderID"));
             m_AgentOwner = new UUI(config.GetString("Owner"));
-            foreach(string key in config.GetKeys())
+
+            m_BakeEyesFilename = config.GetString("BakeEyeFilename");
+            m_BakeHeadFilename = config.GetString("BakeHeadFilename");
+            m_BakeUpperFilename = config.GetString("BakeUpperFilename");
+            m_BakeLowerFilename = config.GetString("BakeLowerFilename");
+            m_BakeHairFilename = config.GetString("BakeHairFilename");
+
+            foreach (string key in config.GetKeys())
             {
                 UUID id;
                 if(key.StartsWith("Folder-") && UUID.TryParse(key.Substring(7), out id))
@@ -73,9 +89,9 @@ namespace SilverSim.Tests.Avatar
                 {
                     m_InventoryFolderParents[id] = new UUID(config.GetString(key));
                 }
-                else if(key.StartsWith("FolderType-") && UUID.TryParse(key.Substring(13), out id))
+                else if(key.StartsWith("FolderType-") && UUID.TryParse(key.Substring(11), out id))
                 {
-                    m_InventoryFolderTypes[id] = (InventoryType)int.Parse(config.GetString(key));
+                    m_InventoryFolderTypes[id] = (InventoryType)config.GetInt(key);
                 }
                 else if (key.StartsWith("Item-") && UUID.TryParse(key.Substring(5), out id))
                 {
@@ -85,9 +101,17 @@ namespace SilverSim.Tests.Avatar
                 {
                     m_InventoryItemParents[id] = new UUID(config.GetString(key));
                 }
-                else if (key.StartsWith("ItemAssetID-") && UUID.TryParse(key.Substring(11), out id))
+                else if (key.StartsWith("ItemAssetID-") && UUID.TryParse(key.Substring(12), out id))
                 {
                     m_InventoryItemAssetIDs[id] = new UUID(config.GetString(key));
+                }
+                else if (key.StartsWith("ItemIsLink-") && UUID.TryParse(key.Substring(11), out id))
+                {
+                    m_AssetLinkDescriptions[id] = config.GetString(key);
+                }
+                else if (key.StartsWith("Asset-") && UUID.TryParse(key.Substring(6), out id))
+                {
+                    m_AssetFiles[id] = config.GetString(key);
                 }
             }
         }
@@ -108,15 +132,27 @@ namespace SilverSim.Tests.Avatar
             if(!m_InventoryService.Folder.TryGetValue(m_AgentOwner.ID, AssetType.RootFolder, out rootFolder))
             {
                 rootFolder = new InventoryFolder(m_RootFolderID);
+                rootFolder.Owner = m_AgentOwner;
                 rootFolder.Name = "My Inventory";
                 rootFolder.InventoryType = InventoryType.Folder;
                 rootFolder.ParentFolderID = UUID.Zero;
                 rootFolder.Version = 1;
                 m_InventoryService.Folder.Add(rootFolder);
             }
-            m_InventoryService.CheckInventory(m_AgentOwner.ID);
 
             UUID rootFolderID = m_InventoryService.Folder[m_AgentOwner.ID, AssetType.RootFolder].ID;
+
+            foreach(KeyValuePair<UUID, string> kvp in m_AssetFiles)
+            {
+                AssetData asset = new AssetData();
+                asset.ID = kvp.Key;
+                asset.FileName = Path.GetFileName(kvp.Value);
+                using (FileStream fs = new FileStream(kvp.Value, FileMode.Open, FileAccess.Read))
+                {
+                    asset.Data = fs.ReadToStreamEnd();
+                }
+                m_AssetService.Store(asset);
+            }
 
             foreach(KeyValuePair<UUID, string> kvp in m_InventoryFolders)
             {
@@ -142,23 +178,68 @@ namespace SilverSim.Tests.Avatar
                 m_InventoryService.Folder.Add(folder);
             }
 
-            foreach(KeyValuePair<UUID, string> kvp in m_InventoryFiles)
+            foreach (KeyValuePair<UUID, string> kvp in m_InventoryFiles)
             {
-                using (FileStream fs = new FileStream(kvp.Value, FileMode.Open, FileAccess.Read))
+                InventoryItem item;
+                using (var fs = new FileStream(kvp.Value, FileMode.Open, FileAccess.Read))
                 {
-                    InventoryItem item = LoadInventoryItem(fs);
-                    UUID parentFolderID;
-                    if (m_InventoryItemParents.TryGetValue(kvp.Key, out parentFolderID))
-                    {
-                        item.ParentFolderID = parentFolderID;
-                    }
-                    else
-                    {
-                        item.ParentFolderID = rootFolderID;
-                    }
+                    item = LoadInventoryItem(fs);
                 }
+                item.SetNewID(kvp.Key);
 
+                UUID parentFolderID;
+                if (m_InventoryItemParents.TryGetValue(kvp.Key, out parentFolderID))
+                {
+                    item.ParentFolderID = parentFolderID;
+                }
+                else
+                {
+                    item.ParentFolderID = rootFolderID;
+                }
+                UUID assetid;
+                if(m_InventoryItemAssetIDs.TryGetValue(kvp.Key, out assetid))
+                {
+                    item.AssetID = assetid;
+                }
+                string linkDescription;
+                if (m_AssetLinkDescriptions.TryGetValue(kvp.Key, out linkDescription))
+                {
+                    item.Description = linkDescription;
+                    item.AssetType = AssetType.Link;
+                }
+                item.Owner = m_AgentOwner;
+                m_InventoryService.Item.Add(item);
             }
+
+            AgentBakeAppearance.AgentInfo info = new AgentBakeAppearance.AgentInfo(m_AgentOwner, m_InventoryService, m_AssetService, UUID.Zero);
+            AppearanceInfo appearance = AgentBakeAppearance.LoadAppearanceFromCurrentOutfit(info, m_AssetService, m_Log.Info);
+            UUID bakeEyesId = appearance.AvatarTextures[(int)AvatarTextureIndex.EyesBaked];
+            UUID bakeHeadId = appearance.AvatarTextures[(int)AvatarTextureIndex.HeadBaked];
+            UUID bakeUpperId = appearance.AvatarTextures[(int)AvatarTextureIndex.UpperBaked];
+            UUID bakeLowerId = appearance.AvatarTextures[(int)AvatarTextureIndex.LowerBaked];
+            UUID bakeHairId = appearance.AvatarTextures[(int)AvatarTextureIndex.HairBaked];
+
+            using (var fs = new FileStream(m_BakeEyesFilename, FileMode.Create, FileAccess.Write))
+            {
+                m_AssetService.Data[bakeEyesId].CopyTo(fs);
+            }
+            using (var fs = new FileStream(m_BakeHeadFilename, FileMode.Create, FileAccess.Write))
+            {
+                m_AssetService.Data[bakeHeadId].CopyTo(fs);
+            }
+            using (var fs = new FileStream(m_BakeUpperFilename, FileMode.Create, FileAccess.Write))
+            {
+                m_AssetService.Data[bakeUpperId].CopyTo(fs);
+            }
+            using (var fs = new FileStream(m_BakeLowerFilename, FileMode.Create, FileAccess.Write))
+            {
+                m_AssetService.Data[bakeLowerId].CopyTo(fs);
+            }
+            using (var fs = new FileStream(m_BakeHairFilename, FileMode.Create, FileAccess.Write))
+            {
+                m_AssetService.Data[bakeHairId].CopyTo(fs);
+            }
+
             return true;
         }
 
