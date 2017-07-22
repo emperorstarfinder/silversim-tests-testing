@@ -23,6 +23,7 @@ using log4net;
 using Nini.Config;
 using SilverSim.Main.Common;
 using SilverSim.Scene.Types.Agent;
+using SilverSim.Scene.Types.Scene;
 using SilverSim.ServiceInterfaces.Asset;
 using SilverSim.ServiceInterfaces.Avatar;
 using SilverSim.ServiceInterfaces.Inventory;
@@ -155,7 +156,16 @@ namespace SilverSim.Tests.Avatar
         public bool Run()
         {
             InventoryFolder rootFolder;
-            if(!m_InventoryService.Folder.TryGetValue(m_AgentOwner.ID, AssetType.RootFolder, out rootFolder))
+            SceneInterface.ResourceAssetService resourceAssets = new SceneInterface.ResourceAssetService();
+
+            m_Log.Info("Loading all default assets");
+            /* copy all default assets */
+            foreach(UUID id in resourceAssets.GetKnownAssets())
+            {
+                m_AssetService.Store(resourceAssets[id]);
+            }
+
+            if (!m_InventoryService.Folder.TryGetValue(m_AgentOwner.ID, AssetType.RootFolder, out rootFolder))
             {
                 rootFolder = new InventoryFolder(m_RootFolderID);
                 rootFolder.Owner = m_AgentOwner;
