@@ -22,6 +22,7 @@
   <Reference name="System.Xml"/>
   <Reference name="System.Web"/>
   <Reference name="System.Data"/>
+  <Reference name="System.Drawing"/>
   <Reference name="SilverSim.Types" localCopy="false"/>
   <Reference name="SilverSim.Http" localCopy="false"/>
   <Reference name="SilverSim.ServiceInterfaces" localCopy="false"/>

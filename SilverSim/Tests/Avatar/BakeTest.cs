@@ -34,6 +34,7 @@ using SilverSim.Types.Asset.Format;
 using SilverSim.Types.Inventory;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -64,6 +65,18 @@ namespace SilverSim.Tests.Avatar
         string m_BakeLowerFilename;
         string m_BakeHairFilename;
 
+        string m_ReferenceBakeEyesFilename;
+        string m_ReferenceBakeHeadFilename;
+        string m_ReferenceBakeUpperFilename;
+        string m_ReferenceBakeLowerFilename;
+        string m_ReferenceBakeHairFilename;
+
+        double m_ReferenceBakeEyesTolerance;
+        double m_ReferenceBakeHeadTolerance;
+        double m_ReferenceBakeUpperTolerance;
+        double m_ReferenceBakeLowerTolerance;
+        double m_ReferenceBakeHairTolerance;
+
         public void Startup(ConfigurationLoader loader)
         {
             IConfig config = loader.Config.Configs[GetType().FullName];
@@ -72,11 +85,24 @@ namespace SilverSim.Tests.Avatar
             m_RootFolderID = new UUID(config.GetString("RootFolderID"));
             m_AgentOwner = new UUI(config.GetString("Owner"));
 
-            m_BakeEyesFilename = config.GetString("BakeEyeFilename");
-            m_BakeHeadFilename = config.GetString("BakeHeadFilename");
-            m_BakeUpperFilename = config.GetString("BakeUpperFilename");
-            m_BakeLowerFilename = config.GetString("BakeLowerFilename");
-            m_BakeHairFilename = config.GetString("BakeHairFilename");
+            m_BakeEyesFilename = config.GetString("BakeEyeFilename", string.Empty);
+            m_BakeHeadFilename = config.GetString("BakeHeadFilename", string.Empty);
+            m_BakeUpperFilename = config.GetString("BakeUpperFilename", string.Empty);
+            m_BakeLowerFilename = config.GetString("BakeLowerFilename", string.Empty);
+            m_BakeHairFilename = config.GetString("BakeHairFilename", string.Empty);
+
+            m_ReferenceBakeEyesFilename = config.GetString("ReferenceBakeEyeFilename", string.Empty);
+            m_ReferenceBakeHeadFilename = config.GetString("ReferenceBakeHeadFilename", string.Empty);
+            m_ReferenceBakeUpperFilename = config.GetString("ReferenceBakeUpperFilename", string.Empty);
+            m_ReferenceBakeLowerFilename = config.GetString("ReferenceBakeLowerFilename", string.Empty);
+            m_ReferenceBakeHairFilename = config.GetString("ReferenceBakeHairFilename", string.Empty);
+
+            double tolerance = config.GetDouble("ReferenceBakeTolerance", 0);
+            m_ReferenceBakeEyesTolerance = config.GetDouble("ReferenceBakeEyesTolerance", tolerance);
+            m_ReferenceBakeHeadTolerance = config.GetDouble("ReferenceBakeHeadTolerance", tolerance);
+            m_ReferenceBakeUpperTolerance = config.GetDouble("ReferenceBakeUpperTolerance", tolerance);
+            m_ReferenceBakeLowerTolerance = config.GetDouble("ReferenceBakeLowerTolerance", tolerance);
+            m_ReferenceBakeHairTolerance = config.GetDouble("ReferenceBakeHairTolerance", tolerance);
 
             foreach (string key in config.GetKeys())
             {
@@ -219,28 +245,119 @@ namespace SilverSim.Tests.Avatar
             UUID bakeLowerId = appearance.AvatarTextures[(int)AvatarTextureIndex.LowerBaked];
             UUID bakeHairId = appearance.AvatarTextures[(int)AvatarTextureIndex.HairBaked];
 
-            using (var fs = new FileStream(m_BakeEyesFilename, FileMode.Create, FileAccess.Write))
+            if (!string.IsNullOrEmpty(m_BakeEyesFilename))
             {
-                m_AssetService.Data[bakeEyesId].CopyTo(fs);
+                using (var fs = new FileStream(m_BakeEyesFilename, FileMode.Create, FileAccess.Write))
+                {
+                    m_AssetService.Data[bakeEyesId].CopyTo(fs);
+                }
             }
-            using (var fs = new FileStream(m_BakeHeadFilename, FileMode.Create, FileAccess.Write))
+            if (!string.IsNullOrEmpty(m_BakeHeadFilename))
             {
-                m_AssetService.Data[bakeHeadId].CopyTo(fs);
+                using (var fs = new FileStream(m_BakeHeadFilename, FileMode.Create, FileAccess.Write))
+                {
+                    m_AssetService.Data[bakeHeadId].CopyTo(fs);
+                }
             }
-            using (var fs = new FileStream(m_BakeUpperFilename, FileMode.Create, FileAccess.Write))
+            if (!string.IsNullOrEmpty(m_BakeUpperFilename))
             {
-                m_AssetService.Data[bakeUpperId].CopyTo(fs);
+                using (var fs = new FileStream(m_BakeUpperFilename, FileMode.Create, FileAccess.Write))
+                {
+                    m_AssetService.Data[bakeUpperId].CopyTo(fs);
+                }
             }
-            using (var fs = new FileStream(m_BakeLowerFilename, FileMode.Create, FileAccess.Write))
+            if (!string.IsNullOrEmpty(m_BakeLowerFilename))
             {
-                m_AssetService.Data[bakeLowerId].CopyTo(fs);
+                using (var fs = new FileStream(m_BakeLowerFilename, FileMode.Create, FileAccess.Write))
+                {
+                    m_AssetService.Data[bakeLowerId].CopyTo(fs);
+                }
             }
-            using (var fs = new FileStream(m_BakeHairFilename, FileMode.Create, FileAccess.Write))
+            if (!string.IsNullOrEmpty(m_BakeHairFilename))
             {
-                m_AssetService.Data[bakeHairId].CopyTo(fs);
+                using (var fs = new FileStream(m_BakeHairFilename, FileMode.Create, FileAccess.Write))
+                {
+                    m_AssetService.Data[bakeHairId].CopyTo(fs);
+                }
             }
 
-            return true;
+            bool referenceok = true;
+            if(!string.IsNullOrEmpty(m_ReferenceBakeEyesFilename))
+            {
+                double actTolerance = CompareImages(m_AssetService[bakeEyesId], m_ReferenceBakeHairFilename);
+                if(actTolerance > m_ReferenceBakeEyesTolerance)
+                {
+                    referenceok = false;
+                    m_Log.ErrorFormat("Eyes reference bake tolerance exceeded {0} > {1}", actTolerance, m_ReferenceBakeHairTolerance);
+                }
+            }
+            if (!string.IsNullOrEmpty(m_ReferenceBakeHeadFilename))
+            {
+                double actTolerance = CompareImages(m_AssetService[bakeHeadId], m_ReferenceBakeHeadFilename);
+                if (actTolerance > m_ReferenceBakeHeadTolerance)
+                {
+                    referenceok = false;
+                    m_Log.ErrorFormat("Head reference bake tolerance exceeded {0} > {1}", actTolerance, m_ReferenceBakeHeadTolerance);
+                }
+            }
+            if (!string.IsNullOrEmpty(m_ReferenceBakeUpperFilename))
+            {
+                double actTolerance = CompareImages(m_AssetService[bakeEyesId], m_ReferenceBakeUpperFilename);
+                if (actTolerance > m_ReferenceBakeUpperTolerance)
+                {
+                    referenceok = false;
+                    m_Log.ErrorFormat("Upper reference bake tolerance exceeded {0} > {1}", actTolerance, m_ReferenceBakeUpperTolerance);
+                }
+            }
+            if (!string.IsNullOrEmpty(m_ReferenceBakeLowerFilename))
+            {
+                double actTolerance = CompareImages(m_AssetService[bakeEyesId], m_ReferenceBakeLowerFilename);
+                if (actTolerance > m_ReferenceBakeLowerTolerance)
+                {
+                    referenceok = false;
+                    m_Log.ErrorFormat("Lower reference bake tolerance exceeded {0} > {1}", actTolerance, m_ReferenceBakeLowerTolerance);
+                }
+            }
+            if (!string.IsNullOrEmpty(m_ReferenceBakeHairFilename))
+            {
+                double actTolerance = CompareImages(m_AssetService[bakeEyesId], m_ReferenceBakeHairFilename);
+                if (actTolerance > m_ReferenceBakeHairTolerance)
+                {
+                    referenceok = false;
+                    m_Log.ErrorFormat("Hair reference bake tolerance exceeded {0} > {1}", actTolerance, m_ReferenceBakeHairTolerance);
+                }
+            }
+
+            return referenceok;
+        }
+
+        private double CompareImages(AssetData asset, string imagefilename)
+        {
+            using (Stream img1input = asset.InputStream)
+            using (Image img1 = Image.FromStream(asset.InputStream))
+            using (Image img2 = Image.FromFile(imagefilename))
+            using (var bmp1 = new Bitmap(img1))
+            using (var bmp2 = new Bitmap(img2))
+            {
+                if (img1.Width != img2.Width || img1.Height != img2.Height)
+                {
+                    return 0;
+                }
+
+                long diff = 0;
+                for (int y = 0; y < img1.Height; ++y)
+                {
+                    for (int x = 0; x < img1.Width; ++x)
+                    {
+                        System.Drawing.Color a = bmp1.GetPixel(x, y);
+                        System.Drawing.Color b = bmp2.GetPixel(x, y);
+                        diff += Math.Abs(a.R - b.R);
+                        diff += Math.Abs(a.G - b.G);
+                        diff += Math.Abs(a.B - b.B);
+                    }
+                }
+                return (double)diff / ((long)img1.Width * img1.Height * 3 * 255);
+            }
         }
 
         private InventoryItem LoadInventoryItem(
