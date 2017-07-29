@@ -32,9 +32,10 @@ namespace SilverSim.Tests.Avatar
 
         protected override AppearanceInfo RunBake()
         {
+            m_Log.Info("Running baking");
             var bakeCache = new BakeCache(m_AssetService);
             bakeCache.LoadFromCurrentOutfit(m_AgentOwner, m_InventoryService, m_AssetService, m_Log.Info);
-            return bakeCache.Bake(m_AssetService);
+            return bakeCache.Bake(m_AssetService, m_Log.Info);
         }
     }
 }
