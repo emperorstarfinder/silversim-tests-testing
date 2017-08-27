@@ -20,21 +20,42 @@
 // exception statement from your version.
 
 using log4net;
-using SilverSim.Scene.Types.Agent;
-using SilverSim.Types;
-using SilverSim.Types.Agent;
+using SilverSim.Main.Common;
+using SilverSim.Scene.Agent.Bakery;
+using SilverSim.Tests.Extensions;
 using System.Reflection;
 
 namespace SilverSim.Tests.Avatar
 {
-    public class BakeTest : BakeTestCommon
+    public class AvatarLadLoadTest : ITest
     {
         private static readonly ILog m_Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        protected override AppearanceInfo RunBake()
+        public void Startup(ConfigurationLoader loader)
         {
-            var info = new AgentBakeAppearance.AgentInfo(m_AgentOwner, m_InventoryService, m_AssetService, UUID.Zero);
-            return AgentBakeAppearance.LoadAppearanceFromCurrentOutfit(info, m_AssetService, m_Log.Info);
+        }
+
+        public void Setup()
+        {
+
+        }
+
+        public void Cleanup()
+        {
+
+        }
+
+        public bool Run()
+        {
+            try
+            {
+                m_Log.InfoFormat("Loaded {0} driver params", new AvatarLad().DriverParams.Length);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
         }
     }
 }
