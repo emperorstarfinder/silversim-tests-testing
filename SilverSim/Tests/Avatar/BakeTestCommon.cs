@@ -15,6 +15,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Reflection;
+using System.Text;
 using System.Xml;
 
 namespace SilverSim.Tests.Avatar
@@ -55,6 +56,7 @@ namespace SilverSim.Tests.Avatar
         protected double m_ReferenceBakeHairTolerance;
         protected double m_ReferenceBakeSkirtTolerance;
         protected readonly Dictionary<AvatarTextureIndex, UUID> m_ExpectedTextureIDs = new Dictionary<AvatarTextureIndex, UUID>();
+        protected byte[] m_ReferenceVisualParams;
 
         public void Startup(ConfigurationLoader loader)
         {
@@ -85,6 +87,11 @@ namespace SilverSim.Tests.Avatar
             m_ReferenceBakeLowerTolerance = config.GetDouble("ReferenceBakeLowerTolerance", tolerance);
             m_ReferenceBakeHairTolerance = config.GetDouble("ReferenceBakeHairTolerance", tolerance);
             m_ReferenceBakeSkirtTolerance = config.GetDouble("ReferenceBakeSkirtTolerance", tolerance);
+
+            if(config.Contains("ReferenceVisualParams"))
+            {
+                m_ReferenceVisualParams = Convert.FromBase64String(config.GetString("ReferenceVisualParams"));
+            }
 
             foreach (string key in config.GetKeys())
             {
@@ -349,6 +356,35 @@ namespace SilverSim.Tests.Avatar
                 {
                     m_Log.ErrorFormat("Unexpected texture at {0}: act={1} exp={2}", kvp.Key.ToString(), actId, kvp.Value);
                     referenceok = false;
+                }
+            }
+
+            if(m_ReferenceVisualParams != null)
+            {
+                if(m_ReferenceVisualParams.Length != appearance.VisualParams.Length)
+                {
+                    m_Log.ErrorFormat("Length of visual params not identical (ref {0} != act {1})", m_ReferenceVisualParams.Length, appearance.VisualParams.Length);
+                    referenceok = false;
+                }
+
+                int minLength = Math.Min(m_ReferenceVisualParams.Length, appearance.VisualParams.Length);
+                var sb = new StringBuilder();
+                for(int i = 0; i < minLength; ++i)
+                {
+                    if(m_ReferenceVisualParams[i] != appearance.VisualParams[i])
+                    {
+                        if(sb.Length == 0)
+                        {
+                            sb.Append("Data mismatch!\n");
+                        }
+                        sb.AppendFormat("vp index {0}: ref {1} != act {2}\n", i, m_ReferenceVisualParams[i], appearance.VisualParams[i]);
+                        referenceok = false;
+                    }
+                }
+
+                if(sb.Length != 0)
+                {
+                    m_Log.Error(sb.ToString());
                 }
             }
 
