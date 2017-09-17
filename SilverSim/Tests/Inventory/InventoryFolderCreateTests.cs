@@ -288,19 +288,19 @@ namespace SilverSim.Tests.Inventory
             {
                 return false;
             }
-            m_Log.InfoFormat("Testing non-existence 9");
+            m_Log.InfoFormat("Testing existence 9");
             if (!m_InventoryService.Folder.Content.ContainsKey(m_UserID.ID, inventoryId))
             {
                 return false;
             }
-            m_Log.InfoFormat("Testing non-existence 10");
+            m_Log.InfoFormat("Testing existence 10");
             if (!m_InventoryService.Folder.Content.TryGetValue(m_UserID.ID, inventoryId, out content))
             {
                 return false;
             }
-            m_Log.InfoFormat("Testing non-existence 11");
+            m_Log.InfoFormat("Testing existence 11");
             content = m_InventoryService.Folder.Content[m_UserID.ID, inventoryId];
-            m_Log.InfoFormat("Testing non-existence 12");
+            m_Log.InfoFormat("Testing existence 12");
             resultContent = m_InventoryService.Folder.Content[m_UserID.ID, new UUID[] { inventoryId }];
             bool isFound = false;
             foreach (InventoryFolderContent checkItem in resultContent)
