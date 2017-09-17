@@ -121,7 +121,7 @@ namespace SilverSim.Tests.Inventory
                 }
             }
 
-            m_Log.Info("Testing IncrementVersion of RootFolder");
+            m_Log.Info("Testing IncrementVersion of RootFolder when supported");
             folder = m_InventoryService.Folder[m_UserID, AssetType.RootFolder];
             int oldVersion = folder.Version;
             if(oldVersion == 1)
@@ -133,9 +133,13 @@ namespace SilverSim.Tests.Inventory
 
             m_Log.Info("Testing IncrementVersion result of RootFolder");
             folder = m_InventoryService.Folder[m_UserID, AssetType.RootFolder];
-            if (oldVersion + 1 != folder.Version)
+            if(oldVersion == folder.Version)
             {
-                m_Log.InfoFormat("Expected an incremented version due to checkInventory (old {0} new {1})", oldVersion, folder.Version);
+                m_Log.InfoFormat("IncrementVersion not supported");
+            }
+            else if (oldVersion + 1 != folder.Version)
+            {
+                m_Log.InfoFormat("Expected an incremented version due to IncrementVersion (old {0} new {1})", oldVersion, folder.Version);
                 return false;
             }
 
