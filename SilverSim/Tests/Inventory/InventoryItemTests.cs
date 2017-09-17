@@ -218,12 +218,29 @@ namespace SilverSim.Tests.Inventory
             {
                 /* this is the okay case */
             }
-
             m_Log.InfoFormat("Testing non-existence 7");
             result = m_InventoryService.Item[m_UserID.ID, new List<UUID> { inventoryId }];
             if (result.Count != 0)
             {
                 return false;
+            }
+            m_Log.InfoFormat("Testing non-existence 8");
+            result = m_InventoryService.Folder.GetItems(m_UserID.ID, rootFolder.ID);
+            foreach(InventoryItem checkItem in result)
+            {
+                if(checkItem.ID == inventoryId)
+                {
+                    return false;
+                }
+            }
+            m_Log.InfoFormat("Testing non-existence 9");
+            result = m_InventoryService.Folder.Content[m_UserID.ID, rootFolder.ID].Items;
+            foreach (InventoryItem checkItem in result)
+            {
+                if (checkItem.ID == inventoryId)
+                {
+                    return false;
+                }
             }
 
             var testItem = new InventoryItem(inventoryId)
@@ -262,13 +279,11 @@ namespace SilverSim.Tests.Inventory
             {
                 return false;
             }
-
             m_Log.InfoFormat("Testing existence 2");
             if (!m_InventoryService.Item.ContainsKey(m_UserID.ID, inventoryId))
             {
                 return false;
             }
-
             m_Log.InfoFormat("Testing existence 3");
             if (!m_InventoryService.Item.TryGetValue(inventoryId, out item))
             {
@@ -288,21 +303,18 @@ namespace SilverSim.Tests.Inventory
             {
                 return false;
             }
-
             m_Log.InfoFormat("Testing existence 5");
             item = m_InventoryService.Item[inventoryId];
             if (!IsDataEqual(item, testItem))
             {
                 return false;
             }
-
             m_Log.InfoFormat("Testing existence 6");
             item = m_InventoryService.Item[m_UserID.ID, inventoryId];
             if (!IsDataEqual(item, testItem))
             {
                 return false;
             }
-
             m_Log.InfoFormat("Testing existence 7");
             result = m_InventoryService.Item[m_UserID.ID, new List<UUID> { inventoryId }];
             if(result.Count != 1)
@@ -310,6 +322,43 @@ namespace SilverSim.Tests.Inventory
                 return false;
             }
             if(!IsDataEqual(result[0], testItem))
+            {
+                return false;
+            }
+
+            item = null;
+            m_Log.InfoFormat("Testing non-existence 8");
+            result = m_InventoryService.Folder.GetItems(m_UserID.ID, rootFolder.ID);
+            foreach (InventoryItem checkItem in result)
+            {
+                if (checkItem.ID == inventoryId)
+                {
+                    item = checkItem;
+                }
+            }
+            if(item == null)
+            {
+                return false;
+            }
+            if(!IsDataEqual(item, testItem))
+            {
+                return false;
+            }
+            m_Log.InfoFormat("Testing non-existence 9");
+            result = m_InventoryService.Folder.Content[m_UserID.ID, rootFolder.ID].Items;
+            item = null;
+            foreach (InventoryItem checkItem in result)
+            {
+                if (checkItem.ID == inventoryId)
+                {
+                    item = checkItem;
+                }
+            }
+            if (item == null)
+            {
+                return false;
+            }
+            if (!IsDataEqual(item, testItem))
             {
                 return false;
             }
@@ -388,6 +437,24 @@ namespace SilverSim.Tests.Inventory
             {
                 return false;
             }
+            m_Log.InfoFormat("Testing non-existence 8");
+            result = m_InventoryService.Folder.GetItems(m_UserID.ID, rootFolder.ID);
+            foreach (InventoryItem checkItem in result)
+            {
+                if (checkItem.ID == inventoryId)
+                {
+                    return false;
+                }
+            }
+            m_Log.InfoFormat("Testing non-existence 9");
+            result = m_InventoryService.Folder.Content[m_UserID.ID, rootFolder.ID].Items;
+            foreach (InventoryItem checkItem in result)
+            {
+                if (checkItem.ID == inventoryId)
+                {
+                    return false;
+                }
+            }
 
             m_Log.InfoFormat("Creating the item");
             m_BackendInventoryService.Item.Add(testItem);
@@ -442,12 +509,29 @@ namespace SilverSim.Tests.Inventory
             {
                 /* this is the okay case */
             }
-
             m_Log.InfoFormat("Testing non-existence 7");
             result = m_InventoryService.Item[m_UserID.ID, new List<UUID> { inventoryId }];
             if (result.Count != 0)
             {
                 return false;
+            }
+            m_Log.InfoFormat("Testing non-existence 8");
+            result = m_InventoryService.Folder.GetItems(m_UserID.ID, rootFolder.ID);
+            foreach (InventoryItem checkItem in result)
+            {
+                if (checkItem.ID == inventoryId)
+                {
+                    return false;
+                }
+            }
+            m_Log.InfoFormat("Testing non-existence 9");
+            result = m_InventoryService.Folder.Content[m_UserID.ID, rootFolder.ID].Items;
+            foreach (InventoryItem checkItem in result)
+            {
+                if (checkItem.ID == inventoryId)
+                {
+                    return false;
+                }
             }
 
             return true;
