@@ -424,6 +424,7 @@ namespace SilverSim.Tests.Inventory
 
             m_Log.InfoFormat("Creating the folder");
             m_InventoryService.Folder.Add(testFolder);
+            inventoryId = testFolder.ID;
 
             m_Log.InfoFormat("Deleting folder");
             List<UUID> deleted = m_InventoryService.Folder.Delete(m_UserID.ID, new List<UUID> { inventoryId });
