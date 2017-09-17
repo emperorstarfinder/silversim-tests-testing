@@ -110,18 +110,22 @@ namespace SilverSim.Tests.Inventory
             if (a.Permissions.Current != b.Permissions.Current)
             {
                 mismatches.Add("Permissions.Current");
+                m_Log.InfoFormat("Permissions.Current {0} != {1}", a.Permissions.Current, b.Permissions.Current);
             }
             if (a.Permissions.NextOwner != b.Permissions.NextOwner)
             {
                 mismatches.Add("Permissions.NextOwner");
+                m_Log.InfoFormat("Permissions.NextOwner {0} != {1}", a.Permissions.NextOwner, b.Permissions.NextOwner);
             }
             if (a.Permissions.Group != b.Permissions.Group)
             {
                 mismatches.Add("Permissions.Group");
+                m_Log.InfoFormat("Permissions.Group {0} != {1}", a.Permissions.Group, b.Permissions.Group);
             }
             if (a.Permissions.EveryOne != b.Permissions.EveryOne)
             {
                 mismatches.Add("Permissions.EveryOne");
+                m_Log.InfoFormat("Permissions.EveryOne {0} != {1}", a.Permissions.EveryOne, b.Permissions.EveryOne);
             }
             if (a.ParentFolderID != b.ParentFolderID)
             {

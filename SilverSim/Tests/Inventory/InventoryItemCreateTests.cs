@@ -96,6 +96,7 @@ namespace SilverSim.Tests.Inventory
             if (a.Group.ID != b.Group.ID)
             {
                 mismatches.Add("Group.ID");
+                m_Log.InfoFormat("Mismatch Group.ID {0} != {1}", a.Group.ID, b.Group.ID);
             }
             if (a.Flags != b.Flags)
             {
@@ -273,6 +274,7 @@ namespace SilverSim.Tests.Inventory
                 CreationDate = Date.Now
             };
             m_InventoryService.Item.Add(testItem);
+            inventoryId = testItem.ID;
 
             m_Log.InfoFormat("Testing existence 1");
             if (!m_InventoryService.Item.ContainsKey(inventoryId))
@@ -458,6 +460,7 @@ namespace SilverSim.Tests.Inventory
 
             m_Log.InfoFormat("Creating the item");
             m_InventoryService.Item.Add(testItem);
+            inventoryId = testItem.ID;
 
             m_Log.InfoFormat("Deleting item");
             List<UUID> deleted = m_InventoryService.Item.Delete(m_UserID.ID, new List<UUID> { inventoryId });
