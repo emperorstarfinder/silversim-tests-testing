@@ -36,12 +36,15 @@ namespace SilverSim.Tests.Inventory
     {
         private static readonly ILog m_Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         InventoryServiceInterface m_InventoryService;
+        InventoryServiceInterface m_BackendInventoryService;
         UUID m_UserID;
 
         public void Startup(ConfigurationLoader loader)
         {
             IConfig config = loader.Config.Configs[GetType().FullName];
-            m_InventoryService = loader.GetService<InventoryServiceInterface>(config.GetString("InventoryService"));
+            string inventoryServiceName = config.GetString("InventoryService");
+            m_InventoryService = loader.GetService<InventoryServiceInterface>(inventoryServiceName);
+            m_BackendInventoryService = loader.GetService<InventoryServiceInterface>(config.GetString("BackendInventoryService", inventoryServiceName));
             m_UserID = config.GetString("UserID");
         }
 
@@ -97,7 +100,7 @@ namespace SilverSim.Tests.Inventory
             m_Log.Info("Create User Inventory");
             try
             {
-                m_InventoryService.CheckInventory(m_UserID);
+                m_BackendInventoryService.CheckInventory(m_UserID);
             }
             catch
             {
