@@ -28,6 +28,7 @@ using SilverSim.Types;
 using SilverSim.Types.Asset;
 using SilverSim.Types.Inventory;
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 
 namespace SilverSim.Tests.Inventory
@@ -152,20 +153,23 @@ namespace SilverSim.Tests.Inventory
             };
 
             UUID rootFolderID = folder.ID;
+            var finalfolderids = new List<UUID>();
 
             m_Log.Info("Creating 4 folders");
+            int folderNameCnt = 1;
             foreach(UUID folderid in folders)
             {
                 folder = new InventoryFolder();
                 folder.ID = folderid;
-                folder.Version = 16;
+                folder.Version = 1;
                 folder.InventoryType = InventoryType.Unknown;
                 folder.Owner.ID = m_UserID;
-                folder.Name = "A " + folderid.ToString();
+                folder.Name = "A " + (folderNameCnt++).ToString();
                 folder.ParentFolderID = rootFolderID;
                 try
                 {
                     m_InventoryService.Folder.Add(folder);
+                    finalfolderids.Add(folder.ID);
                 }
                 catch(Exception e)
                 {
@@ -173,8 +177,10 @@ namespace SilverSim.Tests.Inventory
                     return false;
                 }
             }
+            folders = finalfolderids.ToArray();
 
             m_Log.Info("Testing existence of new folders");
+            folderNameCnt = 1;
             foreach (UUID folderid in folders)
             {
                 try
@@ -191,7 +197,7 @@ namespace SilverSim.Tests.Inventory
                     m_Log.WarnFormat("Parent folder does not match of folder {0}", folderid);
                     return false;
                 }
-                if (folder.Name != "A " + folderid.ToString())
+                if (folder.Name != "A " + (folderNameCnt++).ToString())
                 {
                     m_Log.WarnFormat("Name does not match of folder {0}", folderid);
                     return false;
@@ -206,7 +212,7 @@ namespace SilverSim.Tests.Inventory
                     m_Log.WarnFormat("InventoryType does not match of folder {0}", folderid);
                     return false;
                 }
-                if (folder.Version != 16)
+                if (folder.Version != 1)
                 {
                     m_Log.WarnFormat("Version does not match of folder {0}", folderid);
                     return false;
