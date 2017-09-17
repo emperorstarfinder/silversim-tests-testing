@@ -77,10 +77,6 @@ namespace SilverSim.Tests.Inventory
             {
                 mismatches.Add("InventoryType");
             }
-            if (a.Version != b.Version)
-            {
-                mismatches.Add("Version");
-            }
 
             if (mismatches.Count != 0)
             {
