@@ -68,6 +68,7 @@ namespace SilverSim.Tests.Inventory
             if(a.Name != b.Name)
             {
                 mismatches.Add("Name");
+                m_Log.InfoFormat("Name mismatch {0} != {1}", a.Name, b.Name);
             }
             if (a.Description != b.Description)
             {
@@ -84,6 +85,7 @@ namespace SilverSim.Tests.Inventory
             if (a.Creator.ID != b.Creator.ID)
             {
                 mismatches.Add("Creator.ID");
+                m_Log.InfoFormat("Creator.ID mismatch {0} != {1}", a.Creator.ID, b.Creator.ID);
             }
             if (a.Owner.ID != b.Owner.ID)
             {
@@ -124,6 +126,7 @@ namespace SilverSim.Tests.Inventory
             if (a.ParentFolderID != b.ParentFolderID)
             {
                 mismatches.Add("ParentFolderID");
+                m_Log.InfoFormat("ParentFolderID mismatch {0} != {1}", a.ParentFolderID, b.ParentFolderID);
             }
             if (a.SaleInfo.Price != b.SaleInfo.Price)
             {
@@ -327,7 +330,7 @@ namespace SilverSim.Tests.Inventory
             }
 
             item = null;
-            m_Log.InfoFormat("Testing non-existence 8");
+            m_Log.InfoFormat("Testing existence 8");
             result = m_InventoryService.Folder.GetItems(m_UserID.ID, rootFolder.ID);
             foreach (InventoryItem checkItem in result)
             {
@@ -344,7 +347,7 @@ namespace SilverSim.Tests.Inventory
             {
                 return false;
             }
-            m_Log.InfoFormat("Testing non-existence 9");
+            m_Log.InfoFormat("Testing existence 9");
             result = m_InventoryService.Folder.Content[m_UserID.ID, rootFolder.ID].Items;
             item = null;
             foreach (InventoryItem checkItem in result)
