@@ -32,7 +32,7 @@ using System.Reflection;
 
 namespace SilverSim.Tests.Inventory
 {
-    public class InventoryFolderTests : ITest
+    public class InventoryFolderCreateTests : ITest
     {
         private static readonly ILog m_Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         InventoryServiceInterface m_InventoryService;
@@ -175,7 +175,7 @@ namespace SilverSim.Tests.Inventory
                 }
             }
             m_Log.InfoFormat("Testing non-existence 9");
-            if(m_InventoryService.Folder.Content.ContainsKey(m_UserID.ID, inventoryId))
+            if (m_InventoryService.Folder.Content.ContainsKey(m_UserID.ID, inventoryId))
             {
                 return false;
             }
@@ -190,15 +190,15 @@ namespace SilverSim.Tests.Inventory
                 content = m_InventoryService.Folder.Content[m_UserID.ID, inventoryId];
                 return false;
             }
-            catch(InventoryFolderNotFoundException)
+            catch (InventoryFolderNotFoundException)
             {
                 /* this is the expected one */
             }
             m_Log.InfoFormat("Testing non-existence 12");
             resultContent = m_InventoryService.Folder.Content[m_UserID.ID, new UUID[] { inventoryId }];
-            foreach(InventoryFolderContent checkItem in resultContent)
+            foreach (InventoryFolderContent checkItem in resultContent)
             {
-                if(checkItem.FolderID == inventoryId)
+                if (checkItem.FolderID == inventoryId)
                 {
                     return false;
                 }
@@ -212,7 +212,8 @@ namespace SilverSim.Tests.Inventory
                 InventoryType = InventoryType.Notecard,
                 Owner = m_UserID,
             };
-            m_BackendInventoryService.Folder.Add(testFolder);
+            m_InventoryService.Folder.Add(testFolder);
+            inventoryId = testFolder.ID;
 
             m_Log.InfoFormat("Testing existence 1");
             if (!m_InventoryService.Folder.ContainsKey(inventoryId))
@@ -313,7 +314,7 @@ namespace SilverSim.Tests.Inventory
                     isFound = true;
                 }
             }
-            if(!isFound)
+            if (!isFound)
             {
                 return false;
             }
@@ -426,7 +427,7 @@ namespace SilverSim.Tests.Inventory
             }
 
             m_Log.InfoFormat("Creating the folder");
-            m_BackendInventoryService.Folder.Add(testFolder);
+            m_InventoryService.Folder.Add(testFolder);
 
             m_Log.InfoFormat("Deleting folder");
             List<UUID> deleted = m_InventoryService.Folder.Delete(m_UserID.ID, new List<UUID> { inventoryId });
