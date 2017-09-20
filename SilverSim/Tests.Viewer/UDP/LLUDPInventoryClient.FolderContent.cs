@@ -29,13 +29,31 @@ namespace SilverSim.Tests.Viewer.UDP
 {
     public partial class LLUDPInventoryClient : IInventoryFolderContentServiceInterface
     {
-        InventoryFolderContent IInventoryFolderContentServiceInterface.this[UUID principalID, UUID folderID] => throw new NotImplementedException();
+        InventoryFolderContent IInventoryFolderContentServiceInterface.this[UUID principalID, UUID folderID]
+        {
+            get
+            {
+                InventoryFolderContent content;
+                if(!Folder.Content.TryGetValue(principalID, folderID, out content))
+                {
+                    throw new InventoryFolderNotFoundException(folderID);
+                }
+                return content;
+            }
+        }
 
-        List<InventoryFolderContent> IInventoryFolderContentServiceInterface.this[UUID principalID, UUID[] folderIDs] => throw new NotImplementedException();
+        List<InventoryFolderContent> IInventoryFolderContentServiceInterface.this[UUID principalID, UUID[] folderIDs]
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
 
         bool IInventoryFolderContentServiceInterface.ContainsKey(UUID principalID, UUID folderID)
         {
-            throw new NotImplementedException();
+            InventoryFolderContent content;
+            return Folder.Content.TryGetValue(principalID, folderID, out content);
         }
 
         bool IInventoryFolderContentServiceInterface.TryGetValue(UUID principalID, UUID folderID, out InventoryFolderContent inventoryFolderContent)

@@ -40,11 +40,39 @@ namespace SilverSim.Tests.Viewer.UDP
 
         }
 
-        InventoryItem IInventoryItemServiceInterface.this[UUID key] => throw new NotImplementedException();
+        InventoryItem IInventoryItemServiceInterface.this[UUID key]
+        {
+            get
+            {
+                InventoryItem item;
+                if(!Item.TryGetValue(key, out item))
+                {
+                    throw new InventoryItemNotFoundException(key);
+                }
+                return item;
+            }
+        }
 
-        InventoryItem IInventoryItemServiceInterface.this[UUID principalID, UUID key] => throw new NotImplementedException();
+        InventoryItem IInventoryItemServiceInterface.this[UUID principalID, UUID key]
+        {
+            get
+            {
+                InventoryItem item;
+                if(!Item.TryGetValue(principalID, key, out item))
+                {
+                    throw new InventoryItemNotFoundException(key);
+                }
+                return item;
+            }
+        }
 
-        List<InventoryItem> IInventoryItemServiceInterface.this[UUID principalID, List<UUID> itemids] => throw new NotImplementedException();
+        List<InventoryItem> IInventoryItemServiceInterface.this[UUID principalID, List<UUID> itemids]
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
 
         void IInventoryItemServiceInterface.Add(InventoryItem item)
         {
@@ -53,12 +81,14 @@ namespace SilverSim.Tests.Viewer.UDP
 
         bool IInventoryItemServiceInterface.ContainsKey(UUID key)
         {
-            throw new NotImplementedException();
+            InventoryItem item;
+            return Item.TryGetValue(key, out item);
         }
 
         bool IInventoryItemServiceInterface.ContainsKey(UUID principalID, UUID key)
         {
-            throw new NotImplementedException();
+            InventoryItem item;
+            return Item.TryGetValue(principalID, key, out item);
         }
 
         void IInventoryItemServiceInterface.Delete(UUID principalID, UUID id)
