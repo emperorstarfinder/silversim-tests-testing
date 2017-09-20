@@ -38,7 +38,7 @@ namespace SilverSim.Tests.Viewer.UDP
             m_RootFolderID = rootFolderID;
             m_ViewerCircuit = viewerCircuit;
             m_ViewerCircuit.MessageRouting.Add(MessageType.BulkUpdateInventory, MessageHandler);
-            m_ViewerCircuit.MessageRouting.Add(MessageType.FetchInventoryReply, MessageHandler);
+            m_ViewerCircuit.MessageRouting.Add(MessageType.FetchInventoryReply, HandleFetchInventoryReply);
             m_ViewerCircuit.MessageRouting.Add(MessageType.InventoryDescendents, MessageHandler);
             m_ViewerCircuit.MessageRouting.Add(MessageType.UpdateCreateInventoryItem, HandleUpdateCreateInventoryItem);
             m_ViewerCircuit.MessageRouting.Add(MessageType.UpdateInventoryFolder, HandleUpdateInventoryFolder);
