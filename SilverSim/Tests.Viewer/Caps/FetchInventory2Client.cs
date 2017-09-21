@@ -170,6 +170,8 @@ namespace SilverSim.Tests.Viewer.Caps
 
         public abstract void Move(UUID principalID, UUID id, UUID newFolder);
 
+        public abstract void Copy(UUID principalID, UUID id, UUID newFolder);
+
         public abstract List<UUID> Delete(UUID principalID, List<UUID> ids);
     }
 }

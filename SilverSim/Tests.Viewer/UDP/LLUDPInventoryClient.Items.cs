@@ -62,13 +62,7 @@ namespace SilverSim.Tests.Viewer.UDP
             }
         }
 
-        InventoryItem IInventoryItemServiceInterface.this[UUID key]
-        {
-            get
-            {
-                throw new NotSupportedException();
-            }
-        }
+        InventoryItem IInventoryItemServiceInterface.this[UUID key] => Item[m_ViewerCircuit.AgentID, key];
 
         InventoryItem IInventoryItemServiceInterface.this[UUID principalID, UUID key]
         {
@@ -119,10 +113,7 @@ namespace SilverSim.Tests.Viewer.UDP
             m_ViewerCircuit.SendMessage(req);
         }
 
-        bool IInventoryItemServiceInterface.ContainsKey(UUID key)
-        {
-            throw new NotSupportedException();
-        }
+        bool IInventoryItemServiceInterface.ContainsKey(UUID key) => Item.ContainsKey(m_ViewerCircuit.AgentID, key);
 
         bool IInventoryItemServiceInterface.ContainsKey(UUID principalID, UUID key)
         {
@@ -169,10 +160,30 @@ namespace SilverSim.Tests.Viewer.UDP
             throw new NotImplementedException();
         }
 
-        bool IInventoryItemServiceInterface.TryGetValue(UUID key, out InventoryItem item)
+        void IInventoryItemServiceInterface.Copy(UUID principalID, UUID id, UUID newFolder)
         {
-            throw new NotSupportedException();
-        }
+            InventoryItem item;
+            if(!Item.TryGetValue(principalID, id, out item))
+            {
+                throw new InventoryItemNotFoundException(id);
+            }
+            var req = new CopyInventoryItem
+            {
+                AgentID = m_ViewerCircuit.AgentID,
+                SessionID = m_ViewerCircuit.SessionID,
+            };
+            req.InventoryData.Add(new CopyInventoryItem.InventoryDataEntry
+            {
+                NewFolderID = newFolder,
+                OldAgentID = m_ViewerCircuit.AgentID,
+                OldItemID = id,
+                NewName = item.Name
+            });
+            throw new NotImplementedException();
+        }    
+
+        bool IInventoryItemServiceInterface.TryGetValue(UUID key, out InventoryItem item) =>
+            Item.TryGetValue(m_ViewerCircuit.AgentID, key, out item);
 
         bool IInventoryItemServiceInterface.TryGetValue(UUID principalID, UUID key, out InventoryItem item)
         {
