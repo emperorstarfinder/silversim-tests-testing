@@ -34,6 +34,7 @@
   <Reference name="SilverSim.Scripting.Lsl.Api.Hashtable" path="../../bin/plugins/" localCopy="false"/>
   <Reference name="SilverSim.Viewer.Messages" localCopy="false"/>
   <Reference name="SilverSim.Viewer.Core" localCopy="false"/>
+  <Reference name="SilverSim.AISv3" path="../../bin/plugins/" localCopy="false"/>
   <Reference name="SilverSim.Tests" localCopy="false"/>
   <Reference name="SilverSim.Http" localCopy="false"/>
   <Reference name="SilverSim.Threading" localCopy="false"/>

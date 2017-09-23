@@ -247,7 +247,7 @@ namespace SilverSim.Tests.Viewer
                 {
                     throw new KeyNotFoundException();
                 }
-                var info = new UserInfo()
+                return new UserInfo()
                 {
                     FirstName = account.Principal.FirstName,
                     LastName = account.Principal.LastName,
@@ -255,7 +255,6 @@ namespace SilverSim.Tests.Viewer
                     UserFlags = account.UserFlags,
                     UserTitle = account.UserTitle
                 };
-                return info;
             }
 
             public override UUI GetUUI(UUI user, UUI targetUserID)
