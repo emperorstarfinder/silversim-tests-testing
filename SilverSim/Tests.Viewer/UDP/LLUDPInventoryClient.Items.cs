@@ -160,7 +160,7 @@ namespace SilverSim.Tests.Viewer.UDP
             throw new NotImplementedException();
         }
 
-        void IInventoryItemServiceInterface.Copy(UUID principalID, UUID id, UUID newFolder)
+        UUID IInventoryItemServiceInterface.Copy(UUID principalID, UUID id, UUID newFolder)
         {
             InventoryItem item;
             if(!Item.TryGetValue(principalID, id, out item))
