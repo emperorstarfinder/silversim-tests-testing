@@ -163,6 +163,8 @@ namespace SilverSim.Tests.Viewer.Caps
             /* not implemented */
         }
 
+        public abstract InventoryTree Copy(UUID principalID, UUID folderID, UUID toFolderID);
+
         public abstract void Move(UUID principalID, UUID folderID, UUID toFolderID);
 
         public abstract void Purge(UUID folderID);

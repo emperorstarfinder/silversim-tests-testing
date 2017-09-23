@@ -185,6 +185,9 @@ namespace SilverSim.Tests.Viewer.UDP
             /* intentionally left empty */
         }
 
+        InventoryTree IInventoryFolderServiceInterface.Copy(UUID principalID, UUID folderID, UUID toFolderID) =>
+            CopyFolder(principalID, folderID, toFolderID);
+
         void IInventoryFolderServiceInterface.Move(UUID principalID, UUID folderID, UUID toFolderID)
         {
             var req = new MoveInventoryFolder

@@ -81,6 +81,9 @@ namespace SilverSim.Tests.Viewer.Inventory
             public override List<UUID> Delete(UUID principalID, List<UUID> folderIDs) =>
                 m_UdpClient.Delete(principalID, folderIDs);
 
+            public override InventoryTree Copy(UUID principalID, UUID folderID, UUID toFolderID) =>
+                m_UdpClient.Copy(principalID, folderID, toFolderID);
+
             public override void Move(UUID principalID, UUID folderID, UUID toFolderID) =>
                 m_UdpClient.Move(principalID, folderID, toFolderID);
 
