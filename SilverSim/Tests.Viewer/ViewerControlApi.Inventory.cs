@@ -46,7 +46,7 @@ namespace SilverSim.Tests.Viewer
             ScriptInstance instance,
             LSLKey agentId,
             int circuitCode,
-            UUID rootFolderID,
+            LSLKey rootFolderID,
             HashtableApi.Hashtable seedResponse) =>
             GetAgentInventory(instance, agentId, circuitCode, rootFolderID, seedResponse, VC_AGENT_INVENTORY_FULL_AISV3);
 
@@ -55,7 +55,7 @@ namespace SilverSim.Tests.Viewer
             ScriptInstance instance,
             LSLKey agentId,
             int circuitCode,
-            UUID rootFolderID,
+            LSLKey rootFolderID,
             HashtableApi.Hashtable seedResponse,
             int inventoryOption)
         {
