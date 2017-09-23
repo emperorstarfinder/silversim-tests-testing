@@ -88,5 +88,53 @@ namespace SilverSim.Tests.Viewer
                 return new AgentInventoryApi.AgentInventory();
             }
         }
+
+        [APIExtension("ViewerControl", "vcGetLibraryInventory")]
+        public AgentInventoryApi.AgentInventory GetLibraryInventory(
+            ScriptInstance instance,
+            LSLKey agentId,
+            int circuitCode,
+            UUID rootFolderID,
+            HashtableApi.Hashtable seedResponse) =>
+            GetLibraryInventory(instance, agentId, circuitCode, rootFolderID, seedResponse, VC_AGENT_INVENTORY_FULL_AISV3);
+
+        [APIExtension("ViewerControl", "vcGetLibraryInventory")]
+        public AgentInventoryApi.AgentInventory GetLibraryInventory(
+            ScriptInstance instance,
+            LSLKey agentId,
+            int circuitCode,
+            UUID rootFolderID,
+            HashtableApi.Hashtable seedResponse,
+            int inventoryOption)
+        {
+            lock (instance)
+            {
+                ViewerConnection vc;
+                ViewerCircuit viewerCircuit;
+                if (m_Clients.TryGetValue(agentId.AsUUID, out vc) &&
+                    vc.ViewerCircuits.TryGetValue((uint)circuitCode, out viewerCircuit))
+                {
+                    IValue value;
+                    string aisv3_agent_uri = seedResponse.TryGetValue("LibraryAPIv3", out value) ? value.ToString() : string.Empty;
+                    string fetchlib2_agent_uri = seedResponse.TryGetValue("FetchLib2", out value) ? value.ToString() : string.Empty;
+                    string fetchlibdescendents2_agent_uri = seedResponse.TryGetValue("FetchLibDescendents2", out value) ? value.ToString() : string.Empty;
+
+                    if (inventoryOption >= VC_AGENT_INVENTORY_FULL_AISV3 && !string.IsNullOrEmpty(aisv3_agent_uri))
+                    {
+                        return new AgentInventoryApi.AgentInventory(instance, new AISv3ClientConnector(aisv3_agent_uri), new UUI(viewerCircuit.AgentID), false);
+                    }
+
+                    if (inventoryOption >= VC_AGENT_INVENTORY_FETCH_CAPS && !string.IsNullOrEmpty(fetchlib2_agent_uri) &&
+                        !string.IsNullOrEmpty(fetchlibdescendents2_agent_uri))
+                    {
+                        return new AgentInventoryApi.AgentInventory(instance, new InventoryV2Client(viewerCircuit, fetchlibdescendents2_agent_uri, fetchlib2_agent_uri, rootFolderID), new UUI(viewerCircuit.AgentID), false);
+                    }
+
+                    return new AgentInventoryApi.AgentInventory(instance, new LLUDPInventoryClient(viewerCircuit, rootFolderID), new UUI(viewerCircuit.AgentID), false);
+                }
+
+                return new AgentInventoryApi.AgentInventory();
+            }
+        }
     }
 }
