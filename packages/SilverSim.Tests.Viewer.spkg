@@ -9,6 +9,6 @@
 	</default-configuration>
 	<skip-delivery>true</skip-delivery>
 	<files>
-		<file name="bin/plugins/SilverSim.Tests.Viewer.dll"/>
+		<file name="bin/plugins/SilverSim.Tests.Viewer.dll" is-version-src="true"/>
 	</files>
 </package>
