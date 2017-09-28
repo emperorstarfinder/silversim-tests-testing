@@ -61,6 +61,18 @@ namespace SilverSim.Tests.Http
             return string.Empty;
         }
 
+        private string GetTransferEncodingValue(Dictionary<string, string> headers)
+        {
+            foreach (KeyValuePair<string, string> kvp in headers)
+            {
+                if (string.Compare(kvp.Key, "transfer-encoding", true) == 0)
+                {
+                    return kvp.Value;
+                }
+            }
+            return string.Empty;
+        }
+
         public bool Run()
         {
             m_HttpServer.UriHandlers.Add("/test", HttpHandler);
@@ -102,6 +114,12 @@ namespace SilverSim.Tests.Http
                         m_Log.ErrorFormat("Connection: field has wrong response: \"{0}\"", connval);
                         return false;
                     }
+                }
+                string chunkval = GetTransferEncodingValue(headers).Trim().ToLower();
+                if (chunkval != string.Empty)
+                {
+                    m_Log.ErrorFormat("Transfer-Encoding: field has wrong response: \"{0}\"", chunkval);
+                    return false;
                 }
             }
             numConns = m_HttpServer.AcceptedConnectionsCount - numConns;
