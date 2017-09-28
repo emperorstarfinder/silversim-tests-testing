@@ -27,13 +27,14 @@ using SilverSim.Tests.Extensions;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
 using System.Reflection;
 using System.Text;
 using System.Threading;
 
 namespace SilverSim.Tests.Http
 {
-    public class CloseTest : ITest
+    public class CompressedKeepAliveTest : ITest
     {
         private static readonly ILog m_Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         private BaseHttpServer m_HttpServer;
@@ -50,9 +51,9 @@ namespace SilverSim.Tests.Http
 
         private string GetConnectionValue(Dictionary<string, string> headers)
         {
-            foreach(KeyValuePair<string, string> kvp in headers)
+            foreach (KeyValuePair<string, string> kvp in headers)
             {
-                if(string.Compare(kvp.Key, "connection", true) == 0)
+                if (string.Compare(kvp.Key, "connection", true) == 0)
                 {
                     return kvp.Value;
                 }
@@ -72,19 +73,31 @@ namespace SilverSim.Tests.Http
             return string.Empty;
         }
 
+        private string GetContentEncodingValue(Dictionary<string, string> headers)
+        {
+            foreach (KeyValuePair<string, string> kvp in headers)
+            {
+                if (string.Compare(kvp.Key, "content-encoding", true) == 0)
+                {
+                    return kvp.Value;
+                }
+            }
+            return string.Empty;
+        }
+
         public bool Run()
         {
             m_HttpServer.UriHandlers.Add("/test", HttpHandler);
             int NumberConnections = 1000;
             int numConns = m_HttpServer.AcceptedConnectionsCount;
-            m_Log.InfoFormat("Testing 1000 HTTP GET requests (no connection reuse)");
+            m_Log.InfoFormat("Testing 1000 HTTP GET requests (keep-alive)");
             for (int connidx = 0; connidx++ < NumberConnections;)
             {
                 string res;
                 var headers = new Dictionary<string, string>();
                 try
                 {
-                    res = HttpClient.DoRequest("GET", m_HttpServer.ServerURI + "test", null, string.Empty, 0, null, false, 60000, HttpClient.ConnectionReuseMode.SingleRequest, headers);
+                    res = HttpClient.DoRequest("GET", m_HttpServer.ServerURI + "test", null, string.Empty, 0, null, false, 60000, connidx == NumberConnections ? HttpClient.ConnectionReuseMode.Close : HttpClient.ConnectionReuseMode.Keepalive, headers);
                 }
                 catch (Exception e)
                 {
@@ -98,10 +111,21 @@ namespace SilverSim.Tests.Http
                     return false;
                 }
                 string connval = GetConnectionValue(headers).Trim().ToLower();
-                if(connval != "close")
+                if (connidx == NumberConnections)
                 {
-                    m_Log.ErrorFormat("Connection: field has wrong response: \"{0}\"", connval);
-                    return false;
+                    if (connval != "close")
+                    {
+                        m_Log.ErrorFormat("Connection: field has wrong response on last request: \"{0}\"", connval);
+                        return false;
+                    }
+                }
+                else
+                {
+                    if (connval != "keep-alive")
+                    {
+                        m_Log.ErrorFormat("Connection: field has wrong response: \"{0}\"", connval);
+                        return false;
+                    }
                 }
                 string chunkval = GetTransferEncodingValue(headers).Trim().ToLower();
                 if (chunkval != string.Empty)
@@ -109,12 +133,17 @@ namespace SilverSim.Tests.Http
                     m_Log.ErrorFormat("Transfer-Encoding: field has wrong response: \"{0}\"", chunkval);
                     return false;
                 }
+                string encodingval = GetContentEncodingValue(headers).Trim().ToLower();
+                if (encodingval != "gzip")
+                {
+                    m_Log.ErrorFormat("Content-Encoding: field has wrong response: \"{0}\"", encodingval);
+                    return false;
+                }
             }
-
             numConns = m_HttpServer.AcceptedConnectionsCount - numConns;
-            if (numConns != NumberConnections)
+            if (numConns != 1)
             {
-                m_Log.InfoFormat("HTTP client did not have the specified number of reconnections");
+                m_Log.InfoFormat("HTTP client did not re-use connections (actual {0})", numConns);
                 return false;
             }
             return true;
@@ -124,8 +153,18 @@ namespace SilverSim.Tests.Http
         {
             int cnt = Interlocked.Increment(ref m_HandlerCounter);
             byte[] outdata = Encoding.ASCII.GetBytes(cnt.ToString());
+            using (var ms = new MemoryStream())
+            {
+                using (var gz = new GZipStream(ms, CompressionMode.Compress))
+                {
+                    gz.Write(outdata, 0, outdata.Length);
+                }
+                outdata = ms.ToArray();
+            }
+
             using (HttpResponse res = req.BeginResponse())
             {
+                res.Headers["Content-Encoding"] = "gzip";
                 using (Stream s = res.GetOutputStream(outdata.Length))
                 {
                     s.Write(outdata, 0, outdata.Length);

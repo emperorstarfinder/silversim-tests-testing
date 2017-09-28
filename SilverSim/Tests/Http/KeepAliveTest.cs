@@ -26,7 +26,6 @@ using SilverSim.Main.Common.HttpServer;
 using SilverSim.Tests.Extensions;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 using System.Reflection;
 using System.Text;

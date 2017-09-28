@@ -26,7 +26,6 @@ using SilverSim.Main.Common.HttpServer;
 using SilverSim.Tests.Extensions;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 using System.Reflection;
 using System.Text;
@@ -73,6 +72,18 @@ namespace SilverSim.Tests.Http
             return string.Empty;
         }
 
+        private string GetContentEncodingValue(Dictionary<string, string> headers)
+        {
+            foreach (KeyValuePair<string, string> kvp in headers)
+            {
+                if (string.Compare(kvp.Key, "content-encoding", true) == 0)
+                {
+                    return kvp.Value;
+                }
+            }
+            return string.Empty;
+        }
+
         public bool Run()
         {
             m_HttpServer.UriHandlers.Add("/test", HttpHandler);
@@ -110,6 +121,12 @@ namespace SilverSim.Tests.Http
                     m_Log.ErrorFormat("Transfer-Encoding: field has wrong response: \"{0}\"", chunkval);
                     return false;
                 }
+                string encodingval = GetContentEncodingValue(headers).Trim().ToLower();
+                if (encodingval != string.Empty)
+                {
+                    m_Log.ErrorFormat("Content-Encoding: field has wrong response: \"{0}\"", encodingval);
+                    return false;
+                }
             }
 
             numConns = m_HttpServer.AcceptedConnectionsCount - numConns;
@@ -127,7 +144,7 @@ namespace SilverSim.Tests.Http
             byte[] outdata = Encoding.ASCII.GetBytes(cnt.ToString());
             using (HttpResponse res = req.BeginResponse())
             {
-                using (Stream s = res.GetOutputStream())
+                using (Stream s = res.GetOutputStream(true))
                 {
                     s.Write(outdata, 0, outdata.Length);
                 }

@@ -27,13 +27,14 @@ using SilverSim.Tests.Extensions;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
 using System.Reflection;
 using System.Text;
 using System.Threading;
 
 namespace SilverSim.Tests.Http
 {
-    public class CloseTest : ITest
+    public class CompressedCloseTest : ITest
     {
         private static readonly ILog m_Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         private BaseHttpServer m_HttpServer;
@@ -50,9 +51,9 @@ namespace SilverSim.Tests.Http
 
         private string GetConnectionValue(Dictionary<string, string> headers)
         {
-            foreach(KeyValuePair<string, string> kvp in headers)
+            foreach (KeyValuePair<string, string> kvp in headers)
             {
-                if(string.Compare(kvp.Key, "connection", true) == 0)
+                if (string.Compare(kvp.Key, "connection", true) == 0)
                 {
                     return kvp.Value;
                 }
@@ -65,6 +66,18 @@ namespace SilverSim.Tests.Http
             foreach (KeyValuePair<string, string> kvp in headers)
             {
                 if (string.Compare(kvp.Key, "transfer-encoding", true) == 0)
+                {
+                    return kvp.Value;
+                }
+            }
+            return string.Empty;
+        }
+
+        private string GetContentEncodingValue(Dictionary<string, string> headers)
+        {
+            foreach (KeyValuePair<string, string> kvp in headers)
+            {
+                if (string.Compare(kvp.Key, "content-encoding", true) == 0)
                 {
                     return kvp.Value;
                 }
@@ -98,7 +111,7 @@ namespace SilverSim.Tests.Http
                     return false;
                 }
                 string connval = GetConnectionValue(headers).Trim().ToLower();
-                if(connval != "close")
+                if (connval != "close")
                 {
                     m_Log.ErrorFormat("Connection: field has wrong response: \"{0}\"", connval);
                     return false;
@@ -107,6 +120,12 @@ namespace SilverSim.Tests.Http
                 if (chunkval != string.Empty)
                 {
                     m_Log.ErrorFormat("Transfer-Encoding: field has wrong response: \"{0}\"", chunkval);
+                    return false;
+                }
+                string encodingval = GetContentEncodingValue(headers).Trim().ToLower();
+                if (encodingval != "gzip")
+                {
+                    m_Log.ErrorFormat("Content-Encoding: field has wrong response: \"{0}\"", encodingval);
                     return false;
                 }
             }
@@ -124,8 +143,18 @@ namespace SilverSim.Tests.Http
         {
             int cnt = Interlocked.Increment(ref m_HandlerCounter);
             byte[] outdata = Encoding.ASCII.GetBytes(cnt.ToString());
+            using (var ms = new MemoryStream())
+            {
+                using (var gz = new GZipStream(ms, CompressionMode.Compress))
+                {
+                    gz.Write(outdata, 0, outdata.Length);
+                }
+                outdata = ms.ToArray();
+            }
+
             using (HttpResponse res = req.BeginResponse())
             {
+                res.Headers["Content-Encoding"] = "gzip";
                 using (Stream s = res.GetOutputStream(outdata.Length))
                 {
                     s.Write(outdata, 0, outdata.Length);
