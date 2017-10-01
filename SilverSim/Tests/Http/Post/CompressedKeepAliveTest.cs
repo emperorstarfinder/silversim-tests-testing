@@ -29,7 +29,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Text;
-using System.Threading;
 
 namespace SilverSim.Tests.Http.Post
 {

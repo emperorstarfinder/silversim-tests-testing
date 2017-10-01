@@ -29,7 +29,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Text;
-using System.Threading;
 
 namespace SilverSim.Tests.Http.Post
 {
@@ -122,7 +121,6 @@ namespace SilverSim.Tests.Http.Post
 
         private void HttpHandler(HttpRequest req)
         {
-            int cnt = Interlocked.Increment(ref m_HandlerCounter);
             byte[] outdata;
             using (var ms = new MemoryStream())
             {

@@ -28,8 +28,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
-using System.Text;
-using System.Threading;
 
 namespace SilverSim.Tests.Http.Post
 {
@@ -37,7 +35,6 @@ namespace SilverSim.Tests.Http.Post
     {
         private static readonly ILog m_Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         private BaseHttpServer m_HttpServer;
-        private int m_HandlerCounter;
 
         public void Startup(ConfigurationLoader loader)
         {
