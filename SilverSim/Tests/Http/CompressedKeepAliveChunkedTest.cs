@@ -27,6 +27,7 @@ using SilverSim.Tests.Extensions;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
 using System.Reflection;
 using System.Text;
 using System.Threading;
@@ -152,6 +153,7 @@ namespace SilverSim.Tests.Http
         {
             int cnt = Interlocked.Increment(ref m_HandlerCounter);
             byte[] outdata = Encoding.ASCII.GetBytes(cnt.ToString());
+
             using (HttpResponse res = req.BeginResponse())
             {
                 using (Stream s = res.GetOutputStream(false))
