@@ -78,8 +78,11 @@ namespace SilverSim.Tests.Viewer.Caps
                     reqdata = ms.ToArray();
                 }
                 Map resdata;
-                using (Stream s = HttpClient.DoStreamRequest("POST", m_CapabilityUri, null, "application/llsd+xml", reqdata.Length,
-                    (Stream o) => o.Write(reqdata, 0, reqdata.Length), false, TimeoutMs))
+                using (Stream s = new HttpClient.Post(m_CapabilityUri, "application/llsd+xml", reqdata.Length,
+                    (Stream o) => o.Write(reqdata, 0, reqdata.Length))
+                {
+                    TimeoutMs = TimeoutMs
+                }.ExecuteStreamRequest())
                 {
                     resdata = LlsdXml.Deserialize(s) as Map;
                 }

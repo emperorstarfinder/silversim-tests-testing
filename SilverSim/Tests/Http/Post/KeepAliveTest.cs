@@ -81,7 +81,12 @@ namespace SilverSim.Tests.Http.Post
                 var headers = new Dictionary<string, string>();
                 try
                 {
-                    res = HttpClient.DoRequest("POST", m_HttpServer.ServerURI + "test", null, "text/plain", connidx.ToString(), false, 60000, connidx == NumberConnections ? HttpClient.ConnectionReuseMode.Close : HttpClient.ConnectionReuseMode.Keepalive, headers);
+                    res = new HttpClient.Post(m_HttpServer.ServerURI + "test", "text/plain", connidx.ToString())
+                    {
+                        TimeoutMs = 60000,
+                        ConnectionMode = connidx == NumberConnections ? HttpClient.ConnectionModeEnum.Close : HttpClient.ConnectionModeEnum.Keepalive,
+                        Headers = headers
+                    }.ExecuteRequest();
                 }
                 catch (Exception e)
                 {

@@ -96,7 +96,12 @@ namespace SilverSim.Tests.Http
                 var headers = new Dictionary<string, string>();
                 try
                 {
-                    res = HttpClient.DoRequest("GET", m_HttpServer.ServerURI + "test", null, string.Empty, 0, null, false, 60000, connidx == NumberConnections ? HttpClient.ConnectionReuseMode.Close : HttpClient.ConnectionReuseMode.Keepalive, headers);
+                    res = new HttpClient.Get(m_HttpServer.ServerURI + "test")
+                    {
+                        TimeoutMs = 60000,
+                        ConnectionMode = connidx == NumberConnections ? HttpClient.ConnectionModeEnum.Close : HttpClient.ConnectionModeEnum.Keepalive,
+                        Headers = headers
+                    }.ExecuteRequest();
                 }
                 catch (Exception e)
                 {

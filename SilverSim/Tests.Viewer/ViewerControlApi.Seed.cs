@@ -52,10 +52,7 @@ namespace SilverSim.Tests.Viewer
 
                 try
                 {
-                    using (Stream res = HttpClient.DoStreamRequest("POST", seedCaps, null, "application/llsd+xml", post.Length, delegate (Stream req)
-                         {
-                             req.Write(post, 0, post.Length);
-                         }, false, 20000, null))
+                    using (Stream res = new HttpClient.Post(seedCaps, "application/llsd+xml", post.Length, (Stream req) => req.Write(post, 0, post.Length)).ExecuteStreamRequest())
                     {
                         resdata = LlsdXml.Deserialize(res) as Map;
                     }

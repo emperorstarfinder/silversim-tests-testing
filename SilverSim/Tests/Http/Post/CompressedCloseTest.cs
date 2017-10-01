@@ -36,7 +36,6 @@ namespace SilverSim.Tests.Http.Post
     {
         private static readonly ILog m_Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         private BaseHttpServer m_HttpServer;
-        private int m_HandlerCounter;
 
         public void Startup(ConfigurationLoader loader)
         {
@@ -76,14 +75,20 @@ namespace SilverSim.Tests.Http.Post
             m_HttpServer.UriHandlers.Add("/test", HttpHandler);
             int NumberConnections = 1000;
             int numConns = m_HttpServer.AcceptedConnectionsCount;
-            m_Log.InfoFormat("Testing 1000 HTTP GET requests (no connection reuse)");
+            m_Log.InfoFormat("Testing 1000 HTTP POST requests (no connection reuse)");
             for (int connidx = 0; connidx++ < NumberConnections;)
             {
                 string res;
                 var headers = new Dictionary<string, string>();
                 try
                 {
-                    res = HttpClient.DoRequest("POST", m_HttpServer.ServerURI + "test", null, "text/plain", connidx.ToString(), true, 60000, HttpClient.ConnectionReuseMode.SingleRequest, headers);
+                    res = new HttpClient.Post(m_HttpServer.ServerURI + "test", "text/plain", connidx.ToString())
+                    {
+                        IsCompressed = true,
+                        TimeoutMs = 60000,
+                        ConnectionMode = HttpClient.ConnectionModeEnum.SingleRequest,
+                        Headers = headers
+                    }.ExecuteRequest();
                 }
                 catch (Exception e)
                 {
