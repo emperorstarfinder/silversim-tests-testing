@@ -149,6 +149,10 @@ namespace SilverSim.Tests.Http
             int cnt = Interlocked.Increment(ref m_HandlerCounter);
             byte[] outdata = Encoding.ASCII.GetBytes(cnt.ToString());
 
+            if (req.MajorVersion != 1)
+            {
+                outdata = Encoding.ASCII.GetBytes("Not HTTP/1");
+            }
             using (var ms = new MemoryStream())
             {
                 using (var gz = new GZipStream(ms, CompressionMode.Compress))

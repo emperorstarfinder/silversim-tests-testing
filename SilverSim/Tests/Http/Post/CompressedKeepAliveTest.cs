@@ -147,6 +147,14 @@ namespace SilverSim.Tests.Http.Post
             {
                 outdata = Encoding.ASCII.GetBytes("POST not gzip encoded");
             }
+            if (req.MajorVersion != 1)
+            {
+                outdata = Encoding.ASCII.GetBytes("Not HTTP/1");
+            }
+            if (req.ContainsHeader("expect"))
+            {
+                outdata = Encoding.ASCII.GetBytes("Expect: 100-continue should not be used");
+            }
             using (HttpResponse res = req.BeginResponse())
             {
                 using (Stream s = res.GetOutputStream(outdata.Length))

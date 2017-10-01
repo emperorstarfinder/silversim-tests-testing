@@ -168,6 +168,10 @@ namespace SilverSim.Tests.Http
                 outdata = ms.ToArray();
             }
 
+            if (req.MajorVersion != 1)
+            {
+                outdata = Encoding.ASCII.GetBytes("Not HTTP/1");
+            }
             using (HttpResponse res = req.BeginResponse())
             {
                 res.Headers["Content-Encoding"] = "gzip";

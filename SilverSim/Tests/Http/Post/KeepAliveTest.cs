@@ -28,6 +28,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
+using System.Text;
 
 namespace SilverSim.Tests.Http.Post
 {
@@ -139,6 +140,14 @@ namespace SilverSim.Tests.Http.Post
             {
                 req.Body.CopyTo(ms);
                 outdata = ms.ToArray();
+            }
+            if (req.MajorVersion != 1)
+            {
+                outdata = Encoding.ASCII.GetBytes("Not HTTP/1");
+            }
+            if (req.ContainsHeader("expect"))
+            {
+                outdata = Encoding.ASCII.GetBytes("Expect: 100-continue should not be used");
             }
             using (HttpResponse res = req.BeginResponse())
             {

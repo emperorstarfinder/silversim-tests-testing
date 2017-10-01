@@ -30,9 +30,9 @@ using System.IO;
 using System.Reflection;
 using System.Text;
 
-namespace SilverSim.Tests.Http.Post
+namespace SilverSim.Tests.Http.Post.Expect100Continue
 {
-    public class CompressedCloseTest : ITest
+    public class CloseTest : ITest
     {
         private static readonly ILog m_Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         private BaseHttpServer m_HttpServer;
@@ -75,7 +75,7 @@ namespace SilverSim.Tests.Http.Post
             m_HttpServer.UriHandlers.Add("/test", HttpHandler);
             int NumberConnections = 1000;
             int numConns = m_HttpServer.AcceptedConnectionsCount;
-            m_Log.InfoFormat("Testing 1000 HTTP POST requests (no connection reuse)");
+            m_Log.InfoFormat("Testing 1000 HTTP POST requests (no connection reuse, 100-continue)");
             for (int connidx = 0; connidx++ < NumberConnections;)
             {
                 string res;
@@ -84,10 +84,10 @@ namespace SilverSim.Tests.Http.Post
                 {
                     res = new HttpClient.Post(m_HttpServer.ServerURI + "test", "text/plain", connidx.ToString())
                     {
-                        IsCompressed = true,
                         TimeoutMs = 60000,
                         ConnectionMode = HttpClient.ConnectionModeEnum.SingleRequest,
-                        Headers = headers
+                        Headers = headers,
+                        Expect100Continue = true
                     }.ExecuteRequest();
                 }
                 catch (Exception e)
@@ -132,18 +132,13 @@ namespace SilverSim.Tests.Http.Post
                 req.Body.CopyTo(ms);
                 outdata = ms.ToArray();
             }
-            string encoding;
-            if(!req.TryGetHeader("x-content-encoding", out encoding) || encoding!="gzip")
-            {
-                outdata = Encoding.ASCII.GetBytes("POST not gzip encoded");
-            }
             if (req.MajorVersion != 1)
             {
                 outdata = Encoding.ASCII.GetBytes("Not HTTP/1");
             }
-            if (req.ContainsHeader("expect"))
+            if (!req.ContainsHeader("expect"))
             {
-                outdata = Encoding.ASCII.GetBytes("Expect: 100-continue should not be used");
+                outdata = Encoding.ASCII.GetBytes("Expect: 100-continue should be used");
             }
             using (HttpResponse res = req.BeginResponse())
             {
