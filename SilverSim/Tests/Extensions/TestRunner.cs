@@ -71,6 +71,7 @@ namespace SilverSim.Tests.Extensions
         public void PostLoad()
         {
             bool failed = false;
+            var failedtests = new List<string>();
             foreach(ITest test in m_Tests)
             {
                 var tr = new TestResult()
@@ -101,6 +102,7 @@ namespace SilverSim.Tests.Extensions
                         failed = true;
                         tr.Message = "Failure";
                         tr.Result = false;
+                        failedtests.Add(test.GetType().FullName);
                     }
                 }
                 catch(Exception e)
@@ -112,6 +114,10 @@ namespace SilverSim.Tests.Extensions
                     failed = true;
                     tr.Message = string.Format("Exception {0}: {1}\n{2}", e.GetType().FullName, e.ToString(), e.StackTrace.ToString());
                     tr.Result = false;
+                    if (!failedtests.Contains(test.GetType().FullName))
+                    {
+                        failedtests.Add(test.GetType().FullName);
+                    }
                 }
 
                 try
@@ -127,6 +133,10 @@ namespace SilverSim.Tests.Extensions
                     failed = true;
                     tr.Message = string.Format("Exception {0}: {1}\n{2}", e.GetType().FullName, e.ToString(), e.StackTrace.ToString());
                     tr.Result = false;
+                    if (!failedtests.Contains(test.GetType().FullName))
+                    {
+                        failedtests.Add(test.GetType().FullName);
+                    }
                 }
 
                 if (ExcludeSummaryCount)
@@ -187,6 +197,7 @@ namespace SilverSim.Tests.Extensions
 
             if (failed)
             {
+                m_Log.InfoFormat("Failed tests ({0}): {1}", failedtests.Count, string.Join(" ", failedtests));
                 Thread.Sleep(100);
                 throw new ConfigurationLoader.TestingErrorException();
             }
