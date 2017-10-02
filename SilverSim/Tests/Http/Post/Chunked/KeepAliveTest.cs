@@ -30,7 +30,7 @@ using System.IO;
 using System.Reflection;
 using System.Text;
 
-namespace SilverSim.Tests.Http.Post
+namespace SilverSim.Tests.Http.Post.Chunked
 {
     public class KeepAliveTest : ITest
     {
@@ -75,14 +75,18 @@ namespace SilverSim.Tests.Http.Post
             m_HttpServer.UriHandlers.Add("/test", HttpHandler);
             int NumberConnections = 1000;
             int numConns = m_HttpServer.AcceptedConnectionsCount;
-            m_Log.InfoFormat("Testing 1000 HTTP POST requests (keep-alive)");
+            m_Log.InfoFormat("Testing 1000 HTTP POST requests (keep-alive, chunked)");
             for (int connidx = 0; connidx++ < NumberConnections;)
             {
                 string res;
                 var headers = new Dictionary<string, string>();
                 try
                 {
-                    res = new HttpClient.Post(m_HttpServer.ServerURI + "test", "text/plain", connidx.ToString())
+                    res = new HttpClient.Post(m_HttpServer.ServerURI + "test", "text/plain", (instream) =>
+                    {
+                        byte[] connbytes = Encoding.ASCII.GetBytes(connidx.ToString());
+                        instream.Write(connbytes, 0, connbytes.Length);
+                    })
                     {
                         TimeoutMs = 60000,
                         ConnectionMode = connidx == NumberConnections ? HttpClient.ConnectionModeEnum.Close : HttpClient.ConnectionModeEnum.Keepalive,
@@ -144,6 +148,11 @@ namespace SilverSim.Tests.Http.Post
             if (req.MajorVersion != 1)
             {
                 outdata = Encoding.ASCII.GetBytes("Not HTTP/1");
+            }
+            string transferencoding;
+            if(!req.TryGetHeader("transfer-encoding", out transferencoding) || transferencoding != "chunked")
+            {
+                outdata = Encoding.ASCII.GetBytes("Transfer-Encoding: chunked should be use");
             }
             if (req.ContainsHeader("expect"))
             {

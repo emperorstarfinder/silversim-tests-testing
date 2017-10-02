@@ -27,12 +27,13 @@ using SilverSim.Tests.Extensions;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
 using System.Reflection;
 using System.Text;
 
-namespace SilverSim.Tests.Http.Post
+namespace SilverSim.Tests.Http.Post.Chunked
 {
-    public class KeepAliveTest : ITest
+    public class CompressedKeepAliveTest : ITest
     {
         private static readonly ILog m_Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         private BaseHttpServer m_HttpServer;
@@ -82,8 +83,16 @@ namespace SilverSim.Tests.Http.Post
                 var headers = new Dictionary<string, string>();
                 try
                 {
-                    res = new HttpClient.Post(m_HttpServer.ServerURI + "test", "text/plain", connidx.ToString())
+                    res = new HttpClient.Post(m_HttpServer.ServerURI + "test", "text/plain", (instream) =>
                     {
+                        using (var gzip = new GZipStream(instream, CompressionMode.Compress))
+                        {
+                            byte[] connbytes = Encoding.ASCII.GetBytes(connidx.ToString());
+                            gzip.Write(connbytes, 0, connbytes.Length);
+                        }
+                    })
+                    {
+                        IsCompressed = true,
                         TimeoutMs = 60000,
                         ConnectionMode = connidx == NumberConnections ? HttpClient.ConnectionModeEnum.Close : HttpClient.ConnectionModeEnum.Keepalive,
                         Headers = headers
@@ -141,9 +150,19 @@ namespace SilverSim.Tests.Http.Post
                 req.Body.CopyTo(ms);
                 outdata = ms.ToArray();
             }
+            string encoding;
+            if (!req.TryGetHeader("x-content-encoding", out encoding) || encoding != "gzip")
+            {
+                outdata = Encoding.ASCII.GetBytes("POST not gzip encoded");
+            }
             if (req.MajorVersion != 1)
             {
                 outdata = Encoding.ASCII.GetBytes("Not HTTP/1");
+            }
+            string transferencoding;
+            if (!req.TryGetHeader("transfer-encoding", out transferencoding) || transferencoding != "chunked")
+            {
+                outdata = Encoding.ASCII.GetBytes("Transfer-Encoding: chunked should be use");
             }
             if (req.ContainsHeader("expect"))
             {

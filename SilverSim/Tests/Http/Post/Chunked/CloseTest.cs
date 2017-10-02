@@ -30,9 +30,9 @@ using System.IO;
 using System.Reflection;
 using System.Text;
 
-namespace SilverSim.Tests.Http.Post
+namespace SilverSim.Tests.Http.Post.Chunked
 {
-    public class KeepAliveTest : ITest
+    public class CloseTest : ITest
     {
         private static readonly ILog m_Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         private BaseHttpServer m_HttpServer;
@@ -75,17 +75,21 @@ namespace SilverSim.Tests.Http.Post
             m_HttpServer.UriHandlers.Add("/test", HttpHandler);
             int NumberConnections = 1000;
             int numConns = m_HttpServer.AcceptedConnectionsCount;
-            m_Log.InfoFormat("Testing 1000 HTTP POST requests (keep-alive)");
+            m_Log.InfoFormat("Testing 1000 HTTP POST requests (no connection reuse)");
             for (int connidx = 0; connidx++ < NumberConnections;)
             {
                 string res;
                 var headers = new Dictionary<string, string>();
                 try
                 {
-                    res = new HttpClient.Post(m_HttpServer.ServerURI + "test", "text/plain", connidx.ToString())
+                    res = new HttpClient.Post(m_HttpServer.ServerURI + "test", "text/plain", (instream) =>
+                    {
+                        byte[] connbytes = Encoding.ASCII.GetBytes(connidx.ToString());
+                        instream.Write(connbytes, 0, connbytes.Length);
+                    })
                     {
                         TimeoutMs = 60000,
-                        ConnectionMode = connidx == NumberConnections ? HttpClient.ConnectionModeEnum.Close : HttpClient.ConnectionModeEnum.Keepalive,
+                        ConnectionMode = HttpClient.ConnectionModeEnum.SingleRequest,
                         Headers = headers
                     }.ExecuteRequest();
                 }
@@ -101,21 +105,10 @@ namespace SilverSim.Tests.Http.Post
                     return false;
                 }
                 string connval = GetConnectionValue(headers).Trim().ToLower();
-                if (connidx == NumberConnections)
+                if (connval != "close")
                 {
-                    if (connval != "close")
-                    {
-                        m_Log.ErrorFormat("Connection: field has wrong response on last request: \"{0}\"", connval);
-                        return false;
-                    }
-                }
-                else
-                {
-                    if (connval != "keep-alive")
-                    {
-                        m_Log.ErrorFormat("Connection: field has wrong response: \"{0}\"", connval);
-                        return false;
-                    }
+                    m_Log.ErrorFormat("Connection: field has wrong response: \"{0}\"", connval);
+                    return false;
                 }
                 string chunkval = GetTransferEncodingValue(headers).Trim().ToLower();
                 if (chunkval != string.Empty)
@@ -124,10 +117,11 @@ namespace SilverSim.Tests.Http.Post
                     return false;
                 }
             }
+
             numConns = m_HttpServer.AcceptedConnectionsCount - numConns;
-            if (numConns != 1)
+            if (numConns != NumberConnections)
             {
-                m_Log.InfoFormat("HTTP client did not re-use connections (actual {0})", numConns);
+                m_Log.InfoFormat("HTTP client did not have the specified number of reconnections");
                 return false;
             }
             return true;
@@ -144,6 +138,11 @@ namespace SilverSim.Tests.Http.Post
             if (req.MajorVersion != 1)
             {
                 outdata = Encoding.ASCII.GetBytes("Not HTTP/1");
+            }
+            string transferencoding;
+            if (!req.TryGetHeader("transfer-encoding", out transferencoding) || transferencoding != "chunked")
+            {
+                outdata = Encoding.ASCII.GetBytes("Transfer-Encoding: chunked should be use");
             }
             if (req.ContainsHeader("expect"))
             {

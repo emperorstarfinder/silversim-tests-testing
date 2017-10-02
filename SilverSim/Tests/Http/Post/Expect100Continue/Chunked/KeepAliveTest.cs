@@ -30,7 +30,7 @@ using System.IO;
 using System.Reflection;
 using System.Text;
 
-namespace SilverSim.Tests.Http.Post
+namespace SilverSim.Tests.Http.Post.Expect100Continue.Chunked
 {
     public class KeepAliveTest : ITest
     {
@@ -75,18 +75,23 @@ namespace SilverSim.Tests.Http.Post
             m_HttpServer.UriHandlers.Add("/test", HttpHandler);
             int NumberConnections = 1000;
             int numConns = m_HttpServer.AcceptedConnectionsCount;
-            m_Log.InfoFormat("Testing 1000 HTTP POST requests (keep-alive)");
+            m_Log.InfoFormat("Testing 1000 HTTP POST requests (keep-alive, chunked)");
             for (int connidx = 0; connidx++ < NumberConnections;)
             {
                 string res;
                 var headers = new Dictionary<string, string>();
                 try
                 {
-                    res = new HttpClient.Post(m_HttpServer.ServerURI + "test", "text/plain", connidx.ToString())
+                    res = new HttpClient.Post(m_HttpServer.ServerURI + "test", "text/plain", (instream) =>
+                    {
+                        byte[] connbytes = Encoding.ASCII.GetBytes(connidx.ToString());
+                        instream.Write(connbytes, 0, connbytes.Length);
+                    })
                     {
                         TimeoutMs = 60000,
                         ConnectionMode = connidx == NumberConnections ? HttpClient.ConnectionModeEnum.Close : HttpClient.ConnectionModeEnum.Keepalive,
-                        Headers = headers
+                        Headers = headers,
+                        Expect100Continue = true
                     }.ExecuteRequest();
                 }
                 catch (Exception e)
@@ -145,9 +150,14 @@ namespace SilverSim.Tests.Http.Post
             {
                 outdata = Encoding.ASCII.GetBytes("Not HTTP/1");
             }
-            if (req.ContainsHeader("expect"))
+            string transferencoding;
+            if(!req.TryGetHeader("transfer-encoding", out transferencoding) || transferencoding != "chunked")
             {
-                outdata = Encoding.ASCII.GetBytes("Expect: 100-continue should not be used");
+                outdata = Encoding.ASCII.GetBytes("Transfer-Encoding: chunked should be use");
+            }
+            if (!req.ContainsHeader("expect"))
+            {
+                outdata = Encoding.ASCII.GetBytes("Expect: 100-continue should be used");
             }
             using (HttpResponse res = req.BeginResponse())
             {
