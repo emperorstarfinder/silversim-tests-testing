@@ -136,20 +136,6 @@ namespace SilverSim.Tests.Assets
             }
             #endregion
 
-            var theCreator1 = new UUI()
-            {
-                ID = UUID.Random,
-                HomeURI = new Uri("http://1.example.com/"),
-                FirstName = "The",
-                LastName = "Creator"
-            };
-            var theCreator2 = new UUI()
-            {
-                ID = UUID.Random,
-                HomeURI = new Uri("http://2.example.com/"),
-                FirstName = "The",
-                LastName = "Creator"
-            };
             m_Log.Info("Storing asset 1");
             var asset = new AssetData()
             {
@@ -157,7 +143,6 @@ namespace SilverSim.Tests.Assets
                 ID = Asset1ID,
                 Type = AssetType.CallingCard,
                 Data = Asset1Data,
-                Creator = theCreator1,
                 Temporary = true,
                 Flags = AssetFlags.Normal
             };
@@ -213,7 +198,6 @@ namespace SilverSim.Tests.Assets
                 ID = Asset2ID,
                 Type = AssetType.Mesh,
                 Data = Asset2Data,
-                Creator = theCreator2,
                 Temporary = true,
                 Flags = AssetFlags.Collectable
             };
@@ -275,11 +259,6 @@ namespace SilverSim.Tests.Assets
                 m_Log.ErrorFormat("Asset could not be retrieved correctly (AssetData {0} / {1})", BytesToHex(asset.Data), BytesToHex(Asset1Data));
                 return false;
             }
-            if (!asset.Creator.ID.Equals(theCreator1.ID))
-            {
-                m_Log.ErrorFormat("Asset could not be retrieved correctly (Creator {0} / {1})", asset.Creator, theCreator1.ID);
-                return false;
-            }
             if (!asset.Temporary)
             {
                 m_Log.ErrorFormat("Asset could not be retrieved correctly (Temporary {0} / {1})", asset.Temporary, true);
@@ -310,11 +289,6 @@ namespace SilverSim.Tests.Assets
                 m_Log.ErrorFormat("Asset could not be retrieved correctly (AssetData {0} / {1})", BytesToHex(asset.Data), BytesToHex(Asset2Data));
                 return false;
             }
-            if (!asset.Creator.ID.Equals(theCreator2.ID))
-            {
-                m_Log.ErrorFormat("Asset could not be retrieved correctly (Creator {0} / {1})", asset.Creator, theCreator2.ID);
-                return false;
-            }
             if (!asset.Temporary)
             {
                 m_Log.ErrorFormat("Asset could not be retrieved correctly (Temporary {0} / {1})", asset.Temporary, true);
@@ -340,11 +314,6 @@ namespace SilverSim.Tests.Assets
                 m_Log.Error("Asset could not be retrieved correctly (AssetType)");
                 return false;
             }
-            if (!assetmetadata.Creator.ID.Equals(theCreator1.ID))
-            {
-                m_Log.ErrorFormat("Asset could not be retrieved correctly (Creator {0} / {1})", assetmetadata.Creator, theCreator1.ID);
-                return false;
-            }
             if (!assetmetadata.Temporary)
             {
                 m_Log.ErrorFormat("Asset could not be retrieved correctly (Temporary {0} / {1})", assetmetadata.Temporary, true);
@@ -368,11 +337,6 @@ namespace SilverSim.Tests.Assets
             if (assetmetadata.Type != AssetType.Mesh)
             {
                 m_Log.Error("Asset could not be retrieved correctly (AssetType)");
-                return false;
-            }
-            if (!assetmetadata.Creator.ID.Equals(theCreator2.ID))
-            {
-                m_Log.ErrorFormat("Asset could not be retrieved correctly (Creator {0} / {1})", assetmetadata.Creator, theCreator2.ID);
                 return false;
             }
             if (!assetmetadata.Temporary)
