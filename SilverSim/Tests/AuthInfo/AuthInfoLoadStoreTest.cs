@@ -141,6 +141,7 @@ namespace SilverSim.Tests.AuthInfo
             {
                 return false;
             }
+            m_AuthInfoService.ReleaseTokenBySession(m_UserID, sessionID);
 
             m_Log.Info("Testing authenticate with new way");
             try
