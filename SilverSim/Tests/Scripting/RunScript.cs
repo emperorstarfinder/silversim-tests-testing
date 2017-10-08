@@ -22,6 +22,7 @@
 using log4net;
 using Nini.Config;
 using SilverSim.Main.Common;
+using SilverSim.OpenSimArchiver.RegionArchiver;
 using SilverSim.Scene.Management.Scene;
 using SilverSim.Scene.ServiceInterfaces.Chat;
 using SilverSim.Scene.ServiceInterfaces.Scene;
@@ -86,6 +87,7 @@ namespace SilverSim.Tests.Scripting
         private SceneList m_Scenes;
         private Timer m_KillTimer;
         private int m_StartParameter;
+        private string m_LoadOarFileName;
 
         private InventoryPermissionsMask m_ObjectPermissionsBase = InventoryPermissionsMask.All;
         private InventoryPermissionsMask m_ObjectPermissionsOwner = InventoryPermissionsMask.All;
@@ -113,6 +115,8 @@ namespace SilverSim.Tests.Scripting
                     break;
                 }
             }
+
+            m_LoadOarFileName = config.GetString("OarFilename", string.Empty);
 
             m_TimeoutMs = config.GetInt("RunTimeout", 1000);
             m_RegionID = UUID.Parse(config.GetString("RegionID"));
@@ -308,6 +312,22 @@ namespace SilverSim.Tests.Scripting
             {
                 m_Log.Error("Creating experience failed", e);
                 return false;
+            }
+
+            if(!string.IsNullOrEmpty(m_LoadOarFileName))
+            {
+                try
+                {
+                    using (var s = new FileStream(m_LoadOarFileName, FileMode.Open))
+                    {
+                        OAR.Load(m_Scenes, scene, OAR.LoadOptions.PersistUuids, s);
+                    }
+                }
+                catch(Exception e)
+                {
+                    m_Log.Error("Loading oar failed", e);
+                    return false;
+                }
             }
 
             try

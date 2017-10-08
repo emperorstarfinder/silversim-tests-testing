@@ -35,6 +35,7 @@
   <Reference name="SilverSim.Viewer.Messages" localCopy="false"/>
   <Reference name="SilverSim.Viewer.Core" localCopy="false"/>
   <Reference name="SilverSim.Threading" localCopy="false"/>
+  <Reference name="SilverSim.OpenSimArchiver" localCopy="false"/>
   <Reference name="Nini" localCopy="false"/>
   <Files>
     <Match pattern="*.cs" recurse="true">
