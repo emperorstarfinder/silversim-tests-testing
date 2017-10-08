@@ -26,6 +26,7 @@ using SilverSim.ServiceInterfaces.AuthInfo;
 using SilverSim.Tests.Extensions;
 using SilverSim.Types;
 using SilverSim.Types.AuthInfo;
+using System;
 using System.Collections.Generic;
 using System.Reflection;
 
@@ -146,8 +147,9 @@ namespace SilverSim.Tests.AuthInfo
             {
                 m_AuthInfoService.Authenticate(sessionID, m_UserID, "$1$8b1a9953c4611296a827abf8c47804d7", 30);
             }
-            catch
+            catch(Exception e)
             {
+                m_Log.Debug("Exception", e);
                 return false;
             }
 
