@@ -77,7 +77,7 @@ namespace SilverSim.Tests.Inventory
                 Name = "Test Name",
                 Version = 5,
                 ParentFolderID = rootFolder.ID,
-                InventoryType = InventoryType.Notecard,
+                DefaultType = AssetType.Notecard,
                 Owner = m_UserID,
             };
             m_InventoryService.Folder.Add(testFolder);

@@ -137,7 +137,7 @@ namespace SilverSim.Tests.Assets
             #endregion
 
             m_Log.Info("Storing asset 1");
-            var asset = new AssetData()
+            var asset = new AssetData
             {
                 Name = "Asset 1",
                 ID = Asset1ID,

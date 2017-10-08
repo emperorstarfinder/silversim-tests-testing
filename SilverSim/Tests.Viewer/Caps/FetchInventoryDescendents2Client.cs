@@ -25,7 +25,6 @@ using SilverSim.Types;
 using SilverSim.Types.Asset;
 using SilverSim.Types.Inventory;
 using SilverSim.Types.StructuredData.Llsd;
-using System;
 using System.Collections.Generic;
 using System.IO;
 
@@ -210,7 +209,7 @@ namespace SilverSim.Tests.Viewer.Caps
             }
             foreach(InventoryFolder f in content.Folders)
             {
-                if(f.InventoryType == (InventoryType)(int)type)
+                if(f.DefaultType == type)
                 {
                     folder = f;
                     return true;
@@ -310,7 +309,7 @@ namespace SilverSim.Tests.Viewer.Caps
                         {
                             Name = category["name"].ToString(),
                             ParentFolderID = category["parent_id"].AsUUID,
-                            InventoryType = (InventoryType)category["type"].AsInt,
+                            DefaultType = (AssetType)category["type"].AsInt,
                             Version = category["version"].AsInt
                         });
                     }

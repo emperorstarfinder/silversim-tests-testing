@@ -73,9 +73,9 @@ namespace SilverSim.Tests.Inventory
             {
                 mismatches.Add("ParentFolderID");
             }
-            if (a.InventoryType != b.InventoryType)
+            if (a.DefaultType != b.DefaultType)
             {
-                mismatches.Add("InventoryType");
+                mismatches.Add("DefaultType");
             }
             if (a.Version != b.Version)
             {
@@ -209,7 +209,7 @@ namespace SilverSim.Tests.Inventory
                 Name = "Test Name",
                 Version = 5,
                 ParentFolderID = rootFolder.ID,
-                InventoryType = InventoryType.Notecard,
+                DefaultType = AssetType.Notecard,
                 Owner = m_UserID,
             };
             m_BackendInventoryService.Folder.Add(testFolder);

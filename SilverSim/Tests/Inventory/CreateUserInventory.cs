@@ -162,7 +162,7 @@ namespace SilverSim.Tests.Inventory
                 folder = new InventoryFolder();
                 folder.ID = folderid;
                 folder.Version = 1;
-                folder.InventoryType = InventoryType.Unknown;
+                folder.DefaultType = AssetType.Unknown;
                 folder.Owner.ID = m_UserID;
                 folder.Name = "A " + (folderNameCnt++).ToString();
                 folder.ParentFolderID = rootFolderID;
@@ -207,9 +207,9 @@ namespace SilverSim.Tests.Inventory
                     m_Log.WarnFormat("OwnerID does not match of folder {0}", folderid);
                     return false;
                 }
-                if (folder.InventoryType != InventoryType.Unknown)
+                if (folder.DefaultType != AssetType.Unknown)
                 {
-                    m_Log.WarnFormat("InventoryType does not match of folder {0}", folderid);
+                    m_Log.WarnFormat("DefaultType does not match of folder {0}", folderid);
                     return false;
                 }
                 if (folder.Version != 1)

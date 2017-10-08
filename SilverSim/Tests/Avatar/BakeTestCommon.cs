@@ -50,7 +50,7 @@ namespace SilverSim.Tests.Avatar
         protected UUID m_RootFolderID;
         readonly Dictionary<UUID, string> m_InventoryFolders = new Dictionary<UUID, string>();
         readonly Dictionary<UUID, UUID> m_InventoryFolderParents = new Dictionary<UUID, UUID>();
-        readonly Dictionary<UUID, InventoryType> m_InventoryFolderTypes = new Dictionary<UUID, InventoryType>();
+        readonly Dictionary<UUID, AssetType> m_InventoryFolderTypes = new Dictionary<UUID, AssetType>();
         readonly Dictionary<UUID, string> m_InventoryFiles = new Dictionary<UUID, string>();
         readonly Dictionary<UUID, UUID> m_InventoryItemParents = new Dictionary<UUID, UUID>();
         readonly Dictionary<UUID, UUID> m_InventoryItemAssetIDs = new Dictionary<UUID, UUID>();
@@ -128,7 +128,7 @@ namespace SilverSim.Tests.Avatar
                 }
                 else if (key.StartsWith("FolderType-") && UUID.TryParse(key.Substring(11), out id))
                 {
-                    m_InventoryFolderTypes[id] = (InventoryType)config.GetInt(key);
+                    m_InventoryFolderTypes[id] = (AssetType)config.GetInt(key);
                 }
                 else if (key.StartsWith("Item-") && UUID.TryParse(key.Substring(5), out id))
                 {
@@ -186,7 +186,7 @@ namespace SilverSim.Tests.Avatar
                 rootFolder = new InventoryFolder(m_RootFolderID);
                 rootFolder.Owner = m_AgentOwner;
                 rootFolder.Name = "My Inventory";
-                rootFolder.InventoryType = InventoryType.Folder;
+                rootFolder.DefaultType = AssetType.RootFolder;
                 rootFolder.ParentFolderID = UUID.Zero;
                 rootFolder.Version = 1;
                 m_InventoryService.Folder.Add(rootFolder);
@@ -199,7 +199,7 @@ namespace SilverSim.Tests.Avatar
                 AssetData asset = new AssetData();
                 asset.ID = kvp.Key;
                 asset.FileName = Path.GetFileName(kvp.Value);
-                using (FileStream fs = new FileStream(kvp.Value, FileMode.Open, FileAccess.Read))
+                using (var fs = new FileStream(kvp.Value, FileMode.Open, FileAccess.Read))
                 {
                     asset.Data = fs.ReadToStreamEnd();
                 }
@@ -208,11 +208,11 @@ namespace SilverSim.Tests.Avatar
 
             foreach (KeyValuePair<UUID, string> kvp in m_InventoryFolders)
             {
-                InventoryFolder folder = new InventoryFolder(kvp.Key);
-                InventoryType folderType;
+                var folder = new InventoryFolder(kvp.Key);
+                AssetType folderType;
                 if (m_InventoryFolderTypes.TryGetValue(kvp.Key, out folderType))
                 {
-                    folder.InventoryType = folderType;
+                    folder.DefaultType = folderType;
                 }
 
                 UUID parentFolderID;

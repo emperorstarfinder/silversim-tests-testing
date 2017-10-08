@@ -336,7 +336,7 @@ namespace SilverSim.Tests.Scripting
                         {
                             AssetType = AssetType.LSLText,
                             AssetID = UUID.Random,
-                            InventoryType = InventoryType.LSLText,
+                            InventoryType = InventoryType.LSL,
                             LastOwner = m_ScriptLastOwner,
                             Creator = m_ScriptCreator,
                             Owner = m_ScriptOwner,

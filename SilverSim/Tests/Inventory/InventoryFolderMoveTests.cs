@@ -79,7 +79,7 @@ namespace SilverSim.Tests.Inventory
             {
                 Name = "Test Name",
                 ParentFolderID = rootFolder.ID,
-                InventoryType = InventoryType.Unknown,
+                DefaultType = AssetType.Unknown,
                 Owner = m_UserID,
                 Version = 1
             };

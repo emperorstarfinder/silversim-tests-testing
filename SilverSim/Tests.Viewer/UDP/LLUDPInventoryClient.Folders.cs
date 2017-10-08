@@ -24,8 +24,8 @@ using SilverSim.Threading;
 using SilverSim.Types;
 using SilverSim.Types.Asset;
 using SilverSim.Types.Inventory;
-using SilverSim.Viewer.Messages.Inventory;
 using SilverSim.Viewer.Messages;
+using SilverSim.Viewer.Messages.Inventory;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -108,7 +108,7 @@ namespace SilverSim.Tests.Viewer.UDP
                 SessionID = m_ViewerCircuit.SessionID,
                 FolderID = folder.ID,
                 FolderName = folder.Name,
-                FolderType = folder.InventoryType,
+                DefaultType = folder.DefaultType,
                 ParentFolderID = folder.ParentFolderID,
             };
             var autoEvent = new AutoResetEvent(false);
@@ -250,7 +250,7 @@ namespace SilverSim.Tests.Viewer.UDP
         {
             foreach(InventoryFolder f in Folder.GetFolders(m_ViewerCircuit.AgentID, m_RootFolderID))
             {
-                if(f.InventoryType == (InventoryType)type)
+                if(f.DefaultType == type)
                 {
                     folder = f;
                     return true;
@@ -272,7 +272,7 @@ namespace SilverSim.Tests.Viewer.UDP
                 FolderID = folder.ID,
                 Name = folder.Name,
                 ParentID = folder.ParentFolderID,
-                Type = folder.InventoryType
+                DefaultType = folder.DefaultType
             });
             var autoEvent = new AutoResetEvent(false);
             try
