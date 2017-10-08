@@ -88,6 +88,7 @@ namespace SilverSim.Tests.Scripting
         private Timer m_KillTimer;
         private int m_StartParameter;
         private string m_LoadOarFileName;
+        private string[] m_AdditionalObjectConfigs = new string[0];
 
         private InventoryPermissionsMask m_ObjectPermissionsBase = InventoryPermissionsMask.All;
         private InventoryPermissionsMask m_ObjectPermissionsOwner = InventoryPermissionsMask.All;
@@ -100,10 +101,33 @@ namespace SilverSim.Tests.Scripting
         private InventoryPermissionsMask m_ScriptPermissionsGroup = InventoryPermissionsMask.All;
         private InventoryPermissionsMask m_ScriptPermissionsNext = InventoryPermissionsMask.All;
         private InventoryPermissionsMask m_ScriptPermissionsEveryone = InventoryPermissionsMask.All;
+        private ConfigurationLoader m_Loader;
+
+        public InventoryPermissionsMask GetPermissions(IConfig section, string name, InventoryPermissionsMask defaultvalue = InventoryPermissionsMask.All)
+        {
+            if(section.Contains(name))
+            {
+                var mask = InventoryPermissionsMask.None;
+                foreach (string value in section.GetString(name).Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+                {
+                    InventoryPermissionsMask addmask;
+                    if(Enum.TryParse(value, out addmask))
+                    {
+                        mask |= addmask;
+                    }
+                }
+                return mask;
+            }
+            else
+            {
+                return defaultvalue;
+            }
+        }
 
         public void Startup(ConfigurationLoader loader)
         {
             m_Scenes = loader.Scenes;
+            m_Loader = loader;
             IConfig config = loader.Config.Configs[GetType().FullName];
 
             /* we use same asset id keying here so to make them compatible with the other scripts */
@@ -115,6 +139,18 @@ namespace SilverSim.Tests.Scripting
                     break;
                 }
             }
+
+            m_ObjectPermissionsBase = GetPermissions(config, "ObjectPermisionsBase");
+            m_ObjectPermissionsOwner = GetPermissions(config, "ObjectPermisionsOwner");
+            m_ObjectPermissionsGroup = GetPermissions(config, "ObjectPermisionsGroup");
+            m_ObjectPermissionsNext = GetPermissions(config, "ObjectPermisionsNext");
+            m_ObjectPermissionsEveryone = GetPermissions(config, "ObjectPermisionsEveryone");
+
+            m_ScriptPermissionsBase = GetPermissions(config, "ScriptPermisionsBase");
+            m_ScriptPermissionsOwner = GetPermissions(config, "ScriptPermisionsOwner");
+            m_ScriptPermissionsGroup = GetPermissions(config, "ScriptPermisionsGroup");
+            m_ScriptPermissionsNext = GetPermissions(config, "ScriptPermisionsNext");
+            m_ScriptPermissionsEveryone = GetPermissions(config, "ScriptPermisionsEveryone");
 
             m_LoadOarFileName = config.GetString("OarFilename", string.Empty);
 
@@ -186,6 +222,12 @@ namespace SilverSim.Tests.Scripting
                 throw new ArgumentException("Script filename and UUID missing");
             }
 
+            m_AdditionalObjectConfigs = config.GetString("AdditionalObjects", string.Empty).Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+            if(m_AdditionalObjectConfigs.Length == 1 && m_AdditionalObjectConfigs[0] == string.Empty)
+            {
+                m_AdditionalObjectConfigs = new string[0];
+            }
+
             CompilerRegistry.ScriptCompilers.DefaultCompilerName = config.GetString("DefaultCompiler");
         }
 
@@ -197,6 +239,162 @@ namespace SilverSim.Tests.Scripting
         public void Cleanup()
         {
 
+        }
+
+        private bool TryAddAdditionalObject(SceneInterface scene, string sectionName)
+        {
+            IConfig config = m_Loader.Config.Configs[sectionName];
+            Vector3 position = Vector3.Parse(config.GetString("Position", m_Position.ToString()));
+            Quaternion rotation = Quaternion.Parse(config.GetString("Rotation", m_Rotation.ToString()));
+
+            string objectName = config.GetString("ObjectName", "Object");
+            string scriptName = config.GetString("ScriptName", "Script");
+            string experienceName = config.GetString("ExperienceName", "My Experience");
+            UUID experienceID;
+            UUID.TryParse(config.GetString("ExperienceID", m_ExperienceID.ToString()), out experienceID);
+
+            string objectDescription = config.GetString("ObjectDescription", "");
+            string scriptDescription = config.GetString("ScriptDescription", "");
+
+            var objectOwner = new UUI(config.GetString("ObjectOwner", m_ObjectOwner.ToString()));
+            var objectCreator = new UUI(config.GetString("ObjectCreator", m_ObjectCreator.ToString()));
+            var objectLastOwner = new UUI(config.GetString("ObjectLastOwner", m_ObjectLastOwner.ToString()));
+            var scriptOwner = new UUI(config.GetString("ScriptOwner", m_ScriptOwner.ToString()));
+            var scriptCreator = new UUI(config.GetString("ScriptCreator", m_ScriptCreator.ToString()));
+            var scriptLastOwner = new UUI(config.GetString("ScriptLastOwner", m_ScriptLastOwner.ToString()));
+            int startParameter = config.GetInt("StartParameter", m_StartParameter);
+
+            InventoryPermissionsMask objectPermissionsBase = GetPermissions(config, "ObjectPermisionsBase", m_ObjectPermissionsBase);
+            InventoryPermissionsMask objectPermissionsOwner = GetPermissions(config, "ObjectPermisionsOwner", m_ObjectPermissionsOwner);
+            InventoryPermissionsMask objectPermissionsGroup = GetPermissions(config, "ObjectPermisionsGroup", m_ObjectPermissionsGroup);
+            InventoryPermissionsMask objectPermissionsNext = GetPermissions(config, "ObjectPermisionsNext", m_ObjectPermissionsNext);
+            InventoryPermissionsMask objectPermissionsEveryone = GetPermissions(config, "ObjectPermisionsEveryone", m_ObjectPermissionsEveryone);
+
+            InventoryPermissionsMask scriptPermissionsBase = GetPermissions(config, "ScriptPermisionsBase", m_ScriptPermissionsBase);
+            InventoryPermissionsMask scriptPermissionsOwner = GetPermissions(config, "ScriptPermisionsOwner", m_ScriptPermissionsOwner);
+            InventoryPermissionsMask scriptPermissionsGroup = GetPermissions(config, "ScriptPermisionsGroup", m_ScriptPermissionsGroup);
+            InventoryPermissionsMask scriptPermissionsNext = GetPermissions(config, "ScriptPermisionsNext", m_ScriptPermissionsNext);
+            InventoryPermissionsMask scriptPermissionsEveryone = GetPermissions(config, "ScriptPermisionsEveryone", m_ScriptPermissionsEveryone);
+
+            UUID assetID = UUID.Zero;
+            string scriptFile = string.Empty;
+
+            /* we use same asset id keying here so to make them compatible with the other scripts */
+            foreach (string key in config.GetKeys())
+            {
+                if (UUID.TryParse(key, out assetID))
+                {
+                    scriptFile = config.GetString(key);
+                    break;
+                }
+            }
+
+            IScriptAssembly scriptAssembly = null;
+            if (!string.IsNullOrEmpty(scriptFile))
+            {
+                try
+                {
+                    using (var reader = new StreamReader(m_ScriptFile, new UTF8Encoding(false)))
+                    {
+                        scriptAssembly = CompilerRegistry.ScriptCompilers.Compile(AppDomain.CurrentDomain, UUI.Unknown, m_AssetID, reader);
+                    }
+                    m_Log.InfoFormat("Compilation of {1} ({0}) successful", m_AssetID, m_ScriptFile);
+                }
+                catch (CompilerException e)
+                {
+                    m_Log.ErrorFormat("Compilation of {1} ({0}) failed: {2}", m_AssetID, m_ScriptFile, e.Message);
+                    m_Log.WarnFormat("Stack Trace:\n{0}", e.StackTrace.ToString());
+                    return false;
+                }
+                catch (Exception e)
+                {
+                    m_Log.ErrorFormat("Compilation of {1} ({0}) failed: {2}", m_AssetID, m_ScriptFile, e.Message);
+                    m_Log.WarnFormat("Stack Trace:\n{0}", e.StackTrace.ToString());
+                    return false;
+                }
+            }
+
+            try
+            {
+                ExperienceServiceInterface experienceService = scene.ExperienceService;
+                if (null != experienceService)
+                {
+                    ExperienceInfo test;
+                    if (!experienceService.TryGetValue(experienceID, out test))
+                    {
+                        experienceService.Add(new ExperienceInfo
+                        {
+                            ID = experienceID,
+                            Name = experienceName,
+                            Creator = scriptOwner,
+                            Owner = scriptOwner,
+                            Properties = ExperiencePropertyFlags.Grid /* make this grid-wide since otherwise we have to configure a lot more */
+                        });
+                    }
+                }
+                else
+                {
+                    experienceID = UUID.Zero;
+                }
+            }
+            catch (Exception e)
+            {
+                m_Log.Error("Creating experience failed", e);
+                return false;
+            }
+
+            try
+            {
+                var grp = new ObjectGroup();
+                var part = new ObjectPart();
+                grp.Add(1, part.ID, part);
+                part.ObjectGroup = grp;
+                grp.Owner = objectOwner;
+                grp.LastOwner = objectLastOwner;
+                part.Creator = objectCreator;
+                part.Name = objectName;
+                part.Description = objectDescription;
+                part.GlobalPosition = position;
+                part.GlobalRotation = rotation;
+                part.BaseMask = objectPermissionsBase;
+                part.OwnerMask = objectPermissionsOwner;
+                part.NextOwnerMask = objectPermissionsNext;
+                part.EveryoneMask = objectPermissionsEveryone;
+                part.GroupMask = objectPermissionsGroup;
+
+                var item = new ObjectPartInventoryItem()
+                {
+                    AssetType = AssetType.LSLText,
+                    AssetID = UUID.Random,
+                    InventoryType = InventoryType.LSL,
+                    LastOwner = scriptLastOwner,
+                    Creator = scriptCreator,
+                    Owner = scriptOwner,
+                    Name = scriptName,
+                    Description = scriptDescription
+                };
+                item.Permissions.Base = scriptPermissionsBase;
+                item.Permissions.Current = scriptPermissionsOwner;
+                item.Permissions.EveryOne = scriptPermissionsEveryone;
+                item.Permissions.Group = scriptPermissionsGroup;
+                item.Permissions.NextOwner = scriptPermissionsNext;
+                item.ExperienceID = experienceID;
+
+                scene.Add(grp);
+                if (scriptAssembly != null)
+                {
+                    ScriptInstance scriptInstance = scriptAssembly.Instantiate(part, item);
+                    part.Inventory.Add(item);
+                    item.ScriptInstance = scriptInstance;
+                    item.ScriptInstance.Start(startParameter);
+                }
+            }
+            catch (Exception e)
+            {
+                m_Log.Error("Adding object failed", e);
+                return false;
+            }
+            return true;
         }
 
         public bool Run()
@@ -330,6 +528,18 @@ namespace SilverSim.Tests.Scripting
                 }
             }
 
+            if(success)
+            {
+                foreach(string additionalObject in m_AdditionalObjectConfigs)
+                {
+                    m_Log.InfoFormat("Adding object from section {0}", additionalObject);
+                    if(!TryAddAdditionalObject(scene, additionalObject))
+                    {
+                        success = false;
+                        break;
+                    }
+                }
+            }
             try
             {
                 if (success)
