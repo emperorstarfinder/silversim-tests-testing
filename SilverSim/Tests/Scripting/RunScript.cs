@@ -62,6 +62,7 @@ namespace SilverSim.Tests.Scripting
         private readonly ManualResetEvent m_RunTimeoutEvent = new ManualResetEvent(false);
         private TestRunner m_Runner;
         private UUI m_RegionOwner;
+        private UUID m_ObjectID;
         private UUI m_ObjectOwner;
         private UUI m_ObjectLastOwner;
         private UUI m_ObjectCreator;
@@ -161,6 +162,7 @@ namespace SilverSim.Tests.Scripting
             m_EstateID = (uint)config.GetInt("EstateID", 100);
             m_EstateName = config.GetString("EstateName", "My Estate");
 
+            m_ObjectID = UUID.Parse(config.GetString("ID", UUID.Random.ToString()));
             m_RegionName = config.GetString("RegionName", "Testing Region");
             m_RegionPort = config.GetInt("RegionPort", 9300);
             m_Runner = loader.GetServicesByValue<TestRunner>()[0];
@@ -246,8 +248,9 @@ namespace SilverSim.Tests.Scripting
             IConfig config = m_Loader.Config.Configs[sectionName];
             Vector3 position = Vector3.Parse(config.GetString("Position", m_Position.ToString()));
             Quaternion rotation = Quaternion.Parse(config.GetString("Rotation", m_Rotation.ToString()));
+            UUID objectid = UUID.Parse(config.GetString("ID", UUID.Random.ToString()));
 
-            string objectName = config.GetString("ObjectName", "Object");
+            string objectName = config.GetString("ObjectName", sectionName);
             string scriptName = config.GetString("ScriptName", "Script");
             string experienceName = config.GetString("ExperienceName", "My Experience");
             UUID experienceID;
@@ -346,7 +349,7 @@ namespace SilverSim.Tests.Scripting
             try
             {
                 var grp = new ObjectGroup();
-                var part = new ObjectPart();
+                var part = new ObjectPart(objectid);
                 grp.Add(1, part.ID, part);
                 part.ObjectGroup = grp;
                 grp.Owner = objectOwner;
@@ -546,7 +549,7 @@ namespace SilverSim.Tests.Scripting
                 {
                     {
                         var grp = new ObjectGroup();
-                        var part = new ObjectPart();
+                        var part = new ObjectPart(m_ObjectID);
                         grp.Add(1, part.ID, part);
                         part.ObjectGroup = grp;
                         grp.Owner = m_ObjectOwner;
