@@ -565,7 +565,7 @@ namespace SilverSim.Tests.Scripting
                         part.EveryoneMask = m_ObjectPermissionsEveryone;
                         part.GroupMask = m_ObjectPermissionsGroup;
 
-                        var item = new ObjectPartInventoryItem()
+                        var item = new ObjectPartInventoryItem
                         {
                             AssetType = AssetType.LSLText,
                             AssetID = UUID.Random,
@@ -585,7 +585,7 @@ namespace SilverSim.Tests.Scripting
 
                         scene.Add(grp);
                         ChatServiceInterface chatService = scene.GetService<ChatServiceInterface>();
-                        if (null != chatService)
+                        if (chatService != null)
                         {
                             chatService.AddRegionListener(PUBLIC_CHANNEL, string.Empty, UUID.Zero, "", GetUUID, PublicChannelLog);
                             chatService.AddRegionListener(DEBUG_CHANNEL, string.Empty, UUID.Zero, "", GetUUID, DebugChannelLog);
