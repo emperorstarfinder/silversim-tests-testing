@@ -22,12 +22,8 @@
 using log4net;
 using SilverSim.Scene.Types.Scene;
 using SilverSim.Types;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SilverSim.Tests.SimulationData
 {
@@ -37,7 +33,7 @@ namespace SilverSim.Tests.SimulationData
 
         private bool CompareSettings(RegionSettings a, RegionSettings b)
         {
-            List<string> mismatches = new List<string>();
+            var mismatches = new List<string>();
 
             if(a.AgentLimit != b.AgentLimit)
             {
@@ -233,7 +229,7 @@ namespace SilverSim.Tests.SimulationData
 
         public override bool Run()
         {
-            RegionSettings testData = new RegionSettings()
+            var testData = new RegionSettings
             {
                 AgentLimit = 100,
                 AllowDamage = true,
@@ -249,7 +245,7 @@ namespace SilverSim.Tests.SimulationData
                 UseEstateSun = true
             };
             RegionSettings retrieveData;
-            UUID testRegion = new UUID("11223344-1122-1122-1122-112233445566");
+            var testRegion = new UUID("11223344-1122-1122-1122-112233445566");
 
             m_Log.Info("Testing non-existence via ContainsKey");
             if(SimulationData.RegionSettings.ContainsKey(testRegion))
