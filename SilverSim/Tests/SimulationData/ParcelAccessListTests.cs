@@ -304,6 +304,37 @@ namespace SilverSim.Tests.SimulationData
                 return false;
             }
 
+            m_Log.InfoFormat("{0}: H: Trying to use extend for expiry", listInfo);
+            lut.ExtendExpiry(regionId, parcelId, user, 3600);
+
+            m_Log.InfoFormat("{0}: H: Checking existence", listInfo);
+            if(!lut.TryGetValue(regionId, parcelId, user, out entry))
+            {
+                return false;
+            }
+
+            ulong oldval = entry.ExpiresAt.AsULong;
+
+            m_Log.InfoFormat("{0}: H: Trying to use another extend for expiry", listInfo);
+            lut.ExtendExpiry(regionId, parcelId, user, 3600);
+
+            m_Log.InfoFormat("{0}: H: Checking existence", listInfo);
+            if (!lut.TryGetValue(regionId, parcelId, user, out entry))
+            {
+                return false;
+            }
+
+            m_Log.InfoFormat("{0}: H: Check extension", listInfo);
+            if(oldval >= entry.ExpiresAt.AsULong)
+            {
+                return false;
+            }
+
+            m_Log.InfoFormat("{0}: H: Removing entry 1", listInfo);
+            if (!lut.Remove(regionId, parcelId, user))
+            {
+                return false;
+            }
             return true;
         }
     }
