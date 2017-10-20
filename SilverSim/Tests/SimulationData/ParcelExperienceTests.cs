@@ -63,6 +63,7 @@ namespace SilverSim.Tests.SimulationData
         {
             var regionID = new UUID("12345678-1234-1234-1234-123456789012");
             var experienceID = new UUID("11223344-1122-1122-1122-112233445566");
+            var experienceID2 = new UUID("11223344-1122-1122-1122-112233445567");
             var parcelID = new UUID("11223344-1122-1122-1122-665544332211");
 
             var testentry = new ParcelExperienceEntry
@@ -212,6 +213,47 @@ namespace SilverSim.Tests.SimulationData
                 return false;
             }
 
+            var testentry2 = new ParcelExperienceEntry
+            {
+                RegionID = regionID,
+                ExperienceID = experienceID2,
+                ParcelID = parcelID,
+                IsAllowed = true
+            };
+
+            m_Log.Info("Store two entries");
+            SimulationData.Parcels.Experiences.Store(testentry);
+            SimulationData.Parcels.Experiences.Store(testentry2);
+
+            m_Log.Info("Check that two entries exist");
+            if(SimulationData.Parcels.Experiences[regionID, parcelID].Count != 2)
+            {
+                return false;
+            }
+
+            m_Log.Info("Remove first entry");
+            if(!SimulationData.Parcels.Experiences.Remove(regionID, parcelID, experienceID))
+            {
+                return false;
+            }
+
+            m_Log.Info("Check existence of entry 2");
+            if(!SimulationData.Parcels.Experiences.TryGetValue(regionID, parcelID, experienceID2, out entry))
+            {
+                return false;
+            }
+
+            m_Log.Info("Re-add first entry");
+            SimulationData.Parcels.Experiences.Store(testentry);
+
+            m_Log.Info("Remove all experience entries");
+            SimulationData.Parcels.Experiences.Remove(regionID, parcelID);
+
+            m_Log.Info("Check that no entries exist");
+            if(SimulationData.Parcels.Experiences[regionID, parcelID].Count != 0)
+            {
+                return false;
+            }
             return true;
         }
     }

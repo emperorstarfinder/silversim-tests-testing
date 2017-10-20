@@ -59,6 +59,7 @@ namespace SilverSim.Tests.SimulationData
         {
             var regionID = new UUID("12345678-1234-1234-1234-123456789012");
             var experienceID = new UUID("11223344-1122-1122-1122-112233445566");
+            var experienceID2 = new UUID("11223344-1122-1122-1122-112233445567");
 
             var testentry = new RegionExperienceInfo
             {
@@ -206,6 +207,66 @@ namespace SilverSim.Tests.SimulationData
                 return false;
             }
 
+            var testentry2 = new RegionExperienceInfo
+            {
+                RegionID = regionID,
+                ExperienceID = experienceID2,
+                IsAllowed = true
+            };
+
+            int entriescount;
+
+            m_Log.Info("Storing two entries A");
+            SimulationData.RegionExperiences.Store(testentry);
+            SimulationData.RegionExperiences.Store(testentry2);
+
+            m_Log.Info("Testing that two entries exist A");
+            entriescount = SimulationData.RegionExperiences[regionID].Count;
+            if (entriescount != 2)
+            {
+                m_Log.InfoFormat("Unexpected count {0}", entriescount);
+                return false;
+            }
+
+            m_Log.Info("Removing entry 1 A");
+            if(!SimulationData.RegionExperiences.Remove(regionID, experienceID))
+            {
+                return false;
+            }
+
+            m_Log.Info("Testing existence of entry 2 A");
+            if(!SimulationData.RegionExperiences.TryGetValue(regionID, experienceID2, out entry))
+            {
+                return false;
+            }
+
+            m_Log.Info("Removing entry 2 A");
+            if (!SimulationData.RegionExperiences.Remove(regionID, experienceID2))
+            {
+                return false;
+            }
+
+            m_Log.Info("Storing two entries B");
+            SimulationData.RegionExperiences.Store(testentry);
+            SimulationData.RegionExperiences.Store(testentry2);
+
+            m_Log.Info("Testing that two entries exist");
+            entriescount = SimulationData.RegionExperiences[regionID].Count;
+            if (entriescount != 2)
+            {
+                m_Log.InfoFormat("Unexpected count {0}", entriescount);
+                return false;
+            }
+
+            m_Log.Info("Removing all entries B");
+            SimulationData.RegionExperiences.RemoveRegion(regionID);
+
+            m_Log.Info("Testing that no entries exist B");
+            entriescount = SimulationData.RegionExperiences[regionID].Count;
+            if (entriescount != 0)
+            {
+                return false;
+            }
             return true;
         }
     }

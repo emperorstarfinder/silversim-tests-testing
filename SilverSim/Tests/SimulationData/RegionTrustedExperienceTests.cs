@@ -34,6 +34,7 @@ namespace SilverSim.Tests.SimulationData
         {
             var regionID = new UUID("12345678-1234-1234-1234-123456789012");
             var experienceID = new UUID("11223344-1122-1122-1122-112233445566");
+            var experienceID2 = new UUID("11223344-1122-1122-1122-112233445567");
             bool trusted;
             List<UUID> res;
 
@@ -146,6 +147,37 @@ namespace SilverSim.Tests.SimulationData
             }
             m_Log.Info("Testing non-existence 3C");
             if (SimulationData.TrustedExperiences[regionID].Count != 0)
+            {
+                return false;
+            }
+
+            m_Log.Info("Storing two entries");
+            SimulationData.TrustedExperiences[regionID, experienceID] = true;
+            SimulationData.TrustedExperiences[regionID, experienceID2] = true;
+
+            m_Log.Info("Check that two entries exist");
+            if(SimulationData.TrustedExperiences[regionID].Count != 2)
+            {
+                return false;
+            }
+
+            m_Log.Info("Remove first entry");
+            SimulationData.TrustedExperiences[regionID, experienceID] = false;
+
+            m_Log.Info("Check that entry 2 still exists");
+            if(!SimulationData.TrustedExperiences[regionID, experienceID2])
+            {
+                return false;
+            }
+
+            m_Log.Info("Re-add first entry");
+            SimulationData.TrustedExperiences[regionID, experienceID] = true;
+
+            m_Log.Info("Remove all entries");
+            SimulationData.TrustedExperiences.RemoveRegion(regionID);
+
+            m_Log.Info("Check that no entries exist");
+            if(SimulationData.TrustedExperiences[regionID].Count != 0)
             {
                 return false;
             }
