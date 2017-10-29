@@ -21,41 +21,23 @@
 
 using log4net;
 using Nini.Config;
+using SilverSim.Http.Client;
 using SilverSim.Main.Common;
-using SilverSim.Scene.Types.Script;
-using SilverSim.Scripting.Common;
+using SilverSim.Scene.Types.Object;
 using SilverSim.Tests.Extensions;
 using SilverSim.Types;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
-using System.Text;
 
-namespace SilverSim.Tests.Scripting
+namespace SilverSim.Tests.Assets.Formats
 {
-    public class Compile : ITest
+    public class ObjectDeserializationFromUri : ITest
     {
         private static readonly ILog m_Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-
-        Dictionary<UUID, string> Files = new Dictionary<UUID, string>();
-        TestRunner m_Runner;
-
-        public void Startup(ConfigurationLoader loader)
-        {
-            IConfig config = loader.Config.Configs[GetType().FullName];
-            foreach (string key in config.GetKeys())
-            {
-                UUID uuid;
-                if (UUID.TryParse(key, out uuid))
-                {
-                    Files[uuid] = config.GetString(key);
-                }
-            }
-            CompilerRegistry.ScriptCompilers.DefaultCompilerName = config.GetString("DefaultCompiler");
-            m_Runner = loader.GetServicesByValue<TestRunner>()[0];
-            m_Runner.ExcludeSummaryCount = true;
-        }
+        private static readonly Dictionary<UUID, string> Assets = new Dictionary<UUID, string>();
+        private TestRunner m_Runner;
 
         public void Setup()
         {
@@ -64,7 +46,7 @@ namespace SilverSim.Tests.Scripting
 
         public void Cleanup()
         {
-            m_Runner = null;
+
         }
 
         public bool Run()
@@ -72,33 +54,27 @@ namespace SilverSim.Tests.Scripting
             bool success = true;
             int count = 0;
             int successcnt = 0;
-            foreach (KeyValuePair<UUID, string> file in Files)
+            foreach (KeyValuePair<UUID, string> file in Assets)
             {
                 ++count;
                 var tr = new TestRunner.TestResult
                 {
-                    Name = "Script " + file.Key + "(" + file.Value + ")",
+                    Name = "Asset " + file.Key + "(" + file.Value + ")",
                     Result = false,
                     Message = string.Empty
                 };
                 int startTime = Environment.TickCount;
-                m_Log.InfoFormat("Testing compilation of {1} ({0})", file.Key, file.Value);
+                m_Log.InfoFormat("Testing deserialization of {1} ({0})", file.Key, file.Value);
+
                 try
                 {
-                    using (TextReader reader = new StreamReader(file.Value, new UTF8Encoding(false)))
+                    using(Stream s = new HttpClient.Get(file.Value).ExecuteStreamRequest())
                     {
-                        CompilerRegistry.ScriptCompilers.Compile(AppDomain.CurrentDomain, UUI.Unknown, file.Key, reader);
+                        ObjectXML.FromXml(s, UUI.Unknown, XmlDeserializationOptions.ReadKeyframeMotion);
                     }
-                    m_Log.InfoFormat("Compilation of {1} ({0}) successful", file.Key, file.Value);
+                    m_Log.InfoFormat("Deserialization of {1} ({0}) successful", file.Key, file.Value);
                     ++successcnt;
                     tr.Result = true;
-                }
-                catch (CompilerException e)
-                {
-                    m_Log.ErrorFormat("Compilation of {1} ({0}) failed: {2}", file.Key, file.Value, e.Message);
-                    m_Log.WarnFormat("Stack Trace:\n{0}", e.StackTrace);
-                    tr.Message = e.Message + "\n" + e.StackTrace;
-                    success = false;
                 }
                 catch (Exception e)
                 {
@@ -112,6 +88,22 @@ namespace SilverSim.Tests.Scripting
             }
             m_Log.InfoFormat("{0} of {1} compilations successful", successcnt, count);
             return success;
+        }
+
+        public void Startup(ConfigurationLoader loader)
+        {
+            m_Runner = loader.GetServicesByValue<TestRunner>()[0];
+            m_Runner.ExcludeSummaryCount = true;
+
+            IConfig config = loader.Config.Configs[GetType().FullName];
+            foreach (string key in config.GetKeys())
+            {
+                UUID uuid;
+                if (UUID.TryParse(key, out uuid))
+                {
+                    Assets[uuid] = config.GetString(key);
+                }
+            }
         }
     }
 }

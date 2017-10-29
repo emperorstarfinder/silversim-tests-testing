@@ -24,6 +24,7 @@ using Nini.Config;
 using SilverSim.Main.Common;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 using System.Threading;
 using System.Xml;
@@ -36,7 +37,8 @@ namespace SilverSim.Tests.Extensions
         private static readonly ILog m_Log = LogManager.GetLogger("TEST RUNNER");
         List<ITest> m_Tests = new List<ITest>();
         string m_TestName = string.Empty;
-        string m_XmlResultFileName = string.Empty;
+        string m_XUnitResultsFileName = string.Empty;
+        string m_NUnitResultsFileName = string.Empty;
         ConfigurationLoader m_Loader;
         public struct TestResult
         {
@@ -44,6 +46,7 @@ namespace SilverSim.Tests.Extensions
             public bool Result;
             public int RunTime;
             public string Message;
+            public string StackTrace;
         }
 
         public List<TestResult> TestResults = new List<TestResult>();
@@ -55,7 +58,8 @@ namespace SilverSim.Tests.Extensions
         public TestRunner(IConfig ownSection)
         {
             m_TestName = ownSection.GetString("Name", "");
-            m_XmlResultFileName = ownSection.GetString("XUnitResultsFile", "");
+            m_XUnitResultsFileName = ownSection.GetString("XUnitResultsFile", string.Empty);
+            m_NUnitResultsFileName = ownSection.GetString("NUnitResultsFile", string.Empty);
         }
 
         public void Startup(ConfigurationLoader loader)
@@ -74,7 +78,7 @@ namespace SilverSim.Tests.Extensions
             var failedtests = new List<string>();
             foreach(ITest test in m_Tests)
             {
-                var tr = new TestResult()
+                var tr = new TestResult
                 {
                     Name = test.GetType().FullName,
                     RunTime = Environment.TickCount
@@ -114,6 +118,7 @@ namespace SilverSim.Tests.Extensions
                     failed = true;
                     tr.Message = string.Format("Exception {0}: {1}\n{2}", e.GetType().FullName, e.ToString(), e.StackTrace.ToString());
                     tr.Result = false;
+                    tr.StackTrace = e.StackTrace;
                     if (!failedtests.Contains(test.GetType().FullName))
                     {
                         failedtests.Add(test.GetType().FullName);
@@ -133,6 +138,7 @@ namespace SilverSim.Tests.Extensions
                     failed = true;
                     tr.Message = string.Format("Exception {0}: {1}\n{2}", e.GetType().FullName, e.ToString(), e.StackTrace.ToString());
                     tr.Result = false;
+                    tr.StackTrace = e.StackTrace;
                     if (!failedtests.Contains(test.GetType().FullName))
                     {
                         failedtests.Add(test.GetType().FullName);
@@ -151,9 +157,36 @@ namespace SilverSim.Tests.Extensions
                 TestResults.Add(tr);
             }
 
-            if (m_XmlResultFileName?.Length != 0)
+            if (m_XUnitResultsFileName?.Length != 0)
             {
-                var xmlTestResults = new XmlTextWriter(m_XmlResultFileName, new UTF8Encoding(false));
+                WriteXUnitResults(m_XUnitResultsFileName);
+            }
+
+            if(m_NUnitResultsFileName?.Length != 0)
+            {
+                WriteNUnit2Results(m_NUnitResultsFileName);
+            }
+
+            if (failed)
+            {
+                m_Log.InfoFormat("Failed tests ({0}): {1}", failedtests.Count, string.Join(" ", failedtests));
+                Thread.Sleep(100);
+                throw new ConfigurationLoader.TestingErrorException();
+            }
+            else
+            {
+                ConfigurationLoader loader = m_Loader;
+                if (null != loader)
+                {
+                    loader.TriggerShutdown();
+                }
+            }
+        }
+
+        private void WriteXUnitResults(string filename)
+        {
+            using (var xmlTestResults = new XmlTextWriter(filename, new UTF8Encoding(false)))
+            {
                 xmlTestResults.WriteStartElement("testsuite");
                 xmlTestResults.WriteAttributeString("name", m_TestName);
                 int num_failures = 0;
@@ -166,15 +199,15 @@ namespace SilverSim.Tests.Extensions
                     }
                     ++num_tests;
                 }
-                xmlTestResults.WriteAttributeString("tests", num_tests.ToString());
+                xmlTestResults.WriteAttributeString("tests", num_tests.ToString(CultureInfo.InvariantCulture));
                 xmlTestResults.WriteAttributeString("errors", "0");
-                xmlTestResults.WriteAttributeString("failures", num_failures.ToString());
+                xmlTestResults.WriteAttributeString("failures", num_failures.ToString(CultureInfo.InvariantCulture));
                 xmlTestResults.WriteAttributeString("skip", "0");
                 foreach (TestResult re in TestResults)
                 {
                     xmlTestResults.WriteStartElement("testcase");
                     xmlTestResults.WriteAttributeString("name", re.Name);
-                    xmlTestResults.WriteAttributeString("time", (re.RunTime / 1000f).ToString());
+                    xmlTestResults.WriteAttributeString("time", (re.RunTime / 1000f).ToString(CultureInfo.InvariantCulture));
                     {
                         if (re.Result)
                         {
@@ -192,22 +225,77 @@ namespace SilverSim.Tests.Extensions
                     xmlTestResults.WriteEndElement();
                 }
                 xmlTestResults.WriteEndElement();
-                xmlTestResults.Close();
             }
+        }
 
-            if (failed)
+        private void WriteNUnit2Results(string filename)
+        {
+            using (var xmlTestResults = new XmlTextWriter(filename, new UTF8Encoding(false)))
             {
-                m_Log.InfoFormat("Failed tests ({0}): {1}", failedtests.Count, string.Join(" ", failedtests));
-                Thread.Sleep(100);
-                throw new ConfigurationLoader.TestingErrorException();
-            }
-            else
-            {
-                ConfigurationLoader loader = m_Loader;
-                if (null != loader)
+                int num_failures = 0;
+                int num_tests = 0;
+                long runtime = 0;
+                foreach (TestResult tr in TestResults)
                 {
-                    loader.TriggerShutdown();
+                    if (!tr.Result)
+                    {
+                        ++num_failures;
+                    }
+                    ++num_tests;
+                    runtime += tr.RunTime;
                 }
+
+                xmlTestResults.WriteStartElement("test-results");
+                xmlTestResults.WriteAttributeString("name", m_TestName);
+                xmlTestResults.WriteAttributeString("total", num_tests.ToString(CultureInfo.InvariantCulture));
+                xmlTestResults.WriteAttributeString("errors", "0");
+                xmlTestResults.WriteAttributeString("failures", num_failures.ToString(CultureInfo.InvariantCulture));
+                xmlTestResults.WriteAttributeString("not-run", "0");
+                xmlTestResults.WriteAttributeString("inconclusive", "0");
+                xmlTestResults.WriteAttributeString("ignored", "0");
+                xmlTestResults.WriteAttributeString("skipped", "0");
+                xmlTestResults.WriteAttributeString("invalid", "0");
+                {
+                    xmlTestResults.WriteStartElement("test-suite");
+                    xmlTestResults.WriteAttributeString("name", m_TestName);
+                    xmlTestResults.WriteAttributeString("executed", "True");
+                    xmlTestResults.WriteAttributeString("result", num_failures != 0 ? "Failure" : "Success");
+                    xmlTestResults.WriteAttributeString("success", num_failures != 0 ? "False" : "True");
+                    xmlTestResults.WriteAttributeString("time", (runtime / 1000.0).ToString(CultureInfo.InvariantCulture));
+                    xmlTestResults.WriteAttributeString("asserts", "0");
+                    xmlTestResults.WriteStartElement("results");
+                    {
+                        foreach (TestResult re in TestResults)
+                        {
+                            xmlTestResults.WriteStartElement("test-case");
+                            {
+                                xmlTestResults.WriteAttributeString("name", re.Name);
+                                xmlTestResults.WriteAttributeString("executed", "True");
+                                xmlTestResults.WriteAttributeString("result", re.Result ? "Success" : "Failure");
+                                xmlTestResults.WriteAttributeString("success", re.Result ? "False" : "True");
+                                xmlTestResults.WriteAttributeString("time", (re.RunTime / 1000.0).ToString(CultureInfo.InvariantCulture));
+                                xmlTestResults.WriteAttributeString("asserts", "0");
+                                xmlTestResults.WriteStartElement("reason");
+                                {
+                                    xmlTestResults.WriteStartElement("message");
+                                    xmlTestResults.WriteValue(re.Message);
+                                    xmlTestResults.WriteEndElement();
+                                    if (re.StackTrace?.Length > 0)
+                                    {
+                                        xmlTestResults.WriteStartElement("stack-trace");
+                                        xmlTestResults.WriteValue(re.Message);
+                                        xmlTestResults.WriteEndElement();
+                                    }
+                                }
+                                xmlTestResults.WriteEndElement();
+                            }
+                            xmlTestResults.WriteEndElement();
+                        }
+                        xmlTestResults.WriteEndElement();
+                    }
+                    xmlTestResults.WriteEndElement();
+                }
+                xmlTestResults.WriteEndElement();
             }
         }
 
