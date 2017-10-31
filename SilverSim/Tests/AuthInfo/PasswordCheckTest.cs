@@ -40,7 +40,7 @@ namespace SilverSim.Tests.AuthInfo
         {
             // password: Hello (in $1$8b1a9953c4611296a827abf8c47804d7)
             // salt: World
-            UserAuthInfo authInfo = new UserAuthInfo()
+            var authInfo = new UserAuthInfo
             {
                 PasswordHash = "fd6224f938c9c333dfbeb2336c6640e7",
                 PasswordSalt = "f5a7924e621e84c9280a9a27e1bcb7f6"
