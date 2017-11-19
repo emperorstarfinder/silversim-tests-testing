@@ -38,7 +38,7 @@ namespace SilverSim.Tests.SimulationData.Consistency
             };
             if(item.ParentFolderID != UUID.Zero)
             {
-                m_Log.Info("Test item cannot have valid PartID");
+                m_Log.Info("Test item cannot have valid PartID yet");
                 return false;
             }
             part.Inventory.Add(item.ID, item.Name, item);
