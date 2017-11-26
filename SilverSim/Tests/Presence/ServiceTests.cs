@@ -77,7 +77,15 @@ namespace SilverSim.Tests.Presence
             }
 
             m_Log.Info("---- Check that logout does not create an entry ----");
-            m_PresenceService.Logout(pInfo.SessionID, pInfo.UserID.ID);
+            try
+            {
+                m_PresenceService.Logout(pInfo.SessionID, pInfo.UserID.ID);
+                return false;
+            }
+            catch(PresenceUpdateFailedException)
+            {
+                /* expected exception */
+            }
             if (!CheckNonExistence(pInfo))
             {
                 return false;
@@ -94,7 +102,7 @@ namespace SilverSim.Tests.Presence
             m_PresenceService.Login(pInfo);
 
             m_Log.Info("---- Verify existence ----");
-            if(CheckExistence(pInfo))
+            if(!CheckExistence(pInfo))
             {
                 return false;
             }
@@ -110,7 +118,7 @@ namespace SilverSim.Tests.Presence
             m_PresenceService.LogoutRegion(newRegionID);
 
             m_Log.Info("---- Verify existence ----");
-            if (CheckExistence(pInfo))
+            if (!CheckExistence(pInfo))
             {
                 return false;
             }
@@ -170,8 +178,8 @@ namespace SilverSim.Tests.Presence
         private bool IsEqual(PresenceInfo p1, PresenceInfo p2)
         {
             var mismatches = new List<string>();
-            bool uriEqual = p1.UserID.HomeURI?.ToString() == p2.UserID.HomeURI?.ToString();
-            if(p1.UserID.ID != p2.UserID.ID || p1.UserID.FirstName != p2.UserID.LastName || p1.UserID.LastName != p2.UserID.LastName || ! uriEqual)
+            /* Db services are only required to store UUID */
+            if(p1.UserID.ID != p2.UserID.ID)
             {
                 mismatches.Add("UserID");
             }
@@ -230,6 +238,22 @@ namespace SilverSim.Tests.Presence
                 return false;
             }
 
+            m_Log.Info("Check that entry exists by sessionid alone");
+            try
+            {
+                result = m_PresenceService[pInfo.SessionID, UUID.Zero];
+            }
+            catch
+            {
+                return false;
+            }
+
+            m_Log.Info("Verify equality");
+            if (!IsEqual(result, pInfo))
+            {
+                return false;
+            }
+
             m_Log.Info("Check that entry exists by sessionid and userid");
             try
             {
@@ -244,6 +268,18 @@ namespace SilverSim.Tests.Presence
             if (!IsEqual(result, pInfo))
             {
                 return false;
+            }
+
+
+            m_Log.Info("Check that entry does not exist by sessionid and other userid");
+            try
+            {
+                result = m_PresenceService[pInfo.SessionID, UUID.RandomFixedFirst(0xFFFFFFFF)];
+                return false;
+            }
+            catch(PresenceNotFoundException)
+            {
+                /* expected exception */
             }
 
             return true;
@@ -270,7 +306,7 @@ namespace SilverSim.Tests.Presence
                 result = m_PresenceService[pInfo.SessionID, pInfo.UserID.ID];
                 return false;
             }
-            catch (KeyNotFoundException)
+            catch (PresenceNotFoundException)
             {
                 /* expected exception */
             }
