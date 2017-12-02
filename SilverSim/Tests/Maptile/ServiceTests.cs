@@ -26,10 +26,9 @@ using SilverSim.ServiceInterfaces.Maptile;
 using SilverSim.Tests.Extensions;
 using SilverSim.Types;
 using SilverSim.Types.Maptile;
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
-using System;
 
 namespace SilverSim.Tests.Maptile
 {
