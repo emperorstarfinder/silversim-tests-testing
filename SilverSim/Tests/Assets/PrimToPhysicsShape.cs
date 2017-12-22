@@ -258,11 +258,6 @@ namespace SilverSim.Tests.Assets
         {
         }
 
-        string VertexToString(Vector3 v)
-        {
-            return string.Format(CultureInfo.InvariantCulture, "{0} {1} {2}", v.X, v.Y, v.Z);
-        }
-
         public bool Run()
         {
             PhysicsShapeReference physicsShapeRef;
