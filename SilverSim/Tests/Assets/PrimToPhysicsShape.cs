@@ -22,6 +22,7 @@
 using log4net;
 using Nini.Config;
 using SilverSim.Main.Common;
+using SilverSim.Scene.Physics.ShapeManager;
 using SilverSim.Scene.Types.Object;
 using SilverSim.Scene.Types.Object.Mesh;
 using SilverSim.ServiceInterfaces.Asset;
@@ -36,11 +37,13 @@ using System.Reflection;
 
 namespace SilverSim.Tests.Assets
 {
-    public class PrimToMesh : ITest
+    public class PrimToPhysicsShape : ITest
     {
         private static readonly ILog m_Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
+        PhysicsShapeManager m_PhysicsShapeManager;
         AssetServiceInterface m_AssetService;
+        PrimitivePhysicsShapeType m_PhysicsShapeType;
         ObjectPart.PrimitiveShape.Decoded m_Shape = new ObjectPart.PrimitiveShape.Decoded();
         string m_OutputFileName;
 
@@ -48,6 +51,7 @@ namespace SilverSim.Tests.Assets
         {
             IConfig config = loader.Config.Configs[GetType().FullName];
             m_AssetService = loader.GetService<AssetServiceInterface>(config.GetString("AssetService"));
+            m_PhysicsShapeManager = loader.GetService<PhysicsShapeManager>(config.GetString("PhysicsShapeManager"));
 
             string shapeType = config.GetString("ShapeType", "Box").ToLowerInvariant();
             switch (shapeType)
@@ -120,7 +124,7 @@ namespace SilverSim.Tests.Assets
                 m_Shape.SculptMap = new UUID(config.GetString("SculptMapID"));
             }
 
-            if(config.Contains("SculptMapFile"))
+            if (config.Contains("SculptMapFile"))
             {
                 if (!config.Contains("SculptMapID"))
                 {
@@ -131,12 +135,12 @@ namespace SilverSim.Tests.Assets
                 {
                     var fileLength = (int)fs.Length;
                     data = new byte[fileLength];
-                    if(fileLength != fs.Read(data, 0, fileLength))
+                    if (fileLength != fs.Read(data, 0, fileLength))
                     {
                         throw new ConfigurationLoader.ConfigurationErrorException("Failed to load file");
                     }
                 }
-                var assetdata = new AssetData()
+                var assetdata = new AssetData
                 {
                     Data = data,
                     Type = m_Shape.SculptType == PrimitiveSculptType.Mesh ? AssetType.Mesh : AssetType.Texture,
@@ -153,6 +157,25 @@ namespace SilverSim.Tests.Assets
             if (config.GetBoolean("IsSculptMirrored", false))
             {
                 m_Shape.IsSculptMirrored = true;
+            }
+
+            string physicsShapeType = config.GetString("PhysicsShapeType", "prim").ToLowerInvariant();
+            switch(physicsShapeType)
+            {
+                case "none":
+                    m_PhysicsShapeType = PrimitivePhysicsShapeType.None;
+                    break;
+
+                case "prim":
+                    m_PhysicsShapeType = PrimitivePhysicsShapeType.Prim;
+                    break;
+
+                case "convex":
+                    m_PhysicsShapeType = PrimitivePhysicsShapeType.Convex;
+                    break;
+
+                default:
+                    throw new ConfigurationLoader.ConfigurationErrorException(string.Format("Invalid PhysicsShapeType: {0}", physicsShapeType));
             }
 
             string profileShape = config.GetString("ProfileShape", "Circle").ToLowerInvariant();
@@ -242,19 +265,19 @@ namespace SilverSim.Tests.Assets
 
         public bool Run()
         {
-            MeshLOD mesh = m_Shape.ToMesh(m_AssetService);
+            PhysicsShapeReference physicsShapeRef;
+            ObjectPart.PrimitiveShape ps = new ObjectPart.PrimitiveShape
+            {
+                DecodedParams = m_Shape
+            };
+            if (!m_PhysicsShapeManager.TryGetConvexShape(m_PhysicsShapeType, ps, out physicsShapeRef))
+            {
+                m_Log.Error("Could not generate physics hull shape");
+                return false;
+            }
 
             /* write a blender .raw */
-            using (var w = new StreamWriter(m_OutputFileName))
-            {
-                foreach(Triangle tri in mesh.Triangles)
-                {
-                    w.WriteLine("{0} {1} {2}",
-                        VertexToString(mesh.Vertices[tri.Vertex1]),
-                        VertexToString(mesh.Vertices[tri.Vertex2]),
-                        VertexToString(mesh.Vertices[tri.Vertex3]));
-                }
-            }
+            ((PhysicsConvexShape)physicsShapeRef).DumpToBlenderRaw(m_OutputFileName);
             return true;
         }
 
