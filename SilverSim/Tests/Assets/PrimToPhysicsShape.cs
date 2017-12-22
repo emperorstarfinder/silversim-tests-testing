@@ -50,7 +50,7 @@ namespace SilverSim.Tests.Assets
         public void Startup(ConfigurationLoader loader)
         {
             IConfig config = loader.Config.Configs[GetType().FullName];
-            m_AssetService = loader.GetService<AssetServiceInterface>(config.GetString("AssetService"));
+            m_AssetService = loader.GetService<AssetServiceInterface>(config.GetString("AssetService", "AssetService"));
             m_PhysicsShapeManager = loader.GetService<PhysicsShapeManager>(config.GetString("PhysicsShapeManager"));
 
             string shapeType = config.GetString("ShapeType", "Box").ToLowerInvariant();
@@ -270,6 +270,17 @@ namespace SilverSim.Tests.Assets
                 m_Log.Error("Could not generate physics hull shape");
                 return false;
             }
+
+            PhysicsConvexShape convexShape = physicsShapeRef;
+
+            int hullidx = 0;
+            foreach(PhysicsConvexShape.ConvexHull hull in convexShape.Hulls)
+            {
+                m_Log.InfoFormat("Hull {0}: Generated vertices: {1}", hullidx, hull.Vertices.Count);
+                m_Log.InfoFormat("Hull {0}: Generated triangles: {1}", hullidx, hull.Triangles.Count / 3);
+                ++hullidx;
+            }
+            m_Log.InfoFormat("Generated hulls: {0}", hullidx);
 
             /* write a blender .raw */
             ((PhysicsConvexShape)physicsShapeRef).DumpToBlenderRaw(m_OutputFileName);

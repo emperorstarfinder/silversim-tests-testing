@@ -30,6 +30,8 @@ using SilverSim.Types;
 using SilverSim.Types.Asset;
 using SilverSim.Types.Asset.Format.Mesh;
 using SilverSim.Types.Primitive;
+using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Reflection;
@@ -47,7 +49,7 @@ namespace SilverSim.Tests.Assets
         public void Startup(ConfigurationLoader loader)
         {
             IConfig config = loader.Config.Configs[GetType().FullName];
-            m_AssetService = loader.GetService<AssetServiceInterface>(config.GetString("AssetService"));
+            m_AssetService = loader.GetService<AssetServiceInterface>(config.GetString("AssetService", "AssetService"));
 
             string shapeType = config.GetString("ShapeType", "Box").ToLowerInvariant();
             switch (shapeType)
@@ -244,18 +246,41 @@ namespace SilverSim.Tests.Assets
         {
             MeshLOD mesh = m_Shape.ToMesh(m_AssetService);
 
-            /* write a blender .raw */
-            using (var w = new StreamWriter(m_OutputFileName))
+            var checkList = new List<string>();
+
+            bool success = true;
+            foreach(Triangle tri in mesh.Triangles)
             {
-                foreach(Triangle tri in mesh.Triangles)
+                var tridx = new int[3] { tri.Vertex1, tri.Vertex2, tri.Vertex3 };
+                Array.Sort(tridx);
+                string k = string.Join(",", tridx);
+                if(checkList.Contains(k))
                 {
-                    w.WriteLine("{0} {1} {2}",
-                        VertexToString(mesh.Vertices[tri.Vertex1]),
-                        VertexToString(mesh.Vertices[tri.Vertex2]),
-                        VertexToString(mesh.Vertices[tri.Vertex3]));
+                    m_Log.WarnFormat("Duplicate triangle found: {0} {1} {2}", tri.Vertex1, tri.Vertex2, tri.Vertex3);
+                    success = false;
                 }
+                checkList.Add(k);
             }
-            return true;
+
+            checkList.Clear();
+
+            foreach(Vector3 v in mesh.Vertices)
+            {
+                string k = v.ToString();
+                if(checkList.Contains(k))
+                {
+                    m_Log.WarnFormat("Duplicate vertex found: {0}", k);
+                    success = false;
+                }
+                checkList.Add(k);
+            }
+
+            m_Log.InfoFormat("Generated vertices: {0}", mesh.Vertices.Count);
+            m_Log.InfoFormat("Generated triangles: {0}", mesh.Triangles.Count);
+
+            /* write a blender .raw */
+            mesh.DumpToBlenderRaw(m_OutputFileName);
+            return success;
         }
 
         public void Cleanup()
