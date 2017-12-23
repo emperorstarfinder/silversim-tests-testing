@@ -45,6 +45,7 @@ namespace SilverSim.Tests.Assets
         AssetServiceInterface m_AssetService;
         ObjectPart.PrimitiveShape.Decoded m_Shape = new ObjectPart.PrimitiveShape.Decoded();
         string m_OutputFileName;
+        bool m_DisableDuplicateVertexDetection;
 
         private void DumpParams(ObjectPart.PrimitiveShape.Decoded data)
         {
@@ -75,7 +76,7 @@ namespace SilverSim.Tests.Assets
         {
             IConfig config = loader.Config.Configs[GetType().FullName];
             m_AssetService = loader.GetService<AssetServiceInterface>(config.GetString("AssetService", "AssetService"));
-
+            m_DisableDuplicateVertexDetection = config.GetBoolean("DisableDuplicateVertexDetection", false);
             if (config.Contains("HexData"))
             {
                 ObjectPart.PrimitiveShape p = new ObjectPart.PrimitiveShape
@@ -327,15 +328,18 @@ namespace SilverSim.Tests.Assets
 
             checkList.Clear();
 
-            foreach(Vector3 v in mesh.Vertices)
+            if (!m_DisableDuplicateVertexDetection)
             {
-                string k = v.ToString();
-                if(checkList.Contains(k))
+                foreach (Vector3 v in mesh.Vertices)
                 {
-                    m_Log.WarnFormat("Duplicate vertex found: {0}", k);
-                    success = false;
+                    string k = v.ToString();
+                    if (checkList.Contains(k))
+                    {
+                        m_Log.WarnFormat("Duplicate vertex found: {0}", k);
+                        success = false;
+                    }
+                    checkList.Add(k);
                 }
-                checkList.Add(k);
             }
 
             m_Log.InfoFormat("Generated vertices: {0}", mesh.Vertices.Count);
