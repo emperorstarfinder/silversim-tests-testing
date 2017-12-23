@@ -46,6 +46,31 @@ namespace SilverSim.Tests.Assets
         ObjectPart.PrimitiveShape.Decoded m_Shape = new ObjectPart.PrimitiveShape.Decoded();
         string m_OutputFileName;
 
+        private void DumpParams(ObjectPart.PrimitiveShape.Decoded data)
+        {
+            m_Log.InfoFormat("ShapeType: {0}", data.ShapeType);
+            m_Log.InfoFormat("SculptType: {0}", data.SculptType);
+            m_Log.InfoFormat("PathBegin: {0}", data.PathBegin);
+            m_Log.InfoFormat("PathCurve: {0}", data.PathCurve);
+            m_Log.InfoFormat("PathEnd: {0}", data.PathEnd);
+            m_Log.InfoFormat("HoleShape: {0}", data.HoleShape);
+            m_Log.InfoFormat("Taper: {0}", data.Taper);
+            m_Log.InfoFormat("PathScale: {0}", data.PathScale);
+            m_Log.InfoFormat("ProfileBegin: {0}", data.ProfileBegin);
+            m_Log.InfoFormat("ProfileEnd: {0}", data.ProfileEnd);
+            m_Log.InfoFormat("ProfileHollow: {0}", data.ProfileHollow);
+            m_Log.InfoFormat("ProfileShape: {0}", data.ProfileShape);
+            m_Log.InfoFormat("SculptMap: {0}", data.SculptMap);
+            m_Log.InfoFormat("Skew: {0}", data.Skew);
+            m_Log.InfoFormat("TwistBegin: {0}", data.TwistBegin);
+            m_Log.InfoFormat("TwistEnd: {0}", data.TwistEnd);
+            m_Log.InfoFormat("TopShear: {0}", data.TopShear);
+            m_Log.InfoFormat("Revolutions: {0}", data.Revolutions);
+            m_Log.InfoFormat("RadiusOffset: {0}", data.RadiusOffset);
+            m_Log.InfoFormat("IsSculptInverted: {0}", data.IsSculptInverted);
+            m_Log.InfoFormat("IsSculptMirrored: {0}", data.IsSculptMirrored);
+        }
+
         public void Startup(ConfigurationLoader loader)
         {
             IConfig config = loader.Config.Configs[GetType().FullName];
@@ -125,6 +150,33 @@ namespace SilverSim.Tests.Assets
 
                     default:
                         throw new ConfigurationLoader.ConfigurationErrorException(string.Format("Invalid SculptType: {0}", sculptType));
+                }
+
+                string pathCurve = config.GetString("PathCurve", "default").ToLowerInvariant();
+                switch(pathCurve)
+                {
+                    case "default":
+                        m_Shape.PathCurve = PrimitiveExtrusion.Default;
+                        break;
+
+                    case "curve1":
+                        m_Shape.PathCurve = PrimitiveExtrusion.Curve1;
+                        break;
+
+                    case "curve2":
+                        m_Shape.PathCurve = PrimitiveExtrusion.Curve2;
+                        break;
+
+                    case "flexible":
+                        m_Shape.PathCurve = PrimitiveExtrusion.Flexible;
+                        break;
+
+                    case "straight":
+                        m_Shape.PathCurve = PrimitiveExtrusion.Straight;
+                        break;
+
+                    default:
+                        throw new ConfigurationLoader.ConfigurationErrorException(string.Format("Invalid PathCurve: {0}", pathCurve));
                 }
 
                 if (config.Contains("SculptMapID"))
@@ -254,6 +306,7 @@ namespace SilverSim.Tests.Assets
 
         public bool Run()
         {
+            DumpParams(m_Shape);
             MeshLOD mesh = m_Shape.ToMesh(m_AssetService);
 
             var checkList = new List<string>();
