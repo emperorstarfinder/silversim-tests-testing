@@ -24,7 +24,6 @@ using Nini.Config;
 using SilverSim.Main.Common;
 using SilverSim.Scene.Physics.ShapeManager;
 using SilverSim.Scene.Types.Object;
-using SilverSim.Scene.Types.Object.Mesh;
 using SilverSim.ServiceInterfaces.Asset;
 using SilverSim.Tests.Extensions;
 using SilverSim.Types;
@@ -51,8 +50,7 @@ namespace SilverSim.Tests.Assets
         {
             IConfig config = loader.Config.Configs[GetType().FullName];
             m_AssetService = loader.GetService<AssetServiceInterface>(config.GetString("AssetService", "AssetService"));
-            m_PhysicsShapeManager = loader.GetService<PhysicsShapeManager>(config.GetString("PhysicsShapeManager"));
-
+            m_PhysicsShapeManager = loader.GetService<PhysicsShapeManager>(config.GetString("PhysicsShapeManager", "PhysicsShapeManager"));
 
             string physicsShapeType = config.GetString("PhysicsShapeType", "prim").ToLowerInvariant();
             switch (physicsShapeType)
@@ -75,8 +73,11 @@ namespace SilverSim.Tests.Assets
 
             if (config.Contains("HexData"))
             {
-                ObjectPart.PrimitiveShape p = new ObjectPart.PrimitiveShape();
-                p.Serialization = config.GetString("HexData").FromHexStringToByteArray();
+                ObjectPart.PrimitiveShape p = new ObjectPart.PrimitiveShape
+                {
+                    Serialization = config.GetString("HexData").FromHexStringToByteArray()
+                };
+                m_Shape = p.DecodedParams;
             }
             else
             {
