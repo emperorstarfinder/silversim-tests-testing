@@ -51,185 +51,195 @@ namespace SilverSim.Tests.Assets
             IConfig config = loader.Config.Configs[GetType().FullName];
             m_AssetService = loader.GetService<AssetServiceInterface>(config.GetString("AssetService", "AssetService"));
 
-            string shapeType = config.GetString("ShapeType", "Box").ToLowerInvariant();
-            switch (shapeType)
+            if (config.Contains("HexData"))
             {
-                case "box":
-                    m_Shape.ShapeType = PrimitiveShapeType.Box;
-                    break;
-
-                case "cylinder":
-                    m_Shape.ShapeType = PrimitiveShapeType.Cylinder;
-                    break;
-
-                case "prism":
-                    m_Shape.ShapeType = PrimitiveShapeType.Prism;
-                    break;
-
-                case "sphere":
-                    m_Shape.ShapeType = PrimitiveShapeType.Sphere;
-                    break;
-
-                case "torus":
-                    m_Shape.ShapeType = PrimitiveShapeType.Torus;
-                    break;
-
-                case "tube":
-                    m_Shape.ShapeType = PrimitiveShapeType.Tube;
-                    break;
-
-                case "ring":
-                    m_Shape.ShapeType = PrimitiveShapeType.Ring;
-                    break;
-
-                case "sculpt":
-                    m_Shape.ShapeType = PrimitiveShapeType.Sculpt;
-                    break;
-
-                default:
-                    throw new ConfigurationLoader.ConfigurationErrorException(string.Format("Invalid ShapeType: {0}", shapeType));
-            }
-
-            string sculptType = config.GetString("SculptType", "sphere").ToLowerInvariant();
-            switch (sculptType)
-            {
-                case "sphere":
-                    m_Shape.SculptType = PrimitiveSculptType.Sphere;
-                    break;
-
-                case "torus":
-                    m_Shape.SculptType = PrimitiveSculptType.Torus;
-                    break;
-
-                case "plane":
-                    m_Shape.SculptType = PrimitiveSculptType.Plane;
-                    break;
-
-                case "cylinder":
-                    m_Shape.SculptType = PrimitiveSculptType.Cylinder;
-                    break;
-
-                case "mesh":
-                    m_Shape.SculptType = PrimitiveSculptType.Mesh;
-                    break;
-
-                default:
-                    throw new ConfigurationLoader.ConfigurationErrorException(string.Format("Invalid SculptType: {0}", sculptType));
-            }
-
-            if (config.Contains("SculptMapID"))
-            {
-                m_Shape.SculptMap = new UUID(config.GetString("SculptMapID"));
-            }
-
-            if(config.Contains("SculptMapFile"))
-            {
-                if (!config.Contains("SculptMapID"))
+                ObjectPart.PrimitiveShape p = new ObjectPart.PrimitiveShape
                 {
-                    throw new ConfigurationLoader.ConfigurationErrorException("SculptMap parameter not present");
-                }
-                byte[] data;
-                using (var fs = new FileStream(config.GetString("SculptMapFile"), FileMode.Open))
-                {
-                    var fileLength = (int)fs.Length;
-                    data = new byte[fileLength];
-                    if(fileLength != fs.Read(data, 0, fileLength))
-                    {
-                        throw new ConfigurationLoader.ConfigurationErrorException("Failed to load file");
-                    }
-                }
-                var assetdata = new AssetData()
-                {
-                    Data = data,
-                    Type = m_Shape.SculptType == PrimitiveSculptType.Mesh ? AssetType.Mesh : AssetType.Texture,
-                    ID = m_Shape.SculptMap,
-                    Name = "PrimToMesh imported"
+                    Serialization = config.GetString("HexData").FromHexStringToByteArray()
                 };
-                m_AssetService.Store(assetdata);
+                m_Shape = p.DecodedParams;
             }
-
-            if (config.GetBoolean("IsSculptInverted", false))
+            else
             {
-                m_Shape.IsSculptInverted = true;
+                string shapeType = config.GetString("ShapeType", "Box").ToLowerInvariant();
+                switch (shapeType)
+                {
+                    case "box":
+                        m_Shape.ShapeType = PrimitiveShapeType.Box;
+                        break;
+
+                    case "cylinder":
+                        m_Shape.ShapeType = PrimitiveShapeType.Cylinder;
+                        break;
+
+                    case "prism":
+                        m_Shape.ShapeType = PrimitiveShapeType.Prism;
+                        break;
+
+                    case "sphere":
+                        m_Shape.ShapeType = PrimitiveShapeType.Sphere;
+                        break;
+
+                    case "torus":
+                        m_Shape.ShapeType = PrimitiveShapeType.Torus;
+                        break;
+
+                    case "tube":
+                        m_Shape.ShapeType = PrimitiveShapeType.Tube;
+                        break;
+
+                    case "ring":
+                        m_Shape.ShapeType = PrimitiveShapeType.Ring;
+                        break;
+
+                    case "sculpt":
+                        m_Shape.ShapeType = PrimitiveShapeType.Sculpt;
+                        break;
+
+                    default:
+                        throw new ConfigurationLoader.ConfigurationErrorException(string.Format("Invalid ShapeType: {0}", shapeType));
+                }
+
+                string sculptType = config.GetString("SculptType", "sphere").ToLowerInvariant();
+                switch (sculptType)
+                {
+                    case "sphere":
+                        m_Shape.SculptType = PrimitiveSculptType.Sphere;
+                        break;
+
+                    case "torus":
+                        m_Shape.SculptType = PrimitiveSculptType.Torus;
+                        break;
+
+                    case "plane":
+                        m_Shape.SculptType = PrimitiveSculptType.Plane;
+                        break;
+
+                    case "cylinder":
+                        m_Shape.SculptType = PrimitiveSculptType.Cylinder;
+                        break;
+
+                    case "mesh":
+                        m_Shape.SculptType = PrimitiveSculptType.Mesh;
+                        break;
+
+                    default:
+                        throw new ConfigurationLoader.ConfigurationErrorException(string.Format("Invalid SculptType: {0}", sculptType));
+                }
+
+                if (config.Contains("SculptMapID"))
+                {
+                    m_Shape.SculptMap = new UUID(config.GetString("SculptMapID"));
+                }
+
+                if (config.Contains("SculptMapFile"))
+                {
+                    if (!config.Contains("SculptMapID"))
+                    {
+                        throw new ConfigurationLoader.ConfigurationErrorException("SculptMap parameter not present");
+                    }
+                    byte[] data;
+                    using (var fs = new FileStream(config.GetString("SculptMapFile"), FileMode.Open))
+                    {
+                        var fileLength = (int)fs.Length;
+                        data = new byte[fileLength];
+                        if (fileLength != fs.Read(data, 0, fileLength))
+                        {
+                            throw new ConfigurationLoader.ConfigurationErrorException("Failed to load file");
+                        }
+                    }
+                    var assetdata = new AssetData()
+                    {
+                        Data = data,
+                        Type = m_Shape.SculptType == PrimitiveSculptType.Mesh ? AssetType.Mesh : AssetType.Texture,
+                        ID = m_Shape.SculptMap,
+                        Name = "PrimToMesh imported"
+                    };
+                    m_AssetService.Store(assetdata);
+                }
+
+                if (config.GetBoolean("IsSculptInverted", false))
+                {
+                    m_Shape.IsSculptInverted = true;
+                }
+                if (config.GetBoolean("IsSculptMirrored", false))
+                {
+                    m_Shape.IsSculptMirrored = true;
+                }
+
+                string profileShape = config.GetString("ProfileShape", "Circle").ToLowerInvariant();
+                switch (profileShape)
+                {
+                    case "circle":
+                        m_Shape.ProfileShape = PrimitiveProfileShape.Circle;
+                        break;
+
+                    case "square":
+                        m_Shape.ProfileShape = PrimitiveProfileShape.Square;
+                        break;
+
+                    case "isometrictriangle":
+                        m_Shape.ProfileShape = PrimitiveProfileShape.IsometricTriangle;
+                        break;
+
+                    case "equilateraltriangle":
+                        m_Shape.ProfileShape = PrimitiveProfileShape.EquilateralTriangle;
+                        break;
+
+                    case "righttriangle":
+                        m_Shape.ProfileShape = PrimitiveProfileShape.RightTriangle;
+                        break;
+
+                    case "halfcircle":
+                        m_Shape.ProfileShape = PrimitiveProfileShape.HalfCircle;
+                        break;
+
+                    default:
+                        throw new ConfigurationLoader.ConfigurationErrorException(string.Format("Invalid ProfileShape: {0}", profileShape));
+                }
+
+                string holeShape = config.GetString("HollowShape", "Same").ToLowerInvariant();
+                switch (holeShape)
+                {
+                    case "same":
+                        m_Shape.HoleShape = PrimitiveProfileHollowShape.Same;
+                        break;
+
+                    case "circle":
+                        m_Shape.HoleShape = PrimitiveProfileHollowShape.Circle;
+                        break;
+
+                    case "square":
+                        m_Shape.HoleShape = PrimitiveProfileHollowShape.Square;
+                        break;
+
+                    case "triangle":
+                        m_Shape.HoleShape = PrimitiveProfileHollowShape.Triangle;
+                        break;
+
+                    default:
+                        throw new ConfigurationLoader.ConfigurationErrorException(string.Format("Invalid HollowShape: {0}", holeShape));
+                }
+
+                m_Shape.ProfileBegin = double.Parse(config.GetString("ProfileBegin", "0"), CultureInfo.InvariantCulture);
+                m_Shape.ProfileEnd = double.Parse(config.GetString("ProfileEnd", "0"), CultureInfo.InvariantCulture);
+                m_Shape.ProfileHollow = double.Parse(config.GetString("ProfileHollow", "0"), CultureInfo.InvariantCulture);
+                m_Shape.IsHollow = m_Shape.ProfileHollow > 0;
+                m_Shape.PathBegin = double.Parse(config.GetString("PathBegin", "0"), CultureInfo.InvariantCulture);
+                m_Shape.PathEnd = double.Parse(config.GetString("PathEnd", "1"), CultureInfo.InvariantCulture);
+                m_Shape.IsOpen = m_Shape.PathBegin > 0 || m_Shape.PathEnd < 1f;
+                m_Shape.PathScale.X = double.Parse(config.GetString("PathScaleX", "0"), CultureInfo.InvariantCulture);
+                m_Shape.PathScale.Y = double.Parse(config.GetString("PathScaleY", "0"), CultureInfo.InvariantCulture);
+                m_Shape.TopShear.X = double.Parse(config.GetString("TopShearX", "0"), CultureInfo.InvariantCulture);
+                m_Shape.TopShear.Y = double.Parse(config.GetString("TopShearY", "0"), CultureInfo.InvariantCulture);
+                m_Shape.TwistBegin = double.Parse(config.GetString("TwistBegin", "0"), CultureInfo.InvariantCulture);
+                m_Shape.TwistEnd = double.Parse(config.GetString("TwistEnd", "0"), CultureInfo.InvariantCulture);
+                m_Shape.RadiusOffset = double.Parse(config.GetString("RadiusOffset", "0"), CultureInfo.InvariantCulture);
+                m_Shape.Taper.X = double.Parse(config.GetString("TaperX", "0"), CultureInfo.InvariantCulture);
+                m_Shape.Taper.Y = double.Parse(config.GetString("TaperY", "0"), CultureInfo.InvariantCulture);
+                m_Shape.Revolutions = double.Parse(config.GetString("Revolutions", "1"), CultureInfo.InvariantCulture);
+                m_Shape.Skew = double.Parse(config.GetString("Skew", "0"), CultureInfo.InvariantCulture);
             }
-            if (config.GetBoolean("IsSculptMirrored", false))
-            {
-                m_Shape.IsSculptMirrored = true;
-            }
-
-            string profileShape = config.GetString("ProfileShape", "Circle").ToLowerInvariant();
-            switch (profileShape)
-            {
-                case "circle":
-                    m_Shape.ProfileShape = PrimitiveProfileShape.Circle;
-                    break;
-
-                case "square":
-                    m_Shape.ProfileShape = PrimitiveProfileShape.Square;
-                    break;
-
-                case "isometrictriangle":
-                    m_Shape.ProfileShape = PrimitiveProfileShape.IsometricTriangle;
-                    break;
-
-                case "equilateraltriangle":
-                    m_Shape.ProfileShape = PrimitiveProfileShape.EquilateralTriangle;
-                    break;
-
-                case "righttriangle":
-                    m_Shape.ProfileShape = PrimitiveProfileShape.RightTriangle;
-                    break;
-
-                case "halfcircle":
-                    m_Shape.ProfileShape = PrimitiveProfileShape.HalfCircle;
-                    break;
-
-                default:
-                    throw new ConfigurationLoader.ConfigurationErrorException(string.Format("Invalid ProfileShape: {0}", profileShape));
-            }
-
-            string holeShape = config.GetString("HollowShape", "Same").ToLowerInvariant();
-            switch (holeShape)
-            {
-                case "same":
-                    m_Shape.HoleShape = PrimitiveProfileHollowShape.Same;
-                    break;
-
-                case "circle":
-                    m_Shape.HoleShape = PrimitiveProfileHollowShape.Circle;
-                    break;
-
-                case "square":
-                    m_Shape.HoleShape = PrimitiveProfileHollowShape.Square;
-                    break;
-
-                case "triangle":
-                    m_Shape.HoleShape = PrimitiveProfileHollowShape.Triangle;
-                    break;
-
-                default:
-                    throw new ConfigurationLoader.ConfigurationErrorException(string.Format("Invalid HollowShape: {0}", holeShape));
-            }
-
-            m_Shape.ProfileBegin = double.Parse(config.GetString("ProfileBegin", "0"), CultureInfo.InvariantCulture);
-            m_Shape.ProfileEnd = double.Parse(config.GetString("ProfileEnd", "0"), CultureInfo.InvariantCulture);
-            m_Shape.ProfileHollow = double.Parse(config.GetString("ProfileHollow", "0"), CultureInfo.InvariantCulture);
-            m_Shape.IsHollow = m_Shape.ProfileHollow > 0;
-            m_Shape.PathBegin = double.Parse(config.GetString("PathBegin", "0"), CultureInfo.InvariantCulture);
-            m_Shape.PathEnd = double.Parse(config.GetString("PathEnd", "1"), CultureInfo.InvariantCulture);
-            m_Shape.IsOpen = m_Shape.PathBegin > 0 || m_Shape.PathEnd < 1f;
-            m_Shape.PathScale.X = double.Parse(config.GetString("PathScaleX", "0"), CultureInfo.InvariantCulture);
-            m_Shape.PathScale.Y = double.Parse(config.GetString("PathScaleY", "0"), CultureInfo.InvariantCulture);
-            m_Shape.TopShear.X = double.Parse(config.GetString("TopShearX", "0"), CultureInfo.InvariantCulture);
-            m_Shape.TopShear.Y = double.Parse(config.GetString("TopShearY", "0"), CultureInfo.InvariantCulture);
-            m_Shape.TwistBegin = double.Parse(config.GetString("TwistBegin", "0"), CultureInfo.InvariantCulture);
-            m_Shape.TwistEnd = double.Parse(config.GetString("TwistEnd", "0"), CultureInfo.InvariantCulture);
-            m_Shape.RadiusOffset = double.Parse(config.GetString("RadiusOffset", "0"), CultureInfo.InvariantCulture);
-            m_Shape.Taper.X = double.Parse(config.GetString("TaperX", "0"), CultureInfo.InvariantCulture);
-            m_Shape.Taper.Y = double.Parse(config.GetString("TaperY", "0"), CultureInfo.InvariantCulture);
-            m_Shape.Revolutions = double.Parse(config.GetString("Revolutions", "1"), CultureInfo.InvariantCulture);
-            m_Shape.Skew = double.Parse(config.GetString("Skew", "0"), CultureInfo.InvariantCulture);
-
             m_OutputFileName = config.GetString("OutputFilename");
         }
 
