@@ -242,12 +242,12 @@ namespace SilverSim.Tests.Assets
                 }
 
                 m_Shape.ProfileBegin = double.Parse(config.GetString("ProfileBegin", "0"), CultureInfo.InvariantCulture);
-                m_Shape.ProfileEnd = double.Parse(config.GetString("ProfileEnd", "0"), CultureInfo.InvariantCulture);
+                m_Shape.ProfileEnd = double.Parse(config.GetString("ProfileEnd", "1"), CultureInfo.InvariantCulture);
                 m_Shape.ProfileHollow = double.Parse(config.GetString("ProfileHollow", "0"), CultureInfo.InvariantCulture);
                 m_Shape.IsHollow = m_Shape.ProfileHollow > 0;
                 m_Shape.PathBegin = double.Parse(config.GetString("PathBegin", "0"), CultureInfo.InvariantCulture);
                 m_Shape.PathEnd = double.Parse(config.GetString("PathEnd", "1"), CultureInfo.InvariantCulture);
-                m_Shape.IsOpen = m_Shape.PathBegin > 0 || m_Shape.PathEnd < 1f;
+                m_Shape.IsOpen = m_Shape.ProfileBegin > 0 || m_Shape.ProfileEnd < 1f;
                 m_Shape.PathScale.X = double.Parse(config.GetString("PathScaleX", "0"), CultureInfo.InvariantCulture);
                 m_Shape.PathScale.Y = double.Parse(config.GetString("PathScaleY", "0"), CultureInfo.InvariantCulture);
                 m_Shape.TopShear.X = double.Parse(config.GetString("TopShearX", "0"), CultureInfo.InvariantCulture);
