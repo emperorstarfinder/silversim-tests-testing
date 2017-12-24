@@ -70,6 +70,8 @@ namespace SilverSim.Tests.Assets
             m_Log.InfoFormat("RadiusOffset: {0}", data.RadiusOffset);
             m_Log.InfoFormat("IsSculptInverted: {0}", data.IsSculptInverted);
             m_Log.InfoFormat("IsSculptMirrored: {0}", data.IsSculptMirrored);
+            m_Log.InfoFormat("IsHollow: {0}", data.IsHollow);
+            m_Log.InfoFormat("IsOpen: {0}", data.IsOpen);
         }
 
         public void Startup(ConfigurationLoader loader)
@@ -201,7 +203,7 @@ namespace SilverSim.Tests.Assets
                             throw new ConfigurationLoader.ConfigurationErrorException("Failed to load file");
                         }
                     }
-                    var assetdata = new AssetData()
+                    var assetdata = new AssetData
                     {
                         Data = data,
                         Type = m_Shape.SculptType == PrimitiveSculptType.Mesh ? AssetType.Mesh : AssetType.Texture,
@@ -311,6 +313,7 @@ namespace SilverSim.Tests.Assets
             MeshLOD mesh = m_Shape.ToMesh(m_AssetService);
 
             var checkList = new List<string>();
+            var usedVerts = new List<int>();
 
             bool success = true;
             foreach(Triangle tri in mesh.Triangles)
@@ -322,6 +325,33 @@ namespace SilverSim.Tests.Assets
                 {
                     m_Log.WarnFormat("Duplicate triangle found: {0} {1} {2}", tri.Vertex1, tri.Vertex2, tri.Vertex3);
                     success = false;
+                }
+                if(tri.Vertex1 == tri.Vertex3 || tri.Vertex1 == tri.Vertex2 || tri.Vertex2 == tri.Vertex3)
+                {
+                    m_Log.WarnFormat("Degenerate triangle found: {0} {1} {2}", tri.Vertex1, tri.Vertex2, tri.Vertex3);
+                    success = false;
+                }
+                else if((mesh.Vertices[tri.Vertex1] == mesh.Vertices[tri.Vertex2] ||
+                    mesh.Vertices[tri.Vertex1] == mesh.Vertices[tri.Vertex3] ||
+                    mesh.Vertices[tri.Vertex2] == mesh.Vertices[tri.Vertex3]) &&
+                    (m_Shape.ShapeType != PrimitiveShapeType.Sculpt ||
+                    m_Shape.SculptType == PrimitiveSculptType.Mesh))
+                {
+                    m_Log.WarnFormat("Degenerate triangle found: {0} {1} {2}", tri.Vertex1, tri.Vertex2, tri.Vertex3);
+                    success = false;
+                }
+
+                if (!usedVerts.Contains(tri.Vertex1))
+                {
+                    usedVerts.Add(tri.Vertex1);
+                }
+                if (!usedVerts.Contains(tri.Vertex2))
+                {
+                    usedVerts.Add(tri.Vertex2);
+                }
+                if (!usedVerts.Contains(tri.Vertex3))
+                {
+                    usedVerts.Add(tri.Vertex3);
                 }
                 checkList.Add(k);
             }
@@ -339,6 +369,14 @@ namespace SilverSim.Tests.Assets
                         success = false;
                     }
                     checkList.Add(k);
+                }
+            }
+
+            for(int i = 0; i < mesh.Vertices.Count; ++i)
+            {
+                if(!usedVerts.Contains(i))
+                {
+                    m_Log.WarnFormat("Unused vertex found: {0}: {1}", i, mesh.Vertices[i]);
                 }
             }
 

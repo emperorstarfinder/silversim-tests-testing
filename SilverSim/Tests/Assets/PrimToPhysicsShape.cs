@@ -291,6 +291,8 @@ namespace SilverSim.Tests.Assets
             m_Log.InfoFormat("RadiusOffset: {0}", data.RadiusOffset);
             m_Log.InfoFormat("IsSculptInverted: {0}", data.IsSculptInverted);
             m_Log.InfoFormat("IsSculptMirrored: {0}", data.IsSculptMirrored);
+            m_Log.InfoFormat("IsHollow: {0}", data.IsHollow);
+            m_Log.InfoFormat("IsOpen: {0}", data.IsOpen);
         }
 
         public bool Run()
