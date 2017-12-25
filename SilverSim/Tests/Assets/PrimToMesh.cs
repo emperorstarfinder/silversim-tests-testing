@@ -45,7 +45,6 @@ namespace SilverSim.Tests.Assets
         AssetServiceInterface m_AssetService;
         ObjectPart.PrimitiveShape.Decoded m_Shape = new ObjectPart.PrimitiveShape.Decoded();
         string m_OutputFileName;
-        bool m_DisableDuplicateVertexDetection;
 
         private void DumpParams(ObjectPart.PrimitiveShape.Decoded data)
         {
@@ -78,7 +77,6 @@ namespace SilverSim.Tests.Assets
         {
             IConfig config = loader.Config.Configs[GetType().FullName];
             m_AssetService = loader.GetService<AssetServiceInterface>(config.GetString("AssetService", "AssetService"));
-            m_DisableDuplicateVertexDetection = config.GetBoolean("DisableDuplicateVertexDetection", false);
             if (config.Contains("HexData"))
             {
                 ObjectPart.PrimitiveShape p = new ObjectPart.PrimitiveShape
@@ -338,7 +336,6 @@ namespace SilverSim.Tests.Assets
                     m_Shape.SculptType == PrimitiveSculptType.Mesh))
                 {
                     m_Log.WarnFormat("Degenerate triangle found: {0} {1} {2}", tri.Vertex1, tri.Vertex2, tri.Vertex3);
-                    success = false;
                 }
 
                 if (!usedVerts.Contains(tri.Vertex1))
@@ -358,18 +355,14 @@ namespace SilverSim.Tests.Assets
 
             checkList.Clear();
 
-            if (!m_DisableDuplicateVertexDetection)
+            foreach (Vector3 v in mesh.Vertices)
             {
-                foreach (Vector3 v in mesh.Vertices)
+                string k = v.ToString();
+                if (checkList.Contains(k))
                 {
-                    string k = v.ToString();
-                    if (checkList.Contains(k))
-                    {
-                        m_Log.WarnFormat("Duplicate vertex found: {0}", k);
-                        success = false;
-                    }
-                    checkList.Add(k);
+                    m_Log.WarnFormat("Duplicate vertex found: {0}", k);
                 }
+                checkList.Add(k);
             }
 
             for(int i = 0; i < mesh.Vertices.Count; ++i)
