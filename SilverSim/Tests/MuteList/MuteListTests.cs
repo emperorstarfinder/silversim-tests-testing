@@ -93,7 +93,7 @@ namespace SilverSim.Tests.MuteList
             };
 
             m_Log.InfoFormat("Check that mute list is empty");
-            List<MuteListEntry> list = m_MuteListService.GetList(muteowner);
+            List<MuteListEntry> list = m_MuteListService.GetList(muteowner, 0);
             if(list.Count != 0)
             {
                 m_Log.Error("Mute list is not empty");
@@ -103,7 +103,7 @@ namespace SilverSim.Tests.MuteList
             m_MuteListService.Store(muteowner, mute1entry);
 
             m_Log.InfoFormat("Check that mute list has 1 entry");
-            list = m_MuteListService.GetList(muteowner);
+            list = m_MuteListService.GetList(muteowner, 0);
             if (list.Count != 1)
             {
                 m_Log.Error("Mute list does not match");
@@ -120,7 +120,7 @@ namespace SilverSim.Tests.MuteList
             m_MuteListService.Store(muteowner, mute2entry);
 
             m_Log.InfoFormat("Check that mute list has 2 entries");
-            list = m_MuteListService.GetList(muteowner);
+            list = m_MuteListService.GetList(muteowner, 0);
             if (list.Count != 2)
             {
                 m_Log.Error("Mute list does not match");
@@ -154,7 +154,7 @@ namespace SilverSim.Tests.MuteList
             }
 
             m_Log.InfoFormat("Check that mute list has 1 entry");
-            list = m_MuteListService.GetList(muteowner);
+            list = m_MuteListService.GetList(muteowner, 0);
             if (list.Count != 1)
             {
                 m_Log.Error("Mute list does not match");
@@ -172,7 +172,7 @@ namespace SilverSim.Tests.MuteList
             m_MuteListService.Store(muteowner, mute1entry);
 
             m_Log.InfoFormat("Check that mute list has 1 entry");
-            list = m_MuteListService.GetList(muteowner);
+            list = m_MuteListService.GetList(muteowner, 0);
             if (list.Count != 1)
             {
                 m_Log.Error("Mute list does not match");
@@ -193,7 +193,7 @@ namespace SilverSim.Tests.MuteList
             }
 
             m_Log.InfoFormat("Check that mute list is empty");
-            list = m_MuteListService.GetList(muteowner);
+            list = m_MuteListService.GetList(muteowner, 0);
             if (list.Count != 0)
             {
                 m_Log.Error("Mute list is not empty");
