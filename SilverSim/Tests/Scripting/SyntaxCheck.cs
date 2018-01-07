@@ -66,6 +66,11 @@ namespace SilverSim.Tests.Scripting
 
         }
 
+        private TextReader OpenFile(string name, string scriptname)
+        {
+            return new StreamReader(Path.Combine(Path.GetDirectoryName(scriptname), name));
+        }
+
         public bool Run()
         {
             bool success = true;
@@ -83,12 +88,12 @@ namespace SilverSim.Tests.Scripting
                         {
                             using (var st = new FileStream(file.Value + ".dump.txt", FileMode.Create))
                             {
-                                CompilerRegistry.ScriptCompilers.SyntaxCheckAndDump(st, UUI.Unknown, file.Key, reader);
+                                CompilerRegistry.ScriptCompilers.SyntaxCheckAndDump(st, UUI.Unknown, file.Key, reader, includeOpen: (name) => OpenFile(name, file.Value));
                             }
                         }
                         else
                         {
-                            CompilerRegistry.ScriptCompilers.SyntaxCheck(UUI.Unknown, file.Key, reader);
+                            CompilerRegistry.ScriptCompilers.SyntaxCheck(UUI.Unknown, file.Key, reader, includeOpen: (name) => OpenFile(name, file.Value));
                         }
                     }
                     m_Log.InfoFormat("Syntax of {1} ({0}) parsed successfully", file.Key, file.Value);

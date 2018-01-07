@@ -67,6 +67,11 @@ namespace SilverSim.Tests.Scripting
             m_Runner = null;
         }
 
+        private TextReader OpenFile(string name, string scriptname)
+        {
+            return new StreamReader(Path.Combine(Path.GetDirectoryName(scriptname), name));
+        }
+
         public bool Run()
         {
             bool success = true;
@@ -87,7 +92,7 @@ namespace SilverSim.Tests.Scripting
                 {
                     using (TextReader reader = new StreamReader(file.Value, new UTF8Encoding(false)))
                     {
-                        CompilerRegistry.ScriptCompilers.Compile(AppDomain.CurrentDomain, UUI.Unknown, file.Key, reader);
+                        CompilerRegistry.ScriptCompilers.Compile(AppDomain.CurrentDomain, UUI.Unknown, file.Key, reader, includeOpen: (name) => OpenFile(name, file.Value));
                     }
                     m_Log.InfoFormat("Compilation of {1} ({0}) successful", file.Key, file.Value);
                     ++successcnt;

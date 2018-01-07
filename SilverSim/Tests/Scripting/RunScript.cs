@@ -400,6 +400,11 @@ namespace SilverSim.Tests.Scripting
             return true;
         }
 
+        private TextReader OpenFile(string name)
+        {
+            return new StreamReader(Path.Combine(Path.GetDirectoryName(m_ScriptFile), name));
+        }
+
         public bool Run()
         {
             bool success = true;
@@ -411,7 +416,7 @@ namespace SilverSim.Tests.Scripting
             {
                 using (var reader = new StreamReader(m_ScriptFile, new UTF8Encoding(false)))
                 {
-                    scriptAssembly = CompilerRegistry.ScriptCompilers.Compile(AppDomain.CurrentDomain, UUI.Unknown, m_AssetID, reader);
+                    scriptAssembly = CompilerRegistry.ScriptCompilers.Compile(AppDomain.CurrentDomain, UUI.Unknown, m_AssetID, reader, includeOpen: OpenFile);
                 }
                 m_Log.InfoFormat("Compilation of {1} ({0}) successful", m_AssetID, m_ScriptFile);
                 ++successcnt;
@@ -432,7 +437,7 @@ namespace SilverSim.Tests.Scripting
             RegionInfo rInfo;
             try
             {
-                var estate = new EstateInfo()
+                var estate = new EstateInfo
                 {
                     ParentEstateID = 1,
                     ID = m_EstateID,
@@ -442,7 +447,7 @@ namespace SilverSim.Tests.Scripting
                 m_EstateService.Add(estate);
                 m_EstateService.RegionMap[m_RegionID] = m_EstateID;
 
-                rInfo = new RegionInfo()
+                rInfo = new RegionInfo
                 {
                     Name = m_RegionName,
                     ID = m_RegionID,
