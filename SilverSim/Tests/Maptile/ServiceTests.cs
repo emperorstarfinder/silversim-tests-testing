@@ -63,7 +63,7 @@ namespace SilverSim.Tests.Maptile
                 return false;
             }
 
-            m_Log.Info("Tesing non-existence 2");
+            m_Log.Info("Testing non-existence 2");
             if(m_MaptileService.GetUpdateTimes(UUID.Zero, location, location, 1).Count != 0)
             {
                 return false;
@@ -94,7 +94,7 @@ namespace SilverSim.Tests.Maptile
                 return false;
             }
 
-            m_Log.Info("Tesing existence 2");
+            m_Log.Info("Testing existence 2");
             List<MaptileInfo> reslist;
             reslist = m_MaptileService.GetUpdateTimes(UUID.Zero, location, location, 1);
             if(reslist.Count != 1)
@@ -116,7 +116,7 @@ namespace SilverSim.Tests.Maptile
                 return false;
             }
 
-            m_Log.Info("Tesing non-existence 2");
+            m_Log.Info("Testing non-existence 2");
             if (m_MaptileService.GetUpdateTimes(UUID.Zero, location, location, 1).Count != 0)
             {
                 return false;
