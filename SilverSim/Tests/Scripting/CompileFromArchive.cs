@@ -111,27 +111,27 @@ namespace SilverSim.Tests.Scripting
                                     Message = string.Empty
                                 };
                                 int startTime = Environment.TickCount;
-                                m_Log.InfoFormat("Testing compilation of {1} ({0})", id, file);
+                                m_Log.InfoFormat("Testing compilation of {0} ({1})", id, file);
                                 try
                                 {
                                     using (TextReader reader = new StreamReader(tarreader, new UTF8Encoding(false)))
                                     {
                                         CompilerRegistry.ScriptCompilers.Compile(AppDomain.CurrentDomain, UUI.Unknown, id, reader, includeOpen: (name) => OpenFile(name));
                                     }
-                                    m_Log.InfoFormat("Compilation of {1} ({0}) successful", id, file);
+                                    m_Log.InfoFormat("Compilation of {0} ({1}) successful", id, file);
                                     ++successcnt;
                                     tr.Result = true;
                                 }
                                 catch (CompilerException e)
                                 {
-                                    m_Log.ErrorFormat("Compilation of {1} ({0}) failed: {2}", id, file, e.Message);
+                                    m_Log.ErrorFormat("Compilation of {0} ({1}) failed: {2}", id, file, e.Message);
                                     m_Log.WarnFormat("Stack Trace:\n{0}", e.StackTrace);
                                     tr.Message = e.Message + "\n" + e.StackTrace;
                                     success = false;
                                 }
                                 catch (Exception e)
                                 {
-                                    m_Log.ErrorFormat("Compilation of {1} ({0}) failed: {2}", id, file, e.Message);
+                                    m_Log.ErrorFormat("Compilation of {0} ({1}) failed: {2}", id, file, e.Message);
                                     m_Log.WarnFormat("Stack Trace:\n{0}", e.StackTrace);
                                     tr.Message = e.Message + "\n" + e.StackTrace;
                                     success = false;
