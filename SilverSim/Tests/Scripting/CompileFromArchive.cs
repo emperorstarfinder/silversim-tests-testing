@@ -102,6 +102,12 @@ namespace SilverSim.Tests.Scripting
                                 {
                                     continue;
                                 }
+                                byte[] scriptdata;
+                                using (var ms = new MemoryStream())
+                                {
+                                    tarreader.CopyTo(ms);
+                                    scriptdata = ms.ToArray();
+                                }
                                 ++count;
                                 UUID id = UUID.Parse(h.FileName.Substring(7, 36));
                                 var tr = new TestRunner.TestResult
@@ -114,7 +120,7 @@ namespace SilverSim.Tests.Scripting
                                 m_Log.InfoFormat("Testing compilation of {0} ({1})", id, file);
                                 try
                                 {
-                                    using (TextReader reader = new StreamReader(tarreader, new UTF8Encoding(false)))
+                                    using (TextReader reader = new StreamReader(new MemoryStream(scriptdata), new UTF8Encoding(false)))
                                     {
                                         CompilerRegistry.ScriptCompilers.Compile(AppDomain.CurrentDomain, UUI.Unknown, id, reader, includeOpen: (name) => OpenFile(name));
                                     }
@@ -135,6 +141,13 @@ namespace SilverSim.Tests.Scripting
                                     m_Log.WarnFormat("Stack Trace:\n{0}", e.StackTrace);
                                     tr.Message = e.Message + "\n" + e.StackTrace;
                                     success = false;
+                                }
+                                if(!tr.Result && Directory.Exists("../data/dumps/scripts"))
+                                {
+                                    using (var dumpfs = new FileStream("../data/dumps/scripts/" + id + "_script.lsl", FileMode.Create))
+                                    {
+                                        dumpfs.Write(scriptdata, 0, scriptdata.Length);
+                                    }
                                 }
                                 tr.RunTime = Environment.TickCount - startTime;
                                 m_Runner.TestResults.Add(tr);
