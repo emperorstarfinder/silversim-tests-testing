@@ -22,8 +22,8 @@
 using SilverSim.AISv3.Client;
 using SilverSim.Scene.Types.Script;
 using SilverSim.Scripting.Lsl;
-using SilverSim.Scripting.Lsl.Api.Hashtable;
 using SilverSim.Scripting.Lsl.Api.Agents.Properties;
+using SilverSim.Scripting.Lsl.Api.Hashtable;
 using SilverSim.Tests.Viewer.Inventory;
 using SilverSim.Tests.Viewer.UDP;
 using SilverSim.Types;

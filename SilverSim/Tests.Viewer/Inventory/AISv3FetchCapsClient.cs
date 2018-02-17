@@ -22,14 +22,9 @@
 using SilverSim.AISv3.Client;
 using SilverSim.ServiceInterfaces.Inventory;
 using SilverSim.Tests.Viewer.Caps;
-using SilverSim.Tests.Viewer.UDP;
 using SilverSim.Types;
 using SilverSim.Types.Inventory;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SilverSim.Tests.Viewer.Inventory
 {

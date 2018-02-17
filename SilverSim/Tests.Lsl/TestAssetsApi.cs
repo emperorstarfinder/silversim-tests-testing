@@ -19,21 +19,21 @@
 // obligated to do so. If you do not wish to do so, delete this
 // exception statement from your version.
 
+using CSJ2K;
+using log4net;
 using SilverSim.Main.Common;
+using SilverSim.Scene.Types.Agent;
 using SilverSim.Scene.Types.Object;
 using SilverSim.Scene.Types.Script;
 using SilverSim.Scripting.Lsl;
 using SilverSim.ServiceInterfaces.Asset;
+using SilverSim.Types;
 using SilverSim.Types.Asset;
 using SilverSim.Types.Asset.Format;
 using SilverSim.Types.Asset.Format.Mesh;
-using System.IO;
-using CSJ2K;
-using log4net;
-using System.Drawing;
 using System;
-using SilverSim.Types;
-using SilverSim.Scene.Types.Agent;
+using System.Drawing;
+using System.IO;
 
 namespace SilverSim.Tests.Lsl
 {

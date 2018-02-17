@@ -23,7 +23,6 @@ using SilverSim.Scene.Types.Agent;
 using SilverSim.Scene.Types.Scene;
 using SilverSim.Scene.Types.Script;
 using SilverSim.Scripting.Lsl;
-using SilverSim.ServiceInterfaces.Presence;
 using SilverSim.Tests.Viewer.UDP;
 using SilverSim.Threading;
 using SilverSim.Types;

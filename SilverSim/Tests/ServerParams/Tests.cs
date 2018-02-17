@@ -22,12 +22,9 @@
 using log4net;
 using Nini.Config;
 using SilverSim.Main.Common;
-using SilverSim.ServiceInterfaces.GridUser;
 using SilverSim.ServiceInterfaces.ServerParam;
 using SilverSim.Tests.Extensions;
 using SilverSim.Types;
-using SilverSim.Types.GridUser;
-using System;
 using System.Reflection;
 
 namespace SilverSim.Tests.ServerParams

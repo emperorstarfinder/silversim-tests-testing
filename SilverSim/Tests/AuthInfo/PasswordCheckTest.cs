@@ -23,7 +23,6 @@ using log4net;
 using SilverSim.Main.Common;
 using SilverSim.Tests.Extensions;
 using SilverSim.Types.AuthInfo;
-using System;
 using System.Reflection;
 
 namespace SilverSim.Tests.AuthInfo

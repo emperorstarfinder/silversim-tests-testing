@@ -20,9 +20,8 @@
 // exception statement from your version.
 
 using SilverSim.Main.Common;
-using SilverSim.Types.StructuredData.Json;
 using SilverSim.Tests.Extensions;
-using SilverSim.Types;
+using SilverSim.Types.StructuredData.Json;
 using System.IO;
 using System.Text;
 

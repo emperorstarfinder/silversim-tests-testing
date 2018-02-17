@@ -26,9 +26,7 @@ using SilverSim.ServiceInterfaces.Asset;
 using SilverSim.Tests.Extensions;
 using SilverSim.Types;
 using SilverSim.Types.Asset;
-using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Reflection;
 
 namespace SilverSim.Tests.Assets
