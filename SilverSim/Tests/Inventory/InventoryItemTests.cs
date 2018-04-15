@@ -261,14 +261,6 @@ namespace SilverSim.Tests.Inventory
                 Creator = m_UserID,
                 Flags = InventoryFlags.ObjectPermOverwriteNextOwner,
                 LastOwner = m_UserID,
-                Permissions = new InventoryPermissionsData
-                {
-                    Base = InventoryPermissionsMask.Every,
-                    Current = InventoryPermissionsMask.All,
-                    NextOwner = InventoryPermissionsMask.Copy,
-                    Group = InventoryPermissionsMask.Damage,
-                    EveryOne = InventoryPermissionsMask.Move,
-                },
                 ParentFolderID = rootFolder.ID,
                 SaleInfo = new InventoryItem.SaleInfoData
                 {
@@ -281,6 +273,11 @@ namespace SilverSim.Tests.Inventory
                 Owner = m_UserID,
                 CreationDate = Date.Now
             };
+            testItem.Permissions.Base = InventoryPermissionsMask.Every;
+            testItem.Permissions.Current = InventoryPermissionsMask.All;
+            testItem.Permissions.NextOwner = InventoryPermissionsMask.Copy;
+            testItem.Permissions.Group = InventoryPermissionsMask.Damage;
+            testItem.Permissions.EveryOne = InventoryPermissionsMask.Move;
             m_BackendInventoryService.Item.Add(testItem);
 
             m_Log.InfoFormat("Testing existence 1");

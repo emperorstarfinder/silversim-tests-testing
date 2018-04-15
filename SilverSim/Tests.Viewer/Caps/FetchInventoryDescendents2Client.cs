@@ -331,7 +331,7 @@ namespace SilverSim.Tests.Viewer.Caps
                         }
                         var permissions = (Map)childdata["permissions"];
                         var sale_info = (Map)childdata["sale_info"];
-                        content.Items.Add(new InventoryItem(childdata["item_id"].AsUUID)
+                        var item = new InventoryItem(childdata["item_id"].AsUUID)
                         {
                             AssetID = childdata["asset_id"].AsUUID,
                             CreationDate = Date.UnixTimeToDateTime(childdata["created_at"].AsULong),
@@ -346,20 +346,18 @@ namespace SilverSim.Tests.Viewer.Caps
                             IsGroupOwned = permissions["is_owner_group"].AsBoolean,
                             LastOwner = new UUI(permissions["last_owner_id"].AsUUID),
                             Owner = new UUI(permissions["owner_id"].AsUUID),
-                            Permissions = new InventoryPermissionsData
-                            {
-                                Base = (InventoryPermissionsMask)permissions["base_mask"].AsInt,
-                                EveryOne = (InventoryPermissionsMask)permissions["everyone_mask"].AsInt,
-                                Group = (InventoryPermissionsMask)permissions["group_mask"].AsInt,
-                                NextOwner = (InventoryPermissionsMask)permissions["next_owner_mask"].AsInt,
-                                Current = (InventoryPermissionsMask)permissions["owner_mask"].AsInt
-                            },
                             SaleInfo = new InventoryItem.SaleInfoData
                             {
                                 Price = sale_info["sale_price"].AsInt,
                                 Type = (InventoryItem.SaleInfoData.SaleType)sale_info["sale_type"].AsInt
                             }
-                        });
+                        };
+                        item.Permissions.Base = (InventoryPermissionsMask)permissions["base_mask"].AsInt;
+                        item.Permissions.EveryOne = (InventoryPermissionsMask)permissions["everyone_mask"].AsInt;
+                        item.Permissions.Group = (InventoryPermissionsMask)permissions["group_mask"].AsInt;
+                        item.Permissions.NextOwner = (InventoryPermissionsMask)permissions["next_owner_mask"].AsInt;
+                        item.Permissions.Current = (InventoryPermissionsMask)permissions["owner_mask"].AsInt;
+                        content.Items.Add(item);
                     }
                 }
 

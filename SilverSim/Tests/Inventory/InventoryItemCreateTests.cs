@@ -255,14 +255,6 @@ namespace SilverSim.Tests.Inventory
                 Creator = m_UserID,
                 Flags = InventoryFlags.ObjectPermOverwriteNextOwner,
                 LastOwner = m_UserID,
-                Permissions = new InventoryPermissionsData
-                {
-                    Base = InventoryPermissionsMask.Every,
-                    Current = InventoryPermissionsMask.All,
-                    NextOwner = InventoryPermissionsMask.Copy,
-                    Group = InventoryPermissionsMask.Damage,
-                    EveryOne = InventoryPermissionsMask.Move,
-                },
                 ParentFolderID = rootFolder.ID,
                 SaleInfo = new InventoryItem.SaleInfoData
                 {
@@ -275,6 +267,11 @@ namespace SilverSim.Tests.Inventory
                 Owner = m_UserID,
                 CreationDate = Date.Now
             };
+            item.Permissions.Base = InventoryPermissionsMask.Every;
+            item.Permissions.Current = InventoryPermissionsMask.All;
+            item.Permissions.NextOwner = InventoryPermissionsMask.Copy;
+            item.Permissions.Group = InventoryPermissionsMask.Damage;
+            item.Permissions.EveryOne = InventoryPermissionsMask.Move;
             m_InventoryService.Item.Add(testItem);
             inventoryId = testItem.ID;
 

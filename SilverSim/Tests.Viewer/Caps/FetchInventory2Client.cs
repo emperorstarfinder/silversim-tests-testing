@@ -122,20 +122,17 @@ namespace SilverSim.Tests.Viewer.Caps
                         IsGroupOwned = permissions["is_owner_group"].AsBoolean,
                         LastOwner = new UUI(permissions["last_owner_id"].AsUUID),
                         Owner = new UUI(permissions["owner_id"].AsUUID),
-                        Permissions = new InventoryPermissionsData
-                        {
-                            Base = (InventoryPermissionsMask)permissions["base_mask"].AsInt,
-                            EveryOne = (InventoryPermissionsMask)permissions["everyone_mask"].AsInt,
-                            Group = (InventoryPermissionsMask)permissions["group_mask"].AsInt,
-                            NextOwner = (InventoryPermissionsMask)permissions["next_owner_mask"].AsInt,
-                            Current = (InventoryPermissionsMask)permissions["owner_mask"].AsInt
-                        },
                         SaleInfo = new InventoryItem.SaleInfoData
                         {
                             Price = sale_info["sale_price"].AsInt,
                             Type = (InventoryItem.SaleInfoData.SaleType)sale_info["sale_type"].AsInt
                         }
                     };
+                    resitem.Permissions.Base = (InventoryPermissionsMask)permissions["base_mask"].AsInt;
+                    resitem.Permissions.EveryOne = (InventoryPermissionsMask)permissions["everyone_mask"].AsInt;
+                    resitem.Permissions.Group = (InventoryPermissionsMask)permissions["group_mask"].AsInt;
+                    resitem.Permissions.NextOwner = (InventoryPermissionsMask)permissions["next_owner_mask"].AsInt;
+                    resitem.Permissions.Current = (InventoryPermissionsMask)permissions["owner_mask"].AsInt;
                 }
                 return result;
             }

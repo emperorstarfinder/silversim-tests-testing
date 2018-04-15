@@ -227,20 +227,17 @@ namespace SilverSim.Tests.Viewer.UDP
                 AssetType = d.Type,
                 AssetID = d.AssetID,
                 IsGroupOwned = d.IsGroupOwned,
-                Permissions = new InventoryPermissionsData
-                {
-                    NextOwner = d.NextOwnerMask,
-                    EveryOne = d.EveryoneMask,
-                    Group = d.GroupMask,
-                    Current = d.OwnerMask,
-                    Base = d.BaseMask
-                },
                 Group = new UGI(d.GroupID),
                 Owner = new UUI(d.OwnerID),
                 Creator = new UUI(d.CreatorID),
                 ParentFolderID = d.FolderID,
                 Description = d.Description
             };
+            item.Permissions.NextOwner = d.NextOwnerMask;
+            item.Permissions.EveryOne = d.EveryoneMask;
+            item.Permissions.Group = d.GroupMask;
+            item.Permissions.Current = d.OwnerMask;
+            item.Permissions.Base = d.BaseMask;
             return true;
         }
 
