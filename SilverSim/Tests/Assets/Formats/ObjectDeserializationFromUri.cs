@@ -70,7 +70,7 @@ namespace SilverSim.Tests.Assets.Formats
                 {
                     using(Stream s = new HttpClient.Get(file.Value).ExecuteStreamRequest())
                     {
-                        ObjectXML.FromXml(s, UUI.Unknown, XmlDeserializationOptions.ReadKeyframeMotion);
+                        ObjectXML.FromXml(s, UGUI.Unknown, XmlDeserializationOptions.ReadKeyframeMotion);
                     }
                     m_Log.InfoFormat("Deserialization of {1} ({0}) successful", file.Key, file.Value);
                     ++successcnt;

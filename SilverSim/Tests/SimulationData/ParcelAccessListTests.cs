@@ -79,7 +79,7 @@ namespace SilverSim.Tests.SimulationData
 
             var regionId = new UUID("11223344-1122-1122-1122-112233445566");
             var parcelId = new UUID("11223344-1122-1122-1122-112233445577");
-            var user = new UUI("11223344-1122-1122-1122-112233445588;http://example.com/;Example Com");
+            var user = new UGUI("11223344-1122-1122-1122-112233445588;http://example.com/;Example Com");
             ParcelAccessEntry entry;
             ParcelAccessEntry testentry;
             List<ParcelAccessEntry> res;
@@ -282,7 +282,7 @@ namespace SilverSim.Tests.SimulationData
             m_Log.InfoFormat("{0}: G: Storing entry 1", listInfo);
             lut.Store(testentry);
             m_Log.InfoFormat("{0}: G: Storing entry 2", listInfo);
-            testentry.Accessor = new UUI("22334455-1122-1122-1122-112233445566;http://example.com/;Com Example");
+            testentry.Accessor = new UGUI("22334455-1122-1122-1122-112233445566;http://example.com/;Com Example");
             lut.Store(testentry);
 
             m_Log.InfoFormat("{0}: G: Removing entry 2", listInfo);

@@ -91,9 +91,9 @@ namespace SilverSim.Tests.Viewer
         {
             lock(instance)
             {
-                var acc = new UserAccount()
+                var acc = new UserAccount
                 {
-                    Principal = new UUI { ID = UUID.Random, FirstName = firstName, LastName = lastName }
+                    Principal = new UGUIWithName { ID = UUID.Random, FirstName = firstName, LastName = lastName }
                 };
                 m_UserAccountService.Add(acc);
                 return acc.Principal.ID;

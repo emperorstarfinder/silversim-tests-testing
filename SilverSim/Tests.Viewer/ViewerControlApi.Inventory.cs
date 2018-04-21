@@ -73,16 +73,16 @@ namespace SilverSim.Tests.Viewer
 
                     if (inventoryOption >= VC_AGENT_INVENTORY_FULL_AISV3 && !string.IsNullOrEmpty(aisv3_agent_uri))
                     {
-                        return new AgentInventoryApi.AgentInventory(instance, new AISv3ClientConnector(aisv3_agent_uri), new UUI(viewerCircuit.AgentID), false);
+                        return new AgentInventoryApi.AgentInventory(instance, new AISv3ClientConnector(aisv3_agent_uri), new UGUI(viewerCircuit.AgentID), false);
                     }
 
                     if(inventoryOption >= VC_AGENT_INVENTORY_FETCH_CAPS && !string.IsNullOrEmpty(fetchinventory2_agent_uri) &&
                         !string.IsNullOrEmpty(fetchinventorydescendents2_agent_uri))
                     {
-                        return new AgentInventoryApi.AgentInventory(instance, new InventoryV2Client(viewerCircuit, fetchinventorydescendents2_agent_uri, fetchinventory2_agent_uri, rootFolderID), new UUI(viewerCircuit.AgentID), false);
+                        return new AgentInventoryApi.AgentInventory(instance, new InventoryV2Client(viewerCircuit, fetchinventorydescendents2_agent_uri, fetchinventory2_agent_uri, rootFolderID), new UGUI(viewerCircuit.AgentID), false);
                     }
 
-                    return new AgentInventoryApi.AgentInventory(instance, new LLUDPInventoryClient(viewerCircuit, rootFolderID), new UUI(viewerCircuit.AgentID), false);
+                    return new AgentInventoryApi.AgentInventory(instance, new LLUDPInventoryClient(viewerCircuit, rootFolderID), new UGUI(viewerCircuit.AgentID), false);
                 }
 
                 return new AgentInventoryApi.AgentInventory();
@@ -123,16 +123,16 @@ namespace SilverSim.Tests.Viewer
 
                     if (inventoryOption >= VC_AGENT_INVENTORY_FULL_AISV3 && !string.IsNullOrEmpty(aisv3_agent_uri))
                     {
-                        return new AgentInventoryApi.AgentInventory(instance, new AISv3ClientConnector(aisv3_agent_uri), new UUI(libraryAgentId), false);
+                        return new AgentInventoryApi.AgentInventory(instance, new AISv3ClientConnector(aisv3_agent_uri), new UGUI(libraryAgentId), false);
                     }
 
                     if (inventoryOption >= VC_AGENT_INVENTORY_FETCH_CAPS && !string.IsNullOrEmpty(fetchlib2_agent_uri) &&
                         !string.IsNullOrEmpty(fetchlibdescendents2_agent_uri))
                     {
-                        return new AgentInventoryApi.AgentInventory(instance, new InventoryV2Client(viewerCircuit, fetchlibdescendents2_agent_uri, fetchlib2_agent_uri, rootFolderID), new UUI(libraryAgentId), false);
+                        return new AgentInventoryApi.AgentInventory(instance, new InventoryV2Client(viewerCircuit, fetchlibdescendents2_agent_uri, fetchlib2_agent_uri, rootFolderID), new UGUI(libraryAgentId), false);
                     }
 
-                    return new AgentInventoryApi.AgentInventory(instance, new LLUDPInventoryClient(viewerCircuit, rootFolderID), new UUI(libraryAgentId), false);
+                    return new AgentInventoryApi.AgentInventory(instance, new LLUDPInventoryClient(viewerCircuit, rootFolderID), new UGUI(libraryAgentId), false);
                 }
 
                 return new AgentInventoryApi.AgentInventory();

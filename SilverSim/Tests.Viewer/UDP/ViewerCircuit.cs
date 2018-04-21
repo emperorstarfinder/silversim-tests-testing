@@ -195,7 +195,7 @@ namespace SilverSim.Tests.Viewer.UDP
                 m.CircuitAgentID = AgentID;
                 try
                 {
-                    m.CircuitAgentOwner = UUI.Unknown;
+                    m.CircuitAgentOwner = UGUI.Unknown;
                     m.CircuitSessionID = SessionID;
                     m.CircuitSceneID = UUID.Zero;
                 }

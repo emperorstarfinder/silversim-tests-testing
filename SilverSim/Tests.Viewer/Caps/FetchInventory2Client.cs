@@ -117,11 +117,11 @@ namespace SilverSim.Tests.Viewer.Caps
                         Name = itemdata["name"].ToString(),
                         ParentFolderID = itemdata["parent_id"].AsUUID,
                         AssetType = (AssetType)itemdata["type"].AsInt,
-                        Creator = new UUI(permissions["creator_id"].AsUUID),
+                        Creator = new UGUI(permissions["creator_id"].AsUUID),
                         Group = new UGI(permissions["group_id"].AsUUID),
                         IsGroupOwned = permissions["is_owner_group"].AsBoolean,
-                        LastOwner = new UUI(permissions["last_owner_id"].AsUUID),
-                        Owner = new UUI(permissions["owner_id"].AsUUID),
+                        LastOwner = new UGUI(permissions["last_owner_id"].AsUUID),
+                        Owner = new UGUI(permissions["owner_id"].AsUUID),
                         SaleInfo = new InventoryItem.SaleInfoData
                         {
                             Price = sale_info["sale_price"].AsInt,

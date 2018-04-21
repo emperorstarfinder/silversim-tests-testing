@@ -46,7 +46,7 @@ namespace SilverSim.Tests.Avatar
         private static readonly ILog m_Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         protected AssetServiceInterface m_AssetService;
         protected InventoryServiceInterface m_InventoryService;
-        protected UUI m_AgentOwner;
+        protected UGUI m_AgentOwner;
         protected UUID m_RootFolderID;
         readonly Dictionary<UUID, string> m_InventoryFolders = new Dictionary<UUID, string>();
         readonly Dictionary<UUID, UUID> m_InventoryFolderParents = new Dictionary<UUID, UUID>();
@@ -85,7 +85,7 @@ namespace SilverSim.Tests.Avatar
             m_AssetService = loader.GetService<AssetServiceInterface>(config.GetString("AssetService"));
             m_InventoryService = loader.GetService<InventoryServiceInterface>(config.GetString("InventoryService"));
             m_RootFolderID = new UUID(config.GetString("RootFolderID"));
-            m_AgentOwner = new UUI(config.GetString("Owner"));
+            m_AgentOwner = new UGUI(config.GetString("Owner"));
 
             m_BakeEyesFilename = config.GetString("BakeEyeFilename", string.Empty);
             m_BakeHeadFilename = config.GetString("BakeHeadFilename", string.Empty);
@@ -183,12 +183,14 @@ namespace SilverSim.Tests.Avatar
 
             if (!m_InventoryService.Folder.TryGetValue(m_AgentOwner.ID, AssetType.RootFolder, out rootFolder))
             {
-                rootFolder = new InventoryFolder(m_RootFolderID);
-                rootFolder.Owner = m_AgentOwner;
-                rootFolder.Name = "My Inventory";
-                rootFolder.DefaultType = AssetType.RootFolder;
-                rootFolder.ParentFolderID = UUID.Zero;
-                rootFolder.Version = 1;
+                rootFolder = new InventoryFolder(m_RootFolderID)
+                {
+                    Owner = m_AgentOwner,
+                    Name = "My Inventory",
+                    DefaultType = AssetType.RootFolder,
+                    ParentFolderID = UUID.Zero,
+                    Version = 1
+                };
                 m_InventoryService.Folder.Add(rootFolder);
             }
 
@@ -196,9 +198,11 @@ namespace SilverSim.Tests.Avatar
 
             foreach (KeyValuePair<UUID, string> kvp in m_AssetFiles)
             {
-                AssetData asset = new AssetData();
-                asset.ID = kvp.Key;
-                asset.FileName = Path.GetFileName(kvp.Value);
+                AssetData asset = new AssetData
+                {
+                    ID = kvp.Key,
+                    FileName = Path.GetFileName(kvp.Value)
+                };
                 using (var fs = new FileStream(kvp.Value, FileMode.Open, FileAccess.Read))
                 {
                     asset.Data = fs.ReadToStreamEnd();

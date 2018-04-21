@@ -228,8 +228,8 @@ namespace SilverSim.Tests.Viewer.UDP
                 AssetID = d.AssetID,
                 IsGroupOwned = d.IsGroupOwned,
                 Group = new UGI(d.GroupID),
-                Owner = new UUI(d.OwnerID),
-                Creator = new UUI(d.CreatorID),
+                Owner = new UGUI(d.OwnerID),
+                Creator = new UGUI(d.CreatorID),
                 ParentFolderID = d.FolderID,
                 Description = d.Description
             };

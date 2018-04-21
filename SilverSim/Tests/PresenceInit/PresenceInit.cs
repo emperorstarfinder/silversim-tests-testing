@@ -41,7 +41,7 @@ namespace SilverSim.Tests.PresenceInit
         PresenceServiceInterface m_PresenceService;
         TravelingDataServiceInterface m_TravelingDataService;
         UserAccountServiceInterface m_UserAccountService;
-        UUI m_UserID;
+        UGUIWithName m_UserID;
         UUID m_SessionID;
         UUID m_SecureSessionID;
         string m_ClientIPAddress;
@@ -52,7 +52,7 @@ namespace SilverSim.Tests.PresenceInit
             m_PresenceService = loader.GetService<PresenceServiceInterface>(config.GetString("PresenceService", "PresenceService"));
             m_TravelingDataService = loader.GetService<TravelingDataServiceInterface>(config.GetString("TravelingDataService", "TravelingDataService"));
             m_UserAccountService = loader.GetService<UserAccountServiceInterface>(config.GetString("UserAccountService", "UserAccountService"));
-            m_UserID = new UUI(config.GetString("User"));
+            m_UserID = new UGUIWithName(config.GetString("User"));
             m_SessionID = new UUID(config.GetString("SessionID"));
             m_SecureSessionID = new UUID(config.GetString("SecureSessionID"));
             m_ClientIPAddress = config.GetString("ClientIPAddress");

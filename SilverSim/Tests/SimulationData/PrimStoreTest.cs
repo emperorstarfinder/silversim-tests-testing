@@ -275,7 +275,7 @@ namespace SilverSim.Tests.SimulationData
 
         public override bool Run()
         {
-            var owner = new UUI("11223344-1122-1122-1122-123456789012");
+            var owner = new UGUI("11223344-1122-1122-1122-123456789012");
             var regionID = new UUID("12345678-1234-1234-1234-123456789012");
             var scene = new DummyScene(256, 256, regionID);
             var objgrp = new ObjectGroup();

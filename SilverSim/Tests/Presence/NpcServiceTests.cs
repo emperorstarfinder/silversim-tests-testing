@@ -56,8 +56,8 @@ namespace SilverSim.Tests.Presence
         {
             var pInfo = new NpcPresenceInfo
             {
-                Npc = new UUI(UUID.Random, "Npc", "Test"),
-                Owner = new UUI(UUID.Random, "Test", "User", new Uri("http://example.com/")),
+                Npc = new UGUIWithName(UUID.Random, "Npc", "Test"),
+                Owner = new UGUIWithName(UUID.Random, "Test", "User", new Uri("http://example.com/")),
                 Group = new UGI(UUID.Random, "NpcGroup", new Uri("http://example.com/")),
                 RegionID = UUID.Random,
                 Position = new Vector3(128, 128, 23),
@@ -107,7 +107,7 @@ namespace SilverSim.Tests.Presence
             }
 
             bool ownerUriEqual = p1.Owner.HomeURI?.ToString() == p2.Owner.HomeURI?.ToString();
-            if(p1.Owner.ID != p2.Owner.ID || p1.Owner.FirstName != p2.Owner.FirstName || p1.Owner.LastName != p2.Owner.LastName || !ownerUriEqual)
+            if(p1.Owner.ID != p2.Owner.ID || !ownerUriEqual)
             {
                 mismatches.Add("Owner");
             }

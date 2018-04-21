@@ -63,7 +63,7 @@ namespace SilverSim.Tests.Assets.Formats
                 Stream resource = GetType().Assembly.GetManifestResourceStream(manifest);
                 try
                 {
-                    ObjectXML.FromXml(resource, UUI.Unknown, XmlDeserializationOptions.ReadKeyframeMotion);
+                    ObjectXML.FromXml(resource, UGUI.Unknown, XmlDeserializationOptions.ReadKeyframeMotion);
                 }
                 catch (Exception e)
                 {

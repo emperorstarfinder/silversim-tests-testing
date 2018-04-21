@@ -39,8 +39,8 @@ namespace SilverSim.Tests.Experience
         string m_ExperienceServiceName;
         ExperienceServiceInterface m_ExperienceService;
         UUID m_ExperienceID = new UUID("11112222-3333-4444-5555-666666777777");
-        UUI m_Creator = new UUI("11111111-2222-3333-4444-555555555555", "Experience", "Creator");
-        UUI m_Owner = new UUI("11223344-2222-3333-4444-555555555555", "Experience", "Owner");
+        UGUI m_Creator = new UGUIWithName("11111111-2222-3333-4444-555555555555", "Experience", "Creator");
+        UGUI m_Owner = new UGUIWithName("11223344-2222-3333-4444-555555555555", "Experience", "Owner");
         UGI m_Group = new UGI("11223344-1111-2222-3333-444444444444", "Experience Group", null);
         UUID m_GroupID = new UUID("11223344-1122-1122-1122-112233445566");
         UUID m_InsigniaID = new UUID("11223344-1122-1122-1122-112233445577");

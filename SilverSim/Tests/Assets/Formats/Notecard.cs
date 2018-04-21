@@ -51,7 +51,7 @@ namespace SilverSim.Tests.Assets.Formats
             Notecard notecard;
             Notecard ncserialized;
             AssetData asset;
-            var theCreator = new UUI()
+            var theCreator = new UGUIWithName
             {
                 HomeURI = new Uri("http://example.com/"),
                 ID = UUID.Random,

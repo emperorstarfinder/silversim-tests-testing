@@ -54,9 +54,9 @@ namespace SilverSim.Tests.AvatarName
 
         public bool Run()
         {
-            var uui1 = new UUI(UUID.Random, "First", "User", new Uri("http://example.com/")) { IsAuthoritative = true };
-            var uui2 = new UUI(UUID.Random, "Second", "User", new Uri("http://example.com/")) { IsAuthoritative = true };
-            List<UUI> reslist;
+            var uui1 = new UGUIWithName(UUID.Random, "First", "User", new Uri("http://example.com/")) { IsAuthoritative = true };
+            var uui2 = new UGUIWithName(UUID.Random, "Second", "User", new Uri("http://example.com/")) { IsAuthoritative = true };
+            List<UGUIWithName> reslist;
 
             m_Log.Info("---- Step 1 ----");
             if(!CheckNonExistance(1, uui1))
@@ -184,9 +184,9 @@ namespace SilverSim.Tests.AvatarName
             return true;
         }
 
-        private bool CheckExistance(int number, UUI uui)
+        private bool CheckExistance(int number, UGUIWithName uui)
         {
-            UUI result;
+            UGUIWithName result;
             m_Log.InfoFormat("Testing that entry {0} exists by name 1", number);
             if (!m_AvatarNameService.TryGetValue(uui.FirstName, uui.LastName, out result))
             {
@@ -230,7 +230,7 @@ namespace SilverSim.Tests.AvatarName
             }
 
             m_Log.InfoFormat("Testing that entry {0} is searchable by full name", number);
-            List<UUI> reslist = m_AvatarNameService.Search(new string[] { uui.FirstName, uui.LastName });
+            List<UGUIWithName> reslist = m_AvatarNameService.Search(new string[] { uui.FirstName, uui.LastName });
             if(reslist.Count != 1)
             {
                 m_Log.Info("Result list is not containing exactly one entry");
@@ -257,9 +257,9 @@ namespace SilverSim.Tests.AvatarName
             return true;
         }
 
-        private bool CheckNonExistance(int number, UUI uui)
+        private bool CheckNonExistance(int number, UGUIWithName uui)
         {
-            UUI result;
+            UGUIWithName result;
             m_Log.InfoFormat("Testing that entry {0} does not exist by name 1", number);
             if (m_AvatarNameService.TryGetValue(uui.FirstName, uui.LastName, out result))
             {
@@ -295,7 +295,7 @@ namespace SilverSim.Tests.AvatarName
             }
 
             m_Log.InfoFormat("Testing that entry {0} is not searchable by full name", number);
-            List<UUI> reslist = m_AvatarNameService.Search(new string[] { uui.FirstName, uui.LastName });
+            List<UGUIWithName> reslist = m_AvatarNameService.Search(new string[] { uui.FirstName, uui.LastName });
             if (reslist.Count != 0)
             {
                 m_Log.Info("Result list is not empty");
@@ -313,7 +313,7 @@ namespace SilverSim.Tests.AvatarName
             return true;
         }
 
-        private static bool IsEqual(UUI uui1, UUI uui2)
+        private static bool IsEqual(UGUIWithName uui1, UGUIWithName uui2)
         {
             var mismatches = new List<string>();
             if(uui1.ID != uui2.ID)

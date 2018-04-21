@@ -51,7 +51,7 @@ namespace SilverSim.Tests.Assets.Formats
             Wearable wearable;
             Wearable wearableserialized;
             AssetData assetdata;
-            var theCreator = new UUI()
+            var theCreator = new UGUIWithName
             {
                 ID = UUID.Random,
                 HomeURI = new Uri("http://example.com/"),

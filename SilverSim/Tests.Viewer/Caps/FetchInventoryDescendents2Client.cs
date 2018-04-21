@@ -285,7 +285,7 @@ namespace SilverSim.Tests.Viewer.Caps
                 }
                 var folder = new InventoryFolder(folderdata["folder_id"].AsUUID)
                 {
-                    Owner = new UUI(folderdata["owner_id"].AsUUID),
+                    Owner = new UGUI(folderdata["owner_id"].AsUUID),
                     Version = folderdata["version"].AsInt,
                     ParentFolderID = folderdata["parent_id"].AsUUID,
                 };
@@ -293,7 +293,7 @@ namespace SilverSim.Tests.Viewer.Caps
                 {
                     Version = folderdata["version"].AsInt,
                     FolderID = folderdata["folder_id"].AsUUID,
-                    Owner = new UUI(folderdata["owner_id"].AsUUID)
+                    Owner = new UGUI(folderdata["owner_id"].AsUUID)
                 };
                 AnArray categories;
                 if (folderdata.TryGetValue("categories", out categories))
@@ -341,11 +341,11 @@ namespace SilverSim.Tests.Viewer.Caps
                             Name = childdata["name"].ToString(),
                             ParentFolderID = childdata["parent_id"].AsUUID,
                             AssetType = (AssetType)childdata["type"].AsInt,
-                            Creator = new UUI(permissions["creator_id"].AsUUID),
+                            Creator = new UGUI(permissions["creator_id"].AsUUID),
                             Group = new UGI(permissions["group_id"].AsUUID),
                             IsGroupOwned = permissions["is_owner_group"].AsBoolean,
-                            LastOwner = new UUI(permissions["last_owner_id"].AsUUID),
-                            Owner = new UUI(permissions["owner_id"].AsUUID),
+                            LastOwner = new UGUI(permissions["last_owner_id"].AsUUID),
+                            Owner = new UGUI(permissions["owner_id"].AsUUID),
                             SaleInfo = new InventoryItem.SaleInfoData
                             {
                                 Price = sale_info["sale_price"].AsInt,

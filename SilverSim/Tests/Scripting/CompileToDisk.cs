@@ -92,7 +92,7 @@ namespace SilverSim.Tests.Scripting
                 {
                     using (TextReader reader = new StreamReader(file.Value, new UTF8Encoding(false)))
                     {
-                        CompilerRegistry.ScriptCompilers.CompileToDisk("Script." + file.Key.ToString() + ".dll", UUI.Unknown, file.Key, reader, includeOpen: (name) => OpenFile(name, file.Value));
+                        CompilerRegistry.ScriptCompilers.CompileToDisk("Script." + file.Key.ToString() + ".dll", UGUI.Unknown, file.Key, reader, includeOpen: (name) => OpenFile(name, file.Value));
                     }
                     m_Log.InfoFormat("Compilation of {1} ({0}) successful", file.Key, file.Value);
                     ++successcnt;

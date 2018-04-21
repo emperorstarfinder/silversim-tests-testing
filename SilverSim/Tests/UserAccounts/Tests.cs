@@ -96,9 +96,9 @@ namespace SilverSim.Tests.UserAccounts
             m_Log.Info("Setting up test data");
             UUID userID = UUID.Parse("22334455-1122-1122-1122-112233445566");
             UUID scopeID = UUID.Parse("33445566-1122-1122-1122-112233445566");
-            var ua = new UserAccount()
+            var ua = new UserAccount
             {
-                Principal = new UUI { ID = userID, FirstName = "First", LastName = "Last" },
+                Principal = new UGUIWithName { ID = userID, FirstName = "First", LastName = "Last" },
                 Email = "email@example.com",
                 ScopeID = scopeID
             };

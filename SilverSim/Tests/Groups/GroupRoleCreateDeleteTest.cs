@@ -41,7 +41,7 @@ namespace SilverSim.Tests.Groups
         GroupsServiceInterface m_GroupsService;
         GroupsServiceInterface m_BackendGroupsService;
         AvatarNameServiceInterface m_AvatarNameService;
-        UUI m_Founder = new UUI("11111111-2222-3333-4444-555555555555", "Group", "Creator");
+        UGUIWithName m_Founder = new UGUIWithName("11111111-2222-3333-4444-555555555555", "Group", "Creator");
         UUID m_GroupID = new UUID("11223344-1122-1122-1122-112233445566");
         UUID m_InsigniaID = new UUID("11223344-1122-1122-1122-112233445577");
 

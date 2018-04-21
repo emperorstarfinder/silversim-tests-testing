@@ -51,7 +51,7 @@ namespace SilverSim.Tests.Assets.Formats
             Gesture gestureserialized;
             Gesture gesture;
 
-            var theCreator = new UUI()
+            var theCreator = new UGUIWithName
             {
                 ID = UUID.Random,
                 HomeURI = new Uri("http://example.com/"),

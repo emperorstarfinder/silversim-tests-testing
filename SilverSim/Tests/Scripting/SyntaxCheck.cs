@@ -88,12 +88,12 @@ namespace SilverSim.Tests.Scripting
                         {
                             using (var st = new FileStream(file.Value + ".dump.txt", FileMode.Create))
                             {
-                                CompilerRegistry.ScriptCompilers.SyntaxCheckAndDump(st, UUI.Unknown, file.Key, reader, includeOpen: (name) => OpenFile(name, file.Value));
+                                CompilerRegistry.ScriptCompilers.SyntaxCheckAndDump(st, UGUI.Unknown, file.Key, reader, includeOpen: (name) => OpenFile(name, file.Value));
                             }
                         }
                         else
                         {
-                            CompilerRegistry.ScriptCompilers.SyntaxCheck(UUI.Unknown, file.Key, reader, includeOpen: (name) => OpenFile(name, file.Value));
+                            CompilerRegistry.ScriptCompilers.SyntaxCheck(UGUI.Unknown, file.Key, reader, includeOpen: (name) => OpenFile(name, file.Value));
                         }
                     }
                     m_Log.InfoFormat("Syntax of {1} ({0}) parsed successfully", file.Key, file.Value);

@@ -37,7 +37,7 @@ namespace SilverSim.Tests.Inventory
         private static readonly ILog m_Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         InventoryServiceInterface m_InventoryService;
         InventoryServiceInterface m_BackendInventoryService;
-        UUI m_UserID;
+        UGUI m_UserID;
 
         public void Startup(ConfigurationLoader loader)
         {
@@ -45,7 +45,7 @@ namespace SilverSim.Tests.Inventory
             string inventoryServiceName = config.GetString("InventoryService");
             m_InventoryService = loader.GetService<InventoryServiceInterface>(inventoryServiceName);
             m_BackendInventoryService = loader.GetService<InventoryServiceInterface>(config.GetString("BackendInventoryService", inventoryServiceName));
-            m_UserID = new UUI(config.GetString("User"));
+            m_UserID = new UGUI(config.GetString("User"));
         }
 
         public void Setup()

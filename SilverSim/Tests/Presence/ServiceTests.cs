@@ -57,7 +57,7 @@ namespace SilverSim.Tests.Presence
         {
             var pInfo = new PresenceInfo
             {
-                UserID = new UUI(UUID.Random, "Test", "User", new Uri("http://example.com/")),
+                UserID = new UGUIWithName(UUID.Random, "Test", "User", new Uri("http://example.com/")),
                 RegionID = UUID.Random,
                 SessionID = UUID.Random,
                 SecureSessionID = UUID.Random

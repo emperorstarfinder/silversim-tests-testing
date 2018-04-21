@@ -200,15 +200,15 @@ namespace SilverSim.Tests.Viewer
                 m_UserAccountService = userAccountService;
             }
 
-            bool IDisplayNameAccessor.TryGetValue(UUI agent, out string displayname)
+            bool IDisplayNameAccessor.TryGetValue(UGUI agent, out string displayname)
             {
                 displayname = string.Empty;
                 return false;
             }
 
-            bool IDisplayNameAccessor.ContainsKey(UUI agent) => false;
+            bool IDisplayNameAccessor.ContainsKey(UGUI agent) => false;
 
-            string IDisplayNameAccessor.this[UUI agent]
+            string IDisplayNameAccessor.this[UGUI agent]
             {
                 get
                 {
@@ -230,17 +230,17 @@ namespace SilverSim.Tests.Viewer
                 }
             }
 
-            public override DestinationInfo GetHomeRegion(UUI user)
+            public override DestinationInfo GetHomeRegion(UGUI user)
             {
                 throw new NotImplementedException();
             }
 
-            public override ServerURIs GetServerURLs(UUI user)
+            public override ServerURIs GetServerURLs(UGUI user)
             {
                 throw new KeyNotFoundException();
             }
 
-            public override UserInfo GetUserInfo(UUI user)
+            public override UserInfo GetUserInfo(UGUI user)
             {
                 UserAccount account;
                 if (!m_UserAccountService.TryGetValue(UUID.Zero, user.ID, out account))
@@ -257,7 +257,7 @@ namespace SilverSim.Tests.Viewer
                 };
             }
 
-            public override UUI GetUUI(UUI user, UUI targetUserID)
+            public override UGUIWithName GetUUI(UGUI user, UGUI targetUserID)
             {
                 UserAccount account;
                 if(!m_UserAccountService.TryGetValue(UUID.Zero, targetUserID.ID, out account))
@@ -267,17 +267,17 @@ namespace SilverSim.Tests.Viewer
                 return account.Principal;
             }
 
-            public override bool IsOnline(UUI user)
+            public override bool IsOnline(UGUI user)
             {
                 return m_PresenceService[user.ID].Count != 0;
             }
 
-            public override string LocateUser(UUI user)
+            public override string LocateUser(UGUI user)
             {
                 throw new KeyNotFoundException();
             }
 
-            public override List<UUID> NotifyStatus(List<KeyValuePair<UUI, string>> friends, UUI user, bool online)
+            public override List<UUID> NotifyStatus(List<KeyValuePair<UGUI, string>> friends, UGUI user, bool online)
             {
                 return new List<UUID>();
             }

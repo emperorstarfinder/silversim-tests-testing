@@ -61,15 +61,15 @@ namespace SilverSim.Tests.Scripting
         private UUID m_RegionID;
         private readonly ManualResetEvent m_RunTimeoutEvent = new ManualResetEvent(false);
         private TestRunner m_Runner;
-        private UUI m_RegionOwner;
+        private UGUI m_RegionOwner;
         private UUID m_ObjectID;
-        private UUI m_ObjectOwner;
-        private UUI m_ObjectLastOwner;
-        private UUI m_ObjectCreator;
-        private UUI m_ScriptOwner;
-        private UUI m_ScriptLastOwner;
-        private UUI m_ScriptCreator;
-        private UUI m_EstateOwner;
+        private UGUI m_ObjectOwner;
+        private UGUI m_ObjectLastOwner;
+        private UGUI m_ObjectCreator;
+        private UGUI m_ScriptOwner;
+        private UGUI m_ScriptLastOwner;
+        private UGUI m_ScriptCreator;
+        private UGUI m_EstateOwner;
         private string m_RegionName;
         private string m_ObjectName;
         private string m_ObjectDescription;
@@ -157,8 +157,8 @@ namespace SilverSim.Tests.Scripting
 
             m_TimeoutMs = config.GetInt("RunTimeout", 1000);
             m_RegionID = UUID.Parse(config.GetString("RegionID"));
-            m_RegionOwner = new UUI(config.GetString("RegionOwner"));
-            m_EstateOwner = new UUI(config.GetString("EstateOwner", m_RegionOwner.ToString()));
+            m_RegionOwner = new UGUI(config.GetString("RegionOwner"));
+            m_EstateOwner = new UGUI(config.GetString("EstateOwner", m_RegionOwner.ToString()));
             m_EstateID = (uint)config.GetInt("EstateID", 100);
             m_EstateName = config.GetString("EstateName", "My Estate");
 
@@ -181,10 +181,10 @@ namespace SilverSim.Tests.Scripting
             m_SceneFactory = loader.GetService<SceneFactoryInterface>("DefaultSceneImplementation");
             m_EstateService = loader.GetService<EstateServiceInterface>("EstateService");
 
-            m_ObjectOwner = new UUI(config.GetString("ObjectOwner"));
+            m_ObjectOwner = new UGUI(config.GetString("ObjectOwner"));
             if (config.Contains("ObjectCreator"))
             {
-                m_ObjectCreator = new UUI(config.GetString("ObjectCreator"));
+                m_ObjectCreator = new UGUI(config.GetString("ObjectCreator"));
             }
             else
             {
@@ -192,17 +192,17 @@ namespace SilverSim.Tests.Scripting
             }
             if (config.Contains("ObjectLastOwner"))
             {
-                m_ObjectLastOwner = new UUI(config.GetString("ObjectLastOwner"));
+                m_ObjectLastOwner = new UGUI(config.GetString("ObjectLastOwner"));
             }
             else
             {
                 m_ObjectLastOwner = m_ObjectOwner;
             }
 
-            m_ScriptOwner = new UUI(config.GetString("ScriptOwner"));
+            m_ScriptOwner = new UGUI(config.GetString("ScriptOwner"));
             if(config.Contains("ScriptCreator"))
             {
-                m_ScriptCreator = new UUI(config.GetString("ScriptCreator"));
+                m_ScriptCreator = new UGUI(config.GetString("ScriptCreator"));
             }
             else
             {
@@ -210,7 +210,7 @@ namespace SilverSim.Tests.Scripting
             }
             if (config.Contains("ScriptLastOwner"))
             {
-                m_ScriptLastOwner = new UUI(config.GetString("ScriptLastOwner"));
+                m_ScriptLastOwner = new UGUI(config.GetString("ScriptLastOwner"));
             }
             else
             {
@@ -259,12 +259,12 @@ namespace SilverSim.Tests.Scripting
             string objectDescription = config.GetString("ObjectDescription", "");
             string scriptDescription = config.GetString("ScriptDescription", "");
 
-            var objectOwner = new UUI(config.GetString("ObjectOwner", m_ObjectOwner.ToString()));
-            var objectCreator = new UUI(config.GetString("ObjectCreator", m_ObjectCreator.ToString()));
-            var objectLastOwner = new UUI(config.GetString("ObjectLastOwner", m_ObjectLastOwner.ToString()));
-            var scriptOwner = new UUI(config.GetString("ScriptOwner", m_ScriptOwner.ToString()));
-            var scriptCreator = new UUI(config.GetString("ScriptCreator", m_ScriptCreator.ToString()));
-            var scriptLastOwner = new UUI(config.GetString("ScriptLastOwner", m_ScriptLastOwner.ToString()));
+            var objectOwner = new UGUI(config.GetString("ObjectOwner", m_ObjectOwner.ToString()));
+            var objectCreator = new UGUI(config.GetString("ObjectCreator", m_ObjectCreator.ToString()));
+            var objectLastOwner = new UGUI(config.GetString("ObjectLastOwner", m_ObjectLastOwner.ToString()));
+            var scriptOwner = new UGUI(config.GetString("ScriptOwner", m_ScriptOwner.ToString()));
+            var scriptCreator = new UGUI(config.GetString("ScriptCreator", m_ScriptCreator.ToString()));
+            var scriptLastOwner = new UGUI(config.GetString("ScriptLastOwner", m_ScriptLastOwner.ToString()));
             int startParameter = config.GetInt("StartParameter", m_StartParameter);
 
             InventoryPermissionsMask objectPermissionsBase = GetPermissions(config, "ObjectPermisionsBase", m_ObjectPermissionsBase);
@@ -299,7 +299,7 @@ namespace SilverSim.Tests.Scripting
                 {
                     using (var reader = new StreamReader(m_ScriptFile, new UTF8Encoding(false)))
                     {
-                        scriptAssembly = CompilerRegistry.ScriptCompilers.Compile(AppDomain.CurrentDomain, UUI.Unknown, m_AssetID, reader);
+                        scriptAssembly = CompilerRegistry.ScriptCompilers.Compile(AppDomain.CurrentDomain, UGUI.Unknown, m_AssetID, reader);
                     }
                     m_Log.InfoFormat("Compilation of {1} ({0}) successful", m_AssetID, m_ScriptFile);
                 }
@@ -416,7 +416,7 @@ namespace SilverSim.Tests.Scripting
             {
                 using (var reader = new StreamReader(m_ScriptFile, new UTF8Encoding(false)))
                 {
-                    scriptAssembly = CompilerRegistry.ScriptCompilers.Compile(AppDomain.CurrentDomain, UUI.Unknown, m_AssetID, reader, includeOpen: OpenFile);
+                    scriptAssembly = CompilerRegistry.ScriptCompilers.Compile(AppDomain.CurrentDomain, UGUI.Unknown, m_AssetID, reader, includeOpen: OpenFile);
                 }
                 m_Log.InfoFormat("Compilation of {1} ({0}) successful", m_AssetID, m_ScriptFile);
                 ++successcnt;

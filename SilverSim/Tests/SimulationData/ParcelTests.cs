@@ -293,7 +293,7 @@ namespace SilverSim.Tests.SimulationData
             {
                 Name = "Parcel 1",
                 ID = new UUID("11223344-1122-1122-0001-112233445566"),
-                Owner = new UUI("11223344-1122-1123-0001-112233445566")
+                Owner = new UGUI("11223344-1122-1123-0001-112233445566")
             };
             UUID testRegion1 = new UUID("11223344-1122-1124-0001-112233445566");
             testData1.LandBitmap.SetAllBits();
@@ -301,7 +301,7 @@ namespace SilverSim.Tests.SimulationData
             {
                 Name = "Parcel 2",
                 ID = new UUID("11223344-1122-1122-0002-112233445566"),
-                Owner = new UUI("11223344-1122-1123-0002-112233445566")
+                Owner = new UGUI("11223344-1122-1123-0002-112233445566")
             };
             UUID testRegion2 = new UUID("11223344-1122-1124-0002-112233445566");
             testData2.LandBitmap.SetAllBits();
@@ -309,7 +309,7 @@ namespace SilverSim.Tests.SimulationData
             {
                 Name = "Parcel 3",
                 ID = new UUID("11223344-1122-1122-0003-112233445566"),
-                Owner = new UUI("11223344-1122-1123-0003-112233445566")
+                Owner = new UGUI("11223344-1122-1123-0003-112233445566")
             };
             UUID testRegion3 = new UUID("11223344-1122-1124-0003-112233445566");
             testData3.LandBitmap.SetAllBits();
@@ -317,7 +317,7 @@ namespace SilverSim.Tests.SimulationData
             {
                 Name = "Parcel 4",
                 ID = new UUID("11223344-1122-1122-0004-112233445566"),
-                Owner = new UUI("11223344-1122-1123-0004-112233445566")
+                Owner = new UGUI("11223344-1122-1123-0004-112233445566")
             };
             UUID testRegion4 = new UUID("11223344-1122-1124-0004-112233445566");
             testData4.LandBitmap.SetAllBits();

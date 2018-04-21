@@ -113,9 +113,9 @@ namespace SilverSim.Tests.GridUser
 
         public bool Run()
         {
-            var hgUUI = new UUI(UUID.Parse("11223344-1122-1122-1122-112233445566"), "First", "Last", new Uri("http://example.com/"));
-            var localUUI = new UUI(UUID.Parse("44332211-2211-2211-2211-665544332211"));
-            var residentHGUUI = new UUI(UUID.Parse("44332211-2211-2211-2211-665544332211"), "The", "Resident", new Uri("http://residents.home/"));
+            var hgUUI = new UGUIWithName(UUID.Parse("11223344-1122-1122-1122-112233445566"), "First", "Last", new Uri("http://example.com/"));
+            var localUUI = new UGUI("44332211-2211-2211-2211-665544332211");
+            var residentHGUUI = new UGUIWithName(UUID.Parse("44332211-2211-2211-2211-665544332211"), "The", "Resident", new Uri("http://residents.home/"));
             var region1ID = new UUID("11112222-1111-2222-3333-112233445566");
             var region2ID = new UUID("33334444-1111-2222-3333-112233445566");
 

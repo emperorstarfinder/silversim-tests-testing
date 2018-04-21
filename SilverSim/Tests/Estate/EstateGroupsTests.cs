@@ -34,7 +34,7 @@ namespace SilverSim.Tests.Estate
     {
         private static readonly ILog m_Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         EstateServiceInterface m_EstateService;
-        UUI m_EstateOwner;
+        UGUI m_EstateOwner;
         UGI m_EstateGroup1;
         UGI m_EstateGroup2;
 
@@ -42,7 +42,7 @@ namespace SilverSim.Tests.Estate
         {
             IConfig config = loader.Config.Configs[GetType().FullName];
             m_EstateService = loader.GetService<EstateServiceInterface>(config.GetString("EstateService"));
-            m_EstateOwner = new UUI(config.GetString("EstateOwner"));
+            m_EstateOwner = new UGUI(config.GetString("EstateOwner"));
             m_EstateGroup1 = new UGI(config.GetString("EstateGroup1"));
             m_EstateGroup2 = new UGI(config.GetString("EstateGroup2"));
         }

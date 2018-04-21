@@ -34,17 +34,17 @@ namespace SilverSim.Tests.Estate
     {
         private static readonly ILog m_Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         EstateServiceInterface m_EstateService;
-        UUI m_EstateOwner;
-        UUI m_EstateAccessor1;
-        UUI m_EstateAccessor2;
+        UGUI m_EstateOwner;
+        UGUI m_EstateAccessor1;
+        UGUI m_EstateAccessor2;
 
         public void Startup(ConfigurationLoader loader)
         {
             IConfig config = loader.Config.Configs[GetType().FullName];
             m_EstateService = loader.GetService<EstateServiceInterface>(config.GetString("EstateService"));
-            m_EstateOwner = new UUI(config.GetString("EstateOwner"));
-            m_EstateAccessor1 = new UUI(config.GetString("EstateAccessor1"));
-            m_EstateAccessor2 = new UUI(config.GetString("EstateAccessor2"));
+            m_EstateOwner = new UGUI(config.GetString("EstateOwner"));
+            m_EstateAccessor1 = new UGUI(config.GetString("EstateAccessor1"));
+            m_EstateAccessor2 = new UGUI(config.GetString("EstateAccessor2"));
         }
 
         public void Setup()
