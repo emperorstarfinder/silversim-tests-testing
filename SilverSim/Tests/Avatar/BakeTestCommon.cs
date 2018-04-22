@@ -448,7 +448,7 @@ namespace SilverSim.Tests.Avatar
         private InventoryItem LoadInventoryItem(
             Stream s)
         {
-            using (XmlTextReader reader = new XmlTextReader(new ObjectXmlStreamFilter(s)))
+            using (XmlTextReader reader = new ObjectXmlStreamFilter(s).CreateXmlReader())
             {
                 for (;;)
                 {
