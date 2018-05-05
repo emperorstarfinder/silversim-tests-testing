@@ -28,6 +28,7 @@
   <Reference name="SilverSim.Scene.Types" localCopy="false"/>
   <Reference name="SilverSim.Scene.Agent.Bakery" localCopy="false"/>  
   <Reference name="SilverSim.Scene.ServiceInterfaces" localCopy="false"/>
+  <Reference name="SilverSim.Scene.Physics.Common" localCopy="false"/>
   <Reference name="SilverSim.Main.Common" localCopy="false"/>
   <Reference name="SilverSim.Scripting.Common" localCopy="false"/>
   <Reference name="SilverSim.Scripting.Lsl" path="../../bin/plugins/" localCopy="false"/>
