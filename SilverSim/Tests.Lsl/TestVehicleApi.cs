@@ -140,12 +140,12 @@ namespace SilverSim.Tests.Lsl
             private void Init()
             {
                 m_VehicleParams.VehicleType = VehicleType.Balloon;
-                m_VehicleParams[VehicleFloatParamId.AngularDeflectionEfficiency] = 0;
+                m_VehicleParams[VehicleVectorParamId.AngularDeflectionEfficiency] = Vector3.Zero;
                 m_VehicleParams[VehicleFloatParamId.BankingEfficiency] = 0;
                 m_VehicleParams[VehicleFloatParamId.Buoyancy] = 1;
                 m_VehicleParams[VehicleFloatParamId.HoverEfficiency] = 0;
-                m_VehicleParams[VehicleFloatParamId.LinearDeflectionEfficiency] = 0;
-                m_VehicleParams[VehicleFloatParamId.VerticalAttractionEfficiency] = 0;
+                m_VehicleParams[VehicleVectorParamId.LinearDeflectionEfficiency] = Vector3.Zero;
+                m_VehicleParams[VehicleVectorParamId.VerticalAttractionEfficiency] = Vector3.Zero;
             }
 
             public VehicleInstance()
@@ -399,27 +399,27 @@ namespace SilverSim.Tests.Lsl
                 }
             }
 
-            public double LinearDeflectionEfficiency
+            public Vector3 LinearDeflectionEfficiency
             {
                 get
                 {
-                    return m_VehicleParams[VehicleFloatParamId.LinearDeflectionEfficiency];
+                    return m_VehicleParams[VehicleVectorParamId.LinearDeflectionEfficiency];
                 }
                 set
                 {
-                    m_VehicleParams[VehicleFloatParamId.LinearDeflectionEfficiency] = value;
+                    m_VehicleParams[VehicleVectorParamId.LinearDeflectionEfficiency] = value;
                 }
             }
 
-            public double LinearDeflectionTimescale
+            public Vector3 LinearDeflectionTimescale
             {
                 get
                 {
-                    return m_VehicleParams[VehicleFloatParamId.LinearDeflectionTimescale];
+                    return m_VehicleParams[VehicleVectorParamId.LinearDeflectionTimescale];
                 }
                 set
                 {
-                    m_VehicleParams[VehicleFloatParamId.LinearDeflectionTimescale] = value;
+                    m_VehicleParams[VehicleVectorParamId.LinearDeflectionTimescale] = value;
                 }
             }
             #endregion
@@ -473,27 +473,27 @@ namespace SilverSim.Tests.Lsl
                 }
             }
 
-            public double AngularDeflectionEfficiency
+            public Vector3 AngularDeflectionEfficiency
             {
                 get
                 {
-                    return m_VehicleParams[VehicleFloatParamId.AngularDeflectionEfficiency];
+                    return m_VehicleParams[VehicleVectorParamId.AngularDeflectionEfficiency];
                 }
                 set
                 {
-                    m_VehicleParams[VehicleFloatParamId.AngularDeflectionEfficiency] = value;
+                    m_VehicleParams[VehicleVectorParamId.AngularDeflectionEfficiency] = value;
                 }
             }
 
-            public double AngularDeflectionTimescale
+            public Vector3 AngularDeflectionTimescale
             {
                 get
                 {
-                    return m_VehicleParams[VehicleFloatParamId.AngularDeflectionTimescale];
+                    return m_VehicleParams[VehicleVectorParamId.AngularDeflectionTimescale];
                 }
                 set
                 {
-                    m_VehicleParams[VehicleFloatParamId.AngularDeflectionTimescale] = value;
+                    m_VehicleParams[VehicleVectorParamId.AngularDeflectionTimescale] = value;
                 }
             }
             #endregion
@@ -561,27 +561,27 @@ namespace SilverSim.Tests.Lsl
             #endregion
 
             #region vertical attractor
-            public double VerticalAttractionEfficency
+            public Vector3 VerticalAttractionEfficency
             {
                 get
                 {
-                    return m_VehicleParams[VehicleFloatParamId.VerticalAttractionEfficiency];
+                    return m_VehicleParams[VehicleVectorParamId.VerticalAttractionEfficiency];
                 }
                 set
                 {
-                    m_VehicleParams[VehicleFloatParamId.VerticalAttractionEfficiency] = value;
+                    m_VehicleParams[VehicleVectorParamId.VerticalAttractionEfficiency] = value;
                 }
             }
 
-            public double VerticalAttractionTimescale
+            public Vector3 VerticalAttractionTimescale
             {
                 get
                 {
-                    return m_VehicleParams[VehicleFloatParamId.VerticalAttractionTimescale];
+                    return m_VehicleParams[VehicleVectorParamId.VerticalAttractionTimescale];
                 }
                 set
                 {
-                    m_VehicleParams[VehicleFloatParamId.VerticalAttractionTimescale] = value;
+                    m_VehicleParams[VehicleVectorParamId.VerticalAttractionTimescale] = value;
                 }
             }
             #endregion
