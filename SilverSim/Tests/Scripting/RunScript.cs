@@ -42,6 +42,7 @@ using SilverSim.Types.Experience;
 using SilverSim.Types.Grid;
 using SilverSim.Types.Inventory;
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Text;
@@ -600,8 +601,15 @@ namespace SilverSim.Tests.Scripting
                         item.ScriptInstance = scriptInstance;
                         item.ScriptInstance.Start(m_StartParameter);
                     }
-                    m_KillTimer = new Timer(KillTimerCbk, null, m_TimeoutMs + 5000, Timeout.Infinite);
-                    m_RunTimeoutEvent.WaitOne(m_TimeoutMs);
+                    if (Debugger.IsAttached)
+                    {
+                        m_RunTimeoutEvent.WaitOne();
+                    }
+                    else
+                    {
+                        m_KillTimer = new Timer(KillTimerCbk, null, m_TimeoutMs + 5000, Timeout.Infinite);
+                        m_RunTimeoutEvent.WaitOne(m_TimeoutMs);
+                    }
                     return m_Runner.OtherThreadResult;
                 }
             }
