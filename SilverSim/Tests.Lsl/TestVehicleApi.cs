@@ -719,6 +719,10 @@ namespace SilverSim.Tests.Lsl
             lock (instance)
             {
                 vehicle.Process(instance, deltatime);
+                vehicle.Velocity += vehicle.LinearForce / vehicle.Mass * deltatime;
+                vehicle.Position += vehicle.Velocity * deltatime;
+                vehicle.AngularVelocity += vehicle.AngularTorque * deltatime;
+                vehicle.Rotation *= Quaternion.CreateFromEulers(vehicle.AngularVelocity * deltatime);
             }
         }
 
