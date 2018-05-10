@@ -162,6 +162,7 @@ namespace SilverSim.Tests.Lsl
             {
                 GravityConstant = 9.81;
                 Mass = 1;
+                m_VehicleParams = new VehicleParams(new ObjectPart());
                 m_PhysicsState = m_PhysicsState = new PhysicsStateData(new VehicleObject(), sceneID);
                 m_VehicleMotor = m_VehicleParams.GetMotor();
                 Init();
@@ -177,6 +178,21 @@ namespace SilverSim.Tests.Lsl
 
             public Vector3 LinearForce => m_VehicleMotor.LinearForce / Mass;
             public Vector3 AngularTorque => m_VehicleMotor.AngularTorque;
+
+            public Vector3 LinearMotorForce => m_VehicleMotor.LinearMotorForce;
+            public Vector3 AngularMotorTorque => m_VehicleMotor.AngularMotorTorque;
+            public Vector3 WorldZTorque => m_VehicleMotor.WorldZTorque;
+            public double HoverMotorForce => m_VehicleMotor.HoverMotorForce;
+            public Vector3 LinearFrictionForce => m_VehicleMotor.LinearFrictionForce;
+            public Vector3 AngularFrictionTorque => m_VehicleMotor.AngularFrictionTorque;
+            public Vector3 VerticalAttractorTorque => m_VehicleMotor.VerticalAttractorTorque;
+            public Vector3 LinearWindForce => m_VehicleMotor.LinearWindForce;
+            public Vector3 AngularWindTorque => m_VehicleMotor.AngularWindTorque;
+            public Vector3 LinearCurrentForce => m_VehicleMotor.LinearCurrentForce;
+            public Vector3 AngularCurrentTorque => m_VehicleMotor.AngularCurrentTorque;
+            public double BankingTorque => m_VehicleMotor.BankingTorque;
+            public Vector3 AngularDeflectionTorque => m_VehicleMotor.AngularDeflectionTorque;
+            public Vector3 LinearDeflectionForce => m_VehicleMotor.LinearDeflectionForce;
 
             public Vector3 Position
             {
@@ -717,7 +733,7 @@ namespace SilverSim.Tests.Lsl
             #endregion
         }
 
-        [APIExtension("VehicleTest", APIUseAsEnum.Getter, "VehicleInstance")]
+        [APIExtension("VehicleTest", "VehicleInstance")]
         public VehicleInstance GetInstance(ScriptInstance instance)
         {
             lock (instance)
