@@ -749,8 +749,8 @@ namespace SilverSim.Tests.Lsl
             {
                 vehicle.Process(instance, deltatime);
                 Vector3 linearForce = vehicle.LinearForce * deltatime;
-                linearForce.Z -= vehicle.GravityConstant * deltatime;
-                vehicle.Velocity += linearForce * deltatime;
+                linearForce.Z -= vehicle.GravityConstant * vehicle.Mass * deltatime;
+                vehicle.Velocity += linearForce * deltatime / vehicle.Mass;
                 vehicle.Position += vehicle.Velocity * deltatime;
                 vehicle.AngularVelocity += vehicle.AngularTorque * deltatime;
                 vehicle.Rotation *= Quaternion.CreateFromEulers(vehicle.AngularVelocity * deltatime);
