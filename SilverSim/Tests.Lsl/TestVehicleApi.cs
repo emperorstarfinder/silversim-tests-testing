@@ -131,11 +131,20 @@ namespace SilverSim.Tests.Lsl
         public class VehicleInstance
         {
             [NonSerialized]
-            private readonly VehicleParams m_VehicleParams = new VehicleParams();
+            private readonly VehicleParams m_VehicleParams;
             [NonSerialized]
             private readonly VehicleMotor m_VehicleMotor;
             [NonSerialized]
             private readonly PhysicsStateData m_PhysicsState;
+
+            public VehicleInstance()
+            {
+                PhysicsGravityMultiplier = 1;
+                Mass = 1;
+                m_VehicleParams = new VehicleParams(new ObjectPart());
+                m_PhysicsState = new PhysicsStateData(new VehicleObject(), UUID.Zero);
+                m_VehicleMotor = m_VehicleParams.GetMotor();
+            }
 
             public VehicleInstance(UUID sceneID)
             {
@@ -263,6 +272,436 @@ namespace SilverSim.Tests.Lsl
                     m_PhysicsState.IsAgentInMouselook = value != 0;
                 }
             }
+
+            public int Type
+            {
+                get
+                {
+                    return (int)m_VehicleParams.VehicleType;
+                }
+                set
+                {
+                    switch(value)
+                    {
+                        case 0:
+                            m_VehicleParams.VehicleType = VehicleType.None;
+                            break;
+
+                        case 1:
+                            m_VehicleParams.VehicleType = VehicleType.Sled;
+                            break;
+
+                        case 2:
+                            m_VehicleParams.VehicleType = VehicleType.Car;
+                            break;
+
+                        case 3:
+                            m_VehicleParams.VehicleType = VehicleType.Boat;
+                            break;
+
+                        case 4:
+                            m_VehicleParams.VehicleType = VehicleType.Airplane;
+                            break;
+
+                        case 5:
+                            m_VehicleParams.VehicleType = VehicleType.Balloon;
+                            break;
+
+                        default:
+                            break;
+                    }
+                }
+            }
+
+            public Quaternion ReferenceFrame
+            {
+                get
+                {
+                    return m_VehicleParams[VehicleRotationParamId.ReferenceFrame];
+                }
+                set
+                {
+                    m_VehicleParams[VehicleRotationParamId.ReferenceFrame] = value;
+                }
+            }
+
+            #region linear effects
+            public Vector3 LinearFrictionTimescale
+            {
+                get
+                {
+                    return m_VehicleParams[VehicleVectorParamId.LinearFrictionTimescale];
+                }
+                set
+                {
+                    m_VehicleParams[VehicleVectorParamId.LinearFrictionTimescale] = value;
+                }
+            }
+
+            public Vector3 LinearMotorDecayTimescale
+            {
+                get
+                {
+                    return m_VehicleParams[VehicleVectorParamId.LinearMotorDecayTimescale];
+                }
+                set
+                {
+                    m_VehicleParams[VehicleVectorParamId.LinearMotorDecayTimescale] = value;
+                }
+            }
+
+            public Vector3 LinearMotorTimescale
+            {
+                get
+                {
+                    return m_VehicleParams[VehicleVectorParamId.LinearMotorTimescale];
+                }
+                set
+                {
+                    m_VehicleParams[VehicleVectorParamId.LinearMotorTimescale] = value;
+                }
+            }
+
+            public Vector3 LinearMotorDirection
+            {
+                get
+                {
+                    return m_VehicleParams[VehicleVectorParamId.LinearMotorDirection];
+                }
+                set
+                {
+                    m_VehicleParams[VehicleVectorParamId.LinearMotorDirection] = value;
+                }
+            }
+
+            public Vector3 LinearMotorOffset
+            {
+                get
+                {
+                    return m_VehicleParams[VehicleVectorParamId.LinearMotorOffset];
+                }
+                set
+                {
+                    m_VehicleParams[VehicleVectorParamId.LinearMotorOffset] = value;
+                }
+            }
+
+            public double LinearDeflectionEfficiency
+            {
+                get
+                {
+                    return m_VehicleParams[VehicleFloatParamId.LinearDeflectionEfficiency];
+                }
+                set
+                {
+                    m_VehicleParams[VehicleFloatParamId.LinearDeflectionEfficiency] = value;
+                }
+            }
+
+            public double LinearDeflectionTimescale
+            {
+                get
+                {
+                    return m_VehicleParams[VehicleFloatParamId.LinearDeflectionTimescale];
+                }
+                set
+                {
+                    m_VehicleParams[VehicleFloatParamId.LinearDeflectionTimescale] = value;
+                }
+            }
+            #endregion
+
+            #region angular effects
+            public Vector3 AngularFrictionTimescale
+            {
+                get
+                {
+                    return m_VehicleParams[VehicleVectorParamId.AngularFrictionTimescale];
+                }
+                set
+                {
+                    m_VehicleParams[VehicleVectorParamId.AngularFrictionTimescale] = value;
+                }
+            }
+
+            public Vector3 AngularMotorDirection
+            {
+                get
+                {
+                    return m_VehicleParams[VehicleVectorParamId.AngularMotorDirection];
+                }
+                set
+                {
+                    m_VehicleParams[VehicleVectorParamId.AngularMotorDirection] = value;
+                }
+            }
+
+            public Vector3 AngularMotorDecayTimescale
+            {
+                get
+                {
+                    return m_VehicleParams[VehicleVectorParamId.AngularMotorDecayTimescale];
+                }
+                set
+                {
+                    m_VehicleParams[VehicleVectorParamId.AngularMotorDecayTimescale] = value;
+                }
+            }
+
+            public Vector3 AngularMotorTimescale
+            {
+                get
+                {
+                    return m_VehicleParams[VehicleVectorParamId.AngularMotorTimescale];
+                }
+                set
+                {
+                    m_VehicleParams[VehicleVectorParamId.AngularMotorTimescale] = value;
+                }
+            }
+
+            public double AngularDeflectionEfficiency
+            {
+                get
+                {
+                    return m_VehicleParams[VehicleFloatParamId.AngularDeflectionEfficiency];
+                }
+                set
+                {
+                    m_VehicleParams[VehicleFloatParamId.AngularDeflectionEfficiency] = value;
+                }
+            }
+
+            public double AngularDeflectionTimescale
+            {
+                get
+                {
+                    return m_VehicleParams[VehicleFloatParamId.AngularDeflectionTimescale];
+                }
+                set
+                {
+                    m_VehicleParams[VehicleFloatParamId.AngularDeflectionTimescale] = value;
+                }
+            }
+            #endregion
+
+            #region banking
+            public double BankingEfficiency
+            {
+                get
+                {
+                    return m_VehicleParams[VehicleFloatParamId.BankingEfficiency];
+                }
+                set
+                {
+                    m_VehicleParams[VehicleFloatParamId.BankingEfficiency] = value;
+                }
+            }
+
+            public double BankingMix
+            {
+                get
+                {
+                    return m_VehicleParams[VehicleFloatParamId.BankingMix];
+                }
+                set
+                {
+                    m_VehicleParams[VehicleFloatParamId.BankingMix] = value;
+                }
+            }
+
+            public double BankingTimescale
+            {
+                get
+                {
+                    return m_VehicleParams[VehicleFloatParamId.BankingTimescale];
+                }
+                set
+                {
+                    m_VehicleParams[VehicleFloatParamId.BankingTimescale] = value;
+                }
+            }
+
+            public double BankingAzimuth
+            {
+                get
+                {
+                    return m_VehicleParams[VehicleFloatParamId.BankingAzimuth];
+                }
+                set
+                {
+                    m_VehicleParams[VehicleFloatParamId.BankingAzimuth] = value;
+                }
+            }
+
+            public double InvertedBankingModifier
+            {
+                get
+                {
+                    return m_VehicleParams[VehicleFloatParamId.InvertedBankingModifier];
+                }
+                set
+                {
+                    m_VehicleParams[VehicleFloatParamId.InvertedBankingModifier] = value;
+                }
+            }
+            #endregion
+
+            #region vertical attractor
+            public double VerticalAttractionEfficency
+            {
+                get
+                {
+                    return m_VehicleParams[VehicleFloatParamId.VerticalAttractionEfficiency];
+                }
+                set
+                {
+                    m_VehicleParams[VehicleFloatParamId.VerticalAttractionEfficiency] = value;
+                }
+            }
+
+            public double VerticalAttractionTimescale
+            {
+                get
+                {
+                    return m_VehicleParams[VehicleFloatParamId.VerticalAttractionTimescale];
+                }
+                set
+                {
+                    m_VehicleParams[VehicleFloatParamId.VerticalAttractionTimescale] = value;
+                }
+            }
+            #endregion
+
+            #region buoyancy
+            public double Buoyancy
+            {
+                get
+                {
+                    return m_VehicleParams[VehicleFloatParamId.Buoyancy];
+                }
+                set
+                {
+                    m_VehicleParams[VehicleFloatParamId.Buoyancy] = value;
+                }
+            }
+            #endregion
+
+            #region hover
+            public double HoverHeight
+            {
+                get
+                {
+                    return m_VehicleParams[VehicleFloatParamId.HoverHeight];
+                }
+                set
+                {
+                    m_VehicleParams[VehicleFloatParamId.HoverHeight] = value;
+                }
+            }
+
+            public double HoverEfficiency
+            {
+                get
+                {
+                    return m_VehicleParams[VehicleFloatParamId.HoverEfficiency];
+                }
+                set
+                {
+                    m_VehicleParams[VehicleFloatParamId.HoverEfficiency] = value;
+                }
+            }
+
+            public double HoverTimescale
+            {
+                get
+                {
+                    return m_VehicleParams[VehicleFloatParamId.HoverTimescale];
+                }
+                set
+                {
+                    m_VehicleParams[VehicleFloatParamId.HoverTimescale] = value;
+                }
+            }
+            #endregion
+
+            #region Mouselook functions
+            public double MouselookAzimuth
+            {
+                get
+                {
+                    return m_VehicleParams[VehicleFloatParamId.MouselookAzimuth];
+                }
+                set
+                {
+                    m_VehicleParams[VehicleFloatParamId.MouselookAzimuth] = value;
+                }
+            }
+
+            public double MouselookAltitude
+            {
+                get
+                {
+                    return m_VehicleParams[VehicleFloatParamId.MouselookAltitude];
+                }
+                set
+                {
+                    m_VehicleParams[VehicleFloatParamId.MouselookAltitude] = value;
+                }
+            }
+            #endregion
+
+            #region disable features
+            public double DisableMotorsAbove
+            {
+                get
+                {
+                    return m_VehicleParams[VehicleFloatParamId.DisableMotorsAbove];
+                }
+                set
+                {
+                    m_VehicleParams[VehicleFloatParamId.DisableMotorsAbove] = value;
+                }
+            }
+
+            public double DisableMotorsAfter
+            {
+                get
+                {
+                    return m_VehicleParams[VehicleFloatParamId.DisableMotorsAfter];
+                }
+                set
+                {
+                    m_VehicleParams[VehicleFloatParamId.DisableMotorsAfter] = value;
+                }
+            }
+            #endregion
+
+            #region Wind effects
+            public Vector3 LinearWindEfficiency
+            {
+                get
+                {
+                    return m_VehicleParams[VehicleVectorParamId.LinearWindEfficiency];
+                }
+                set
+                {
+                    m_VehicleParams[VehicleVectorParamId.LinearWindEfficiency] = value;
+                }
+            }
+
+            public Vector3 AngularWindEfficiency
+            {
+                get
+                {
+                    return m_VehicleParams[VehicleVectorParamId.AngularWindEfficiency];
+                }
+                set
+                {
+                    m_VehicleParams[VehicleVectorParamId.AngularWindEfficiency] = value;
+                }
+            }
+            #endregion
         }
 
         [APIExtension("VehicleTest", APIUseAsEnum.Getter, "VehicleInstance")]
