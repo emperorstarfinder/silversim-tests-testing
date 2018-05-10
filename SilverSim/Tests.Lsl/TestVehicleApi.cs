@@ -137,32 +137,45 @@ namespace SilverSim.Tests.Lsl
             [NonSerialized]
             private readonly PhysicsStateData m_PhysicsState;
 
+            private void Init()
+            {
+                m_VehicleParams.VehicleType = VehicleType.Balloon;
+                m_VehicleParams[VehicleFloatParamId.AngularDeflectionEfficiency] = 0;
+                m_VehicleParams[VehicleFloatParamId.BankingEfficiency] = 0;
+                m_VehicleParams[VehicleFloatParamId.Buoyancy] = 1;
+                m_VehicleParams[VehicleFloatParamId.HoverEfficiency] = 0;
+                m_VehicleParams[VehicleFloatParamId.LinearDeflectionEfficiency] = 0;
+                m_VehicleParams[VehicleFloatParamId.VerticalAttractionEfficiency] = 0;
+            }
+
             public VehicleInstance()
             {
-                PhysicsGravityMultiplier = 1;
+                GravityConstant = 9.81;
                 Mass = 1;
                 m_VehicleParams = new VehicleParams(new ObjectPart());
                 m_PhysicsState = new PhysicsStateData(new VehicleObject(), UUID.Zero);
                 m_VehicleMotor = m_VehicleParams.GetMotor();
+                Init();
             }
 
             public VehicleInstance(UUID sceneID)
             {
-                PhysicsGravityMultiplier = 1;
+                GravityConstant = 9.81;
                 Mass = 1;
                 m_PhysicsState = m_PhysicsState = new PhysicsStateData(new VehicleObject(), sceneID);
                 m_VehicleMotor = m_VehicleParams.GetMotor();
+                Init();
             }
 
             public void Process(ScriptInstance instance, double dt)
             {
-                m_VehicleMotor.Process(dt, m_PhysicsState, instance.Part.ObjectGroup.Scene, Mass, PhysicsGravityMultiplier);
+                m_VehicleMotor.Process(dt, m_PhysicsState, instance.Part.ObjectGroup.Scene, Mass, GravityConstant);
             }
 
             public double Mass { get; set; }
-            public double PhysicsGravityMultiplier { get; set; }
+            public double GravityConstant { get; set; }
 
-            public Vector3 LinearForce => m_VehicleMotor.LinearForce;
+            public Vector3 LinearForce => m_VehicleMotor.LinearForce / Mass;
             public Vector3 AngularTorque => m_VehicleMotor.AngularTorque;
 
             public Vector3 Position
@@ -719,7 +732,9 @@ namespace SilverSim.Tests.Lsl
             lock (instance)
             {
                 vehicle.Process(instance, deltatime);
-                vehicle.Velocity += vehicle.LinearForce / vehicle.Mass * deltatime;
+                Vector3 linearForce = vehicle.LinearForce * deltatime;
+                linearForce.Z -= vehicle.GravityConstant * deltatime;
+                vehicle.Velocity += linearForce * deltatime;
                 vehicle.Position += vehicle.Velocity * deltatime;
                 vehicle.AngularVelocity += vehicle.AngularTorque * deltatime;
                 vehicle.Rotation *= Quaternion.CreateFromEulers(vehicle.AngularVelocity * deltatime);
