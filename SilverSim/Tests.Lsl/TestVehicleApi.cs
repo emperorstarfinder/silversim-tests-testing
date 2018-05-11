@@ -140,6 +140,7 @@ namespace SilverSim.Tests.Lsl
             private void Init()
             {
                 m_VehicleParams.VehicleType = VehicleType.Balloon;
+                m_VehicleParams.Flags = VehicleFlags.None;
                 m_VehicleParams[VehicleVectorParamId.AngularDeflectionEfficiency] = Vector3.Zero;
                 m_VehicleParams[VehicleFloatParamId.BankingEfficiency] = 0;
                 m_VehicleParams[VehicleFloatParamId.Buoyancy] = 1;
