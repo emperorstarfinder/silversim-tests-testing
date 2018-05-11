@@ -391,6 +391,54 @@ namespace SilverSim.Tests.Lsl
                 }
             }
 
+            public Vector3 LinearMotorAccelPosTimescale
+            {
+                get
+                {
+                    return m_VehicleParams[VehicleVectorParamId.LinearMotorAccelPosTimescale];
+                }
+                set
+                {
+                    m_VehicleParams[VehicleVectorParamId.LinearMotorAccelPosTimescale] = value;
+                }
+            }
+
+            public Vector3 LinearMotorDecelPosTimescale
+            {
+                get
+                {
+                    return m_VehicleParams[VehicleVectorParamId.LinearMotorDecelPosTimescale];
+                }
+                set
+                {
+                    m_VehicleParams[VehicleVectorParamId.LinearMotorDecelPosTimescale] = value;
+                }
+            }
+
+            public Vector3 LinearMotorAccelNegTimescale
+            {
+                get
+                {
+                    return m_VehicleParams[VehicleVectorParamId.LinearMotorAccelNegTimescale];
+                }
+                set
+                {
+                    m_VehicleParams[VehicleVectorParamId.LinearMotorAccelNegTimescale] = value;
+                }
+            }
+
+            public Vector3 LinearMotorDecelNegTimescale
+            {
+                get
+                {
+                    return m_VehicleParams[VehicleVectorParamId.LinearMotorDecelNegTimescale];
+                }
+                set
+                {
+                    m_VehicleParams[VehicleVectorParamId.LinearMotorDecelNegTimescale] = value;
+                }
+            }
+
             public Vector3 LinearMotorDirection
             {
                 get
@@ -486,6 +534,54 @@ namespace SilverSim.Tests.Lsl
                 set
                 {
                     m_VehicleParams[VehicleVectorParamId.AngularMotorTimescale] = value;
+                }
+            }
+
+            public Vector3 AngularMotorAccelPosTimescale
+            {
+                get
+                {
+                    return m_VehicleParams[VehicleVectorParamId.AngularMotorAccelPosTimescale];
+                }
+                set
+                {
+                    m_VehicleParams[VehicleVectorParamId.AngularMotorAccelPosTimescale] = value;
+                }
+            }
+
+            public Vector3 AngularMotorDecelPosTimescale
+            {
+                get
+                {
+                    return m_VehicleParams[VehicleVectorParamId.AngularMotorDecelPosTimescale];
+                }
+                set
+                {
+                    m_VehicleParams[VehicleVectorParamId.AngularMotorDecelPosTimescale] = value;
+                }
+            }
+
+            public Vector3 AngularMotorAccelNegTimescale
+            {
+                get
+                {
+                    return m_VehicleParams[VehicleVectorParamId.AngularMotorAccelNegTimescale];
+                }
+                set
+                {
+                    m_VehicleParams[VehicleVectorParamId.AngularMotorAccelNegTimescale] = value;
+                }
+            }
+
+            public Vector3 AngularMotorDecelNegTimescale
+            {
+                get
+                {
+                    return m_VehicleParams[VehicleVectorParamId.AngularMotorDecelNegTimescale];
+                }
+                set
+                {
+                    m_VehicleParams[VehicleVectorParamId.AngularMotorDecelNegTimescale] = value;
                 }
             }
 
