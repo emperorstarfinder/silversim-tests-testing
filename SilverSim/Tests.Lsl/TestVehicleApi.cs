@@ -828,6 +828,104 @@ namespace SilverSim.Tests.Lsl
                 }
             }
             #endregion
+
+            #region Move to target
+            public Vector3 LinearMoveToTargetEfficiency
+            {
+                get
+                {
+                    return m_VehicleParams[VehicleVectorParamId.LinearMoveToTargetEfficiency];
+                }
+                set
+                {
+                    m_VehicleParams[VehicleVectorParamId.LinearMoveToTargetEfficiency] = value;
+                }
+            }
+
+            public Vector3 LinearMoveToTargetTimescale
+            {
+                get
+                {
+                    return m_VehicleParams[VehicleVectorParamId.LinearMoveToTargetTimescale];
+                }
+                set
+                {
+                    m_VehicleParams[VehicleVectorParamId.LinearMoveToTargetTimescale] = value;
+                }
+            }
+
+            public Vector3 LinearMoveToTargetEpsilon
+            {
+                get
+                {
+                    return m_VehicleParams[VehicleVectorParamId.LinearMoveToTargetEpsilon];
+                }
+                set
+                {
+                    m_VehicleParams[VehicleVectorParamId.LinearMoveToTargetEpsilon] = value;
+                }
+            }
+
+            public Vector3 LinearMoveToTargetMaxOutput
+            {
+                get
+                {
+                    return m_VehicleParams[VehicleVectorParamId.LinearMoveToTargetMaxOutput];
+                }
+                set
+                {
+                    m_VehicleParams[VehicleVectorParamId.LinearMoveToTargetMaxOutput] = value;
+                }
+            }
+
+            public Vector3 AngularMoveToTargetEfficiency
+            {
+                get
+                {
+                    return m_VehicleParams[VehicleVectorParamId.AngularMoveToTargetEfficiency];
+                }
+                set
+                {
+                    m_VehicleParams[VehicleVectorParamId.AngularMoveToTargetEfficiency] = value;
+                }
+            }
+
+            public Vector3 AngularMoveToTargetTimescale
+            {
+                get
+                {
+                    return m_VehicleParams[VehicleVectorParamId.AngularMoveToTargetTimescale];
+                }
+                set
+                {
+                    m_VehicleParams[VehicleVectorParamId.AngularMoveToTargetTimescale] = value;
+                }
+            }
+
+            public Vector3 AngularMoveToTargetEpsilon
+            {
+                get
+                {
+                    return m_VehicleParams[VehicleVectorParamId.AngularMoveToTargetEpsilon];
+                }
+                set
+                {
+                    m_VehicleParams[VehicleVectorParamId.AngularMoveToTargetEpsilon] = value;
+                }
+            }
+
+            public Vector3 AngularMoveToTargetMaxOutput
+            {
+                get
+                {
+                    return m_VehicleParams[VehicleVectorParamId.AngularMoveToTargetMaxOutput];
+                }
+                set
+                {
+                    m_VehicleParams[VehicleVectorParamId.AngularMoveToTargetMaxOutput] = value;
+                }
+            }
+            #endregion
         }
 
         [APIExtension("VehicleTest", "VehicleInstance")]
