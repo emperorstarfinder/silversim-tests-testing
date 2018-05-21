@@ -31,6 +31,7 @@ using SilverSim.Scene.Types.Scene;
 using SilverSim.Scene.Types.Script;
 using SilverSim.Scene.Types.Script.Events;
 using SilverSim.Scripting.Common;
+using SilverSim.ServiceInterfaces.Asset;
 using SilverSim.ServiceInterfaces.Estate;
 using SilverSim.ServiceInterfaces.Experience;
 using SilverSim.ServiceInterfaces.Grid;
@@ -91,6 +92,8 @@ namespace SilverSim.Tests.Scripting
         private int m_StartParameter;
         private string m_LoadOarFileName;
         private string[] m_AdditionalObjectConfigs = new string[0];
+        private string[] m_AdditionalInventoryConfigs = new string[0];
+        private string m_AssetSourcesConfig = string.Empty;
 
         private InventoryPermissionsMask m_ObjectPermissionsBase = InventoryPermissionsMask.All;
         private InventoryPermissionsMask m_ObjectPermissionsOwner = InventoryPermissionsMask.All;
@@ -231,6 +234,14 @@ namespace SilverSim.Tests.Scripting
                 m_AdditionalObjectConfigs = new string[0];
             }
 
+            m_AdditionalInventoryConfigs = config.GetString("AdditionalInventories", string.Empty).Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+            if(m_AdditionalInventoryConfigs.Length == 1 && m_AdditionalInventoryConfigs[0] == string.Empty)
+            {
+                m_AdditionalInventoryConfigs = new string[0];
+            }
+
+            m_AssetSourcesConfig = config.GetString("AssetSources", string.Empty);
+
             CompilerRegistry.ScriptCompilers.DefaultCompilerName = config.GetString("DefaultCompiler");
         }
 
@@ -241,7 +252,47 @@ namespace SilverSim.Tests.Scripting
 
         public void Cleanup()
         {
+            /* intentionally left empty */
+        }
 
+        private void AddAssets(AssetServiceInterface assetService)
+        {
+            IConfig config = m_Loader.Config.Configs[m_AssetSourcesConfig];
+            foreach(string k in config.GetKeys())
+            {
+                string fname = config.GetString(k);
+                using (FileStream fs = new FileStream(fname, FileMode.Open))
+                {
+                    assetService.Store(new AssetData
+                    {
+                        FileName = fname,
+                        Data = fs.ReadToStreamEnd()
+                    });
+                }
+            }
+        }
+
+        private void AddAdditionalInventory(ObjectPart part, string sectionName)
+        {
+            IConfig config = m_Loader.Config.Configs[sectionName];
+            ObjectPartInventoryItem item = new ObjectPartInventoryItem();
+            item.Name = config.GetString("Name");
+            item.Description = config.GetString("Description", string.Empty);
+            item.AssetID = new UUID(config.GetString("AssetID", UUID.Random.ToString()));
+            item.AssetTypeName = config.GetString("AssetType");
+            item.Creator = new UGUI(config.GetString("Creator", m_ObjectCreator.ToString()));
+            item.Owner = new UGUI(config.GetString("Owner", m_ObjectOwner.ToString()));
+            item.LastOwner = new UGUI(config.GetString("LastOwner", m_ObjectLastOwner.ToString()));
+            item.InventoryTypeName = config.GetString("InventoryType");
+            item.Flags = (InventoryFlags)config.GetInt("Flags", 0);
+            item.IsGroupOwned = config.GetBoolean("IsGroupOwned", false);
+            item.Permissions.Base = (InventoryPermissionsMask)config.GetInt("BasePermissions", (int)InventoryPermissionsMask.Every);
+            item.Permissions.Current = (InventoryPermissionsMask)config.GetInt("CurrentPermissions", (int)InventoryPermissionsMask.Every);
+            item.Permissions.EveryOne = (InventoryPermissionsMask)config.GetInt("EveryOnePermissions", (int)InventoryPermissionsMask.Every);
+            item.Permissions.Group = (InventoryPermissionsMask)config.GetInt("GroupPermissions", (int)InventoryPermissionsMask.Every);
+            item.Permissions.NextOwner = (InventoryPermissionsMask)config.GetInt("NextOwnerPermissions", (int)InventoryPermissionsMask.Every);
+
+            part.Inventory.Add(item);
         }
 
         private bool TryAddAdditionalObject(SceneInterface scene, string sectionName)
@@ -347,6 +398,12 @@ namespace SilverSim.Tests.Scripting
                 return false;
             }
 
+            string[] additionalInventoryConfigs = config.GetString("AdditionalInventories", string.Empty).Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+            if (additionalInventoryConfigs.Length == 1 && additionalInventoryConfigs[0] == string.Empty)
+            {
+                additionalInventoryConfigs = new string[0];
+            }
+
             try
             {
                 var grp = new ObjectGroup();
@@ -366,7 +423,7 @@ namespace SilverSim.Tests.Scripting
                 part.EveryoneMask = objectPermissionsEveryone;
                 part.GroupMask = objectPermissionsGroup;
 
-                var item = new ObjectPartInventoryItem()
+                var item = new ObjectPartInventoryItem
                 {
                     AssetType = AssetType.LSLText,
                     AssetID = UUID.Random,
@@ -385,6 +442,12 @@ namespace SilverSim.Tests.Scripting
                 item.ExperienceID = experienceID;
 
                 scene.Add(grp);
+
+                foreach (string invconfig in additionalInventoryConfigs)
+                {
+                    AddAdditionalInventory(part, invconfig);
+                }
+
                 if (scriptAssembly != null)
                 {
                     ScriptInstance scriptInstance = scriptAssembly.Instantiate(part, item);
@@ -521,7 +584,12 @@ namespace SilverSim.Tests.Scripting
                 return false;
             }
 
-            if(!string.IsNullOrEmpty(m_LoadOarFileName))
+            if(!string.IsNullOrEmpty(m_AssetSourcesConfig))
+            {
+                AddAssets(scene.AssetService);
+            }
+
+            if (!string.IsNullOrEmpty(m_LoadOarFileName))
             {
                 try
                 {
@@ -590,6 +658,11 @@ namespace SilverSim.Tests.Scripting
                         item.ExperienceID = m_ExperienceID;
 
                         scene.Add(grp);
+
+                        foreach(string invconfig in m_AdditionalInventoryConfigs)
+                        {
+                            AddAdditionalInventory(part, invconfig);
+                        }
                         ChatServiceInterface chatService = scene.GetService<ChatServiceInterface>();
                         if (chatService != null)
                         {
