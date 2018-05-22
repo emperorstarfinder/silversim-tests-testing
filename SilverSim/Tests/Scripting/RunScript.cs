@@ -43,6 +43,7 @@ using SilverSim.Types.Experience;
 using SilverSim.Types.Grid;
 using SilverSim.Types.Inventory;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
@@ -94,6 +95,8 @@ namespace SilverSim.Tests.Scripting
         private string[] m_AdditionalObjectConfigs = new string[0];
         private string[] m_AdditionalInventoryConfigs = new string[0];
         private string m_AssetSourcesConfig = string.Empty;
+        private string m_ScriptStatesConfig = string.Empty;
+        private readonly Dictionary<UUID, byte[]> m_ScriptStates = new Dictionary<UUID, byte[]>();
 
         private InventoryPermissionsMask m_ObjectPermissionsBase = InventoryPermissionsMask.All;
         private InventoryPermissionsMask m_ObjectPermissionsOwner = InventoryPermissionsMask.All;
@@ -242,6 +245,8 @@ namespace SilverSim.Tests.Scripting
 
             m_AssetSourcesConfig = config.GetString("AssetSources", string.Empty);
 
+            m_ScriptStatesConfig = config.GetString("ScriptStates", string.Empty);
+
             CompilerRegistry.ScriptCompilers.DefaultCompilerName = config.GetString("DefaultCompiler");
         }
 
@@ -268,6 +273,22 @@ namespace SilverSim.Tests.Scripting
                         FileName = fname,
                         Data = fs.ReadToStreamEnd()
                     });
+                }
+            }
+        }
+
+        private void AddScriptStates()
+        {
+            IConfig config = m_Loader.Config.Configs[m_ScriptStatesConfig];
+            foreach (string k in config.GetKeys())
+            {
+                UUID stateId;
+                if (UUID.TryParse(k, out stateId))
+                {
+                    using (FileStream fs = new FileStream(config.GetString(k), FileMode.Open))
+                    {
+                        m_ScriptStates.Add(stateId, fs.ReadToStreamEnd());
+                    }
                 }
             }
         }
@@ -450,7 +471,9 @@ namespace SilverSim.Tests.Scripting
 
                 if (scriptAssembly != null)
                 {
-                    ScriptInstance scriptInstance = scriptAssembly.Instantiate(part, item);
+                    byte[] serializedState;
+                    m_ScriptStates.TryGetValue(item.ID, out serializedState);
+                    ScriptInstance scriptInstance = scriptAssembly.Instantiate(part, item, serializedState);
                     part.Inventory.Add(item);
                     item.ScriptInstance = scriptInstance;
                     item.ScriptInstance.Start(startParameter);
@@ -589,6 +612,11 @@ namespace SilverSim.Tests.Scripting
                 AddAssets(scene.AssetService);
             }
 
+            if(!string.IsNullOrEmpty(m_ScriptStatesConfig))
+            {
+                AddScriptStates();
+            }
+
             if (!string.IsNullOrEmpty(m_LoadOarFileName))
             {
                 try
@@ -669,7 +697,9 @@ namespace SilverSim.Tests.Scripting
                             chatService.AddRegionListener(PUBLIC_CHANNEL, string.Empty, UUID.Zero, "", GetUUID, PublicChannelLog);
                             chatService.AddRegionListener(DEBUG_CHANNEL, string.Empty, UUID.Zero, "", GetUUID, DebugChannelLog);
                         }
-                        ScriptInstance scriptInstance = scriptAssembly.Instantiate(part, item);
+                        byte[] serializedState;
+                        m_ScriptStates.TryGetValue(item.ID, out serializedState);
+                        ScriptInstance scriptInstance = scriptAssembly.Instantiate(part, item, serializedState);
                         part.Inventory.Add(item);
                         item.ScriptInstance = scriptInstance;
                         item.ScriptInstance.Start(m_StartParameter);
