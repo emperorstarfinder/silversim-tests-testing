@@ -76,6 +76,7 @@ namespace SilverSim.Tests.Scripting
         private string m_RegionName;
         private string m_ObjectName;
         private string m_ObjectDescription;
+        private UUID m_ItemID;
         private string m_ScriptName;
         private string m_ScriptDescription;
         private string m_EstateName;
@@ -176,6 +177,7 @@ namespace SilverSim.Tests.Scripting
             m_Position = Vector3.Parse(config.GetString("Position", "<128, 128, 23>"));
             m_Rotation = Quaternion.Parse(config.GetString("Rotation", "<0,0,0,1>"));
 
+            m_ItemID = UUID.Parse(config.GetString("ScriptItemID", UUID.Random.ToString()));
             m_ObjectName = config.GetString("ObjectName", "Object");
             m_ScriptName = config.GetString("ScriptName", "Script");
             m_ExperienceName = config.GetString("ExperienceName", "My Experience");
@@ -296,17 +298,19 @@ namespace SilverSim.Tests.Scripting
         private void AddAdditionalInventory(ObjectPart part, string sectionName)
         {
             IConfig config = m_Loader.Config.Configs[sectionName];
-            ObjectPartInventoryItem item = new ObjectPartInventoryItem();
-            item.Name = config.GetString("Name");
-            item.Description = config.GetString("Description", string.Empty);
-            item.AssetID = new UUID(config.GetString("AssetID", UUID.Random.ToString()));
-            item.AssetTypeName = config.GetString("AssetType");
-            item.Creator = new UGUI(config.GetString("Creator", m_ObjectCreator.ToString()));
-            item.Owner = new UGUI(config.GetString("Owner", m_ObjectOwner.ToString()));
-            item.LastOwner = new UGUI(config.GetString("LastOwner", m_ObjectLastOwner.ToString()));
-            item.InventoryTypeName = config.GetString("InventoryType");
-            item.Flags = (InventoryFlags)config.GetInt("Flags", 0);
-            item.IsGroupOwned = config.GetBoolean("IsGroupOwned", false);
+            var item = new ObjectPartInventoryItem
+            {
+                Name = config.GetString("Name"),
+                Description = config.GetString("Description", string.Empty),
+                AssetID = new UUID(config.GetString("AssetID", UUID.Random.ToString())),
+                AssetTypeName = config.GetString("AssetType"),
+                Creator = new UGUI(config.GetString("Creator", m_ObjectCreator.ToString())),
+                Owner = new UGUI(config.GetString("Owner", m_ObjectOwner.ToString())),
+                LastOwner = new UGUI(config.GetString("LastOwner", m_ObjectLastOwner.ToString())),
+                InventoryTypeName = config.GetString("InventoryType"),
+                Flags = (InventoryFlags)config.GetInt("Flags", 0),
+                IsGroupOwned = config.GetBoolean("IsGroupOwned", false)
+            };
             item.Permissions.Base = (InventoryPermissionsMask)config.GetInt("BasePermissions", (int)InventoryPermissionsMask.Every);
             item.Permissions.Current = (InventoryPermissionsMask)config.GetInt("CurrentPermissions", (int)InventoryPermissionsMask.Every);
             item.Permissions.EveryOne = (InventoryPermissionsMask)config.GetInt("EveryOnePermissions", (int)InventoryPermissionsMask.Every);
@@ -326,6 +330,7 @@ namespace SilverSim.Tests.Scripting
             string objectName = config.GetString("ObjectName", sectionName);
             string scriptName = config.GetString("ScriptName", "Script");
             string experienceName = config.GetString("ExperienceName", "My Experience");
+            UUID itemID = UUID.Parse(config.GetString("ScriptItemID", UUID.Zero.ToString()));
             UUID experienceID;
             UUID.TryParse(config.GetString("ExperienceID", m_ExperienceID.ToString()), out experienceID);
 
@@ -444,7 +449,7 @@ namespace SilverSim.Tests.Scripting
                 part.EveryoneMask = objectPermissionsEveryone;
                 part.GroupMask = objectPermissionsGroup;
 
-                var item = new ObjectPartInventoryItem
+                var item = new ObjectPartInventoryItem(itemID)
                 {
                     AssetType = AssetType.LSLText,
                     AssetID = UUID.Random,
@@ -667,7 +672,7 @@ namespace SilverSim.Tests.Scripting
                         part.EveryoneMask = m_ObjectPermissionsEveryone;
                         part.GroupMask = m_ObjectPermissionsGroup;
 
-                        var item = new ObjectPartInventoryItem
+                        var item = new ObjectPartInventoryItem(m_ItemID)
                         {
                             AssetType = AssetType.LSLText,
                             AssetID = UUID.Random,
