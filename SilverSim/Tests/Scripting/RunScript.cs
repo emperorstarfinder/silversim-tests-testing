@@ -452,7 +452,7 @@ namespace SilverSim.Tests.Scripting
                 var item = new ObjectPartInventoryItem(itemID)
                 {
                     AssetType = AssetType.LSLText,
-                    AssetID = UUID.Random,
+                    AssetID = assetID,
                     InventoryType = InventoryType.LSL,
                     LastOwner = scriptLastOwner,
                     Creator = scriptCreator,
@@ -640,7 +640,9 @@ namespace SilverSim.Tests.Scripting
 
             if(success)
             {
-                foreach(string additionalObject in m_AdditionalObjectConfigs)
+                m_Runner.OtherThreadResult = false;
+
+                foreach (string additionalObject in m_AdditionalObjectConfigs)
                 {
                     m_Log.InfoFormat("Adding object from section {0}", additionalObject);
                     if(!TryAddAdditionalObject(scene, additionalObject))
@@ -675,7 +677,7 @@ namespace SilverSim.Tests.Scripting
                         var item = new ObjectPartInventoryItem(m_ItemID)
                         {
                             AssetType = AssetType.LSLText,
-                            AssetID = UUID.Random,
+                            AssetID = m_AssetID,
                             InventoryType = InventoryType.LSL,
                             LastOwner = m_ScriptLastOwner,
                             Creator = m_ScriptCreator,
