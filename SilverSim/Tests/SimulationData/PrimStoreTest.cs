@@ -311,7 +311,7 @@ namespace SilverSim.Tests.SimulationData
                     return false;
                 }
                 m_Log.Info("Checking that actual object does not exist");
-                if (SimulationData.Objects[regionID].Count != 0)
+                if (SimulationData.Objects.LoadObjects(regionID).Count != 0)
                 {
                     return false;
                 }
@@ -342,7 +342,7 @@ namespace SilverSim.Tests.SimulationData
                     return false;
                 }
                 m_Log.Info("Checking that actual object exists");
-                List<ObjectGroup> objectList = SimulationData.Objects[regionID];
+                List<ObjectGroup> objectList = SimulationData.Objects.LoadObjects(regionID);
                 if (objectList.Count != 1)
                 {
                     return false;
@@ -382,7 +382,7 @@ namespace SilverSim.Tests.SimulationData
                 Thread.Sleep(2000);
 
                 m_Log.Info("check that inventory item got deleted");
-                objectList = SimulationData.Objects[regionID];
+                objectList = SimulationData.Objects.LoadObjects(regionID);
                 if (objectList.Count != 1 || !objectList[0].TryGetValue(part.ID, out resPart) || resPart.Inventory.Count != 0)
                 {
                     return false;
@@ -407,7 +407,7 @@ namespace SilverSim.Tests.SimulationData
                     return false;
                 }
                 m_Log.Info("Checking that actual object does not exist");
-                if (SimulationData.Objects[regionID].Count != 0)
+                if (SimulationData.Objects.LoadObjects(regionID).Count != 0)
                 {
                     return false;
                 }
