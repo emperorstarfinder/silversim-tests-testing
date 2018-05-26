@@ -161,7 +161,7 @@ namespace SilverSim.Tests.SimulationData
                 throw new System.NotImplementedException();
             }
 
-            public override void LoadScene()
+            public override void LoadScene(bool skipErrors = false)
             {
                 throw new System.NotImplementedException();
             }
