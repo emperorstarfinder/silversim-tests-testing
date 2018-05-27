@@ -22,6 +22,7 @@
 using log4net;
 using SilverSim.Main.Common;
 using SilverSim.Scene.Types.Script;
+using SilverSim.Scene.Types.Script.Events;
 using SilverSim.Scripting.Lsl;
 using SilverSim.Tests.Extensions;
 using SilverSim.Tests.Scripting;
@@ -70,6 +71,16 @@ namespace SilverSim.Tests.Lsl
                 m_Loader.GetServerParamStorage()[UUID.Zero, paraname] = paravalue;
             }
         }
+
+        [APIExtension("Testing", "_test_scriptresetevent")]
+        public void TestScriptReset(ScriptInstance instance)
+        {
+            lock(instance)
+            {
+                instance.PostEvent(new ResetScriptEvent());
+            }
+        }
+
 
         [APIExtension("Testing", "_test_Shutdown")]
         public void TestShutdown(ScriptInstance instance)
