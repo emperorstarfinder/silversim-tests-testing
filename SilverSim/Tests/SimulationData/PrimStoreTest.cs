@@ -211,7 +211,7 @@ namespace SilverSim.Tests.SimulationData
                 throw new System.NotImplementedException();
             }
 
-            public override void RezScriptsForObject(ObjectGroup group)
+            public override void RezScriptsForObject(ObjectGroup group, int startparam)
             {
                 throw new System.NotImplementedException();
             }
