@@ -49,6 +49,28 @@ namespace SilverSim.Tests.Lsl
             /* intentionally left empty */
         }
 
+        [APIExtension("Testing", "_test_exportxmlstate")]
+        public void ExportXmlState(ScriptInstance instance, string filename)
+        {
+            using (var fs = new FileStream(filename, FileMode.Create, FileAccess.Write))
+            {
+                using (var writer = fs.UTF8XmlTextWriter())
+                {
+                    ((Script)instance).ToXml(writer);
+                }
+            }
+        }
+
+        [APIExtension("Testing", "_test_exportdbstate")]
+        public void ExportDbState(ScriptInstance instance, string filename)
+        {
+            using (var fs = new FileStream(filename, FileMode.Create, FileAccess.Write))
+            {
+                byte[] state = ((Script)instance).ToDbSerializedState();
+                fs.Write(state, 0, state.Length);
+            }
+        }
+
         [APIExtension("Testing", "_test_exportasset")]
         public void ExportAsset(ScriptInstance instance, LSLKey assetid, string basefilename)
         {
