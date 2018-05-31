@@ -31,6 +31,8 @@ using SilverSim.Types.Grid;
 using SilverSim.Types.Presence;
 using SilverSim.Viewer.Core;
 using SilverSim.Viewer.Messages;
+using SilverSim.Viewer.Messages.Agent;
+using SilverSim.Viewer.Messages.Alert;
 using SilverSim.Viewer.Messages.Circuit;
 using SilverSim.Viewer.Messages.Telehub;
 using SilverSim.Viewer.Messages.Teleport;
@@ -164,7 +166,7 @@ namespace SilverSim.Tests.Viewer
                 {
                     return string.Empty;
                 }
-                var clientInfo = new ClientInfo()
+                var clientInfo = new ClientInfo
                 {
                     ClientIP = clientIP,
                     Channel = viewerChannel,
@@ -179,7 +181,7 @@ namespace SilverSim.Tests.Viewer
                     return string.Empty;
                 }
 
-                var presenceInfo = new PresenceInfo()
+                var presenceInfo = new PresenceInfo
                 {
                     RegionID = regionId,
                     SecureSessionID = secureSessionId,
@@ -296,7 +298,7 @@ namespace SilverSim.Tests.Viewer
 
                 try
                 {
-                    m_PresenceService.Report(new PresenceInfo()
+                    m_PresenceService.Report(new PresenceInfo
                     {
                         UserID = agent.Owner,
                         SessionID = agent.SessionID,
@@ -309,7 +311,7 @@ namespace SilverSim.Tests.Viewer
                     m_Log.Warn("Could not contact PresenceService", e);
                 }
                 circuit.LogIncomingAgent(m_Log, false);
-                var useCircuit = new UseCircuitCode()
+                var useCircuit = new UseCircuitCode
                 {
                     AgentID = agentId,
                     SessionID = sessionId.AsUUID,
@@ -321,16 +323,79 @@ namespace SilverSim.Tests.Viewer
                 viewerCircuit.Start();
                 viewerCircuit.MessageRouting.Add(MessageType.RegionHandshake, vc.HandleRegionHandshake);
                 viewerCircuit.SendMessage(useCircuit);
-                viewerCircuit.MessageRouting.Add(MessageType.LogoutReply, (Message m) => HandleLogoutReply((uint)circuitCode, vc));
-                viewerCircuit.MessageRouting.Add(MessageType.TelehubInfo, (Message m) => HandleTelehubInfo((TelehubInfo)m, vc));
-                viewerCircuit.MessageRouting.Add(MessageType.TeleportLocal, (Message m) => HandleTeleportLocal((TeleportLocal)m, vc));
-                viewerCircuit.MessageRouting.Add(MessageType.EconomyData, (Message m) => vc.PostEvent(new EconomyDataReceivedEvent { AgentID = m.CircuitAgentID, RegionID = m.CircuitSceneID }));
-                viewerCircuit.MessageRouting.Add(MessageType.TeleportProgress, (Message m) => HandleTeleportProgress(m, vc));
-                viewerCircuit.MessageRouting.Add(MessageType.TeleportStart, (Message m) => HandleTeleportStart(m, vc));
-                viewerCircuit.MessageRouting.Add(MessageType.TeleportFailed, (Message m) => HandleTeleportFailed(m, vc));
+                viewerCircuit.MessageRouting.Add(MessageType.LogoutReply, (m) => HandleLogoutReply((uint)circuitCode, vc));
+                viewerCircuit.MessageRouting.Add(MessageType.TelehubInfo, (m) => HandleTelehubInfo((TelehubInfo)m, vc));
+                viewerCircuit.MessageRouting.Add(MessageType.TeleportLocal, (m) => HandleTeleportLocal((TeleportLocal)m, vc));
+                viewerCircuit.MessageRouting.Add(MessageType.EconomyData, (m) => vc.PostEvent(new EconomyDataReceivedEvent { AgentID = m.CircuitAgentID, RegionID = m.CircuitSceneID }));
+                viewerCircuit.MessageRouting.Add(MessageType.TeleportProgress, (m) => HandleTeleportProgress(m, vc));
+                viewerCircuit.MessageRouting.Add(MessageType.TeleportStart, (m) => HandleTeleportStart(m, vc));
+                viewerCircuit.MessageRouting.Add(MessageType.TeleportFailed, (m) => HandleTeleportFailed(m, vc));
+                viewerCircuit.MessageRouting.Add(MessageType.AlertMessage, (m) => HandleAlertMessage(m, vc));
+                viewerCircuit.MessageRouting.Add(MessageType.AgentDataUpdate, (m) => HandleAgentDataUpdate(m, vc));
+                viewerCircuit.MessageRouting.Add(MessageType.AgentDropGroup, (m) => HandleAgentDropGroup(m, vc));
+                viewerCircuit.MessageRouting.Add(MessageType.CoarseLocationUpdate, (m) => HandleCoarseLocationUpdate(m, vc));
                 vc.ViewerCircuits.Add((uint)circuitCode, viewerCircuit);
                 return capsPath;
             }
+        }
+
+        private void HandleCoarseLocationUpdate(Message m, ViewerConnection vc)
+        {
+            var res = (CoarseLocationUpdate)m;
+            var ev = new CoarseLocationUpdateReceivedEvent
+            {
+                Prey = res.Prey,
+                You = res.You
+            };
+            foreach(CoarseLocationUpdate.AgentDataEntry d in res.AgentData)
+            {
+                ev.AgentData.Add(new LSLKey(d.AgentID));
+                ev.AgentData.Add(d.X);
+                ev.AgentData.Add(d.Y);
+                ev.AgentData.Add(d.Z);
+            }
+            vc.PostEvent(ev);
+        }
+
+        private void HandleAgentDropGroup(Message m, ViewerConnection vc)
+        {
+            var res = (AgentDropGroup)m;
+            vc.PostEvent(new AgentDropGroupReceivedEvent
+            {
+                AgentID = res.AgentID,
+                GroupID = res.GroupID
+            });
+        }
+
+        private void HandleAgentDataUpdate(Message m, ViewerConnection vc)
+        {
+            var res = (AgentDataUpdate)m;
+            vc.PostEvent(new AgentDataUpdateReceivedEvent
+            {
+                AgentID = res.AgentID,
+                FirstName = res.FirstName,
+                LastName = res.LastName,
+                GroupTitle = res.GroupTitle,
+                ActiveGroupID = res.ActiveGroupID,
+                GroupPowers = (long)res.GroupPowers,
+                GroupName = res.GroupName
+            });
+        }
+
+        private void HandleAlertMessage(Message m, ViewerConnection vc)
+        {
+            var res = (AlertMessage)m;
+            var ev = new AlertMessageReceivedEvent
+            {
+                Message = res.Message
+            };
+
+            foreach(AlertMessage.Data d in res.AlertInfo)
+            {
+                ev.AlertInfo.Add(d.Message);
+                ev.AlertInfo.Add(d.ExtraParams.ToHexString());
+            }
+            vc.PostEvent(ev);
         }
 
         private void HandleTeleportFailed(Message m, ViewerConnection vc)
@@ -425,7 +490,7 @@ namespace SilverSim.Tests.Viewer
                 if (m_Clients.TryGetValue(agentId.AsUUID, out vc) &&
                     vc.ViewerCircuits.TryGetValue((uint)circuitCode, out viewerCircuit))
                 {
-                    var logoutreq = new LogoutRequest()
+                    var logoutreq = new LogoutRequest
                     {
                         AgentID = viewerCircuit.AgentID,
                         SessionID = viewerCircuit.SessionID

@@ -227,6 +227,91 @@ namespace SilverSim.Tests.Viewer
             LSLKey regionId);
         #endregion
 
+        #region alertmessage_received
+        [TranslatedScriptEvent("alertmessage_received")]
+        public class AlertMessageReceivedEvent : IScriptEvent
+        {
+            [TranslatedScriptEventParameter(0)]
+            public string Message;
+            [TranslatedScriptEventParameter(1)]
+            public AnArray AlertInfo = new AnArray();
+        }
+
+        [APIExtension("ViewerControl", "alertmessage_received")]
+        [StateEventDelegate]
+        public delegate void AlertMessageReceived(
+            string message,
+            AnArray alertInfo);
+        #endregion
+
+        #region agentdataupdate_received
+        [TranslatedScriptEvent("agentdataupdate_received")]
+        public class AgentDataUpdateReceivedEvent : IScriptEvent
+        {
+            [TranslatedScriptEventParameter(0)]
+            public LSLKey AgentID = new LSLKey();
+            [TranslatedScriptEventParameter(1)]
+            public string FirstName = string.Empty;
+            [TranslatedScriptEventParameter(2)]
+            public string LastName = string.Empty;
+            [TranslatedScriptEventParameter(3)]
+            public string GroupTitle = string.Empty;
+            [TranslatedScriptEventParameter(4)]
+            public LSLKey ActiveGroupID = new LSLKey();
+            [TranslatedScriptEventParameter(5)]
+            public long GroupPowers;
+            [TranslatedScriptEventParameter(6)]
+            public string GroupName = string.Empty;
+        }
+
+        [APIExtension("ViewerControl", "agentdataupdate_received")]
+        [StateEventDelegate]
+        public delegate void AgentDataUpdateReceived(
+            LSLKey agentID,
+            string firstName,
+            string lastName,
+            string groupTitle,
+            LSLKey activeGroupId,
+            long groupPowers,
+            string groupName);
+        #endregion
+
+        #region agentdropgroup_received
+        [TranslatedScriptEvent("agentdropgroup_received")]
+        public class AgentDropGroupReceivedEvent : IScriptEvent
+        {
+            [TranslatedScriptEventParameter(0)]
+            public LSLKey AgentID = new LSLKey();
+            [TranslatedScriptEventParameter(1)]
+            public LSLKey GroupID = new LSLKey();
+        }
+
+        [APIExtension("ViewerControl", "agentdropgroup_received")]
+        [StateEventDelegate]
+        public delegate void AgentDropGroupReceived(
+            LSLKey agentID,
+            LSLKey groupID);
+        #endregion
+
+        #region coarselocationupdate_received
+        [TranslatedScriptEvent("coarselocationupdate_received")]
+        public class CoarseLocationUpdateReceivedEvent : IScriptEvent
+        {
+            [TranslatedScriptEventParameter(0)]
+            public int You;
+            [TranslatedScriptEventParameter(1)]
+            public int Prey;
+            [TranslatedScriptEventParameter(2)]
+            public AnArray AgentData = new AnArray();
+        }
+
+        [APIExtension("ViewerControl", "coarselocationupdate_received")]
+        public delegate void CoarseLocationUpdateReceived(
+            int you,
+            int prey,
+            AnArray agentData);
+        #endregion
+
         [TranslatedScriptEventsInfo]
         public static readonly Type[] TranslatedEvents = new Type[] {
             typeof(RegionHandshakeReceivedEvent),
@@ -236,7 +321,9 @@ namespace SilverSim.Tests.Viewer
             typeof(EconomyDataReceivedEvent),
             typeof(TeleportProgressReceivedEvent),
             typeof(TeleportStartReceivedEvent),
-            typeof(TeleportFailedReceivedEvent)
+            typeof(TeleportFailedReceivedEvent),
+            typeof(AlertMessageReceivedEvent),
+            typeof(AgentDataUpdateReceivedEvent)
         };
     }
 }
