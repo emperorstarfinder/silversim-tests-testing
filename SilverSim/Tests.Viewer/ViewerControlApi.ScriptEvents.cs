@@ -312,6 +312,385 @@ namespace SilverSim.Tests.Viewer
             AnArray agentData);
         #endregion
 
+        #region healthmessage_received
+        [TranslatedScriptEvent("healthmessage_received")]
+        public class HealthMessageReceivedEvent : IScriptEvent
+        {
+            [TranslatedScriptEventParameter(0)]
+            public double Health;
+        }
+
+        [APIExtension("ViewerControl", "healthmessage_received")]
+        public delegate void HealthMessageUpdateReceived(
+            double health);
+        #endregion
+
+        #region avataranimation_received
+        [TranslatedScriptEvent("avataranimation_received")]
+        public class AvatarAnimationReceivedEvent : IScriptEvent
+        {
+            [TranslatedScriptEventParameter(0)]
+            public LSLKey Sender = new LSLKey();
+            [TranslatedScriptEventParameter(1)]
+            public AnArray AnimationData = new AnArray();
+        }
+
+        [APIExtension("ViewerControl", "avataranimation_received")]
+        public delegate void AvatarAnimationReceived(
+            LSLKey sender,
+            AnArray animationData);
+        #endregion
+
+        #region avatarsitresponse_received
+        [TranslatedScriptEvent("avatarsitresponse_received")]
+        public class AvatarSitResponseReceivedEvent : IScriptEvent
+        {
+            [TranslatedScriptEventParameter(0)]
+            public LSLKey SitObject = new LSLKey();
+            [TranslatedScriptEventParameter(1)]
+            public int IsAutopilot;
+            [TranslatedScriptEventParameter(2)]
+            public Vector3 SitPosition;
+            [TranslatedScriptEventParameter(3)]
+            public Quaternion SitRotation;
+            [TranslatedScriptEventParameter(4)]
+            public Vector3 CameraEyeOffset;
+            [TranslatedScriptEventParameter(5)]
+            public Vector3 CameraAtOffset;
+            [TranslatedScriptEventParameter(6)]
+            public int ForceMouselook;
+        }
+
+        [APIExtension("ViewerControl", "avatarsitresponse_received")]
+        public delegate void AvatarSitResponseReceived(
+            LSLKey sitObject,
+            int isAutopilot,
+            Vector3 sitPosition,
+            Quaternion sitRotation,
+            Vector3 cameraEyeOffset,
+            Vector3 cameraAtOffset,
+            int forceMouselook);
+        #endregion
+
+        #region cameraconstraint_received
+        [TranslatedScriptEvent("cameraconstraint_received")]
+        public class CameraConstraintReceivedEvent : IScriptEvent
+        {
+            [TranslatedScriptEventParameter(0)]
+            public Quaternion CameraCollidePlane;
+        }
+
+        [APIExtension("ViewerControl", "cameraconstraint_received")]
+        public delegate void CameraConstraintReceived(
+            Quaternion cameraCollidePlane);
+        #endregion
+
+        #region clearfollowcamproperties_received
+        [TranslatedScriptEvent("clearfollowcamproperties_received")]
+        public class ClearFollowCamPropertiesReceivedEvent : IScriptEvent
+        {
+            [TranslatedScriptEventParameter(0)]
+            public LSLKey ObjectID = new LSLKey();
+        }
+
+        [APIExtension("ViewerControl", "clearfollowcamproperties_received")]
+        public delegate void ClearFollowCamPropertiesReceived(
+            LSLKey objectID);
+        #endregion
+
+        #region setfollowcamproperties_received
+        [TranslatedScriptEvent("setfollowcamproperties_received")]
+        public class SetFollowCamPropertiesReceivedEvent : IScriptEvent
+        {
+            [TranslatedScriptEventParameter(0)]
+            public LSLKey ObjectID = new LSLKey();
+            [TranslatedScriptEventParameter(1)]
+            public AnArray CameraParams = new AnArray();
+        }
+
+        [APIExtension("ViewerControl", "setfollowcamproperties_received")]
+        public delegate void SetFollowCamPropertiesReceived(
+            LSLKey objectID,
+            AnArray cameraParams);
+        #endregion
+
+        #region chatfromsimulator_received
+        [TranslatedScriptEvent("chatfromsimulator_received")]
+        public class ChatFromSimulatorReceivedEvent : IScriptEvent
+        {
+            [TranslatedScriptEventParameter(0)]
+            public string FromName;
+            [TranslatedScriptEventParameter(1)]
+            public LSLKey SourceID;
+            [TranslatedScriptEventParameter(2)]
+            public LSLKey OwnerID;
+            [TranslatedScriptEventParameter(3)]
+            public int SourceType;
+            [TranslatedScriptEventParameter(4)]
+            public int ChatType;
+            [TranslatedScriptEventParameter(5)]
+            public int AudibleLevel;
+            [TranslatedScriptEventParameter(6)]
+            public Vector3 Position;
+            [TranslatedScriptEventParameter(7)]
+            public string Message;
+        }
+
+        [APIExtension("ViewerControl", "chatfromsimulator_received")]
+        public delegate void ChatFromSimulatorReceived(
+            string fromName,
+            LSLKey sourceID,
+            LSLKey ownerID,
+            int sourceType,
+            int chatType,
+            int audibleLevel,
+            Vector3 position,
+            string message);
+        #endregion
+
+        #region
+        [TranslatedScriptEvent("estatecovenantreply_received")]
+        public class EstateCovenantReplyReceivedEvent : IScriptEvent
+        {
+            [TranslatedScriptEventParameter(0)]
+            public LSLKey CovenantID = new LSLKey();
+            [TranslatedScriptEventParameter(1)]
+            public long CovenantTimestamp;
+            [TranslatedScriptEventParameter(2)]
+            public string EstateName;
+            [TranslatedScriptEventParameter(3)]
+            public LSLKey EstateOwnerID = new LSLKey();
+        }
+
+        [APIExtension("ViewerControl", "estatecovenantreply_received")]
+        public delegate void EstateCovenantReplyReceived(
+            LSLKey covenantID,
+            long covenantTimestamp,
+            string estateName,
+            LSLKey estateOwnerID);
+        #endregion
+
+        #region loadurl_received
+        [TranslatedScriptEvent("loadurl_received")]
+        public class LoadURLReceivedEvent : IScriptEvent
+        {
+            [TranslatedScriptEventParameter(0)]
+            public string ObjectName = string.Empty;
+            [TranslatedScriptEventParameter(1)]
+            public LSLKey ObjectID = new LSLKey();
+            [TranslatedScriptEventParameter(2)]
+            public LSLKey OwnerID = new LSLKey();
+            [TranslatedScriptEventParameter(3)]
+            public int OwnerIsGroup;
+            [TranslatedScriptEventParameter(4)]
+            public string Message = string.Empty;
+            [TranslatedScriptEventParameter(5)]
+            public string URL = string.Empty;
+        }
+
+        [APIExtension("ViewerControl", "loadurl_received")]
+        public delegate void LoadURLReceived(
+            string objectName,
+            LSLKey objectId,
+            LSLKey ownerID,
+            int ownerIsGroup,
+            string message,
+            string url);
+        #endregion
+
+        #region scriptteleportrequest_received
+        [TranslatedScriptEvent("scriptteleportrequest_received")]
+        public class ScriptTeleportRequestReceivedEvent : IScriptEvent
+        {
+            [TranslatedScriptEventParameter(0)]
+            public string ObjectName = string.Empty;
+            [TranslatedScriptEventParameter(1)]
+            public string SimName = string.Empty;
+            [TranslatedScriptEventParameter(2)]
+            public Vector3 SimPosition;
+            [TranslatedScriptEventParameter(3)]
+            public Vector3 LookAt;
+        }
+
+        [APIExtension("ViewerControl", "scriptteleportrequest_received")]
+        public delegate void ScriptTeleportRequestReceived(
+            string objectName,
+            string simName,
+            Vector3 simPosition,
+            Vector3 lookAt);
+        #endregion
+
+        #region scriptquestion_received
+        [TranslatedScriptEvent("scriptquestion_received")]
+        public class ScriptQuestionReceivedEvent : IScriptEvent
+        {
+            [TranslatedScriptEventParameter(0)]
+            public LSLKey TaskID = new LSLKey();
+            [TranslatedScriptEventParameter(1)]
+            public LSLKey ItemID = new LSLKey();
+            [TranslatedScriptEventParameter(2)]
+            public string ObjectName;
+            [TranslatedScriptEventParameter(3)]
+            public string ObjectOwner;
+            [TranslatedScriptEventParameter(4)]
+            public int Questions;
+            [TranslatedScriptEventParameter(5)]
+            public LSLKey ExperienceID = new LSLKey();
+        }
+
+        [APIExtension("ViewerControl", "scriptquestion_received")]
+        public delegate void ScriptQuestionReceived(
+            LSLKey taskID,
+            LSLKey itemID,
+            string objectName,
+            string objectOwner,
+            int scriptPermissions,
+            LSLKey experienceID);
+        #endregion
+
+        #region scriptdialog_received
+        [TranslatedScriptEvent("scriptdialog_received")]
+        public class ScriptDialogReceivedEvent : IScriptEvent
+        {
+            [TranslatedScriptEventParameter(0)]
+            public LSLKey ObjectID = new LSLKey();
+            [TranslatedScriptEventParameter(1)]
+            public string FirstName = string.Empty;
+            [TranslatedScriptEventParameter(2)]
+            public string LastName = string.Empty;
+            [TranslatedScriptEventParameter(3)]
+            public string ObjectName = string.Empty;
+            [TranslatedScriptEventParameter(4)]
+            public string Message = string.Empty;
+            [TranslatedScriptEventParameter(5)]
+            public int ChatChannel;
+            [TranslatedScriptEventParameter(6)]
+            public LSLKey ImageID = new LSLKey();
+            [TranslatedScriptEventParameter(7)]
+            public AnArray ButtonData = new AnArray();
+            [TranslatedScriptEventParameter(8)]
+            public AnArray OwnerData = new AnArray();
+        }
+
+        [APIExtension("ViewerControl", "scriptdialog_received")]
+        public delegate void ScriptDialogReceived(
+            LSLKey objectID,
+            string firstName,
+            string lastName,
+            string objectName,
+            string message,
+            int chatchannel,
+            LSLKey imageID,
+            AnArray buttons,
+            AnArray ownerdata);
+        #endregion
+
+        #region scriptcontrolchange_received
+        [TranslatedScriptEvent("scriptcontrolchange_received")]
+        public class ScriptControlChangeReceivedEvent : IScriptEvent
+        {
+            [TranslatedScriptEventParameter(0)]
+            public AnArray ControlData = new AnArray();
+        }
+
+        [APIExtension("ViewerControl", "scriptcontrolchange_received")]
+        public delegate void ScriptControlChangeReceived(AnArray controlData);
+        #endregion
+
+        #region preloadsound_received
+        [TranslatedScriptEvent("preloadsound_received")]
+        public class PreloadSoundReceivedEvent : IScriptEvent
+        {
+            [TranslatedScriptEventParameter(0)]
+            public LSLKey ObjectID = new LSLKey();
+            [TranslatedScriptEventParameter(1)]
+            public LSLKey OwnerID = new LSLKey();
+            [TranslatedScriptEventParameter(2)]
+            public LSLKey SoundID = new LSLKey();
+        }
+
+        [APIExtension("ViewerControl", "preloadsound_received")]
+        public delegate void PreloadsoundReceived(
+            LSLKey objectId,
+            LSLKey ownerID,
+            LSLKey soundID);
+        #endregion
+
+        #region attachedsound_received
+        [TranslatedScriptEvent("attachedsound_received")]
+        public class AttachedSoundReceivedEvent : IScriptEvent
+        {
+            [TranslatedScriptEventParameter(0)]
+            public LSLKey SoundID = new LSLKey();
+            [TranslatedScriptEventParameter(1)]
+            public LSLKey ObjectID = new LSLKey();
+            [TranslatedScriptEventParameter(2)]
+            public LSLKey OwnerID = new LSLKey();
+            [TranslatedScriptEventParameter(3)]
+            public double Gain;
+            [TranslatedScriptEventParameter(4)]
+            public int Flags;
+        }
+
+        [APIExtension("ViewerControl", "attachedsound_received")]
+        public delegate void AttachedSoundReceived(
+            LSLKey soundID,
+            LSLKey objectID,
+            LSLKey ownerID,
+            double gain,
+            int flags);
+        #endregion
+
+        #region soundtrigger_received
+        [TranslatedScriptEvent("soundtrigger_received")]
+        public class SoundTriggerReceivedEvent : IScriptEvent
+        {
+            [TranslatedScriptEventParameter(0)]
+            public LSLKey SoundID = new LSLKey();
+            [TranslatedScriptEventParameter(1)]
+            public LSLKey OwnerID = new LSLKey();
+            [TranslatedScriptEventParameter(2)]
+            public LSLKey ObjectID = new LSLKey();
+            [TranslatedScriptEventParameter(3)]
+            public LSLKey ParentID = new LSLKey();
+            [TranslatedScriptEventParameter(4)]
+            public int GridX;
+            [TranslatedScriptEventParameter(5)]
+            public int GridY;
+            [TranslatedScriptEventParameter(6)]
+            public Vector3 Position;
+            [TranslatedScriptEventParameter(7)]
+            public double Gain;
+        }
+
+        [APIExtension("ViewerControl", "soundtrigger_received")]
+        public delegate void SoundTriggerReceived(
+            LSLKey soundID,
+            LSLKey ownerID,
+            LSLKey objectID,
+            LSLKey parentID,
+            int gridX,
+            int gridY,
+            Vector3 position,
+            double gain);
+        #endregion
+
+        #region attachedsoundgainchange_received
+        [TranslatedScriptEvent("attachedsoundgainchange_received")]
+        public class AttachedSoundGainChangeReceivedEvent : IScriptEvent
+        {
+            [TranslatedScriptEventParameter(0)]
+            public LSLKey ObjectID = new LSLKey();
+            [TranslatedScriptEventParameter(1)]
+            public double Gain;
+        }
+
+        [APIExtension("ViewerControl", "attachedsoundgainchange_received")]
+        public delegate void AttachedSoundGainChangeReceived(
+            LSLKey objectID,
+            double gain);
+        #endregion
+
         [TranslatedScriptEventsInfo]
         public static readonly Type[] TranslatedEvents = new Type[] {
             typeof(RegionHandshakeReceivedEvent),
@@ -323,7 +702,24 @@ namespace SilverSim.Tests.Viewer
             typeof(TeleportStartReceivedEvent),
             typeof(TeleportFailedReceivedEvent),
             typeof(AlertMessageReceivedEvent),
-            typeof(AgentDataUpdateReceivedEvent)
+            typeof(AgentDataUpdateReceivedEvent),
+            typeof(HealthMessageReceivedEvent),
+            typeof(AvatarAnimationReceivedEvent),
+            typeof(AvatarSitResponseReceivedEvent),
+            typeof(CameraConstraintReceivedEvent),
+            typeof(ClearFollowCamPropertiesReceivedEvent),
+            typeof(SetFollowCamPropertiesReceivedEvent),
+            typeof(ChatFromSimulatorReceivedEvent),
+            typeof(EstateCovenantReplyReceivedEvent),
+            typeof(LoadURLReceivedEvent),
+            typeof(ScriptTeleportRequestReceivedEvent),
+            typeof(ScriptQuestionReceivedEvent),
+            typeof(ScriptDialogReceivedEvent),
+            typeof(ScriptControlChangeReceivedEvent),
+            typeof(PreloadSoundReceivedEvent),
+            typeof(AttachedSoundReceivedEvent),
+            typeof(SoundTriggerReceivedEvent),
+            typeof(AttachedSoundGainChangeReceivedEvent)
         };
     }
 }

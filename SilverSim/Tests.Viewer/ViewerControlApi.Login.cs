@@ -33,7 +33,13 @@ using SilverSim.Viewer.Core;
 using SilverSim.Viewer.Messages;
 using SilverSim.Viewer.Messages.Agent;
 using SilverSim.Viewer.Messages.Alert;
+using SilverSim.Viewer.Messages.Avatar;
+using SilverSim.Viewer.Messages.Camera;
+using SilverSim.Viewer.Messages.Chat;
 using SilverSim.Viewer.Messages.Circuit;
+using SilverSim.Viewer.Messages.Estate;
+using SilverSim.Viewer.Messages.Script;
+using SilverSim.Viewer.Messages.Sound;
 using SilverSim.Viewer.Messages.Telehub;
 using SilverSim.Viewer.Messages.Teleport;
 using System;
@@ -334,9 +340,243 @@ namespace SilverSim.Tests.Viewer
                 viewerCircuit.MessageRouting.Add(MessageType.AgentDataUpdate, (m) => HandleAgentDataUpdate(m, vc));
                 viewerCircuit.MessageRouting.Add(MessageType.AgentDropGroup, (m) => HandleAgentDropGroup(m, vc));
                 viewerCircuit.MessageRouting.Add(MessageType.CoarseLocationUpdate, (m) => HandleCoarseLocationUpdate(m, vc));
+                viewerCircuit.MessageRouting.Add(MessageType.HealthMessage, (m) => HandleHealthMessage(m, vc));
+                viewerCircuit.MessageRouting.Add(MessageType.AvatarAnimation, (m) => HandleAvatarAnimation(m, vc));
+                viewerCircuit.MessageRouting.Add(MessageType.AvatarSitResponse, (m) => HandleAvatarSitResponse(m, vc));
+                viewerCircuit.MessageRouting.Add(MessageType.CameraConstraint, (m) => HandleCameraConstraint(m, vc));
+                viewerCircuit.MessageRouting.Add(MessageType.ClearFollowCamProperties, (m) => vc.PostEvent(new ClearFollowCamPropertiesReceivedEvent { ObjectID = ((ClearFollowCamProperties)m).ObjectID }));
+                viewerCircuit.MessageRouting.Add(MessageType.SetFollowCamProperties, (m) => HandleSetFollowCamProperties(m, vc));
+                viewerCircuit.MessageRouting.Add(MessageType.ChatFromSimulator, (m) => HandleChatFromSimulator(m, vc));
+                viewerCircuit.MessageRouting.Add(MessageType.LoadURL, (m) => HandleLoadURLReceived(m, vc));
+                viewerCircuit.MessageRouting.Add(MessageType.ScriptQuestion, (m) => HandleScriptQuestion(m, vc));
+                viewerCircuit.MessageRouting.Add(MessageType.ScriptDialog, (m) => HandleScriptDialog(m, vc));
+                viewerCircuit.MessageRouting.Add(MessageType.PreloadSound, (m) => HandlePreloadSound(m, vc));
+                viewerCircuit.MessageRouting.Add(MessageType.AttachedSound, (m) => HandleAttachedSound(m, vc));
+                viewerCircuit.MessageRouting.Add(MessageType.SoundTrigger, (m) => HandleSoundTrigger(m, vc));
+                viewerCircuit.MessageRouting.Add(MessageType.AttachedSoundGainChange, (m) => HandleAttachedSoundGainChange(m, vc));
                 vc.ViewerCircuits.Add((uint)circuitCode, viewerCircuit);
                 return capsPath;
             }
+        }
+
+        private void HandleAttachedSoundGainChange(Message m, ViewerConnection vc)
+        {
+            var res = (AttachedSoundGainChange)m;
+            vc.PostEvent(new AttachedSoundGainChangeReceivedEvent
+            {
+                ObjectID = res.ObjectID,
+                Gain = res.Gain
+            });
+        }
+
+        private void HandleSoundTrigger(Message m, ViewerConnection vc)
+        {
+            var res = (SoundTrigger)m;
+            vc.PostEvent(new SoundTriggerReceivedEvent
+            {
+                SoundID = res.SoundID,
+                OwnerID = res.OwnerID,
+                ObjectID = res.ObjectID,
+                ParentID = res.ParentID,
+                GridX = res.GridPosition.GridX,
+                GridY = res.GridPosition.GridY,
+                Position = res.Position,
+                Gain = res.Gain
+            });
+        }
+
+        private void HandleAttachedSound(Message m, ViewerConnection vc)
+        {
+            var res = (AttachedSound)m;
+            vc.PostEvent(new AttachedSoundReceivedEvent
+            {
+                SoundID = res.SoundID,
+                ObjectID = res.ObjectID,
+                OwnerID = res.OwnerID,
+                Gain = res.Gain,
+                Flags = (int)res.Flags
+            });
+        }
+
+        private void HandlePreloadSound(Message m, ViewerConnection vc)
+        {
+            var res = (PreloadSound)m;
+            vc.PostEvent(new PreloadSoundReceivedEvent
+            {
+                ObjectID = res.ObjectID,
+                OwnerID = res.OwnerID,
+                SoundID = res.SoundID
+            });
+        }
+
+        private void HandleScriptControlChange(Message m, ViewerConnection vc)
+        {
+            var res = (ScriptControlChange)m;
+            var ev = new ScriptControlChangeReceivedEvent();
+            foreach(ScriptControlChange.DataEntry d in res.Data)
+            {
+                ev.ControlData.Add(d.TakeControls.ToLSLBoolean());
+                ev.ControlData.Add((int)d.Controls);
+                ev.ControlData.Add(d.PassToAgent.ToLSLBoolean());
+            }
+            vc.PostEvent(ev);
+        }
+
+        private void HandleScriptDialog(Message m, ViewerConnection vc)
+        {
+            var res = (ScriptDialog)m;
+            var ev = new ScriptDialogReceivedEvent
+            {
+                ObjectID = res.ObjectID,
+                FirstName = res.FirstName,
+                LastName = res.LastName,
+                ObjectName = res.ObjectName,
+                Message = res.Message,
+                ChatChannel = res.ChatChannel,
+                ImageID = res.ImageID
+            };
+            foreach(string button in res.Buttons)
+            {
+                ev.ButtonData.Add(button);
+            }
+            foreach(UUID owner in res.OwnerData)
+            {
+                ev.OwnerData.Add(owner);
+            }
+            vc.PostEvent(ev);
+        }
+
+        private void HandleScriptQuestion(Message m, ViewerConnection vc)
+        {
+            var res = (ScriptQuestion)m;
+            vc.PostEvent(new ScriptQuestionReceivedEvent
+            {
+                TaskID = res.TaskID,
+                ItemID = res.ItemID,
+                ObjectName = res.ObjectName,
+                ObjectOwner = res.ObjectOwner,
+                Questions = (int)res.Questions,
+                ExperienceID = res.ExperienceID
+            });
+        }
+
+        private void HandleScriptTeleportRequest(Message m, ViewerConnection vc)
+        {
+            var res = (ScriptTeleportRequest)m;
+            vc.PostEvent(new ScriptTeleportRequestReceivedEvent
+            {
+                ObjectName = res.ObjectName,
+                SimName = res.SimName,
+                SimPosition = res.SimPosition,
+                LookAt = res.LookAt
+            });
+        }
+
+        private void HandleLoadURLReceived(Message m, ViewerConnection vc)
+        {
+            var res = (LoadURL)m;
+            vc.PostEvent(new LoadURLReceivedEvent
+            {
+                ObjectName = res.ObjectName,
+                ObjectID = res.ObjectID,
+                OwnerID = res.OwnerID,
+                OwnerIsGroup = res.OwnerIsGroup.ToLSLBoolean(),
+                Message = res.Message,
+                URL = res.URL
+            });
+        }
+
+        private void HandleEstateCovenantReply(Message m, ViewerConnection vc)
+        {
+            var res = (EstateCovenantReply)m;
+            vc.PostEvent(new EstateCovenantReplyReceivedEvent
+            {
+                CovenantID = res.CovenantID,
+                CovenantTimestamp = res.CovenantTimestamp,
+                EstateName = res.EstateName,
+                EstateOwnerID = res.EstateOwnerID
+            });
+        }
+
+        private void HandleChatFromSimulator(Message m, ViewerConnection vc)
+        {
+            var res = (ChatFromSimulator)m;
+            vc.PostEvent(new ChatFromSimulatorReceivedEvent
+            {
+                FromName = res.FromName,
+                SourceID = res.SourceID,
+                OwnerID = res.OwnerID,
+                SourceType = (int)res.SourceType,
+                ChatType = (int)res.ChatType,
+                AudibleLevel = (int)res.Audible,
+                Position = res.Position,
+                Message = res.Message
+            });
+        }
+
+        private void HandleSetFollowCamProperties(Message m, ViewerConnection vc)
+        {
+            var res = (SetFollowCamProperties)m;
+            var ev = new SetFollowCamPropertiesReceivedEvent
+            {
+                ObjectID = res.ObjectID
+            };
+            foreach(SetFollowCamProperties.CameraProperty prop in res.CameraProperties)
+            {
+                ev.CameraParams.Add(prop.Type);
+                ev.CameraParams.Add(prop.Value);
+            }
+            vc.PostEvent(ev);
+        }
+
+        private void HandleCameraConstraint(Message m, ViewerConnection vc)
+        {
+            var res = (CameraConstraint)m;
+            vc.PostEvent(new CameraConstraintReceivedEvent
+            {
+                CameraCollidePlane = new Quaternion(res.CameraCollidePlane.X, res.CameraCollidePlane.Y, res.CameraCollidePlane.Z, res.CameraCollidePlane.W)
+            });
+        }
+
+        private void HandleAvatarSitResponse(Message m, ViewerConnection vc)
+        {
+            var res = (AvatarSitResponse)m;
+            vc.PostEvent(new AvatarSitResponseReceivedEvent
+            {
+                SitObject = res.SitObject,
+                IsAutopilot = res.IsAutoPilot.ToLSLBoolean(),
+                SitPosition = res.SitPosition,
+                SitRotation = res.SitRotation,
+                CameraEyeOffset = res.CameraEyeOffset,
+                CameraAtOffset = res.CameraAtOffset,
+                ForceMouselook = res.ForceMouselook.ToLSLBoolean()
+            });
+        }
+
+        private void HandleAvatarAnimation(Message m, ViewerConnection vc)
+        {
+            var res = (AvatarAnimation)m;
+            var ev = new AvatarAnimationReceivedEvent
+            {
+                Sender = res.Sender
+            };
+
+            foreach(AvatarAnimation.AnimationData ad in res.AnimationList)
+            {
+                ev.AnimationData.Add(new LSLKey(ad.AnimID));
+                ev.AnimationData.Add((int)ad.AnimSequenceID);
+                ev.AnimationData.Add(new LSLKey(ad.ObjectID));
+            }
+            vc.PostEvent(ev);
+        }
+
+        private void HandleHealthMessage(Message m, ViewerConnection vc)
+        {
+            var res = (HealthMessage)m;
+            vc.PostEvent(new HealthMessageReceivedEvent
+            {
+                Health = res.Health
+            });
         }
 
         private void HandleCoarseLocationUpdate(Message m, ViewerConnection vc)
