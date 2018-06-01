@@ -449,6 +449,7 @@ namespace SilverSim.Tests.Viewer
         }
 
         [APIExtension("ViewerControl", "coarselocationupdate_received")]
+        [StateEventDelegate]
         public delegate void CoarseLocationUpdateReceived(
             AgentInfo agent,
             int you,
@@ -477,6 +478,7 @@ namespace SilverSim.Tests.Viewer
         }
 
         [APIExtension("ViewerControl", "healthmessage_received")]
+        [StateEventDelegate]
         public delegate void HealthMessageUpdateReceived(
             AgentInfo agent,
             double health);
@@ -513,6 +515,7 @@ namespace SilverSim.Tests.Viewer
         }
 
         [APIExtension("ViewerControl", "avataranimation_received")]
+        [StateEventDelegate]
         public delegate void AvatarAnimationReceived(
             AgentInfo agent,
             LSLKey sender,
@@ -558,6 +561,7 @@ namespace SilverSim.Tests.Viewer
         }
 
         [APIExtension("ViewerControl", "avatarsitresponse_received")]
+        [StateEventDelegate]
         public delegate void AvatarSitResponseReceived(
             AgentInfo agent,
             LSLKey sitObject,
@@ -590,6 +594,7 @@ namespace SilverSim.Tests.Viewer
         }
 
         [APIExtension("ViewerControl", "cameraconstraint_received")]
+        [StateEventDelegate]
         public delegate void CameraConstraintReceived(
             AgentInfo agent,
             Quaternion cameraCollidePlane);
@@ -616,6 +621,7 @@ namespace SilverSim.Tests.Viewer
         }
 
         [APIExtension("ViewerControl", "clearfollowcamproperties_received")]
+        [StateEventDelegate]
         public delegate void ClearFollowCamPropertiesReceived(
             AgentInfo agent,
             LSLKey objectID);
@@ -650,6 +656,7 @@ namespace SilverSim.Tests.Viewer
         }
 
         [APIExtension("ViewerControl", "setfollowcamproperties_received")]
+        [StateEventDelegate]
         public delegate void SetFollowCamPropertiesReceived(
             AgentInfo agent,
             LSLKey objectID,
@@ -698,6 +705,7 @@ namespace SilverSim.Tests.Viewer
         }
 
         [APIExtension("ViewerControl", "chatfromsimulator_received")]
+        [StateEventDelegate]
         public delegate void ChatFromSimulatorReceived(
             AgentInfo agent,
             string fromName,
@@ -740,6 +748,7 @@ namespace SilverSim.Tests.Viewer
         }
 
         [APIExtension("ViewerControl", "estatecovenantreply_received")]
+        [StateEventDelegate]
         public delegate void EstateCovenantReplyReceived(
             AgentInfo agent,
             LSLKey covenantID,
@@ -784,6 +793,7 @@ namespace SilverSim.Tests.Viewer
         }
 
         [APIExtension("ViewerControl", "loadurl_received")]
+        [StateEventDelegate]
         public delegate void LoadURLReceived(
             AgentInfo agent,
             string objectName,
@@ -824,6 +834,7 @@ namespace SilverSim.Tests.Viewer
         }
 
         [APIExtension("ViewerControl", "scriptteleportrequest_received")]
+        [StateEventDelegate]
         public delegate void ScriptTeleportRequestReceived(
             AgentInfo agent,
             string objectName,
@@ -868,6 +879,7 @@ namespace SilverSim.Tests.Viewer
         }
 
         [APIExtension("ViewerControl", "scriptquestion_received")]
+        [StateEventDelegate]
         public delegate void ScriptQuestionReceived(
             AgentInfo agent,
             LSLKey taskID,
@@ -930,6 +942,7 @@ namespace SilverSim.Tests.Viewer
         }
 
         [APIExtension("ViewerControl", "scriptdialog_received")]
+        [StateEventDelegate]
         public delegate void ScriptDialogReceived(
             AgentInfo agent,
             LSLKey objectID,
@@ -970,6 +983,7 @@ namespace SilverSim.Tests.Viewer
         }
 
         [APIExtension("ViewerControl", "scriptcontrolchange_received")]
+        [StateEventDelegate]
         public delegate void ScriptControlChangeReceived(AgentInfo agent, AnArray controlData);
         #endregion
 
@@ -1000,6 +1014,7 @@ namespace SilverSim.Tests.Viewer
         }
 
         [APIExtension("ViewerControl", "preloadsound_received")]
+        [StateEventDelegate]
         public delegate void PreloadsoundReceived(
             AgentInfo agent,
             LSLKey objectId,
@@ -1040,6 +1055,7 @@ namespace SilverSim.Tests.Viewer
         }
 
         [APIExtension("ViewerControl", "attachedsound_received")]
+        [StateEventDelegate]
         public delegate void AttachedSoundReceived(
             AgentInfo agent,
             LSLKey soundID,
@@ -1091,6 +1107,7 @@ namespace SilverSim.Tests.Viewer
         }
 
         [APIExtension("ViewerControl", "soundtrigger_received")]
+        [StateEventDelegate]
         public delegate void SoundTriggerReceived(
             AgentInfo agent,
             LSLKey soundID,
@@ -1127,6 +1144,7 @@ namespace SilverSim.Tests.Viewer
         }
 
         [APIExtension("ViewerControl", "attachedsoundgainchange_received")]
+        [StateEventDelegate]
         public delegate void AttachedSoundGainChangeReceived(
             AgentInfo agent,
             LSLKey objectID,
@@ -1157,6 +1175,7 @@ namespace SilverSim.Tests.Viewer
         }
 
         [APIExtension("ViewerControl", "featuredisabled_received")]
+        [StateEventDelegate]
         public delegate void FeatureDisabledReceived(
             AgentInfo agent,
             LSLKey transactionID,
@@ -1194,11 +1213,43 @@ namespace SilverSim.Tests.Viewer
         }
 
         [APIExtension("ViewerControl", "paypricereply_received")]
+        [StateEventDelegate]
         public delegate void PayPriceReplyReceived(
             AgentInfo agent,
             LSLKey objectID,
             int defaultPayPrice,
             AnArray buttonData);
+        #endregion
+
+        #region killobject_received
+        [TranslatedScriptEvent("killobject_received")]
+        public class KillObjectReceivedEvent : IScriptEvent
+        {
+            [TranslatedScriptEventParameter(0)]
+            public AgentInfo Agent;
+            [TranslatedScriptEventParameter(1)]
+            public AnArray LocalIDs;
+
+            public static void ToScriptEvent(Message m, ViewerConnection vc, uint circuitCode)
+            {
+                var res = (KillObject)m;
+                var ev = new KillObjectReceivedEvent
+                {
+                    Agent = new AgentInfo(m, circuitCode)
+                };
+                foreach(uint localid in res.LocalIDs)
+                {
+                    ev.LocalIDs.Add((int)localid);
+                }
+                vc.PostEvent(ev);
+            }
+        }
+
+        [APIExtension("ViewerControl", "killobject_received")]
+        [StateEventDelegate]
+        public delegate void KillObjectReceived(
+            AgentInfo agent,
+            AnArray localids);
         #endregion
 
         [TranslatedScriptEventsInfo]
@@ -1231,7 +1282,8 @@ namespace SilverSim.Tests.Viewer
             typeof(SoundTriggerReceivedEvent),
             typeof(AttachedSoundGainChangeReceivedEvent),
             typeof(FeatureDisabledReceivedEvent),
-            typeof(PayPriceReplyReceivedEvent)
+            typeof(PayPriceReplyReceivedEvent),
+            typeof(KillObjectReceivedEvent)
         };
     }
 }
