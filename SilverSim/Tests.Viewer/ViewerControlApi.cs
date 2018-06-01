@@ -48,8 +48,6 @@ using SilverSim.Types.Account;
 using SilverSim.Types.Grid;
 using SilverSim.Types.ServerURIs;
 using SilverSim.Viewer.Core;
-using SilverSim.Viewer.Messages;
-using SilverSim.Viewer.Messages.Region;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
