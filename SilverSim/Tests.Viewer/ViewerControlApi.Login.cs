@@ -37,6 +37,7 @@ using SilverSim.Viewer.Messages.Avatar;
 using SilverSim.Viewer.Messages.Camera;
 using SilverSim.Viewer.Messages.Chat;
 using SilverSim.Viewer.Messages.Circuit;
+using SilverSim.Viewer.Messages.Common;
 using SilverSim.Viewer.Messages.Estate;
 using SilverSim.Viewer.Messages.Script;
 using SilverSim.Viewer.Messages.Sound;
@@ -121,8 +122,32 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
+        [APIExtension("ViewerControl", "vieweragent")]
+        [APIDisplayName("vieweragent")]
+        [APIAccessibleMembers]
+        [Serializable]
+        public class ViewerAgentAccessor
+        {
+            public UUID AgentID { get; }
+            public uint CircuitCode { get; }
+            public string CapsPath { get; }
+
+            public ViewerAgentAccessor()
+            {
+            }
+
+            public ViewerAgentAccessor(UUID agentID, uint circuitCode, string capsPath)
+            {
+                AgentID = agentID;
+                CircuitCode = circuitCode;
+                CapsPath = capsPath;
+            }
+
+            public static implicit operator bool(ViewerAgentAccessor vc) => vc.AgentID != UUID.Zero;
+        }
+
         [APIExtension("ViewerControl", "vcLoginAgent")]
-        public string LoginAgent(
+        public ViewerAgentAccessor LoginAgent(
             ScriptInstance instance,
             int circuitCode,
             LSLKey regionId,
@@ -148,7 +173,7 @@ namespace SilverSim.Tests.Viewer
                 if (addresses.Length == 0)
                 {
                     m_Log.InfoFormat("ExternalHostName \"{0}\" does not resolve", externalHostName);
-                    return string.Empty;
+                    return new ViewerAgentAccessor();
                 }
 
                 foreach (IPAddress addr in addresses)
@@ -162,7 +187,7 @@ namespace SilverSim.Tests.Viewer
                 if (string.IsNullOrEmpty(clientIP))
                 {
                     m_Log.InfoFormat("ExternalHostName \"{0}\" does not resolve", externalHostName);
-                    return string.Empty;
+                    return new ViewerAgentAccessor();
                 }
 
                 UUID capsId = UUID.Random;
@@ -170,7 +195,7 @@ namespace SilverSim.Tests.Viewer
                 SceneInterface scene;
                 if (!m_Scenes.TryGetValue(regionId, out scene))
                 {
-                    return string.Empty;
+                    return new ViewerAgentAccessor();
                 }
                 var clientInfo = new ClientInfo
                 {
@@ -184,7 +209,7 @@ namespace SilverSim.Tests.Viewer
                 if (!m_UserAccountService.TryGetValue(UUID.Zero, agentId, out userAccount))
                 {
                     m_Log.InfoFormat("User account {0} does not exist", agentId.ToString());
-                    return string.Empty;
+                    return new ViewerAgentAccessor();
                 }
 
                 var presenceInfo = new PresenceInfo
@@ -233,7 +258,7 @@ namespace SilverSim.Tests.Viewer
                 catch (Exception e)
                 {
                     m_Log.InfoFormat("Failed to determine initial location for agent {0}: {1}: {2}", userAccount.Principal.FullName, e.GetType().FullName, e.Message);
-                    return string.Empty;
+                    return new ViewerAgentAccessor();
                 }
 
                 var udpServer = (UDPCircuitsManager)scene.UDPServer;
@@ -242,7 +267,7 @@ namespace SilverSim.Tests.Viewer
                 if (!IPAddress.TryParse(clientInfo.ClientIP, out ipAddr))
                 {
                     m_Log.InfoFormat("Invalid IP address for agent {0}", userAccount.Principal.FullName);
-                    return string.Empty;
+                    return new ViewerAgentAccessor();
                 }
 
                 ViewerConnection vc = AddAgent(instance, userAccount.Principal.ID);
@@ -286,7 +311,7 @@ namespace SilverSim.Tests.Viewer
                 {
                     m_Log.Debug("Failed agent post", e);
                     agent.Circuits.Clear();
-                    return string.Empty;
+                    return new ViewerAgentAccessor();
                 }
                 /* make agent a root agent */
                 agent.SceneID = scene.ID;
@@ -354,9 +379,21 @@ namespace SilverSim.Tests.Viewer
                 viewerCircuit.MessageRouting.Add(MessageType.AttachedSound, (m) => HandleAttachedSound(m, vc));
                 viewerCircuit.MessageRouting.Add(MessageType.SoundTrigger, (m) => HandleSoundTrigger(m, vc));
                 viewerCircuit.MessageRouting.Add(MessageType.AttachedSoundGainChange, (m) => HandleAttachedSoundGainChange(m, vc));
+                viewerCircuit.MessageRouting.Add(MessageType.FeatureDisabled, (m) => HandleFeatureDisabled(m, vc));
                 vc.ViewerCircuits.Add((uint)circuitCode, viewerCircuit);
-                return capsPath;
+                return new ViewerAgentAccessor(agent.ID, (uint)circuitCode, capsPath);
             }
+        }
+
+        private void HandleFeatureDisabled(Message m, ViewerConnection vc)
+        {
+            var res = (FeatureDisabled)m;
+            vc.PostEvent(new FeatureDisabledReceivedEvent
+            {
+                AgentID = res.AgentID,
+                TransactionID = res.TransactionID,
+                ErrorMessage = res.ErrorMessage
+            });
         }
 
         private void HandleAttachedSoundGainChange(Message m, ViewerConnection vc)
@@ -720,15 +757,15 @@ namespace SilverSim.Tests.Viewer
             });
         }
 
-        [APIExtension("ViewerControl", "vcLogoutAgent")]
-        public void LogoutAgent(ScriptInstance instance, LSLKey agentId, int circuitCode)
+        [APIExtension("ViewerControl", APIUseAsEnum.MemberFunction, "Logout")]
+        public void LogoutAgent(ScriptInstance instance, ViewerAgentAccessor agent)
         {
             lock (instance)
             {
                 ViewerConnection vc;
                 ViewerCircuit viewerCircuit;
-                if (m_Clients.TryGetValue(agentId.AsUUID, out vc) &&
-                    vc.ViewerCircuits.TryGetValue((uint)circuitCode, out viewerCircuit))
+                if (m_Clients.TryGetValue(agent.AgentID, out vc) &&
+                    vc.ViewerCircuits.TryGetValue(agent.CircuitCode, out viewerCircuit))
                 {
                     var logoutreq = new LogoutRequest
                     {

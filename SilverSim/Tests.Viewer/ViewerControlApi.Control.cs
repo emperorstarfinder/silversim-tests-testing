@@ -30,19 +30,18 @@ namespace SilverSim.Tests.Viewer
 {
     public partial class ViewerControlApi
     {
-        [APIExtension("ViewerControl", "vcSendAgentPause")]
+        [APIExtension("ViewerControl", APIUseAsEnum.MemberFunction, "SendAgentPause")]
         public void SendAgentPause(
             ScriptInstance instance,
-            LSLKey agentId,
-            int circuitCode,
+            ViewerAgentAccessor agent,
             int serialNo)
         {
             lock (instance)
             {
                 ViewerConnection vc;
                 ViewerCircuit viewerCircuit;
-                if (m_Clients.TryGetValue(agentId.AsUUID, out vc) &&
-                    vc.ViewerCircuits.TryGetValue((uint)circuitCode, out viewerCircuit))
+                if (m_Clients.TryGetValue(agent.AgentID, out vc) &&
+                    vc.ViewerCircuits.TryGetValue(agent.CircuitCode, out viewerCircuit))
                 {
                     viewerCircuit.SendMessage(new AgentPause
                     {
@@ -54,19 +53,18 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension("ViewerControl", "vcSendAgentResume")]
+        [APIExtension("ViewerControl", APIUseAsEnum.MemberFunction, "SendAgentResume")]
         public void SendAgentResume(
             ScriptInstance instance,
-            LSLKey agentId,
-            int circuitCode,
+            ViewerAgentAccessor agent,
             int serialNo)
         {
             lock (instance)
             {
                 ViewerConnection vc;
                 ViewerCircuit viewerCircuit;
-                if (m_Clients.TryGetValue(agentId.AsUUID, out vc) &&
-                    vc.ViewerCircuits.TryGetValue((uint)circuitCode, out viewerCircuit))
+                if (m_Clients.TryGetValue(agent.AgentID, out vc) &&
+                    vc.ViewerCircuits.TryGetValue(agent.CircuitCode, out viewerCircuit))
                 {
                     viewerCircuit.SendMessage(new AgentResume
                     {
@@ -78,11 +76,10 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension("ViewerControl", "vcSendAgentUpdate")]
+        [APIExtension("ViewerControl", APIUseAsEnum.MemberFunction, "SendAgentUpdate")]
         public void SendAgentUpdate(
             ScriptInstance instance,
-            LSLKey agentId,
-            int circuitCode,
+            ViewerAgentAccessor agent,
             Quaternion bodyRotation,
             Quaternion headRotation,
             int state,
@@ -98,8 +95,8 @@ namespace SilverSim.Tests.Viewer
             {
                 ViewerConnection vc;
                 ViewerCircuit viewerCircuit;
-                if (m_Clients.TryGetValue(agentId.AsUUID, out vc) &&
-                    vc.ViewerCircuits.TryGetValue((uint)circuitCode, out viewerCircuit))
+                if (m_Clients.TryGetValue(agent.AgentID, out vc) &&
+                    vc.ViewerCircuits.TryGetValue(agent.CircuitCode, out viewerCircuit))
                 {
                     viewerCircuit.SendMessage(new AgentUpdate
                     {
@@ -113,7 +110,7 @@ namespace SilverSim.Tests.Viewer
                         CameraLeftAxis = cameraLeftAxis,
                         CameraUpAxis = cameraUpAxis,
                         Far = far,
-                        ControlFlags = (Types.Agent.ControlFlags)controlFlags,
+                        ControlFlags = (ControlFlags)controlFlags,
                         Flags = (byte)flags
                     });
                 }

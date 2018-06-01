@@ -691,6 +691,25 @@ namespace SilverSim.Tests.Viewer
             double gain);
         #endregion
 
+        #region featuredisabled_received
+        [TranslatedScriptEvent("featuredisabled_received")]
+        public class FeatureDisabledReceivedEvent : IScriptEvent
+        {
+            [TranslatedScriptEventParameter(0)]
+            public LSLKey AgentID = new LSLKey();
+            [TranslatedScriptEventParameter(1)]
+            public LSLKey TransactionID = new LSLKey();
+            [TranslatedScriptEventParameter(2)]
+            public string ErrorMessage = string.Empty;
+        }
+
+        [APIExtension("ViewerControl", "featuredisabled_received")]
+        public delegate void FeatureDisabledReceived(
+            LSLKey agentID,
+            LSLKey transactionID,
+            string errorMessage);
+        #endregion
+
         [TranslatedScriptEventsInfo]
         public static readonly Type[] TranslatedEvents = new Type[] {
             typeof(RegionHandshakeReceivedEvent),
@@ -719,7 +738,8 @@ namespace SilverSim.Tests.Viewer
             typeof(PreloadSoundReceivedEvent),
             typeof(AttachedSoundReceivedEvent),
             typeof(SoundTriggerReceivedEvent),
-            typeof(AttachedSoundGainChangeReceivedEvent)
+            typeof(AttachedSoundGainChangeReceivedEvent),
+            typeof(FeatureDisabledReceivedEvent)
         };
     }
 }

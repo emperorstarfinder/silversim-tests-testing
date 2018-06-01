@@ -41,20 +41,18 @@ namespace SilverSim.Tests.Viewer
         [APIExtension("ViewerControl")]
         public const int VC_AGENT_INVENTORY_FULL_AISV3 = 3;
 
-        [APIExtension("ViewerControl", "vcGetAgentInventory")]
+        [APIExtension("ViewerControl", APIUseAsEnum.MemberFunction, "GetAgentInventory")]
         public AgentInventoryApi.AgentInventory GetAgentInventory(
             ScriptInstance instance,
-            LSLKey agentId,
-            int circuitCode,
+            ViewerAgentAccessor agent,
             LSLKey rootFolderID,
             HashtableApi.Hashtable seedResponse) =>
-            GetAgentInventory(instance, agentId, circuitCode, rootFolderID, seedResponse, VC_AGENT_INVENTORY_FULL_AISV3);
+            GetAgentInventory(instance, agent, rootFolderID, seedResponse, VC_AGENT_INVENTORY_FULL_AISV3);
 
-        [APIExtension("ViewerControl", "vcGetAgentInventory")]
+        [APIExtension("ViewerControl", APIUseAsEnum.MemberFunction, "GetAgentInventory")]
         public AgentInventoryApi.AgentInventory GetAgentInventory(
             ScriptInstance instance,
-            LSLKey agentId,
-            int circuitCode,
+            ViewerAgentAccessor agent,
             LSLKey rootFolderID,
             HashtableApi.Hashtable seedResponse,
             int inventoryOption)
@@ -63,8 +61,8 @@ namespace SilverSim.Tests.Viewer
             {
                 ViewerConnection vc;
                 ViewerCircuit viewerCircuit;
-                if (m_Clients.TryGetValue(agentId.AsUUID, out vc) &&
-                    vc.ViewerCircuits.TryGetValue((uint)circuitCode, out viewerCircuit))
+                if (m_Clients.TryGetValue(agent.AgentID, out vc) &&
+                    vc.ViewerCircuits.TryGetValue(agent.CircuitCode, out viewerCircuit))
                 {
                     IValue value;
                     string aisv3_agent_uri = seedResponse.TryGetValue("InventoryAPIv3", out value) ? value.ToString() : string.Empty;
@@ -89,20 +87,20 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension("ViewerControl", "vcGetLibraryInventory")]
+        [APIExtension("ViewerControl", APIUseAsEnum.MemberFunction, "GetLibraryInventory")]
         public AgentInventoryApi.AgentInventory GetLibraryInventory(
             ScriptInstance instance,
-            LSLKey agentId,
+            ViewerAgentAccessor agent,
             int circuitCode,
             LSLKey libraryAgentId,
             LSLKey rootFolderID,
             HashtableApi.Hashtable seedResponse) =>
-            GetLibraryInventory(instance, agentId, circuitCode, libraryAgentId, rootFolderID, seedResponse, VC_AGENT_INVENTORY_FULL_AISV3);
+            GetLibraryInventory(instance, agent, circuitCode, libraryAgentId, rootFolderID, seedResponse, VC_AGENT_INVENTORY_FULL_AISV3);
 
-        [APIExtension("ViewerControl", "vcGetLibraryInventory")]
+        [APIExtension("ViewerControl", APIUseAsEnum.MemberFunction, "GetLibraryInventory")]
         public AgentInventoryApi.AgentInventory GetLibraryInventory(
             ScriptInstance instance,
-            LSLKey agentId,
+            ViewerAgentAccessor agent,
             int circuitCode,
             LSLKey libraryAgentId,
             LSLKey rootFolderID,
@@ -113,7 +111,7 @@ namespace SilverSim.Tests.Viewer
             {
                 ViewerConnection vc;
                 ViewerCircuit viewerCircuit;
-                if (m_Clients.TryGetValue(agentId.AsUUID, out vc) &&
+                if (m_Clients.TryGetValue(agent.AgentID, out vc) &&
                     vc.ViewerCircuits.TryGetValue((uint)circuitCode, out viewerCircuit))
                 {
                     IValue value;

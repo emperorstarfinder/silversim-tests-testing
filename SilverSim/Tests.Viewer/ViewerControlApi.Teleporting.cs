@@ -29,11 +29,10 @@ namespace SilverSim.Tests.Viewer
 {
     public partial class ViewerControlApi
     {
-        [APIExtension("ViewerControl", "vcSendTeleportRequest")]
+        [APIExtension("ViewerControl", APIUseAsEnum.MemberFunction, "SendTeleportRequest")]
         public void SendTeleportRequest(
             ScriptInstance instance,
-            LSLKey agentId,
-            int circuitCode,
+            ViewerAgentAccessor agent,
             LSLKey regionId,
             Vector3 position,
             Vector3 lookAt)
@@ -42,10 +41,10 @@ namespace SilverSim.Tests.Viewer
             {
                 ViewerConnection vc;
                 ViewerCircuit viewerCircuit;
-                if (m_Clients.TryGetValue(agentId.AsUUID, out vc) &&
-                    vc.ViewerCircuits.TryGetValue((uint)circuitCode, out viewerCircuit))
+                if (m_Clients.TryGetValue(agent.AgentID, out vc) &&
+                    vc.ViewerCircuits.TryGetValue(agent.CircuitCode, out viewerCircuit))
                 {
-                    var req = new TeleportRequest()
+                    var req = new TeleportRequest
                     {
                         AgentID = viewerCircuit.AgentID,
                         SessionID = viewerCircuit.SessionID,
@@ -58,11 +57,10 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension("ViewerControl", "vcSendTeleportLocationRequest")]
+        [APIExtension("ViewerControl", APIUseAsEnum.MemberFunction, "SendTeleportLocationRequest")]
         public void SendTeleportLocationRequest(
             ScriptInstance instance,
-            LSLKey agentId,
-            int circuitCode,
+            ViewerAgentAccessor agent,
             Vector3 gridLocation,
             Vector3 position,
             Vector3 lookAt
@@ -72,10 +70,10 @@ namespace SilverSim.Tests.Viewer
             {
                 ViewerConnection vc;
                 ViewerCircuit viewerCircuit;
-                if (m_Clients.TryGetValue(agentId.AsUUID, out vc) &&
-                    vc.ViewerCircuits.TryGetValue((uint)circuitCode, out viewerCircuit))
+                if (m_Clients.TryGetValue(agent.AgentID, out vc) &&
+                    vc.ViewerCircuits.TryGetValue(agent.CircuitCode, out viewerCircuit))
                 {
-                    var req = new TeleportLocationRequest()
+                    var req = new TeleportLocationRequest
                     {
                         AgentID = viewerCircuit.AgentID,
                         SessionID = viewerCircuit.SessionID,
@@ -88,21 +86,20 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension("ViewerControl", "vcSendTeleportLocal")]
+        [APIExtension("ViewerControl", APIUseAsEnum.MemberFunction, "SendTeleportLocal")]
         public void SendTeleportLandmarkRequest(
             ScriptInstance instance,
-            LSLKey agentId,
-            int circuitCode,
+            ViewerAgentAccessor agent,
             LSLKey landmarkId)
         {
             lock (instance)
             {
                 ViewerConnection vc;
                 ViewerCircuit viewerCircuit;
-                if (m_Clients.TryGetValue(agentId.AsUUID, out vc) &&
-                    vc.ViewerCircuits.TryGetValue((uint)circuitCode, out viewerCircuit))
+                if (m_Clients.TryGetValue(agent.AgentID, out vc) &&
+                    vc.ViewerCircuits.TryGetValue(agent.CircuitCode, out viewerCircuit))
                 {
-                    var req = new TeleportLandmarkRequest()
+                    var req = new TeleportLandmarkRequest
                     {
                         AgentID = viewerCircuit.AgentID,
                         SessionID = viewerCircuit.SessionID,

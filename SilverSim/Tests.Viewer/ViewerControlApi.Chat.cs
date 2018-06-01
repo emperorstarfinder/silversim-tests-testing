@@ -71,11 +71,10 @@ namespace SilverSim.Tests.Viewer
         [APIExtension("ViewerControl")]
         public const int CHAT_TYPE_BROADCAST = 0xFF;
 
-        [APIExtension("ViewerControl", "vcSendChatFromViewer")]
+        [APIExtension("ViewerControl", APIUseAsEnum.MemberFunction, "SendChatFromViewer")]
         public void SendChatFromViewer(
             ScriptInstance instance,
-            LSLKey agentId,
-            int circuitCode,
+            ViewerAgentAccessor agent,
             string message,
             int chatType,
             int channel)
@@ -84,8 +83,8 @@ namespace SilverSim.Tests.Viewer
             {
                 ViewerConnection vc;
                 ViewerCircuit viewerCircuit;
-                if (m_Clients.TryGetValue(agentId.AsUUID, out vc) &&
-                    vc.ViewerCircuits.TryGetValue((uint)circuitCode, out viewerCircuit))
+                if (m_Clients.TryGetValue(agent.AgentID, out vc) &&
+                    vc.ViewerCircuits.TryGetValue(agent.CircuitCode, out viewerCircuit))
                 {
                     viewerCircuit.SendMessage(new ChatFromViewer
                     {

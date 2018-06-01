@@ -247,7 +247,7 @@ namespace SilverSim.Tests.Viewer
                 {
                     throw new KeyNotFoundException();
                 }
-                return new UserInfo()
+                return new UserInfo
                 {
                     FirstName = account.Principal.FirstName,
                     LastName = account.Principal.LastName,

@@ -28,18 +28,17 @@ namespace SilverSim.Tests.Viewer
 {
     public partial class ViewerControlApi
     {
-        [APIExtension("ViewerControl", "vcSendEconomyDataRequest")]
+        [APIExtension("ViewerControl", APIUseAsEnum.MemberFunction, "SendEconomyDataRequest")]
         public void SendEconomyDataRequest(
             ScriptInstance instance,
-            LSLKey agentId,
-            int circuitCode)
+            ViewerAgentAccessor agent)
         {
             lock (instance)
             {
                 ViewerConnection vc;
                 ViewerCircuit viewerCircuit;
-                if (m_Clients.TryGetValue(agentId.AsUUID, out vc) &&
-                    vc.ViewerCircuits.TryGetValue((uint)circuitCode, out viewerCircuit))
+                if (m_Clients.TryGetValue(agent.AgentID, out vc) &&
+                    vc.ViewerCircuits.TryGetValue(agent.CircuitCode, out viewerCircuit))
                 {
                     viewerCircuit.SendMessage(new EconomyDataRequest());
                 }
