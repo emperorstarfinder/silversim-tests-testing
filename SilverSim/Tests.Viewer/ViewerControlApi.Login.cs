@@ -352,409 +352,52 @@ namespace SilverSim.Tests.Viewer
                 var viewerCircuit = new ViewerCircuit(vc.ClientUDP, (uint)circuitCode, sessionId.AsUUID, agentId, regionEndPoint);
                 vc.ClientUDP.AddCircuit(viewerCircuit);
                 viewerCircuit.Start();
-                viewerCircuit.MessageRouting.Add(MessageType.RegionHandshake, vc.HandleRegionHandshake);
+                viewerCircuit.MessageRouting.Add(MessageType.RegionHandshake, (m) => HandleLogoutReply(m, (uint)circuitCode, vc));
                 viewerCircuit.SendMessage(useCircuit);
-                viewerCircuit.MessageRouting.Add(MessageType.LogoutReply, (m) => HandleLogoutReply((uint)circuitCode, vc));
-                viewerCircuit.MessageRouting.Add(MessageType.TelehubInfo, (m) => HandleTelehubInfo((TelehubInfo)m, vc));
-                viewerCircuit.MessageRouting.Add(MessageType.TeleportLocal, (m) => HandleTeleportLocal((TeleportLocal)m, vc));
-                viewerCircuit.MessageRouting.Add(MessageType.EconomyData, (m) => vc.PostEvent(new EconomyDataReceivedEvent { AgentID = m.CircuitAgentID, RegionID = m.CircuitSceneID }));
-                viewerCircuit.MessageRouting.Add(MessageType.TeleportProgress, (m) => HandleTeleportProgress(m, vc));
-                viewerCircuit.MessageRouting.Add(MessageType.TeleportStart, (m) => HandleTeleportStart(m, vc));
-                viewerCircuit.MessageRouting.Add(MessageType.TeleportFailed, (m) => HandleTeleportFailed(m, vc));
-                viewerCircuit.MessageRouting.Add(MessageType.AlertMessage, (m) => HandleAlertMessage(m, vc));
-                viewerCircuit.MessageRouting.Add(MessageType.AgentDataUpdate, (m) => HandleAgentDataUpdate(m, vc));
-                viewerCircuit.MessageRouting.Add(MessageType.AgentDropGroup, (m) => HandleAgentDropGroup(m, vc));
-                viewerCircuit.MessageRouting.Add(MessageType.CoarseLocationUpdate, (m) => HandleCoarseLocationUpdate(m, vc));
-                viewerCircuit.MessageRouting.Add(MessageType.HealthMessage, (m) => HandleHealthMessage(m, vc));
-                viewerCircuit.MessageRouting.Add(MessageType.AvatarAnimation, (m) => HandleAvatarAnimation(m, vc));
-                viewerCircuit.MessageRouting.Add(MessageType.AvatarSitResponse, (m) => HandleAvatarSitResponse(m, vc));
-                viewerCircuit.MessageRouting.Add(MessageType.CameraConstraint, (m) => HandleCameraConstraint(m, vc));
-                viewerCircuit.MessageRouting.Add(MessageType.ClearFollowCamProperties, (m) => vc.PostEvent(new ClearFollowCamPropertiesReceivedEvent { ObjectID = ((ClearFollowCamProperties)m).ObjectID }));
-                viewerCircuit.MessageRouting.Add(MessageType.SetFollowCamProperties, (m) => HandleSetFollowCamProperties(m, vc));
-                viewerCircuit.MessageRouting.Add(MessageType.ChatFromSimulator, (m) => HandleChatFromSimulator(m, vc));
-                viewerCircuit.MessageRouting.Add(MessageType.LoadURL, (m) => HandleLoadURLReceived(m, vc));
-                viewerCircuit.MessageRouting.Add(MessageType.ScriptQuestion, (m) => HandleScriptQuestion(m, vc));
-                viewerCircuit.MessageRouting.Add(MessageType.ScriptDialog, (m) => HandleScriptDialog(m, vc));
-                viewerCircuit.MessageRouting.Add(MessageType.PreloadSound, (m) => HandlePreloadSound(m, vc));
-                viewerCircuit.MessageRouting.Add(MessageType.AttachedSound, (m) => HandleAttachedSound(m, vc));
-                viewerCircuit.MessageRouting.Add(MessageType.SoundTrigger, (m) => HandleSoundTrigger(m, vc));
-                viewerCircuit.MessageRouting.Add(MessageType.AttachedSoundGainChange, (m) => HandleAttachedSoundGainChange(m, vc));
-                viewerCircuit.MessageRouting.Add(MessageType.FeatureDisabled, (m) => HandleFeatureDisabled(m, vc));
+                viewerCircuit.MessageRouting.Add(MessageType.LogoutReply, (m) => HandleLogoutReply(m, (uint)circuitCode, vc));
+                viewerCircuit.MessageRouting.Add(MessageType.TelehubInfo, (m) => TelehubInfoReceivedEvent.ToScriptEvent((TelehubInfo)m, vc, (uint)circuitCode));
+                viewerCircuit.MessageRouting.Add(MessageType.TeleportLocal, (m) => TeleportLocalReceivedEvent.ToScriptEvent((TeleportLocal)m, vc, (uint)circuitCode));
+                viewerCircuit.MessageRouting.Add(MessageType.EconomyData, (m) => EconomyDataReceivedEvent.ToScriptEvent(m, vc, (uint)circuitCode));
+                viewerCircuit.MessageRouting.Add(MessageType.TeleportProgress, (m) => TeleportProgressReceivedEvent.ToScriptEvent(m, vc, (uint)circuitCode));
+                viewerCircuit.MessageRouting.Add(MessageType.TeleportStart, (m) => TeleportStartReceivedEvent.ToScriptEvent(m, vc, (uint)circuitCode));
+                viewerCircuit.MessageRouting.Add(MessageType.TeleportFailed, (m) => TeleportFailedReceivedEvent.ToScriptEvent(m, vc, (uint)circuitCode));
+                viewerCircuit.MessageRouting.Add(MessageType.AlertMessage, (m) => AlertMessageReceivedEvent.ToScriptEvent(m, vc, (uint)circuitCode));
+                viewerCircuit.MessageRouting.Add(MessageType.AgentDataUpdate, (m) => AgentDataUpdateReceivedEvent.ToScriptEvent(m, vc, (uint)circuitCode));
+                viewerCircuit.MessageRouting.Add(MessageType.AgentDropGroup, (m) => AgentDropGroupReceivedEvent.ToScriptEvent(m, vc, (uint)circuitCode));
+                viewerCircuit.MessageRouting.Add(MessageType.CoarseLocationUpdate, (m) => CoarseLocationUpdateReceivedEvent.ToScriptEvent(m, vc, (uint)circuitCode));
+                viewerCircuit.MessageRouting.Add(MessageType.HealthMessage, (m) => HealthMessageReceivedEvent.ToScriptEvent(m, vc, (uint)circuitCode));
+                viewerCircuit.MessageRouting.Add(MessageType.AvatarAnimation, (m) => AvatarAnimationReceivedEvent.ToScriptEvent(m, vc, (uint)circuitCode));
+                viewerCircuit.MessageRouting.Add(MessageType.AvatarSitResponse, (m) => AvatarSitResponseReceivedEvent.ToScriptEvent(m, vc, (uint)circuitCode));
+                viewerCircuit.MessageRouting.Add(MessageType.CameraConstraint, (m) => CameraConstraintReceivedEvent.ToScriptEvent(m, vc, (uint)circuitCode));
+                viewerCircuit.MessageRouting.Add(MessageType.ClearFollowCamProperties, (m) => ClearFollowCamPropertiesReceivedEvent.ToScriptEvent(m, vc, (uint)circuitCode));
+                viewerCircuit.MessageRouting.Add(MessageType.SetFollowCamProperties, (m) => SetFollowCamPropertiesReceivedEvent.ToScriptEvent(m, vc, (uint)circuitCode));
+                viewerCircuit.MessageRouting.Add(MessageType.ChatFromSimulator, (m) => ChatFromSimulatorReceivedEvent.ToScriptEvent(m, vc, (uint)circuitCode));
+                viewerCircuit.MessageRouting.Add(MessageType.EstateCovenantReply, (m) => EstateCovenantReplyReceivedEvent.ToScriptEvent(m, vc, (uint)circuitCode));
+                viewerCircuit.MessageRouting.Add(MessageType.LoadURL, (m) => LoadURLReceivedEvent.ToScriptEvent(m, vc, (uint)circuitCode));
+                viewerCircuit.MessageRouting.Add(MessageType.ScriptTeleportRequest, (m) => ScriptTeleportRequestReceivedEvent.ToScriptEvent(m, vc, (uint)circuitCode));
+                viewerCircuit.MessageRouting.Add(MessageType.ScriptQuestion, (m) => ScriptQuestionReceivedEvent.ToScriptEvent(m, vc, (uint)circuitCode));
+                viewerCircuit.MessageRouting.Add(MessageType.ScriptDialog, (m) => ScriptDialogReceivedEvent.ToScriptEvent(m, vc, (uint)circuitCode));
+                viewerCircuit.MessageRouting.Add(MessageType.ScriptControlChange, (m) => ScriptControlChangeReceivedEvent.ToScriptEvent(m, vc, (uint)circuitCode));
+                viewerCircuit.MessageRouting.Add(MessageType.PreloadSound, (m) => PreloadSoundReceivedEvent.ToScriptEvent(m, vc, (uint)circuitCode));
+                viewerCircuit.MessageRouting.Add(MessageType.AttachedSound, (m) => AttachedSoundReceivedEvent.ToScriptEvent(m, vc, (uint)circuitCode));
+                viewerCircuit.MessageRouting.Add(MessageType.SoundTrigger, (m) => SoundTriggerReceivedEvent.ToScriptEvent(m, vc, (uint)circuitCode));
+                viewerCircuit.MessageRouting.Add(MessageType.AttachedSoundGainChange, (m) => AttachedSoundGainChangeReceivedEvent.ToScriptEvent(m, vc, (uint)circuitCode));
+                viewerCircuit.MessageRouting.Add(MessageType.FeatureDisabled, (m) => FeatureDisabledReceivedEvent.ToScriptEvent(m, vc, (uint)circuitCode));
+                viewerCircuit.MessageRouting.Add(MessageType.PayPriceReply, (m) => PayPriceReplyReceivedEvent.ToScriptEvent(m, vc, (uint)circuitCode));
                 vc.ViewerCircuits.Add((uint)circuitCode, viewerCircuit);
                 return new ViewerAgentAccessor(agent.ID, (uint)circuitCode, capsPath);
             }
         }
 
-        private void HandleFeatureDisabled(Message m, ViewerConnection vc)
-        {
-            var res = (FeatureDisabled)m;
-            vc.PostEvent(new FeatureDisabledReceivedEvent
-            {
-                AgentID = res.AgentID,
-                TransactionID = res.TransactionID,
-                ErrorMessage = res.ErrorMessage
-            });
-        }
-
-        private void HandleAttachedSoundGainChange(Message m, ViewerConnection vc)
-        {
-            var res = (AttachedSoundGainChange)m;
-            vc.PostEvent(new AttachedSoundGainChangeReceivedEvent
-            {
-                ObjectID = res.ObjectID,
-                Gain = res.Gain
-            });
-        }
-
-        private void HandleSoundTrigger(Message m, ViewerConnection vc)
-        {
-            var res = (SoundTrigger)m;
-            vc.PostEvent(new SoundTriggerReceivedEvent
-            {
-                SoundID = res.SoundID,
-                OwnerID = res.OwnerID,
-                ObjectID = res.ObjectID,
-                ParentID = res.ParentID,
-                GridX = res.GridPosition.GridX,
-                GridY = res.GridPosition.GridY,
-                Position = res.Position,
-                Gain = res.Gain
-            });
-        }
-
-        private void HandleAttachedSound(Message m, ViewerConnection vc)
-        {
-            var res = (AttachedSound)m;
-            vc.PostEvent(new AttachedSoundReceivedEvent
-            {
-                SoundID = res.SoundID,
-                ObjectID = res.ObjectID,
-                OwnerID = res.OwnerID,
-                Gain = res.Gain,
-                Flags = (int)res.Flags
-            });
-        }
-
-        private void HandlePreloadSound(Message m, ViewerConnection vc)
-        {
-            var res = (PreloadSound)m;
-            vc.PostEvent(new PreloadSoundReceivedEvent
-            {
-                ObjectID = res.ObjectID,
-                OwnerID = res.OwnerID,
-                SoundID = res.SoundID
-            });
-        }
-
-        private void HandleScriptControlChange(Message m, ViewerConnection vc)
-        {
-            var res = (ScriptControlChange)m;
-            var ev = new ScriptControlChangeReceivedEvent();
-            foreach(ScriptControlChange.DataEntry d in res.Data)
-            {
-                ev.ControlData.Add(d.TakeControls.ToLSLBoolean());
-                ev.ControlData.Add((int)d.Controls);
-                ev.ControlData.Add(d.PassToAgent.ToLSLBoolean());
-            }
-            vc.PostEvent(ev);
-        }
-
-        private void HandleScriptDialog(Message m, ViewerConnection vc)
-        {
-            var res = (ScriptDialog)m;
-            var ev = new ScriptDialogReceivedEvent
-            {
-                ObjectID = res.ObjectID,
-                FirstName = res.FirstName,
-                LastName = res.LastName,
-                ObjectName = res.ObjectName,
-                Message = res.Message,
-                ChatChannel = res.ChatChannel,
-                ImageID = res.ImageID
-            };
-            foreach(string button in res.Buttons)
-            {
-                ev.ButtonData.Add(button);
-            }
-            foreach(UUID owner in res.OwnerData)
-            {
-                ev.OwnerData.Add(owner);
-            }
-            vc.PostEvent(ev);
-        }
-
-        private void HandleScriptQuestion(Message m, ViewerConnection vc)
-        {
-            var res = (ScriptQuestion)m;
-            vc.PostEvent(new ScriptQuestionReceivedEvent
-            {
-                TaskID = res.TaskID,
-                ItemID = res.ItemID,
-                ObjectName = res.ObjectName,
-                ObjectOwner = res.ObjectOwner,
-                Questions = (int)res.Questions,
-                ExperienceID = res.ExperienceID
-            });
-        }
-
-        private void HandleScriptTeleportRequest(Message m, ViewerConnection vc)
-        {
-            var res = (ScriptTeleportRequest)m;
-            vc.PostEvent(new ScriptTeleportRequestReceivedEvent
-            {
-                ObjectName = res.ObjectName,
-                SimName = res.SimName,
-                SimPosition = res.SimPosition,
-                LookAt = res.LookAt
-            });
-        }
-
-        private void HandleLoadURLReceived(Message m, ViewerConnection vc)
-        {
-            var res = (LoadURL)m;
-            vc.PostEvent(new LoadURLReceivedEvent
-            {
-                ObjectName = res.ObjectName,
-                ObjectID = res.ObjectID,
-                OwnerID = res.OwnerID,
-                OwnerIsGroup = res.OwnerIsGroup.ToLSLBoolean(),
-                Message = res.Message,
-                URL = res.URL
-            });
-        }
-
-        private void HandleEstateCovenantReply(Message m, ViewerConnection vc)
-        {
-            var res = (EstateCovenantReply)m;
-            vc.PostEvent(new EstateCovenantReplyReceivedEvent
-            {
-                CovenantID = res.CovenantID,
-                CovenantTimestamp = res.CovenantTimestamp,
-                EstateName = res.EstateName,
-                EstateOwnerID = res.EstateOwnerID
-            });
-        }
-
-        private void HandleChatFromSimulator(Message m, ViewerConnection vc)
-        {
-            var res = (ChatFromSimulator)m;
-            vc.PostEvent(new ChatFromSimulatorReceivedEvent
-            {
-                FromName = res.FromName,
-                SourceID = res.SourceID,
-                OwnerID = res.OwnerID,
-                SourceType = (int)res.SourceType,
-                ChatType = (int)res.ChatType,
-                AudibleLevel = (int)res.Audible,
-                Position = res.Position,
-                Message = res.Message
-            });
-        }
-
-        private void HandleSetFollowCamProperties(Message m, ViewerConnection vc)
-        {
-            var res = (SetFollowCamProperties)m;
-            var ev = new SetFollowCamPropertiesReceivedEvent
-            {
-                ObjectID = res.ObjectID
-            };
-            foreach(SetFollowCamProperties.CameraProperty prop in res.CameraProperties)
-            {
-                ev.CameraParams.Add(prop.Type);
-                ev.CameraParams.Add(prop.Value);
-            }
-            vc.PostEvent(ev);
-        }
-
-        private void HandleCameraConstraint(Message m, ViewerConnection vc)
-        {
-            var res = (CameraConstraint)m;
-            vc.PostEvent(new CameraConstraintReceivedEvent
-            {
-                CameraCollidePlane = new Quaternion(res.CameraCollidePlane.X, res.CameraCollidePlane.Y, res.CameraCollidePlane.Z, res.CameraCollidePlane.W)
-            });
-        }
-
-        private void HandleAvatarSitResponse(Message m, ViewerConnection vc)
-        {
-            var res = (AvatarSitResponse)m;
-            vc.PostEvent(new AvatarSitResponseReceivedEvent
-            {
-                SitObject = res.SitObject,
-                IsAutopilot = res.IsAutoPilot.ToLSLBoolean(),
-                SitPosition = res.SitPosition,
-                SitRotation = res.SitRotation,
-                CameraEyeOffset = res.CameraEyeOffset,
-                CameraAtOffset = res.CameraAtOffset,
-                ForceMouselook = res.ForceMouselook.ToLSLBoolean()
-            });
-        }
-
-        private void HandleAvatarAnimation(Message m, ViewerConnection vc)
-        {
-            var res = (AvatarAnimation)m;
-            var ev = new AvatarAnimationReceivedEvent
-            {
-                Sender = res.Sender
-            };
-
-            foreach(AvatarAnimation.AnimationData ad in res.AnimationList)
-            {
-                ev.AnimationData.Add(new LSLKey(ad.AnimID));
-                ev.AnimationData.Add((int)ad.AnimSequenceID);
-                ev.AnimationData.Add(new LSLKey(ad.ObjectID));
-            }
-            vc.PostEvent(ev);
-        }
-
-        private void HandleHealthMessage(Message m, ViewerConnection vc)
-        {
-            var res = (HealthMessage)m;
-            vc.PostEvent(new HealthMessageReceivedEvent
-            {
-                Health = res.Health
-            });
-        }
-
-        private void HandleCoarseLocationUpdate(Message m, ViewerConnection vc)
-        {
-            var res = (CoarseLocationUpdate)m;
-            var ev = new CoarseLocationUpdateReceivedEvent
-            {
-                Prey = res.Prey,
-                You = res.You
-            };
-            foreach(CoarseLocationUpdate.AgentDataEntry d in res.AgentData)
-            {
-                ev.AgentData.Add(new LSLKey(d.AgentID));
-                ev.AgentData.Add(d.X);
-                ev.AgentData.Add(d.Y);
-                ev.AgentData.Add(d.Z);
-            }
-            vc.PostEvent(ev);
-        }
-
-        private void HandleAgentDropGroup(Message m, ViewerConnection vc)
-        {
-            var res = (AgentDropGroup)m;
-            vc.PostEvent(new AgentDropGroupReceivedEvent
-            {
-                AgentID = res.AgentID,
-                GroupID = res.GroupID
-            });
-        }
-
-        private void HandleAgentDataUpdate(Message m, ViewerConnection vc)
-        {
-            var res = (AgentDataUpdate)m;
-            vc.PostEvent(new AgentDataUpdateReceivedEvent
-            {
-                AgentID = res.AgentID,
-                FirstName = res.FirstName,
-                LastName = res.LastName,
-                GroupTitle = res.GroupTitle,
-                ActiveGroupID = res.ActiveGroupID,
-                GroupPowers = (long)res.GroupPowers,
-                GroupName = res.GroupName
-            });
-        }
-
-        private void HandleAlertMessage(Message m, ViewerConnection vc)
-        {
-            var res = (AlertMessage)m;
-            var ev = new AlertMessageReceivedEvent
-            {
-                Message = res.Message
-            };
-
-            foreach(AlertMessage.Data d in res.AlertInfo)
-            {
-                ev.AlertInfo.Add(d.Message);
-                ev.AlertInfo.Add(d.ExtraParams.ToHexString());
-            }
-            vc.PostEvent(ev);
-        }
-
-        private void HandleTeleportFailed(Message m, ViewerConnection vc)
-        {
-            var res = (TeleportFailed)m;
-            var ev = new TeleportFailedReceivedEvent
-            {
-                AgentID = res.CircuitAgentID,
-                RegionID = res.CircuitSceneID,
-                Reason = res.Reason
-            };
-
-            foreach(TeleportFailed.AlertInfoEntry e in res.AlertInfo)
-            {
-                ev.AlertInfo.Add(e.Message);
-                ev.AlertInfo.Add(e.ExtraParams);
-            }
-            vc.PostEvent(ev);
-        }
-
-        private void HandleTeleportStart(Message m, ViewerConnection vc)
-        {
-            var res = (TeleportStart)m;
-            vc.PostEvent(new TeleportStartReceivedEvent
-            {
-                AgentID = res.CircuitAgentID,
-                RegionID = res.CircuitSceneID,
-                TeleportFlags = (int)res.TeleportFlags
-            });
-        }
-
-        private void HandleTeleportProgress(Message m, ViewerConnection vc)
-        {
-            var res = (TeleportProgress)m;
-            vc.PostEvent(new TeleportProgressReceivedEvent
-            {
-                AgentID = res.CircuitAgentID,
-                RegionID = res.CircuitSceneID,
-                TeleportFlags = (int)res.TeleportFlags,
-                Message = res.Message
-            });
-        }
-
-        private void HandleLogoutReply(uint circuitCode, ViewerConnection vc)
+        private void HandleLogoutReply(Message m, uint circuitCode, ViewerConnection vc)
         {
             ViewerCircuit removeCircuit;
             if (vc.ViewerCircuits.TryGetValue(circuitCode, out removeCircuit))
             {
-                vc.PostEvent(new LogoutReplyReceivedEvent(removeCircuit.AgentID, removeCircuit.RegionData.RegionID, (int)removeCircuit.CircuitCode));
+                vc.PostEvent(new LogoutReplyReceivedEvent(m, removeCircuit.CircuitCode));
                 removeCircuit.Stop();
                 vc.ClientUDP.RemoveCircuit(removeCircuit);
             }
-        }
-
-        private void HandleTelehubInfo(TelehubInfo m, ViewerConnection vc)
-        {
-            var ev = new TelehubInfoReceivedEvent
-            {
-                AgentID = m.CircuitAgentID,
-                RegionID = m.CircuitSceneID,
-                ObjectID = m.ObjectID,
-                ObjectName = m.ObjectName,
-                TelehubPos = m.TelehubPos,
-                TelehubRot = m.TelehubRot
-            };
-            foreach (Vector3 v in m.SpawnPoints)
-            {
-                ev.SpawnPointPos.Add(v);
-            }
-            vc.PostEvent(ev);
-        }
-
-        private void HandleTeleportLocal(TeleportLocal m, ViewerConnection vc)
-        {
-            vc.PostEvent(new TeleportLocalReceivedEvent
-            {
-                AgentID = m.CircuitAgentID,
-                RegionID = m.CircuitSceneID,
-                Position = m.Position,
-                LookAt = m.LookAt,
-                TeleportFlags = (int)m.TeleportFlags
-            });
         }
 
         [APIExtension("ViewerControl", APIUseAsEnum.MemberFunction, "Logout")]

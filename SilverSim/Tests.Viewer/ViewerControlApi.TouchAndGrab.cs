@@ -153,5 +153,80 @@ namespace SilverSim.Tests.Viewer
                 }
             }
         }
+
+        [APIExtension("ViewerControl", APIUseAsEnum.MemberFunction, "SendObjectSelect")]
+        public void SendObjectSelect(
+            ScriptInstance instance,
+            ViewerAgentAccessor agent,
+            AnArray objectlocalids)
+        {
+            lock (instance)
+            {
+                ViewerConnection vc;
+                ViewerCircuit viewerCircuit;
+                if (m_Clients.TryGetValue(agent.AgentID, out vc) &&
+                    vc.ViewerCircuits.TryGetValue(agent.CircuitCode, out viewerCircuit))
+                {
+                    var msg = new ObjectSelect
+                    {
+                        AgentID = viewerCircuit.AgentID,
+                        SessionID = viewerCircuit.SessionID,
+                    };
+                    foreach(IValue iv in objectlocalids)
+                    {
+                        msg.ObjectData.Add(iv.AsUInt);
+                    }
+                    viewerCircuit.SendMessage(msg);
+                }
+            }
+        }
+
+        [APIExtension("ViewerControl", APIUseAsEnum.MemberFunction, "SendObjectDeselect")]
+        public void SendObjectDeselect(
+            ScriptInstance instance,
+            ViewerAgentAccessor agent,
+            AnArray objectlocalids)
+        {
+            lock (instance)
+            {
+                ViewerConnection vc;
+                ViewerCircuit viewerCircuit;
+                if (m_Clients.TryGetValue(agent.AgentID, out vc) &&
+                    vc.ViewerCircuits.TryGetValue(agent.CircuitCode, out viewerCircuit))
+                {
+                    var msg = new ObjectDeselect
+                    {
+                        AgentID = viewerCircuit.AgentID,
+                        SessionID = viewerCircuit.SessionID,
+                    };
+                    foreach (IValue iv in objectlocalids)
+                    {
+                        msg.ObjectData.Add(iv.AsUInt);
+                    }
+                    viewerCircuit.SendMessage(msg);
+                }
+            }
+        }
+
+        [APIExtension("ViewerControl", APIUseAsEnum.MemberFunction, "SendRequestPayPrice")]
+        public void SendRequestPayPrice(
+            ScriptInstance instance,
+            ViewerAgentAccessor agent,
+            LSLKey objectID)
+        {
+            lock (instance)
+            {
+                ViewerConnection vc;
+                ViewerCircuit viewerCircuit;
+                if (m_Clients.TryGetValue(agent.AgentID, out vc) &&
+                    vc.ViewerCircuits.TryGetValue(agent.CircuitCode, out viewerCircuit))
+                {
+                    viewerCircuit.SendMessage(new RequestPayPrice
+                    {
+                        ObjectID = objectID.AsUUID
+                    });
+                }
+            }
+        }
     }
 }

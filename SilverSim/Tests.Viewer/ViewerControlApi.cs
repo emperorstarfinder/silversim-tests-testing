@@ -68,11 +68,11 @@ namespace SilverSim.Tests.Viewer
         {
             public readonly RwLockedDictionary<uint, ViewerCircuit> ViewerCircuits = new RwLockedDictionary<uint, ViewerCircuit>();
             public readonly UDPCircuitsManager ClientUDP;
-            readonly SceneList m_Scenes;
-            readonly UUID AgentID;
-            readonly UUID m_SceneID;
-            readonly UUID m_PartID;
-            readonly UUID m_ItemID;
+            private readonly SceneList m_Scenes;
+            public readonly UUID AgentID;
+            private readonly UUID m_SceneID;
+            private readonly UUID m_PartID;
+            private readonly UUID m_ItemID;
 
             public ViewerConnection(SceneList scenes, UUID agentID, UUID sceneID, UUID partID, UUID itemID)
             {
@@ -94,12 +94,6 @@ namespace SilverSim.Tests.Viewer
                     circuit.Stop();
                 }
                 ClientUDP.Shutdown();
-            }
-
-            public void HandleRegionHandshake(Message m)
-            {
-                var msg = (RegionHandshake)m;
-                PostEvent(new RegionHandshakeReceivedEvent(AgentID, msg.RegionID));
             }
 
             public void PostEvent(IScriptEvent ev)

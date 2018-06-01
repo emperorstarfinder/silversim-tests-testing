@@ -22,6 +22,20 @@
 using SilverSim.Scene.Types.Script.Events;
 using SilverSim.Scripting.Lsl;
 using SilverSim.Types;
+using SilverSim.Viewer.Messages;
+using SilverSim.Viewer.Messages.Agent;
+using SilverSim.Viewer.Messages.Alert;
+using SilverSim.Viewer.Messages.Avatar;
+using SilverSim.Viewer.Messages.Camera;
+using SilverSim.Viewer.Messages.Chat;
+using SilverSim.Viewer.Messages.Common;
+using SilverSim.Viewer.Messages.Estate;
+using SilverSim.Viewer.Messages.Object;
+using SilverSim.Viewer.Messages.Region;
+using SilverSim.Viewer.Messages.Script;
+using SilverSim.Viewer.Messages.Sound;
+using SilverSim.Viewer.Messages.Telehub;
+using SilverSim.Viewer.Messages.Teleport;
 using System;
 using System.ComponentModel;
 
@@ -29,30 +43,48 @@ namespace SilverSim.Tests.Viewer
 {
     public partial class ViewerControlApi
     {
+        [APIExtension("ViewerControl", "agentinfo")]
+        [APIAccessibleMembers]
+        public sealed class AgentInfo
+        {
+            public LSLKey AgentID { get; }
+            public int CircuitCode { get; }
+            public LSLKey RegionID { get; }
+
+            public AgentInfo(Message m, uint circuitCode)
+            {
+                AgentID = m.CircuitAgentID;
+                CircuitCode = CircuitCode;
+                RegionID = m.CircuitSceneID;
+            }
+        }
+
         #region regionhandshake_received event
         [TranslatedScriptEvent("regionhandshake_received")]
         public class RegionHandshakeReceivedEvent : IScriptEvent
         {
             [TranslatedScriptEventParameter(0)]
-            public LSLKey AgentID { get; }
+            public AgentInfo Agent;
 
             [TranslatedScriptEventParameter(1)]
-            public LSLKey RegionID { get; }
+            public LSLKey RegionID;
 
-            public RegionHandshakeReceivedEvent(LSLKey agentID, LSLKey regionID)
+            public static void HandleRegionHandshake(Message m, ViewerConnection vc, uint circuitCode)
             {
-                AgentID = agentID;
-                RegionID = regionID;
+                var msg = (RegionHandshake)m;
+                vc.PostEvent(new RegionHandshakeReceivedEvent
+                {
+                    Agent = new AgentInfo(m, circuitCode),
+                    RegionID = msg.RegionID
+                });
             }
         }
 
         [APIExtension("ViewerControl", "regionhandshake_received")]
         [StateEventDelegate]
         public delegate void RegionHandshakeReceived(
-            [Description("Agent id")]
-            LSLKey agentId,
-            [Description("Region id")]
-            LSLKey regionId);
+            [Description("Agent info")]
+            AgentInfo agent);
         #endregion
 
         #region logoutreply_received
@@ -60,31 +92,19 @@ namespace SilverSim.Tests.Viewer
         public class LogoutReplyReceivedEvent : IScriptEvent
         {
             [TranslatedScriptEventParameter(0)]
-            public LSLKey AgentID { get; }
+            public AgentInfo Agent { get; }
 
-            [TranslatedScriptEventParameter(1)]
-            public LSLKey RegionID { get; }
-
-            [TranslatedScriptEventParameter(2)]
-            public int CircuitCode { get; }
-
-            public LogoutReplyReceivedEvent(LSLKey agentID, LSLKey regionID, int circuitcode)
+            public LogoutReplyReceivedEvent(Message m, uint circuitcode)
             {
-                AgentID = agentID;
-                RegionID = regionID;
-                CircuitCode = circuitcode;
+                Agent = new AgentInfo(m, circuitcode);
             }
         }
 
         [APIExtension("ViewerControl", "logoutreply_received")]
         [StateEventDelegate]
         public delegate void LogoutReplyReceived(
-            [Description("Agent id")]
-            LSLKey agentId,
-            [Description("Region id")]
-            LSLKey regionId,
-            [Description("Circuit code")]
-            int circuitCode);
+            [Description("Agent info")]
+            AgentInfo agent);
         #endregion
 
         #region telehubinfo_received
@@ -92,26 +112,41 @@ namespace SilverSim.Tests.Viewer
         public class TelehubInfoReceivedEvent : IScriptEvent
         {
             [TranslatedScriptEventParameter(0)]
-            public LSLKey AgentID;
+            public AgentInfo Agent;
             [TranslatedScriptEventParameter(1)]
-            public LSLKey RegionID;
-            [TranslatedScriptEventParameter(2)]
             public LSLKey ObjectID;
-            [TranslatedScriptEventParameter(3)]
+            [TranslatedScriptEventParameter(2)]
             public string ObjectName;
-            [TranslatedScriptEventParameter(4)]
+            [TranslatedScriptEventParameter(3)]
             public Vector3 TelehubPos;
-            [TranslatedScriptEventParameter(5)]
+            [TranslatedScriptEventParameter(4)]
             public Quaternion TelehubRot;
-            [TranslatedScriptEventParameter(6)]
+            [TranslatedScriptEventParameter(5)]
             public AnArray SpawnPointPos = new AnArray();
+
+            public static void ToScriptEvent(Message m, ViewerConnection vc, uint circuitCode)
+            {
+                var res = (TelehubInfo)m;
+                var ev = new TelehubInfoReceivedEvent
+                {
+                    Agent = new AgentInfo(m, circuitCode),
+                    ObjectID = res.ObjectID,
+                    ObjectName = res.ObjectName,
+                    TelehubPos = res.TelehubPos,
+                    TelehubRot = res.TelehubRot
+                };
+                foreach (Vector3 v in res.SpawnPoints)
+                {
+                    ev.SpawnPointPos.Add(v);
+                }
+                vc.PostEvent(ev);
+            }
         }
 
         [APIExtension("ViewerControl", "telehubinfo_received")]
         [StateEventDelegate]
         public delegate void TelehubInfoReceived(
-            LSLKey agentId,
-            LSLKey regionId,
+            AgentInfo agent,
             LSLKey objectId,
             string objectName,
             Vector3 telehubPos,
@@ -123,22 +158,30 @@ namespace SilverSim.Tests.Viewer
         public class TeleportLocalReceivedEvent : IScriptEvent
         {
             [TranslatedScriptEventParameter(0)]
-            public LSLKey AgentID;
+            public AgentInfo Agent;
             [TranslatedScriptEventParameter(1)]
-            public LSLKey RegionID;
-            [TranslatedScriptEventParameter(2)]
             public Vector3 Position;
-            [TranslatedScriptEventParameter(3)]
+            [TranslatedScriptEventParameter(2)]
             public Vector3 LookAt;
-            [TranslatedScriptEventParameter(4)]
+            [TranslatedScriptEventParameter(3)]
             public int TeleportFlags;
+
+            public static void ToScriptEvent(TeleportLocal m, ViewerConnection vc, uint circuitCode)
+            {
+                vc.PostEvent(new TeleportLocalReceivedEvent
+                {
+                    Agent = new AgentInfo(m, circuitCode),
+                    Position = m.Position,
+                    LookAt = m.LookAt,
+                    TeleportFlags = (int)m.TeleportFlags
+                });
+            }
         }
 
         [APIExtension("ViewerControl", "teleportlocal_received")]
         [StateEventDelegate]
         public delegate void TeleportLocalReceived(
-            LSLKey agentId,
-            LSLKey regionId,
+            AgentInfo agent,
             Vector3 position,
             Vector3 lookAt,
             int teleportFlags);
@@ -149,20 +192,28 @@ namespace SilverSim.Tests.Viewer
         public class TeleportProgressReceivedEvent : IScriptEvent
         {
             [TranslatedScriptEventParameter(0)]
-            public LSLKey AgentID;
+            public AgentInfo Agent;
             [TranslatedScriptEventParameter(1)]
-            public LSLKey RegionID;
-            [TranslatedScriptEventParameter(2)]
             public int TeleportFlags;
-            [TranslatedScriptEventParameter(3)]
+            [TranslatedScriptEventParameter(2)]
             public string Message;
+
+            public static void ToScriptEvent(Message m, ViewerConnection vc, uint circuitCode)
+            {
+                var res = (TeleportProgress)m;
+                vc.PostEvent(new TeleportProgressReceivedEvent
+                {
+                    Agent = new AgentInfo(m, circuitCode),
+                    TeleportFlags = (int)res.TeleportFlags,
+                    Message = res.Message
+                });
+            }
         }
 
         [APIExtension("ViewerControl", "teleportprogress_received")]
         [StateEventDelegate]
         public delegate void TeleportProgressReceived(
-            LSLKey agentId,
-            LSLKey regionId,
+            AgentInfo agent,
             int teleportFlags,
             string message);
         #endregion
@@ -172,18 +223,25 @@ namespace SilverSim.Tests.Viewer
         public class TeleportStartReceivedEvent : IScriptEvent
         {
             [TranslatedScriptEventParameter(0)]
-            public LSLKey AgentID;
+            public AgentInfo Agent;
             [TranslatedScriptEventParameter(1)]
-            public LSLKey RegionID;
-            [TranslatedScriptEventParameter(2)]
             public int TeleportFlags;
+
+            public static void ToScriptEvent(Message m, ViewerConnection vc, uint circuitCode)
+            {
+                var res = (TeleportStart)m;
+                vc.PostEvent(new TeleportStartReceivedEvent
+                {
+                    Agent = new AgentInfo(m, circuitCode),
+                    TeleportFlags = (int)res.TeleportFlags
+                });
+            }
         }
 
         [APIExtension("ViewerControl", "teleportstart_received")]
         [StateEventDelegate]
         public delegate void TeleportStartReceived(
-            LSLKey agentId,
-            LSLKey regionId,
+            AgentInfo agent,
             int teleportFlags);
         #endregion
 
@@ -192,20 +250,34 @@ namespace SilverSim.Tests.Viewer
         public class TeleportFailedReceivedEvent : IScriptEvent
         {
             [TranslatedScriptEventParameter(0)]
-            public LSLKey AgentID;
+            public AgentInfo Agent;
             [TranslatedScriptEventParameter(1)]
-            public LSLKey RegionID;
-            [TranslatedScriptEventParameter(2)]
             public LSLKey Reason;
-            [TranslatedScriptEventParameter(3)]
+            [TranslatedScriptEventParameter(2)]
             public AnArray AlertInfo = new AnArray();
+
+            public static void ToScriptEvent(Message m, ViewerConnection vc, uint circuitCode)
+            {
+                var res = (TeleportFailed)m;
+                var ev = new TeleportFailedReceivedEvent
+                {
+                    Agent = new AgentInfo(m, circuitCode),
+                    Reason = res.Reason
+                };
+
+                foreach (TeleportFailed.AlertInfoEntry e in res.AlertInfo)
+                {
+                    ev.AlertInfo.Add(e.Message);
+                    ev.AlertInfo.Add(e.ExtraParams);
+                }
+                vc.PostEvent(ev);
+            }
         }
 
         [APIExtension("ViewerControl", "teleportfailed_received")]
         [StateEventDelegate]
         public delegate void TeleportFailedReceived(
-            LSLKey agentId,
-            LSLKey regionId,
+            AgentInfo agent,
             string reason,
             AnArray alertInfo);
         #endregion
@@ -215,16 +287,21 @@ namespace SilverSim.Tests.Viewer
         public class EconomyDataReceivedEvent : IScriptEvent
         {
             [TranslatedScriptEventParameter(0)]
-            public LSLKey AgentID;
-            [TranslatedScriptEventParameter(1)]
-            public LSLKey RegionID;
+            public AgentInfo Agent;
+
+            public static void ToScriptEvent(Message m, ViewerConnection vc, uint circuitCode)
+            {
+                vc.PostEvent(new EconomyDataReceivedEvent
+                {
+                    Agent = new AgentInfo(m, circuitCode),
+                });
+            }
         }
 
         [APIExtension("ViewerControl", "economydata_received")]
         [StateEventDelegate]
         public delegate void EconomyDataReceived(
-            LSLKey agentId,
-            LSLKey regionId);
+            AgentInfo agent);
         #endregion
 
         #region alertmessage_received
@@ -232,14 +309,34 @@ namespace SilverSim.Tests.Viewer
         public class AlertMessageReceivedEvent : IScriptEvent
         {
             [TranslatedScriptEventParameter(0)]
-            public string Message;
+            public AgentInfo Agent;
             [TranslatedScriptEventParameter(1)]
+            public string Message;
+            [TranslatedScriptEventParameter(2)]
             public AnArray AlertInfo = new AnArray();
+
+            public static void ToScriptEvent(Message m, ViewerConnection vc, uint circuitCode)
+            {
+                var res = (AlertMessage)m;
+                var ev = new AlertMessageReceivedEvent
+                {
+                    Agent = new AgentInfo(m, circuitCode),
+                    Message = res.Message
+                };
+
+                foreach (AlertMessage.Data d in res.AlertInfo)
+                {
+                    ev.AlertInfo.Add(d.Message);
+                    ev.AlertInfo.Add(d.ExtraParams.ToHexString());
+                }
+                vc.PostEvent(ev);
+            }
         }
 
         [APIExtension("ViewerControl", "alertmessage_received")]
         [StateEventDelegate]
         public delegate void AlertMessageReceived(
+            AgentInfo agent,
             string message,
             AnArray alertInfo);
         #endregion
@@ -249,7 +346,7 @@ namespace SilverSim.Tests.Viewer
         public class AgentDataUpdateReceivedEvent : IScriptEvent
         {
             [TranslatedScriptEventParameter(0)]
-            public LSLKey AgentID = new LSLKey();
+            public AgentInfo Agent;
             [TranslatedScriptEventParameter(1)]
             public string FirstName = string.Empty;
             [TranslatedScriptEventParameter(2)]
@@ -262,12 +359,27 @@ namespace SilverSim.Tests.Viewer
             public long GroupPowers;
             [TranslatedScriptEventParameter(6)]
             public string GroupName = string.Empty;
+
+            public static void ToScriptEvent(Message m, ViewerConnection vc, uint circuitCode)
+            {
+                var res = (AgentDataUpdate)m;
+                vc.PostEvent(new AgentDataUpdateReceivedEvent
+                {
+                    Agent = new AgentInfo(m, circuitCode),
+                    FirstName = res.FirstName,
+                    LastName = res.LastName,
+                    GroupTitle = res.GroupTitle,
+                    ActiveGroupID = res.ActiveGroupID,
+                    GroupPowers = (long)res.GroupPowers,
+                    GroupName = res.GroupName
+                });
+            }
         }
 
         [APIExtension("ViewerControl", "agentdataupdate_received")]
         [StateEventDelegate]
         public delegate void AgentDataUpdateReceived(
-            LSLKey agentID,
+            AgentInfo agent,
             string firstName,
             string lastName,
             string groupTitle,
@@ -281,15 +393,25 @@ namespace SilverSim.Tests.Viewer
         public class AgentDropGroupReceivedEvent : IScriptEvent
         {
             [TranslatedScriptEventParameter(0)]
-            public LSLKey AgentID = new LSLKey();
+            public AgentInfo Agent;
             [TranslatedScriptEventParameter(1)]
             public LSLKey GroupID = new LSLKey();
+
+            public static void ToScriptEvent(Message m, ViewerConnection vc, uint circuitCode)
+            {
+                var res = (AgentDropGroup)m;
+                vc.PostEvent(new AgentDropGroupReceivedEvent
+                {
+                    Agent = new AgentInfo(m, circuitCode),
+                    GroupID = res.GroupID
+                });
+            }
         }
 
         [APIExtension("ViewerControl", "agentdropgroup_received")]
         [StateEventDelegate]
         public delegate void AgentDropGroupReceived(
-            LSLKey agentID,
+            AgentInfo agent,
             LSLKey groupID);
         #endregion
 
@@ -298,15 +420,37 @@ namespace SilverSim.Tests.Viewer
         public class CoarseLocationUpdateReceivedEvent : IScriptEvent
         {
             [TranslatedScriptEventParameter(0)]
-            public int You;
+            public AgentInfo Agent;
             [TranslatedScriptEventParameter(1)]
-            public int Prey;
+            public int You;
             [TranslatedScriptEventParameter(2)]
+            public int Prey;
+            [TranslatedScriptEventParameter(3)]
             public AnArray AgentData = new AnArray();
+
+            public static void ToScriptEvent(Message m, ViewerConnection vc, uint circuitCode)
+            {
+                var res = (CoarseLocationUpdate)m;
+                var ev = new CoarseLocationUpdateReceivedEvent
+                {
+                    Agent = new AgentInfo(m, circuitCode),
+                    Prey = res.Prey,
+                    You = res.You
+                };
+                foreach (CoarseLocationUpdate.AgentDataEntry d in res.AgentData)
+                {
+                    ev.AgentData.Add(new LSLKey(d.AgentID));
+                    ev.AgentData.Add(d.X);
+                    ev.AgentData.Add(d.Y);
+                    ev.AgentData.Add(d.Z);
+                }
+                vc.PostEvent(ev);
+            }
         }
 
         [APIExtension("ViewerControl", "coarselocationupdate_received")]
         public delegate void CoarseLocationUpdateReceived(
+            AgentInfo agent,
             int you,
             int prey,
             AnArray agentData);
@@ -317,11 +461,24 @@ namespace SilverSim.Tests.Viewer
         public class HealthMessageReceivedEvent : IScriptEvent
         {
             [TranslatedScriptEventParameter(0)]
+            public AgentInfo Agent;
+            [TranslatedScriptEventParameter(1)]
             public double Health;
+
+            public static void ToScriptEvent(Message m, ViewerConnection vc, uint circuitCode)
+            {
+                var res = (HealthMessage)m;
+                vc.PostEvent(new HealthMessageReceivedEvent
+                {
+                    Agent = new AgentInfo(m, circuitCode),
+                    Health = res.Health
+                });
+            }
         }
 
         [APIExtension("ViewerControl", "healthmessage_received")]
         public delegate void HealthMessageUpdateReceived(
+            AgentInfo agent,
             double health);
         #endregion
 
@@ -330,13 +487,34 @@ namespace SilverSim.Tests.Viewer
         public class AvatarAnimationReceivedEvent : IScriptEvent
         {
             [TranslatedScriptEventParameter(0)]
-            public LSLKey Sender = new LSLKey();
+            public AgentInfo Agent;
             [TranslatedScriptEventParameter(1)]
+            public LSLKey Sender = new LSLKey();
+            [TranslatedScriptEventParameter(2)]
             public AnArray AnimationData = new AnArray();
+
+            public static void ToScriptEvent(Message m, ViewerConnection vc, uint circuitCode)
+            {
+                var res = (AvatarAnimation)m;
+                var ev = new AvatarAnimationReceivedEvent
+                {
+                    Agent = new AgentInfo(m, circuitCode),
+                    Sender = res.Sender
+                };
+
+                foreach (AvatarAnimation.AnimationData ad in res.AnimationList)
+                {
+                    ev.AnimationData.Add(new LSLKey(ad.AnimID));
+                    ev.AnimationData.Add((int)ad.AnimSequenceID);
+                    ev.AnimationData.Add(new LSLKey(ad.ObjectID));
+                }
+                vc.PostEvent(ev);
+            }
         }
 
         [APIExtension("ViewerControl", "avataranimation_received")]
         public delegate void AvatarAnimationReceived(
+            AgentInfo agent,
             LSLKey sender,
             AnArray animationData);
         #endregion
@@ -346,23 +524,42 @@ namespace SilverSim.Tests.Viewer
         public class AvatarSitResponseReceivedEvent : IScriptEvent
         {
             [TranslatedScriptEventParameter(0)]
-            public LSLKey SitObject = new LSLKey();
+            public AgentInfo Agent;
             [TranslatedScriptEventParameter(1)]
-            public int IsAutopilot;
+            public LSLKey SitObject = new LSLKey();
             [TranslatedScriptEventParameter(2)]
-            public Vector3 SitPosition;
+            public int IsAutopilot;
             [TranslatedScriptEventParameter(3)]
-            public Quaternion SitRotation;
+            public Vector3 SitPosition;
             [TranslatedScriptEventParameter(4)]
-            public Vector3 CameraEyeOffset;
+            public Quaternion SitRotation;
             [TranslatedScriptEventParameter(5)]
-            public Vector3 CameraAtOffset;
+            public Vector3 CameraEyeOffset;
             [TranslatedScriptEventParameter(6)]
+            public Vector3 CameraAtOffset;
+            [TranslatedScriptEventParameter(7)]
             public int ForceMouselook;
+
+            public static void ToScriptEvent(Message m, ViewerConnection vc, uint circuitCode)
+            {
+                var res = (AvatarSitResponse)m;
+                vc.PostEvent(new AvatarSitResponseReceivedEvent
+                {
+                    Agent = new AgentInfo(m, circuitCode),
+                    SitObject = res.SitObject,
+                    IsAutopilot = res.IsAutoPilot.ToLSLBoolean(),
+                    SitPosition = res.SitPosition,
+                    SitRotation = res.SitRotation,
+                    CameraEyeOffset = res.CameraEyeOffset,
+                    CameraAtOffset = res.CameraAtOffset,
+                    ForceMouselook = res.ForceMouselook.ToLSLBoolean()
+                });
+            }
         }
 
         [APIExtension("ViewerControl", "avatarsitresponse_received")]
         public delegate void AvatarSitResponseReceived(
+            AgentInfo agent,
             LSLKey sitObject,
             int isAutopilot,
             Vector3 sitPosition,
@@ -377,11 +574,24 @@ namespace SilverSim.Tests.Viewer
         public class CameraConstraintReceivedEvent : IScriptEvent
         {
             [TranslatedScriptEventParameter(0)]
+            public AgentInfo Agent;
+            [TranslatedScriptEventParameter(1)]
             public Quaternion CameraCollidePlane;
+
+            public static void ToScriptEvent(Message m, ViewerConnection vc, uint circuitCode)
+            {
+                var res = (CameraConstraint)m;
+                vc.PostEvent(new CameraConstraintReceivedEvent
+                {
+                    Agent = new AgentInfo(m, circuitCode),
+                    CameraCollidePlane = new Quaternion(res.CameraCollidePlane.X, res.CameraCollidePlane.Y, res.CameraCollidePlane.Z, res.CameraCollidePlane.W)
+                });
+            }
         }
 
         [APIExtension("ViewerControl", "cameraconstraint_received")]
         public delegate void CameraConstraintReceived(
+            AgentInfo agent,
             Quaternion cameraCollidePlane);
         #endregion
 
@@ -390,11 +600,24 @@ namespace SilverSim.Tests.Viewer
         public class ClearFollowCamPropertiesReceivedEvent : IScriptEvent
         {
             [TranslatedScriptEventParameter(0)]
+            public AgentInfo Agent;
+            [TranslatedScriptEventParameter(1)]
             public LSLKey ObjectID = new LSLKey();
+
+            public static void ToScriptEvent(Message m, ViewerConnection vc, uint circuitCode)
+            {
+                var res = (ClearFollowCamProperties)m;
+                vc.PostEvent(new ClearFollowCamPropertiesReceivedEvent
+                {
+                    Agent = new AgentInfo(m, circuitCode),
+                    ObjectID = res.ObjectID
+                });
+            }
         }
 
         [APIExtension("ViewerControl", "clearfollowcamproperties_received")]
         public delegate void ClearFollowCamPropertiesReceived(
+            AgentInfo agent,
             LSLKey objectID);
         #endregion
 
@@ -403,13 +626,32 @@ namespace SilverSim.Tests.Viewer
         public class SetFollowCamPropertiesReceivedEvent : IScriptEvent
         {
             [TranslatedScriptEventParameter(0)]
-            public LSLKey ObjectID = new LSLKey();
+            public AgentInfo Agent;
             [TranslatedScriptEventParameter(1)]
+            public LSLKey ObjectID = new LSLKey();
+            [TranslatedScriptEventParameter(2)]
             public AnArray CameraParams = new AnArray();
+
+            public static void ToScriptEvent(Message m, ViewerConnection vc, uint circuitCode)
+            {
+                var res = (SetFollowCamProperties)m;
+                var ev = new SetFollowCamPropertiesReceivedEvent
+                {
+                    Agent = new AgentInfo(m, circuitCode),
+                    ObjectID = res.ObjectID
+                };
+                foreach (SetFollowCamProperties.CameraProperty prop in res.CameraProperties)
+                {
+                    ev.CameraParams.Add(prop.Type);
+                    ev.CameraParams.Add(prop.Value);
+                }
+                vc.PostEvent(ev);
+            }
         }
 
         [APIExtension("ViewerControl", "setfollowcamproperties_received")]
         public delegate void SetFollowCamPropertiesReceived(
+            AgentInfo agent,
             LSLKey objectID,
             AnArray cameraParams);
         #endregion
@@ -419,25 +661,45 @@ namespace SilverSim.Tests.Viewer
         public class ChatFromSimulatorReceivedEvent : IScriptEvent
         {
             [TranslatedScriptEventParameter(0)]
-            public string FromName;
+            public AgentInfo Agent;
             [TranslatedScriptEventParameter(1)]
-            public LSLKey SourceID;
+            public string FromName;
             [TranslatedScriptEventParameter(2)]
-            public LSLKey OwnerID;
+            public LSLKey SourceID;
             [TranslatedScriptEventParameter(3)]
-            public int SourceType;
+            public LSLKey OwnerID;
             [TranslatedScriptEventParameter(4)]
-            public int ChatType;
+            public int SourceType;
             [TranslatedScriptEventParameter(5)]
-            public int AudibleLevel;
+            public int ChatType;
             [TranslatedScriptEventParameter(6)]
-            public Vector3 Position;
+            public int AudibleLevel;
             [TranslatedScriptEventParameter(7)]
+            public Vector3 Position;
+            [TranslatedScriptEventParameter(8)]
             public string Message;
+
+            public static void ToScriptEvent(Message m, ViewerConnection vc, uint circuitCode)
+            {
+                var res = (ChatFromSimulator)m;
+                vc.PostEvent(new ChatFromSimulatorReceivedEvent
+                {
+                    Agent = new AgentInfo(m, circuitCode),
+                    FromName = res.FromName,
+                    SourceID = res.SourceID,
+                    OwnerID = res.OwnerID,
+                    SourceType = (int)res.SourceType,
+                    ChatType = (int)res.ChatType,
+                    AudibleLevel = (int)res.Audible,
+                    Position = res.Position,
+                    Message = res.Message
+                });
+            }
         }
 
         [APIExtension("ViewerControl", "chatfromsimulator_received")]
         public delegate void ChatFromSimulatorReceived(
+            AgentInfo agent,
             string fromName,
             LSLKey sourceID,
             LSLKey ownerID,
@@ -453,17 +715,33 @@ namespace SilverSim.Tests.Viewer
         public class EstateCovenantReplyReceivedEvent : IScriptEvent
         {
             [TranslatedScriptEventParameter(0)]
-            public LSLKey CovenantID = new LSLKey();
+            public AgentInfo Agent;
             [TranslatedScriptEventParameter(1)]
-            public long CovenantTimestamp;
+            public LSLKey CovenantID = new LSLKey();
             [TranslatedScriptEventParameter(2)]
-            public string EstateName;
+            public long CovenantTimestamp;
             [TranslatedScriptEventParameter(3)]
+            public string EstateName;
+            [TranslatedScriptEventParameter(4)]
             public LSLKey EstateOwnerID = new LSLKey();
+
+            public static void ToScriptEvent(Message m, ViewerConnection vc, uint circuitCode)
+            {
+                var res = (EstateCovenantReply)m;
+                vc.PostEvent(new EstateCovenantReplyReceivedEvent
+                {
+                    Agent = new AgentInfo(m, circuitCode),
+                    CovenantID = res.CovenantID,
+                    CovenantTimestamp = res.CovenantTimestamp,
+                    EstateName = res.EstateName,
+                    EstateOwnerID = res.EstateOwnerID
+                });
+            }
         }
 
         [APIExtension("ViewerControl", "estatecovenantreply_received")]
         public delegate void EstateCovenantReplyReceived(
+            AgentInfo agent,
             LSLKey covenantID,
             long covenantTimestamp,
             string estateName,
@@ -475,21 +753,39 @@ namespace SilverSim.Tests.Viewer
         public class LoadURLReceivedEvent : IScriptEvent
         {
             [TranslatedScriptEventParameter(0)]
-            public string ObjectName = string.Empty;
+            public AgentInfo Agent;
             [TranslatedScriptEventParameter(1)]
-            public LSLKey ObjectID = new LSLKey();
+            public string ObjectName = string.Empty;
             [TranslatedScriptEventParameter(2)]
-            public LSLKey OwnerID = new LSLKey();
+            public LSLKey ObjectID = new LSLKey();
             [TranslatedScriptEventParameter(3)]
-            public int OwnerIsGroup;
+            public LSLKey OwnerID = new LSLKey();
             [TranslatedScriptEventParameter(4)]
-            public string Message = string.Empty;
+            public int OwnerIsGroup;
             [TranslatedScriptEventParameter(5)]
+            public string Message = string.Empty;
+            [TranslatedScriptEventParameter(6)]
             public string URL = string.Empty;
+
+            public static void ToScriptEvent(Message m, ViewerConnection vc, uint circuitCode)
+            {
+                var res = (LoadURL)m;
+                vc.PostEvent(new LoadURLReceivedEvent
+                {
+                    Agent = new AgentInfo(m, circuitCode),
+                    ObjectName = res.ObjectName,
+                    ObjectID = res.ObjectID,
+                    OwnerID = res.OwnerID,
+                    OwnerIsGroup = res.OwnerIsGroup.ToLSLBoolean(),
+                    Message = res.Message,
+                    URL = res.URL
+                });
+            }
         }
 
         [APIExtension("ViewerControl", "loadurl_received")]
         public delegate void LoadURLReceived(
+            AgentInfo agent,
             string objectName,
             LSLKey objectId,
             LSLKey ownerID,
@@ -503,17 +799,33 @@ namespace SilverSim.Tests.Viewer
         public class ScriptTeleportRequestReceivedEvent : IScriptEvent
         {
             [TranslatedScriptEventParameter(0)]
-            public string ObjectName = string.Empty;
+            public AgentInfo Agent;
             [TranslatedScriptEventParameter(1)]
-            public string SimName = string.Empty;
+            public string ObjectName = string.Empty;
             [TranslatedScriptEventParameter(2)]
-            public Vector3 SimPosition;
+            public string SimName = string.Empty;
             [TranslatedScriptEventParameter(3)]
+            public Vector3 SimPosition;
+            [TranslatedScriptEventParameter(4)]
             public Vector3 LookAt;
+
+            public static void ToScriptEvent(Message m, ViewerConnection vc, uint circuitCode)
+            {
+                var res = (ScriptTeleportRequest)m;
+                vc.PostEvent(new ScriptTeleportRequestReceivedEvent
+                {
+                    Agent = new AgentInfo(m, circuitCode),
+                    ObjectName = res.ObjectName,
+                    SimName = res.SimName,
+                    SimPosition = res.SimPosition,
+                    LookAt = res.LookAt
+                });
+            }
         }
 
         [APIExtension("ViewerControl", "scriptteleportrequest_received")]
         public delegate void ScriptTeleportRequestReceived(
+            AgentInfo agent,
             string objectName,
             string simName,
             Vector3 simPosition,
@@ -525,21 +837,39 @@ namespace SilverSim.Tests.Viewer
         public class ScriptQuestionReceivedEvent : IScriptEvent
         {
             [TranslatedScriptEventParameter(0)]
-            public LSLKey TaskID = new LSLKey();
+            public AgentInfo Agent;
             [TranslatedScriptEventParameter(1)]
-            public LSLKey ItemID = new LSLKey();
+            public LSLKey TaskID = new LSLKey();
             [TranslatedScriptEventParameter(2)]
-            public string ObjectName;
+            public LSLKey ItemID = new LSLKey();
             [TranslatedScriptEventParameter(3)]
-            public string ObjectOwner;
+            public string ObjectName;
             [TranslatedScriptEventParameter(4)]
-            public int Questions;
+            public string ObjectOwner;
             [TranslatedScriptEventParameter(5)]
+            public int Questions;
+            [TranslatedScriptEventParameter(6)]
             public LSLKey ExperienceID = new LSLKey();
+
+            public static void ToScriptEvent(Message m, ViewerConnection vc, uint circuitCode)
+            {
+                var res = (ScriptQuestion)m;
+                vc.PostEvent(new ScriptQuestionReceivedEvent
+                {
+                    Agent = new AgentInfo(m, circuitCode),
+                    TaskID = res.TaskID,
+                    ItemID = res.ItemID,
+                    ObjectName = res.ObjectName,
+                    ObjectOwner = res.ObjectOwner,
+                    Questions = (int)res.Questions,
+                    ExperienceID = res.ExperienceID
+                });
+            }
         }
 
         [APIExtension("ViewerControl", "scriptquestion_received")]
         public delegate void ScriptQuestionReceived(
+            AgentInfo agent,
             LSLKey taskID,
             LSLKey itemID,
             string objectName,
@@ -553,27 +883,55 @@ namespace SilverSim.Tests.Viewer
         public class ScriptDialogReceivedEvent : IScriptEvent
         {
             [TranslatedScriptEventParameter(0)]
-            public LSLKey ObjectID = new LSLKey();
+            public AgentInfo Agent;
             [TranslatedScriptEventParameter(1)]
-            public string FirstName = string.Empty;
+            public LSLKey ObjectID = new LSLKey();
             [TranslatedScriptEventParameter(2)]
-            public string LastName = string.Empty;
+            public string FirstName = string.Empty;
             [TranslatedScriptEventParameter(3)]
-            public string ObjectName = string.Empty;
+            public string LastName = string.Empty;
             [TranslatedScriptEventParameter(4)]
-            public string Message = string.Empty;
+            public string ObjectName = string.Empty;
             [TranslatedScriptEventParameter(5)]
-            public int ChatChannel;
+            public string Message = string.Empty;
             [TranslatedScriptEventParameter(6)]
-            public LSLKey ImageID = new LSLKey();
+            public int ChatChannel;
             [TranslatedScriptEventParameter(7)]
-            public AnArray ButtonData = new AnArray();
+            public LSLKey ImageID = new LSLKey();
             [TranslatedScriptEventParameter(8)]
+            public AnArray ButtonData = new AnArray();
+            [TranslatedScriptEventParameter(9)]
             public AnArray OwnerData = new AnArray();
+
+            public static void ToScriptEvent(Message m, ViewerConnection vc, uint circuitCode)
+            {
+                var res = (ScriptDialog)m;
+                var ev = new ScriptDialogReceivedEvent
+                {
+                    Agent = new AgentInfo(m, circuitCode),
+                    ObjectID = res.ObjectID,
+                    FirstName = res.FirstName,
+                    LastName = res.LastName,
+                    ObjectName = res.ObjectName,
+                    Message = res.Message,
+                    ChatChannel = res.ChatChannel,
+                    ImageID = res.ImageID
+                };
+                foreach (string button in res.Buttons)
+                {
+                    ev.ButtonData.Add(button);
+                }
+                foreach (UUID owner in res.OwnerData)
+                {
+                    ev.OwnerData.Add(owner);
+                }
+                vc.PostEvent(ev);
+            }
         }
 
         [APIExtension("ViewerControl", "scriptdialog_received")]
         public delegate void ScriptDialogReceived(
+            AgentInfo agent,
             LSLKey objectID,
             string firstName,
             string lastName,
@@ -590,11 +948,29 @@ namespace SilverSim.Tests.Viewer
         public class ScriptControlChangeReceivedEvent : IScriptEvent
         {
             [TranslatedScriptEventParameter(0)]
+            public AgentInfo Agent;
+            [TranslatedScriptEventParameter(1)]
             public AnArray ControlData = new AnArray();
+
+            public static void ToScriptEvent(Message m, ViewerConnection vc, uint circuitCode)
+            {
+                var res = (ScriptControlChange)m;
+                var ev = new ScriptControlChangeReceivedEvent
+                {
+                    Agent = new AgentInfo(m, circuitCode)
+                };
+                foreach (ScriptControlChange.DataEntry d in res.Data)
+                {
+                    ev.ControlData.Add(d.TakeControls.ToLSLBoolean());
+                    ev.ControlData.Add((int)d.Controls);
+                    ev.ControlData.Add(d.PassToAgent.ToLSLBoolean());
+                }
+                vc.PostEvent(ev);
+            }
         }
 
         [APIExtension("ViewerControl", "scriptcontrolchange_received")]
-        public delegate void ScriptControlChangeReceived(AnArray controlData);
+        public delegate void ScriptControlChangeReceived(AgentInfo agent, AnArray controlData);
         #endregion
 
         #region preloadsound_received
@@ -602,15 +978,30 @@ namespace SilverSim.Tests.Viewer
         public class PreloadSoundReceivedEvent : IScriptEvent
         {
             [TranslatedScriptEventParameter(0)]
-            public LSLKey ObjectID = new LSLKey();
+            public AgentInfo Agent;
             [TranslatedScriptEventParameter(1)]
-            public LSLKey OwnerID = new LSLKey();
+            public LSLKey ObjectID = new LSLKey();
             [TranslatedScriptEventParameter(2)]
+            public LSLKey OwnerID = new LSLKey();
+            [TranslatedScriptEventParameter(3)]
             public LSLKey SoundID = new LSLKey();
+
+            public static void ToScriptEvent(Message m, ViewerConnection vc, uint circuitCode)
+            {
+                var res = (PreloadSound)m;
+                vc.PostEvent(new PreloadSoundReceivedEvent
+                {
+                    Agent = new AgentInfo(m, circuitCode),
+                    ObjectID = res.ObjectID,
+                    OwnerID = res.OwnerID,
+                    SoundID = res.SoundID
+                });
+            }
         }
 
         [APIExtension("ViewerControl", "preloadsound_received")]
         public delegate void PreloadsoundReceived(
+            AgentInfo agent,
             LSLKey objectId,
             LSLKey ownerID,
             LSLKey soundID);
@@ -621,19 +1012,36 @@ namespace SilverSim.Tests.Viewer
         public class AttachedSoundReceivedEvent : IScriptEvent
         {
             [TranslatedScriptEventParameter(0)]
-            public LSLKey SoundID = new LSLKey();
+            public AgentInfo Agent;
             [TranslatedScriptEventParameter(1)]
-            public LSLKey ObjectID = new LSLKey();
+            public LSLKey SoundID = new LSLKey();
             [TranslatedScriptEventParameter(2)]
-            public LSLKey OwnerID = new LSLKey();
+            public LSLKey ObjectID = new LSLKey();
             [TranslatedScriptEventParameter(3)]
-            public double Gain;
+            public LSLKey OwnerID = new LSLKey();
             [TranslatedScriptEventParameter(4)]
+            public double Gain;
+            [TranslatedScriptEventParameter(5)]
             public int Flags;
+
+            public static void ToScriptEvent(Message m, ViewerConnection vc, uint circuitCode)
+            {
+                var res = (AttachedSound)m;
+                vc.PostEvent(new AttachedSoundReceivedEvent
+                {
+                    Agent = new AgentInfo(m, circuitCode),
+                    SoundID = res.SoundID,
+                    ObjectID = res.ObjectID,
+                    OwnerID = res.OwnerID,
+                    Gain = res.Gain,
+                    Flags = (int)res.Flags
+                });
+            }
         }
 
         [APIExtension("ViewerControl", "attachedsound_received")]
         public delegate void AttachedSoundReceived(
+            AgentInfo agent,
             LSLKey soundID,
             LSLKey objectID,
             LSLKey ownerID,
@@ -646,25 +1054,45 @@ namespace SilverSim.Tests.Viewer
         public class SoundTriggerReceivedEvent : IScriptEvent
         {
             [TranslatedScriptEventParameter(0)]
-            public LSLKey SoundID = new LSLKey();
+            public AgentInfo Agent;
             [TranslatedScriptEventParameter(1)]
-            public LSLKey OwnerID = new LSLKey();
+            public LSLKey SoundID = new LSLKey();
             [TranslatedScriptEventParameter(2)]
-            public LSLKey ObjectID = new LSLKey();
+            public LSLKey OwnerID = new LSLKey();
             [TranslatedScriptEventParameter(3)]
-            public LSLKey ParentID = new LSLKey();
+            public LSLKey ObjectID = new LSLKey();
             [TranslatedScriptEventParameter(4)]
-            public int GridX;
+            public LSLKey ParentID = new LSLKey();
             [TranslatedScriptEventParameter(5)]
-            public int GridY;
+            public int GridX;
             [TranslatedScriptEventParameter(6)]
-            public Vector3 Position;
+            public int GridY;
             [TranslatedScriptEventParameter(7)]
+            public Vector3 Position;
+            [TranslatedScriptEventParameter(8)]
             public double Gain;
+
+            public static void ToScriptEvent(Message m, ViewerConnection vc, uint circuitCode)
+            {
+                var res = (SoundTrigger)m;
+                vc.PostEvent(new SoundTriggerReceivedEvent
+                {
+                    Agent = new AgentInfo(m, circuitCode),
+                    SoundID = res.SoundID,
+                    OwnerID = res.OwnerID,
+                    ObjectID = res.ObjectID,
+                    ParentID = res.ParentID,
+                    GridX = res.GridPosition.GridX,
+                    GridY = res.GridPosition.GridY,
+                    Position = res.Position,
+                    Gain = res.Gain
+                });
+            }
         }
 
         [APIExtension("ViewerControl", "soundtrigger_received")]
         public delegate void SoundTriggerReceived(
+            AgentInfo agent,
             LSLKey soundID,
             LSLKey ownerID,
             LSLKey objectID,
@@ -680,13 +1108,27 @@ namespace SilverSim.Tests.Viewer
         public class AttachedSoundGainChangeReceivedEvent : IScriptEvent
         {
             [TranslatedScriptEventParameter(0)]
-            public LSLKey ObjectID = new LSLKey();
+            public AgentInfo Agent;
             [TranslatedScriptEventParameter(1)]
+            public LSLKey ObjectID = new LSLKey();
+            [TranslatedScriptEventParameter(2)]
             public double Gain;
+
+            public static void ToScriptEvent(Message m, ViewerConnection vc, uint circuitCode)
+            {
+                var res = (AttachedSoundGainChange)m;
+                vc.PostEvent(new AttachedSoundGainChangeReceivedEvent
+                {
+                    Agent = new AgentInfo(m, circuitCode),
+                    ObjectID = res.ObjectID,
+                    Gain = res.Gain
+                });
+            }
         }
 
         [APIExtension("ViewerControl", "attachedsoundgainchange_received")]
         public delegate void AttachedSoundGainChangeReceived(
+            AgentInfo agent,
             LSLKey objectID,
             double gain);
         #endregion
@@ -696,18 +1138,67 @@ namespace SilverSim.Tests.Viewer
         public class FeatureDisabledReceivedEvent : IScriptEvent
         {
             [TranslatedScriptEventParameter(0)]
-            public LSLKey AgentID = new LSLKey();
+            public AgentInfo Agent;
             [TranslatedScriptEventParameter(1)]
             public LSLKey TransactionID = new LSLKey();
             [TranslatedScriptEventParameter(2)]
             public string ErrorMessage = string.Empty;
+
+            public static void ToScriptEvent(Message m, ViewerConnection vc, uint circuitCode)
+            {
+                var res = (FeatureDisabled)m;
+                vc.PostEvent(new FeatureDisabledReceivedEvent
+                {
+                    Agent = new AgentInfo(m, circuitCode),
+                    TransactionID = res.TransactionID,
+                    ErrorMessage = res.ErrorMessage
+                });
+            }
         }
 
         [APIExtension("ViewerControl", "featuredisabled_received")]
         public delegate void FeatureDisabledReceived(
-            LSLKey agentID,
+            AgentInfo agent,
             LSLKey transactionID,
             string errorMessage);
+        #endregion
+
+        #region paypricereply_received
+        [TranslatedScriptEvent("paypricereply_received")]
+        public class PayPriceReplyReceivedEvent : IScriptEvent
+        {
+            [TranslatedScriptEventParameter(0)]
+            public AgentInfo Agent;
+            [TranslatedScriptEventParameter(1)]
+            public LSLKey ObjectID;
+            [TranslatedScriptEventParameter(2)]
+            public int DefaultPayPrice;
+            [TranslatedScriptEventParameter(3)]
+            public AnArray ButtonData = new AnArray();
+
+            public static void ToScriptEvent(Message m, ViewerConnection vc, uint circuitCode)
+            {
+                var res = (PayPriceReply)m;
+                var ev = new PayPriceReplyReceivedEvent
+                {
+                    Agent = new AgentInfo(m, circuitCode),
+                    ObjectID = res.ObjectID,
+                    DefaultPayPrice = res.DefaultPayPrice,
+                };
+                foreach(int val in res.ButtonData)
+                {
+                    ev.ButtonData.Add(val);
+                }
+                vc.PostEvent(ev);
+            }
+        }
+
+        [APIExtension("ViewerControl", "paypricereply_received")]
+        public delegate void PayPriceReplyReceived(
+            AgentInfo agent,
+            LSLKey objectID,
+            int defaultPayPrice,
+            AnArray buttonData);
         #endregion
 
         [TranslatedScriptEventsInfo]
@@ -739,7 +1230,8 @@ namespace SilverSim.Tests.Viewer
             typeof(AttachedSoundReceivedEvent),
             typeof(SoundTriggerReceivedEvent),
             typeof(AttachedSoundGainChangeReceivedEvent),
-            typeof(FeatureDisabledReceivedEvent)
+            typeof(FeatureDisabledReceivedEvent),
+            typeof(PayPriceReplyReceivedEvent)
         };
     }
 }
