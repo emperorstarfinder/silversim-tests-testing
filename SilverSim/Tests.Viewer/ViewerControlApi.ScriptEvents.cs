@@ -21,6 +21,7 @@
 
 using SilverSim.Scene.Types.Script.Events;
 using SilverSim.Scripting.Lsl;
+using SilverSim.Scripting.Lsl.Api.ByteString;
 using SilverSim.Types;
 using SilverSim.Viewer.Messages;
 using SilverSim.Viewer.Messages.Agent;
@@ -30,6 +31,9 @@ using SilverSim.Viewer.Messages.Camera;
 using SilverSim.Viewer.Messages.Chat;
 using SilverSim.Viewer.Messages.Common;
 using SilverSim.Viewer.Messages.Estate;
+using SilverSim.Viewer.Messages.Friend;
+using SilverSim.Viewer.Messages.IM;
+using SilverSim.Viewer.Messages.Names;
 using SilverSim.Viewer.Messages.Object;
 using SilverSim.Viewer.Messages.Region;
 using SilverSim.Viewer.Messages.Script;
@@ -1252,6 +1256,305 @@ namespace SilverSim.Tests.Viewer
             AnArray localids);
         #endregion
 
+        #region onlinenotification_received
+        [TranslatedScriptEvent("onlinenotification_received")]
+        public class OnlineNotificationReceivedEvent : IScriptEvent
+        {
+            [TranslatedScriptEventParameter(0)]
+            public AgentInfo Agent;
+            [TranslatedScriptEventParameter(1)]
+            public AnArray Agents;
+
+            public static void ToScriptEvent(Message m, ViewerConnection vc, uint circuitCode)
+            {
+                OnlineNotification res = (OnlineNotification)m;
+                var ev = new OnlineNotificationReceivedEvent
+                {
+                    Agent = new AgentInfo(m, circuitCode),
+                };
+                foreach(UUID id in res.AgentIDs)
+                {
+                    ev.Agents.Add(new LSLKey(id));
+                }
+                vc.PostEvent(ev);
+            }
+        }
+
+        [APIExtension("ViewerControl", "onlinenotification_received")]
+        [StateEventDelegate]
+        public delegate void OnlineNotificationReceived(
+            AgentInfo agent,
+            AnArray agents);
+        #endregion
+
+        #region offlinenotification_received
+        [TranslatedScriptEvent("offlinenotification_received")]
+        public class OfflineNotificationReceivedEvent : IScriptEvent
+        {
+            [TranslatedScriptEventParameter(0)]
+            public AgentInfo Agent;
+            [TranslatedScriptEventParameter(1)]
+            public AnArray Agents;
+
+            public static void ToScriptEvent(Message m, ViewerConnection vc, uint circuitCode)
+            {
+                OnlineNotification res = (OnlineNotification)m;
+                var ev = new OnlineNotificationReceivedEvent
+                {
+                    Agent = new AgentInfo(m, circuitCode),
+                };
+                foreach (UUID id in res.AgentIDs)
+                {
+                    ev.Agents.Add(new LSLKey(id));
+                }
+                vc.PostEvent(ev);
+            }
+        }
+
+        [APIExtension("ViewerControl", "offlinenotification_received")]
+        [StateEventDelegate]
+        public delegate void OfflineNotificationReceived(
+            AgentInfo agent,
+            AnArray agents);
+        #endregion
+
+        #region improvedinstantmessage_received
+        [TranslatedScriptEvent("improvedinstantmessage_received")]
+        public class ImprovedInstantMessageReceivedEvent : IScriptEvent
+        {
+            [TranslatedScriptEventParameter(0)]
+            public AgentInfo Agent;
+            [TranslatedScriptEventParameter(1)]
+            public int FromGroup;
+            [TranslatedScriptEventParameter(2)]
+            public LSLKey ToAgentID;
+            [TranslatedScriptEventParameter(3)]
+            public int ParentEstateID;
+            [TranslatedScriptEventParameter(4)]
+            public LSLKey RegionID;
+            [TranslatedScriptEventParameter(5)]
+            public Vector3 Position;
+            [TranslatedScriptEventParameter(6)]
+            public int IsOffline;
+            [TranslatedScriptEventParameter(7)]
+            public int Dialog;
+            [TranslatedScriptEventParameter(8)]
+            public LSLKey ID;
+            [TranslatedScriptEventParameter(9)]
+            public long Timestamp;
+            [TranslatedScriptEventParameter(10)]
+            public string FromAgentName;
+            [TranslatedScriptEventParameter(11)]
+            public string Message;
+            [TranslatedScriptEventParameter(12)]
+            public ByteArrayApi.ByteArray BinaryBucket;
+
+            public static void ToScriptEvent(Message m, ViewerConnection vc, uint circuitCode)
+            {
+                var res = (ImprovedInstantMessage)m;
+                vc.PostEvent(new ImprovedInstantMessageReceivedEvent
+                {
+                    Agent = new AgentInfo(m, circuitCode),
+                    FromGroup = res.FromGroup.ToLSLBoolean(),
+                    ToAgentID = res.ToAgentID,
+                    ParentEstateID = (int)res.ParentEstateID,
+                    RegionID = res.RegionID,
+                    Position = res.Position,
+                    IsOffline = res.IsOffline.ToLSLBoolean(),
+                    Dialog = (int)res.Dialog,
+                    ID = res.ID,
+                    Timestamp = res.Timestamp.AsLong,
+                    FromAgentName = res.FromAgentName,
+                    Message = res.Message,
+                    BinaryBucket = new ByteArrayApi.ByteArray(res.BinaryBucket)
+                });
+            }
+        }
+
+        [APIExtension("ViewerControl", "improvedinstantmessage_received")]
+        [StateEventDelegate]
+        public delegate void ImprovedInstantMessageReceived(
+            AgentInfo agent,
+            int fromGroup,
+            LSLKey toAgentID,
+            int parentEstateID,
+            LSLKey regionID,
+            Vector3 position,
+            int isOffline,
+            int dialog,
+            LSLKey id,
+            long timestamp,
+            string fromAgentName,
+            string message,
+            ByteArrayApi.ByteArray binaryBucket);
+        #endregion
+
+        #region uuidgroupnamereply_received
+        [TranslatedScriptEvent("uuidgroupnamereply_received")]
+        public class UUIDGroupNameReplyReceivedEvent : IScriptEvent
+        {
+            [TranslatedScriptEventParameter(0)]
+            public AgentInfo Agent;
+            [TranslatedScriptEventParameter(1)]
+            public AnArray Data;
+
+            public static void ToScriptEvent(Message m, ViewerConnection vc, uint circuitCode)
+            {
+                var res = (UUIDGroupNameReply)m;
+                var ev = new UUIDGroupNameReplyReceivedEvent
+                {
+                    Agent = new AgentInfo(m, circuitCode)
+                };
+                foreach(UUIDGroupNameReply.Data d in res.UUIDNameBlock)
+                {
+                    ev.Data.Add(new LSLKey(d.ID));
+                    ev.Data.Add(d.GroupName);
+                }
+                vc.PostEvent(ev);
+            }
+        }
+
+        [APIExtension("ViewerControl", "uuidgroupnamereply_received")]
+        [StateEventDelegate]
+        public delegate void UUIDGroupNameReplyReceived(
+            AgentInfo agent,
+            AnArray data);
+        #endregion
+
+        #region uuidnamereply_received
+        [TranslatedScriptEvent("uuidnamereply_received")]
+        public class UUIDNameReplyReceivedEvent : IScriptEvent
+        {
+            [TranslatedScriptEventParameter(0)]
+            public AgentInfo Agent;
+            [TranslatedScriptEventParameter(1)]
+            public AnArray Data;
+
+            public static void ToScriptEvent(Message m, ViewerConnection vc, uint circuitCode)
+            {
+                var res = (UUIDNameReply)m;
+                var ev = new UUIDNameReplyReceivedEvent
+                {
+                    Agent = new AgentInfo(m, circuitCode)
+                };
+                foreach(UUIDNameReply.Data d in res.UUIDNameBlock)
+                {
+                    ev.Data.Add(new LSLKey(d.ID));
+                    ev.Data.Add(d.FirstName + " " + d.LastName);
+                }
+                vc.PostEvent(ev);
+            }
+        }
+
+        [APIExtension("ViewerControl", "uuidnamereply_received")]
+        [StateEventDelegate]
+        public delegate void UUIDNameReplyReceived(
+            AgentInfo agent, 
+            AnArray data);
+        #endregion
+
+        #region derezack_received
+        [TranslatedScriptEvent("derezack_received")]
+        public class DeRezAckReceivedEvent : IScriptEvent
+        {
+            [TranslatedScriptEventParameter(0)]
+            public AgentInfo Agent;
+            [TranslatedScriptEventParameter(1)]
+            public LSLKey TransactionID;
+            [TranslatedScriptEventParameter(2)]
+            public int Success;
+
+            public static void ToScriptEvent(Message m, ViewerConnection vc, uint circuitCode)
+            {
+                var res = (DeRezAck)m;
+                vc.PostEvent(new DeRezAckReceivedEvent
+                {
+                    Agent = new AgentInfo(m, circuitCode),
+                    TransactionID = res.TransactionID,
+                    Success = res.Success.ToLSLBoolean()
+                });
+            }
+        }
+
+        [APIExtension("ViewerControl", "derezack_received")]
+        [StateEventDelegate]
+        public delegate void DeRezAckReceived(
+            AgentInfo agent,
+            LSLKey transactionID,
+            int success);
+        #endregion
+
+        #region forceobjectselect_received
+        [TranslatedScriptEvent("forceobjectselect_received")]
+        public class ForceObjectSelectReceivedEvent : IScriptEvent
+        {
+            [TranslatedScriptEventParameter(0)]
+            public AgentInfo Agent;
+            [TranslatedScriptEventParameter(1)]
+            public int ResetList;
+            [TranslatedScriptEventParameter(2)]
+            public AnArray LocalIDs;
+
+            public static void ToScriptEvent(Message m, ViewerConnection vc, uint circuitCode)
+            {
+                var res = (ForceObjectSelect)m;
+                var ev = new ForceObjectSelectReceivedEvent
+                {
+                    Agent = new AgentInfo(m, circuitCode),
+                    ResetList = res.ResetList.ToLSLBoolean()
+                };
+
+                foreach(uint id in res.LocalIDs)
+                {
+                    ev.LocalIDs.Add((int)id);
+                }
+                vc.PostEvent(ev);
+            }
+        }
+
+        [APIExtension("ViewerControl", "forceobjectselect_received")]
+        [StateEventDelegate]
+        public delegate void ForceObjectSelectReceived(
+            AgentInfo agent,
+            int resetList,
+            AnArray localIDs);
+        #endregion
+
+        #region objectanimation_received
+        [TranslatedScriptEvent("objectanimation_received")]
+        public class ObjectAnimationReceivedEvent : IScriptEvent
+        {
+            [TranslatedScriptEventParameter(0)]
+            public AgentInfo Agent;
+            [TranslatedScriptEventParameter(1)]
+            public LSLKey Sender;
+            [TranslatedScriptEventParameter(2)]
+            public AnArray AnimationData;
+
+            public static void ToScriptEvent(Message m, ViewerConnection vc, uint circuitCode)
+            {
+                var res = (ObjectAnimation)m;
+                var ev = new ObjectAnimationReceivedEvent
+                {
+                    Agent = new AgentInfo(m, circuitCode),
+                    Sender = res.Sender
+                };
+                foreach(ObjectAnimation.AnimationData d in res.AnimationList)
+                {
+                    ev.AnimationData.Add(new LSLKey(d.AnimID));
+                    ev.AnimationData.Add((int)d.AnimSequenceID);
+                }
+                vc.PostEvent(ev);
+            }
+        }
+
+        [APIExtension("ViewerControl", "objectanimation_received")]
+        public delegate void ObjectAnimationReceived(
+            AgentInfo agent,
+            LSLKey sender,
+            AnArray animationData);
+        #endregion
+
         [TranslatedScriptEventsInfo]
         public static readonly Type[] TranslatedEvents = new Type[] {
             typeof(RegionHandshakeReceivedEvent),
@@ -1283,7 +1586,15 @@ namespace SilverSim.Tests.Viewer
             typeof(AttachedSoundGainChangeReceivedEvent),
             typeof(FeatureDisabledReceivedEvent),
             typeof(PayPriceReplyReceivedEvent),
-            typeof(KillObjectReceivedEvent)
+            typeof(KillObjectReceivedEvent),
+            typeof(OnlineNotificationReceivedEvent),
+            typeof(OfflineNotificationReceivedEvent),
+            typeof(ImprovedInstantMessageReceivedEvent),
+            typeof(UUIDGroupNameReplyReceivedEvent),
+            typeof(UUIDNameReplyReceivedEvent),
+            typeof(DeRezAckReceivedEvent),
+            typeof(ForceObjectSelectReceivedEvent),
+            typeof(ObjectAnimationReceivedEvent)
         };
     }
 }

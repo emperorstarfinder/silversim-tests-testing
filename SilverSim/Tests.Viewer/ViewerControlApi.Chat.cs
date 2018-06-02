@@ -21,10 +21,13 @@
 
 using SilverSim.Scene.Types.Script;
 using SilverSim.Scripting.Lsl;
+using SilverSim.Scripting.Lsl.Api.ByteString;
 using SilverSim.Tests.Viewer.UDP;
 using SilverSim.Types;
+using SilverSim.Types.IM;
 using SilverSim.Viewer.Messages;
 using SilverSim.Viewer.Messages.Chat;
+using SilverSim.Viewer.Messages.IM;
 
 namespace SilverSim.Tests.Viewer
 {
@@ -93,6 +96,153 @@ namespace SilverSim.Tests.Viewer
                         Message = message,
                         ChatType = (ChatType)chatType,
                         Channel = channel
+                    });
+                }
+            }
+        }
+
+        [APIExtension("ViewerControl")]
+        public const int DIALOG_MESSAGE_FROM_AGENT = 0;
+        [APIExtension("ViewerControl")]
+        public const int DIALOG_MESSAGE_BOX = 1;
+        [APIExtension("ViewerControl")]
+        public const int DIALOG_GROUP_INVITATION = 3;
+        [APIExtension("ViewerControl")]
+        public const int DIALOG_INVENTORY_OFFERED = 4;
+        [APIExtension("ViewerControl")]
+        public const int DIALOG_INVENTORY_ACCEPTED = 5;
+        [APIExtension("ViewerControl")]
+        public const int DIALOG_INVENTORY_DECLINED = 6;
+        [APIExtension("ViewerControl")]
+        public const int DIALOG_GROUP_VOTE = 7;
+        [APIExtension("ViewerControl")]
+        public const int DIALOG_TASK_INVENTORY_OFFERED = 9;
+        [APIExtension("ViewerControl")]
+        public const int DIALOG_TASK_INVENTORY_ACCEPTED = 10;
+        [APIExtension("ViewerControl")]
+        public const int DIALOG_TASK_INVENTORY_DECLINED = 11;
+        [APIExtension("ViewerControl")]
+        public const int DIALOG_NEW_USER_DEFAULT = 12;
+        [APIExtension("ViewerControl")]
+        public const int DIALOG_SESION_ADD = 13;
+        [APIExtension("ViewerControl")]
+        public const int DIALOG_SESSION_OFFLINE_ADD = 14;
+        [APIExtension("ViewerControl")]
+        public const int DIALOG_SESSION_GROUP_START = 15;
+        [APIExtension("ViewerControl")]
+        public const int DIALOG_SESSION_CARDLESS_START = 16;
+        [APIExtension("ViewerControl")]
+        public const int DIALOG_SESSION_SEND = 17;
+        [APIExtension("ViewerControl")]
+        public const int DIALOG_SESSION_DROP = 18;
+        [APIExtension("ViewerControl")]
+        public const int DIALOG_MESSAGE_FROM_OBJECT = 19;
+        [APIExtension("ViewerControl")]
+        public const int DIALOG_BUSY_AUTO_RESPONSE = 20;
+        [APIExtension("ViewerControl")]
+        public const int DIALOG_CONSOLE_AND_CHAT_HISTORY = 21;
+        [APIExtension("ViewerControl")]
+        public const int DIALOG_REQUEST_TELEPORT = 22;
+        [APIExtension("ViewerControl")]
+        public const int DIALOG_ACCEPT_TELEPORT = 23;
+        [APIExtension("ViewerControl")]
+        public const int DIALOG_DENY_TELEPORT = 24;
+        [APIExtension("ViewerControl")]
+        public const int DIALOG_GODLIKE_REQUEST_TELEPORT = 25;
+        [APIExtension("ViewerControl")]
+        public const int DIALOG_REQUEST_LURE = 26;
+        [APIExtension("ViewerControl")]
+        public const int DIALOG_GOTO_URL = 28;
+        [APIExtension("ViewerControl")]
+        public const int DIALOG_SESION_911_START = 29;
+        [APIExtension("ViewerControl")]
+        public const int DIALOG_LURE_911 = 30;
+        [APIExtension("ViewerControl")]
+        public const int DIALOG_FROM_TASK_AS_ALERT = 31;
+        [APIExtension("ViewerControl")]
+        public const int DIALOG_GROUP_NOTICE = 32;
+        [APIExtension("ViewerControl")]
+        public const int DIALOG_GROUP_NOTICE_INVENTORY_ACCEPTED = 33;
+        [APIExtension("ViewerControl")]
+        public const int DIALOG_GROUP_NOTICE_INVENTORY_DECLINED = 34;
+        [APIExtension("ViewerControl")]
+        public const int DIALOG_GROUP_INVITATION_ACCEPT = 35;
+        [APIExtension("ViewerControl")]
+        public const int DIALOG_GROUP_INVITATION_DECLINE = 36;
+        [APIExtension("ViewerControl")]
+        public const int DIALOG_GROUP_NOTICE_REQUESTED = 37;
+        [APIExtension("ViewerControl")]
+        public const int DIALOG_FRIENDSHIP_OFFERED = 38;
+        [APIExtension("ViewerControl")]
+        public const int DIALOG_FRIENDSHIP_ACCEPTED = 39;
+        [APIExtension("ViewerControl")]
+        public const int DIALOG_FRIENDSHIP_DECLINED = 40;
+        [APIExtension("ViewerControl")]
+        public const int DIALOG_START_TYPING = 41;
+        [APIExtension("ViewerControl")]
+        public const int DIALOG_STOP_TYPING = 42;
+
+        [APIExtension("ViewerControl", APIUseAsEnum.MemberFunction, "SendInstantMessage")]
+        public void SendInstantMessage(
+            ScriptInstance instance,
+            ViewerAgentAccessor agent,
+            int isFromGroup,
+            LSLKey toAgent,
+            int parentEstateID,
+            LSLKey regionID,
+            Vector3 position,
+            int isOffline,
+            int dialog,
+            LSLKey id,
+            long timestamp,
+            string fromAgentName,
+            string message,
+            ByteArrayApi.ByteArray binaryBucket)
+        {
+            lock (instance)
+            {
+                ViewerConnection vc;
+                ViewerCircuit viewerCircuit;
+                if (m_Clients.TryGetValue(agent.AgentID, out vc) &&
+                    vc.ViewerCircuits.TryGetValue(agent.CircuitCode, out viewerCircuit))
+                {
+                    viewerCircuit.SendMessage(new ImprovedInstantMessage
+                    {
+                        AgentID = viewerCircuit.AgentID,
+                        SessionID = viewerCircuit.SessionID,
+                        FromGroup = isFromGroup != 0,
+                        ToAgentID = toAgent.AsUUID,
+                        ParentEstateID = (uint)parentEstateID,
+                        RegionID = regionID.AsUUID,
+                        Position = position,
+                        IsOffline = isOffline != 0,
+                        Dialog = (GridInstantMessageDialog)dialog,
+                        ID = id.AsUUID,
+                        Timestamp = Date.UnixTimeToDateTime((ulong)timestamp),
+                        FromAgentName = fromAgentName,
+                        Message = message,
+                        BinaryBucket = binaryBucket.Data
+                    });
+                }
+            }
+        }
+
+        [APIExtension("ViewerControl", APIUseAsEnum.MemberFunction, "SendRetrieveInstantMessages")]
+        public void RetrieveInstantMessages(
+            ScriptInstance instance,
+            ViewerAgentAccessor agent)
+        {
+            lock (instance)
+            {
+                ViewerConnection vc;
+                ViewerCircuit viewerCircuit;
+                if (m_Clients.TryGetValue(agent.AgentID, out vc) &&
+                    vc.ViewerCircuits.TryGetValue(agent.CircuitCode, out viewerCircuit))
+                {
+                    viewerCircuit.SendMessage(new RetrieveInstantMessages
+                    {
+                        AgentID = viewerCircuit.AgentID,
+                        SessionID = viewerCircuit.SessionID
                     });
                 }
             }

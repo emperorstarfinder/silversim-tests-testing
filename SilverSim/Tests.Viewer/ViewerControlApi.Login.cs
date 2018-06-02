@@ -375,6 +375,15 @@ namespace SilverSim.Tests.Viewer
                 viewerCircuit.MessageRouting.Add(MessageType.AttachedSoundGainChange, (m) => AttachedSoundGainChangeReceivedEvent.ToScriptEvent(m, vc, (uint)circuitCode));
                 viewerCircuit.MessageRouting.Add(MessageType.FeatureDisabled, (m) => FeatureDisabledReceivedEvent.ToScriptEvent(m, vc, (uint)circuitCode));
                 viewerCircuit.MessageRouting.Add(MessageType.PayPriceReply, (m) => PayPriceReplyReceivedEvent.ToScriptEvent(m, vc, (uint)circuitCode));
+                viewerCircuit.MessageRouting.Add(MessageType.KillObject, (m) => KillObjectReceivedEvent.ToScriptEvent(m, vc, (uint)circuitCode));
+                viewerCircuit.MessageRouting.Add(MessageType.OnlineNotification, (m) => OnlineNotificationReceivedEvent.ToScriptEvent(m, vc, (uint)circuitCode));
+                viewerCircuit.MessageRouting.Add(MessageType.OfflineNotification, (m) => OfflineNotificationReceivedEvent.ToScriptEvent(m, vc, (uint)circuitCode));
+                viewerCircuit.MessageRouting.Add(MessageType.ImprovedInstantMessage, (m) => ImprovedInstantMessageReceivedEvent.ToScriptEvent(m, vc, (uint)circuitCode));
+                viewerCircuit.MessageRouting.Add(MessageType.UUIDGroupNameReply, (m) => UUIDGroupNameReplyReceivedEvent.ToScriptEvent(m, vc, (uint)circuitCode));
+                viewerCircuit.MessageRouting.Add(MessageType.UUIDNameReply, (m) => UUIDNameReplyReceivedEvent.ToScriptEvent(m, vc, (uint)circuitCode));
+                viewerCircuit.MessageRouting.Add(MessageType.DeRezAck, (m) => DeRezAckReceivedEvent.ToScriptEvent(m, vc, (uint)circuitCode));
+                viewerCircuit.MessageRouting.Add(MessageType.ForceObjectSelect, (m) => ForceObjectSelectReceivedEvent.ToScriptEvent(m, vc, (uint)circuitCode));
+                viewerCircuit.MessageRouting.Add(MessageType.ObjectAnimation, (m) => ObjectAnimationReceivedEvent.ToScriptEvent(m, vc, (uint)circuitCode));
                 vc.ViewerCircuits.Add((uint)circuitCode, viewerCircuit);
                 return new ViewerAgentAccessor(agent.ID, (uint)circuitCode, capsPath);
             }
