@@ -384,6 +384,8 @@ namespace SilverSim.Tests.Viewer
                 viewerCircuit.MessageRouting.Add(MessageType.DeRezAck, (m) => DeRezAckReceivedEvent.ToScriptEvent(m, vc, (uint)circuitCode));
                 viewerCircuit.MessageRouting.Add(MessageType.ForceObjectSelect, (m) => ForceObjectSelectReceivedEvent.ToScriptEvent(m, vc, (uint)circuitCode));
                 viewerCircuit.MessageRouting.Add(MessageType.ObjectAnimation, (m) => ObjectAnimationReceivedEvent.ToScriptEvent(m, vc, (uint)circuitCode));
+                viewerCircuit.MessageRouting.Add(MessageType.MoneyBalanceReply, (m) => MoneyBalanceReplyReceivedEvent.ToScriptEvent(m, vc, (uint)circuitCode));
+                viewerCircuit.MessageRouting.Add(MessageType.GrantGodlikePowers, (m) => GrantGodlikePowersReceivedEvent.ToScriptEvent(m, vc, (uint)circuitCode));
                 vc.ViewerCircuits.Add((uint)circuitCode, viewerCircuit);
                 return new ViewerAgentAccessor(agent.ID, (uint)circuitCode, capsPath);
             }

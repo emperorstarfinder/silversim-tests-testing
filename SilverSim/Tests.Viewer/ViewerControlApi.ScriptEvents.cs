@@ -30,8 +30,10 @@ using SilverSim.Viewer.Messages.Avatar;
 using SilverSim.Viewer.Messages.Camera;
 using SilverSim.Viewer.Messages.Chat;
 using SilverSim.Viewer.Messages.Common;
+using SilverSim.Viewer.Messages.Economy;
 using SilverSim.Viewer.Messages.Estate;
 using SilverSim.Viewer.Messages.Friend;
+using SilverSim.Viewer.Messages.God;
 using SilverSim.Viewer.Messages.IM;
 using SilverSim.Viewer.Messages.Names;
 using SilverSim.Viewer.Messages.Object;
@@ -1555,6 +1557,104 @@ namespace SilverSim.Tests.Viewer
             AnArray animationData);
         #endregion
 
+        #region moneybalancereply_received
+        [TranslatedScriptEvent("moneybalancereply_received")]
+        public class MoneyBalanceReplyReceivedEvent : IScriptEvent
+        {
+            [TranslatedScriptEventParameter(0)]
+            public AgentInfo Agent;
+            [TranslatedScriptEventParameter(1)]
+            public LSLKey TransactionID;
+            [TranslatedScriptEventParameter(2)]
+            public int TransactionSuccess;
+            [TranslatedScriptEventParameter(3)]
+            public int MoneyBalance;
+            [TranslatedScriptEventParameter(4)]
+            public int SquareMetersCredit;
+            [TranslatedScriptEventParameter(5)]
+            public int SquareMetersCommitted;
+            [TranslatedScriptEventParameter(6)]
+            public string Description;
+            [TranslatedScriptEventParameter(7)]
+            public int TransactionType;
+            [TranslatedScriptEventParameter(8)]
+            public LSLKey SourceID;
+            [TranslatedScriptEventParameter(9)]
+            public int IsSourceGroup;
+            [TranslatedScriptEventParameter(10)]
+            public LSLKey DestID;
+            [TranslatedScriptEventParameter(11)]
+            public int IsDestGroup;
+            [TranslatedScriptEventParameter(12)]
+            public int Amount;
+            [TranslatedScriptEventParameter(13)]
+            public string ItemDescription;
+
+            public static void ToScriptEvent(Message m, ViewerConnection vc, uint circuitCode)
+            {
+                var res = (MoneyBalanceReply)m;
+                vc.PostEvent(new MoneyBalanceReplyReceivedEvent
+                {
+                    Agent = new AgentInfo(m, circuitCode),
+                    TransactionID = res.TransactionID,
+                    TransactionSuccess = res.TransactionSuccess.ToLSLBoolean(),
+                    MoneyBalance = res.MoneyBalance,
+                    SquareMetersCredit = res.SquareMetersCredit,
+                    SquareMetersCommitted = res.SquareMetersCommitted,
+                    Description = res.Description,
+                    TransactionType = res.TransactionType,
+                    SourceID = res.SourceID,
+                    IsSourceGroup = res.IsSourceGroup.ToLSLBoolean(),
+                    DestID = res.DestID,
+                    IsDestGroup = res.IsDestGroup.ToLSLBoolean(),
+                    Amount = res.Amount,
+                    ItemDescription = res.ItemDescription
+                });
+            }
+        }
+
+        [APIExtension("ViewerControl", "moneybalancereply_received")]
+        [StateEventDelegate]
+        public delegate void MoneyBalanceReplyReceived(
+            AgentInfo agent,
+            LSLKey transactionID,
+            int transactionSuccess,
+            int moneyBalance,
+            int squareMetersCredit,
+            int squareMetersCommitted,
+            string destination,
+            int transactionType,
+            LSLKey sourceID,
+            int isSourceGroup,
+            LSLKey destID,
+            int isDestGroup,
+            int amount,
+            string itemDescription);
+        #endregion
+
+        #region grantgodlikepowers_received
+        public class GrantGodlikePowersReceivedEvent : IScriptEvent
+        {
+            [TranslatedScriptEventParameter(0)]
+            public AgentInfo Agent;
+            [TranslatedScriptEventParameter(1)]
+            public int GodLevel;
+            [TranslatedScriptEventParameter(2)]
+            public LSLKey Token;
+
+            public static void ToScriptEvent(Message m, ViewerConnection vc, uint circuitCode)
+            {
+                var res = (GrantGodlikePowers)m;
+                vc.PostEvent(new GrantGodlikePowersReceivedEvent
+                {
+                    Agent = new AgentInfo(m, circuitCode),
+                    GodLevel = res.GodLevel,
+                    Token = res.Token
+                });
+            }
+        }
+        #endregion
+
         [TranslatedScriptEventsInfo]
         public static readonly Type[] TranslatedEvents = new Type[] {
             typeof(RegionHandshakeReceivedEvent),
@@ -1594,7 +1694,9 @@ namespace SilverSim.Tests.Viewer
             typeof(UUIDNameReplyReceivedEvent),
             typeof(DeRezAckReceivedEvent),
             typeof(ForceObjectSelectReceivedEvent),
-            typeof(ObjectAnimationReceivedEvent)
+            typeof(ObjectAnimationReceivedEvent),
+            typeof(MoneyBalanceReplyReceivedEvent),
+            typeof(GrantGodlikePowersReceivedEvent)
         };
     }
 }
