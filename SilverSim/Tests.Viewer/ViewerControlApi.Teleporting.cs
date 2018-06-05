@@ -23,6 +23,7 @@ using SilverSim.Scene.Types.Script;
 using SilverSim.Scripting.Lsl;
 using SilverSim.Tests.Viewer.UDP;
 using SilverSim.Types;
+using SilverSim.Types.Grid;
 using SilverSim.Viewer.Messages.Teleport;
 
 namespace SilverSim.Tests.Viewer
@@ -51,6 +52,32 @@ namespace SilverSim.Tests.Viewer
                         RegionID = regionId.AsUUID,
                         Position = position,
                         LookAt = lookAt
+                    };
+                    viewerCircuit.SendMessage(req);
+                }
+            }
+        }
+
+        [APIExtension("ViewerControl", APIUseAsEnum.MemberFunction, "SendTeleportLureRequest")]
+        public void SendTeleportLureRequest(
+            ScriptInstance instance,
+            ViewerAgentAccessor agent,
+            LSLKey lureID,
+            int teleportFlags)
+        {
+            lock (instance)
+            {
+                ViewerConnection vc;
+                ViewerCircuit viewerCircuit;
+                if (m_Clients.TryGetValue(agent.AgentID, out vc) &&
+                    vc.ViewerCircuits.TryGetValue(agent.CircuitCode, out viewerCircuit))
+                {
+                    var req = new TeleportLureRequest
+                    {
+                        AgentID = viewerCircuit.AgentID,
+                        SessionID = viewerCircuit.SessionID,
+                        LureID = lureID,
+                        TeleportFlags = (TeleportFlags)teleportFlags
                     };
                     viewerCircuit.SendMessage(req);
                 }

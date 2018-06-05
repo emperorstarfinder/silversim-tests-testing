@@ -24,11 +24,6 @@ using SilverSim.Scripting.Lsl;
 using SilverSim.Tests.Viewer.UDP;
 using SilverSim.Types.Script;
 using SilverSim.Viewer.Messages.Script;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SilverSim.Tests.Viewer
 {
