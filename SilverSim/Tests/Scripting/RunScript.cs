@@ -701,8 +701,8 @@ namespace SilverSim.Tests.Scripting
                         ChatServiceInterface chatService = scene.GetService<ChatServiceInterface>();
                         if (chatService != null)
                         {
-                            chatService.AddRegionListener(PUBLIC_CHANNEL, string.Empty, UUID.Zero, "", GetUUID, PublicChannelLog);
-                            chatService.AddRegionListener(DEBUG_CHANNEL, string.Empty, UUID.Zero, "", GetUUID, DebugChannelLog);
+                            chatService.AddRegionListener(PUBLIC_CHANNEL, string.Empty, UUID.Zero, "", GetUUID, null, PublicChannelLog);
+                            chatService.AddRegionListener(DEBUG_CHANNEL, string.Empty, UUID.Zero, "", GetUUID, null, DebugChannelLog);
                         }
                         byte[] serializedState;
                         m_ScriptStates.TryGetValue(item.ID, out serializedState);
