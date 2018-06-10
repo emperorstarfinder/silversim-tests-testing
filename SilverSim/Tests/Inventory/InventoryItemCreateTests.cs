@@ -146,6 +146,7 @@ namespace SilverSim.Tests.Inventory
             }
             if (a.CreationDate.DateTimeToUnixTime() != b.CreationDate.DateTimeToUnixTime())
             {
+                m_Log.WarnFormat("CreationDate A({0} => {1}) B({2} => {3})", a.CreationDate, a.CreationDate.DateTimeToUnixTime(), b.CreationDate, b.CreationDate.DateTimeToUnixTime());
                 mismatches.Add("CreationDate");
             }
 
