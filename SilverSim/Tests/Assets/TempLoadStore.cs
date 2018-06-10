@@ -129,9 +129,9 @@ namespace SilverSim.Tests.Assets
                     return false;
                 }
             }
-            catch
+            catch(Exception e)
             {
-                m_Log.Fatal("Failed to detect multiple non-existence of asset 1 and 2");
+                m_Log.Fatal("Failed to detect multiple non-existence of asset 1 and 2", e);
                 return false;
             }
             #endregion
@@ -165,9 +165,9 @@ namespace SilverSim.Tests.Assets
                     return false;
                 }
             }
-            catch
+            catch(Exception e)
             {
-                m_Log.Fatal("Failed to detect multiple non-existence of asset 1 and 2");
+                m_Log.Fatal("Failed to detect multiple non-existence of asset 1 and 2", e);
                 return false;
             }
             try
@@ -185,14 +185,14 @@ namespace SilverSim.Tests.Assets
                     return false;
                 }
             }
-            catch
+            catch(Exception e)
             {
-                m_Log.Fatal("Failed to detect multiple non-existence of asset 2");
+                m_Log.Fatal("Failed to detect multiple non-existence of asset 2", e);
                 return false;
             }
 
             m_Log.Info("Storing asset 2");
-            asset = new AssetData()
+            asset = new AssetData
             {
                 Name = "Asset 2",
                 ID = Asset2ID,
@@ -234,9 +234,9 @@ namespace SilverSim.Tests.Assets
                     return false;
                 }
             }
-            catch
+            catch(Exception e)
             {
-                m_Log.Fatal("Failed to detect multiple existence of asset 1 and 2");
+                m_Log.Fatal("Failed to detect multiple existence of asset 1 and 2", e);
                 return false;
             }
             #endregion
@@ -359,9 +359,9 @@ namespace SilverSim.Tests.Assets
             {
                 assetstream.Read(data, 0, Asset1Data.Length);
             }
-            catch
+            catch(Exception e)
             {
-                m_Log.Error("Asset length does not match (Too Short)");
+                m_Log.Error("Asset length does not match (Too Short)", e);
                 return false;
             }
             try
@@ -391,9 +391,9 @@ namespace SilverSim.Tests.Assets
             {
                 assetstream.Read(data, 0, Asset2Data.Length);
             }
-            catch
+            catch(Exception e)
             {
-                m_Log.Error("Asset length does not match (Too Short)");
+                m_Log.Error("Asset length does not match (Too Short)", e);
                 return false;
             }
             try
