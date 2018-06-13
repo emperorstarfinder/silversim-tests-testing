@@ -50,6 +50,7 @@ namespace SilverSim.Tests.Viewer
     public partial class ViewerControlApi
     {
         [APIExtension("ViewerControl", "agentinfo")]
+        [APIDisplayName("agentinfo")]
         [APIAccessibleMembers]
         public sealed class AgentInfo
         {
@@ -1551,6 +1552,7 @@ namespace SilverSim.Tests.Viewer
         }
 
         [APIExtension("ViewerControl", "objectanimation_received")]
+        [StateEventDelegate]
         public delegate void ObjectAnimationReceived(
             AgentInfo agent,
             LSLKey sender,

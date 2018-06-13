@@ -176,7 +176,7 @@ namespace SilverSim.Tests.Viewer
             m_UserAccountServiceName = ownSection.GetString("UserAccountService");
         }
 
-        sealed class LocalUserAgentService : UserAgentServiceInterface, IDisplayNameAccessor
+        private sealed class LocalUserAgentService : UserAgentServiceInterface, IDisplayNameAccessor
         {
             readonly PresenceServiceInterface m_PresenceService;
             readonly GridUserServiceInterface m_GridUserService;
