@@ -417,6 +417,75 @@ namespace SilverSim.Tests.Assets
             }
             #endregion
 
+            #region Asset 1 Metadata with length test
+            m_Log.Info("Testing stored asset metadata 1 with length");
+            int assetlength;
+            if(!m_AssetService.TryGetValue(Asset1ID, out assetmetadata, out assetlength))
+            {
+                m_Log.Error("Failed to get asset 1");
+                return false;
+            }
+            if (assetmetadata.Name != "Asset 1")
+            {
+                m_Log.Error("Asset could not be retrieved correctly (Name)");
+                return false;
+            }
+            if (assetmetadata.Type != AssetType.CallingCard)
+            {
+                m_Log.Error("Asset could not be retrieved correctly (AssetType)");
+                return false;
+            }
+            if (assetmetadata.Temporary)
+            {
+                m_Log.ErrorFormat("Asset could not be retrieved correctly (Temporary {0} / {1})", assetmetadata.Temporary, false);
+                return false;
+            }
+            if (assetmetadata.Flags != AssetFlags.Normal)
+            {
+                m_Log.Error("Asset could not be retrieved correctly (Flags)");
+                return false;
+            }
+            if(assetlength != Asset1Data.Length)
+            {
+                m_Log.ErrorFormat("Asset could not be retrieved correctly (Length {0} / {1})", assetlength, Asset1Data.Length);
+                return false;
+            }
+            #endregion
+
+            #region Asset 2 Metadata with length test
+            m_Log.Info("Testing stored asset metadata 2 with length");
+            if (!m_AssetService.TryGetValue(Asset2ID, out assetmetadata, out assetlength))
+            {
+                m_Log.Error("Failed to get asset 2");
+                return false;
+            }
+            if (assetmetadata.Name != "Asset 2")
+            {
+                m_Log.Error("Asset could not be retrieved correctly (Name)");
+                return false;
+            }
+            if (assetmetadata.Type != AssetType.Mesh)
+            {
+                m_Log.Error("Asset could not be retrieved correctly (AssetType)");
+                return false;
+            }
+            if (assetmetadata.Temporary)
+            {
+                m_Log.ErrorFormat("Asset could not be retrieved correctly (Temporary {0} / {1})", assetmetadata.Temporary, false);
+                return false;
+            }
+            if (assetmetadata.Flags != AssetFlags.Maptile)
+            {
+                m_Log.ErrorFormat("Asset could not be retrieved correctly (Flags {0} / {1})", (uint)assetmetadata.Flags, (uint)AssetFlags.Maptile);
+                return false;
+            }
+            if (assetlength != Asset2Data.Length)
+            {
+                m_Log.ErrorFormat("Asset could not be retrieved correctly (Length {0} / {1})", assetlength, Asset2Data.Length);
+                return false;
+            }
+            #endregion
+
             return true;
         }
     }
