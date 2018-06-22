@@ -21,6 +21,7 @@
 
 using SilverSim.Http.Client;
 using SilverSim.ServiceInterfaces.Inventory;
+using SilverSim.ServiceInterfaces.Inventory.This;
 using SilverSim.Types;
 using SilverSim.Types.Asset;
 using SilverSim.Types.Inventory;
@@ -43,7 +44,7 @@ namespace SilverSim.Tests.Viewer.Caps
             TimeoutMs = 20000;
         }
 
-        InventoryFolder IInventoryFolderServiceInterface.this[UUID key]
+        InventoryFolder IInventoryFolderServiceThisInterface.this[UUID key]
         {
             get
             {
@@ -56,7 +57,7 @@ namespace SilverSim.Tests.Viewer.Caps
             }
         }
 
-        InventoryFolder IInventoryFolderServiceInterface.this[UUID principalID, UUID key]
+        InventoryFolder IInventoryFolderServiceThisInterface.this[UUID principalID, UUID key]
         {
             get
             {
@@ -69,7 +70,7 @@ namespace SilverSim.Tests.Viewer.Caps
             }
         }
 
-        InventoryFolder IInventoryFolderServiceInterface.this[UUID principalID, AssetType type]
+        InventoryFolder IInventoryFolderServiceThisInterface.this[UUID principalID, AssetType type]
         {
             get
             {
@@ -82,7 +83,7 @@ namespace SilverSim.Tests.Viewer.Caps
             }
         }
 
-        InventoryFolderContent IInventoryFolderContentServiceInterface.this[UUID principalID, UUID folderID]
+        InventoryFolderContent IInventoryFolderContentServiceThisInterface.this[UUID principalID, UUID folderID]
         {
             get
             {

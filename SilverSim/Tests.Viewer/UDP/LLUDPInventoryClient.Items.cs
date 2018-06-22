@@ -20,6 +20,7 @@
 // exception statement from your version.
 
 using SilverSim.ServiceInterfaces.Inventory;
+using SilverSim.ServiceInterfaces.Inventory.This;
 using SilverSim.Threading;
 using SilverSim.Types;
 using SilverSim.Types.Asset.Format;
@@ -62,9 +63,9 @@ namespace SilverSim.Tests.Viewer.UDP
             }
         }
 
-        InventoryItem IInventoryItemServiceInterface.this[UUID key] => Item[m_ViewerCircuit.AgentID, key];
+        InventoryItem IInventoryItemServiceThisInterface.this[UUID key] => Item[m_ViewerCircuit.AgentID, key];
 
-        InventoryItem IInventoryItemServiceInterface.this[UUID principalID, UUID key]
+        InventoryItem IInventoryItemServiceThisInterface.this[UUID principalID, UUID key]
         {
             get
             {

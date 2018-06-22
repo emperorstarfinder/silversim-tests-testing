@@ -20,6 +20,7 @@
 // exception statement from your version.
 
 using SilverSim.ServiceInterfaces.Inventory;
+using SilverSim.ServiceInterfaces.Inventory.This;
 using SilverSim.Threading;
 using SilverSim.Types;
 using SilverSim.Types.Asset;
@@ -38,7 +39,7 @@ namespace SilverSim.Tests.Viewer.UDP
         private readonly RwLockedDictionary<UUID, AutoResetEvent> m_WaitMoveFolder = new RwLockedDictionary<UUID, AutoResetEvent>();
         private readonly RwLockedDictionary<UUID, AutoResetEvent> m_WaitUpdateFolder = new RwLockedDictionary<UUID, AutoResetEvent>();
 
-        InventoryFolder IInventoryFolderServiceInterface.this[UUID key]
+        InventoryFolder IInventoryFolderServiceThisInterface.this[UUID key]
         {
             get
             {
@@ -51,7 +52,7 @@ namespace SilverSim.Tests.Viewer.UDP
             }
         }
 
-        InventoryFolder IInventoryFolderServiceInterface.this[UUID principalID, UUID key]
+        InventoryFolder IInventoryFolderServiceThisInterface.this[UUID principalID, UUID key]
         {
             get
             {
@@ -64,7 +65,7 @@ namespace SilverSim.Tests.Viewer.UDP
             }
         }
 
-        InventoryFolder IInventoryFolderServiceInterface.this[UUID principalID, AssetType type]
+        InventoryFolder IInventoryFolderServiceThisInterface.this[UUID principalID, AssetType type]
         {
             get
             {

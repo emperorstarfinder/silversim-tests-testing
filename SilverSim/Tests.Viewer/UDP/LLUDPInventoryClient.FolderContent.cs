@@ -29,19 +29,6 @@ namespace SilverSim.Tests.Viewer.UDP
 {
     public partial class LLUDPInventoryClient : IInventoryFolderContentServiceInterface
     {
-        InventoryFolderContent IInventoryFolderContentServiceInterface.this[UUID principalID, UUID folderID]
-        {
-            get
-            {
-                InventoryFolderContent content;
-                if(!Folder.Content.TryGetValue(principalID, folderID, out content))
-                {
-                    throw new InventoryFolderNotFoundException(folderID);
-                }
-                return content;
-            }
-        }
-
         List<InventoryFolderContent> IInventoryFolderContentServiceInterface.this[UUID principalID, UUID[] folderIDs]
         {
             get
