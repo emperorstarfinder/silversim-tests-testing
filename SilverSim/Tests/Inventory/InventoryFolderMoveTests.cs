@@ -85,32 +85,32 @@ namespace SilverSim.Tests.Inventory
             };
             m_InventoryService.Folder.Add(testFolder);
 
-            m_Log.InfoFormat("Move folder to notecard folder");
+            m_Log.Info("Move folder to notecard folder");
             m_InventoryService.Folder.Move(m_UserID.ID, testFolder.ID, notecardFolder.ID);
 
-            m_Log.InfoFormat("Check for parentfolder change");
+            m_Log.Info("Check for parentfolder change");
             folder = m_InventoryService.Folder[m_UserID.ID, testFolder.ID];
             if (folder.ParentFolderID != notecardFolder.ID)
             {
                 return false;
             }
 
-            m_Log.InfoFormat("Move folder to root folder");
+            m_Log.Info("Move folder to root folder");
             m_InventoryService.Folder.Move(m_UserID.ID, testFolder.ID, rootFolder.ID);
 
-            m_Log.InfoFormat("Check for parentfolder change");
+            m_Log.Info("Check for parentfolder change");
             folder = m_InventoryService.Folder[m_UserID.ID, testFolder.ID];
             if (folder.ParentFolderID != rootFolder.ID)
             {
                 return false;
             }
 
-            m_Log.InfoFormat("Move folder to unknown parentfolder");
+            m_Log.Info("Move folder to unknown parentfolder");
             UUID unknownFolderID;
             do
             {
                 unknownFolderID = UUID.Random;
-            } while (m_BackendInventoryService.Folder.ContainsKey(unknownFolderID));
+            } while (m_BackendInventoryService.Folder.ContainsKey(m_UserID.ID, unknownFolderID));
             try
             {
                 m_InventoryService.Folder.Move(m_UserID.ID, testFolder.ID, unknownFolderID);
@@ -121,14 +121,14 @@ namespace SilverSim.Tests.Inventory
                 /* this is the expected case */
             }
 
-            m_Log.InfoFormat("Check for parentfolder not being changed");
+            m_Log.Info("Check for parentfolder not being changed");
             folder = m_InventoryService.Folder[m_UserID.ID, testFolder.ID];
             if (folder.ParentFolderID != rootFolder.ID)
             {
                 return false;
             }
 
-            m_Log.InfoFormat("Deleting folder");
+            m_Log.Info("Deleting folder");
             m_InventoryService.Folder.Delete(m_UserID.ID, testFolder.ID);
 
             return true;

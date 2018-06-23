@@ -27,6 +27,7 @@ using SilverSim.Tests.Extensions;
 using SilverSim.Types;
 using SilverSim.Types.Asset;
 using SilverSim.Types.Inventory;
+using System;
 using System.Collections.Generic;
 using System.Reflection;
 
@@ -113,40 +114,90 @@ namespace SilverSim.Tests.Inventory
             InventoryFolder rootFolder = m_InventoryService.Folder[m_UserID.ID, AssetType.RootFolder];
             UUID inventoryId = UUID.Random;
 
-            m_Log.InfoFormat("Testing non-existence 1");
-            if (m_InventoryService.Folder.ContainsKey(inventoryId))
+            m_Log.Info("Testing non-existence 1");
+            try
             {
-                return false;
+                if (m_InventoryService.Folder.ContainsKey(inventoryId))
+                {
+                    return false;
+                }
+                if (!m_InventoryService.SupportsLegacyFunctions)
+                {
+                    m_Log.Error("Service does not specify legacy functions supported");
+                    return false;
+                }
+            }
+            catch (NotSupportedException)
+            {
+                if (m_InventoryService.SupportsLegacyFunctions)
+                {
+                    m_Log.Error("Service specifies legacy functions supported. Missing function.");
+                    return false;
+                }
             }
 
-            m_Log.InfoFormat("Testing non-existence 2");
+            m_Log.Info("Testing non-existence 2");
             if (m_InventoryService.Folder.ContainsKey(m_UserID.ID, inventoryId))
             {
                 return false;
             }
 
-            m_Log.InfoFormat("Testing non-existence 3");
-            if (m_InventoryService.Folder.TryGetValue(inventoryId, out folder))
+            m_Log.Info("Testing non-existence 3");
+            try
             {
-                return false;
+                if (m_InventoryService.Folder.TryGetValue(inventoryId, out folder))
+                {
+                    return false;
+                }
+                if (!m_InventoryService.SupportsLegacyFunctions)
+                {
+                    m_Log.Error("Service does not specify legacy functions supported");
+                    return false;
+                }
+            }
+            catch (NotSupportedException)
+            {
+                if (m_InventoryService.SupportsLegacyFunctions)
+                {
+                    m_Log.Error("Service specifies legacy functions supported. Missing function.");
+                    return false;
+                }
             }
 
-            m_Log.InfoFormat("Testing non-existence 4");
+            m_Log.Info("Testing non-existence 4");
             if (m_InventoryService.Folder.TryGetValue(m_UserID.ID, inventoryId, out folder))
             {
                 return false;
             }
-            m_Log.InfoFormat("Testing non-existence 5");
+            m_Log.Info("Testing non-existence 5");
             try
             {
                 folder = m_InventoryService.Folder[inventoryId];
+                if (!m_InventoryService.SupportsLegacyFunctions)
+                {
+                    m_Log.Error("Service does not specify legacy functions supported");
+                    return false;
+                }
                 return false;
+            }
+            catch (NotSupportedException)
+            {
+                if (m_InventoryService.SupportsLegacyFunctions)
+                {
+                    m_Log.Error("Service specifies legacy functions supported. Missing function.");
+                    return false;
+                }
             }
             catch (InventoryFolderNotFoundException)
             {
                 /* this is the okay case */
+                if (!m_InventoryService.SupportsLegacyFunctions)
+                {
+                    m_Log.Error("Service does not specify legacy functions supported");
+                    return false;
+                }
             }
-            m_Log.InfoFormat("Testing non-existence 6");
+            m_Log.Info("Testing non-existence 6");
             try
             {
                 folder = m_InventoryService.Folder[m_UserID.ID, inventoryId];
@@ -156,7 +207,7 @@ namespace SilverSim.Tests.Inventory
             {
                 /* this is the okay case */
             }
-            m_Log.InfoFormat("Testing non-existence 7");
+            m_Log.Info("Testing non-existence 7");
             result = m_InventoryService.Folder.GetFolders(m_UserID.ID, rootFolder.ID);
             foreach (InventoryFolder checkItem in result)
             {
@@ -165,7 +216,7 @@ namespace SilverSim.Tests.Inventory
                     return false;
                 }
             }
-            m_Log.InfoFormat("Testing non-existence 8");
+            m_Log.Info("Testing non-existence 8");
             result = m_InventoryService.Folder.Content[m_UserID.ID, rootFolder.ID].Folders;
             foreach (InventoryFolder checkItem in result)
             {
@@ -174,17 +225,17 @@ namespace SilverSim.Tests.Inventory
                     return false;
                 }
             }
-            m_Log.InfoFormat("Testing non-existence 9");
+            m_Log.Info("Testing non-existence 9");
             if(m_InventoryService.Folder.Content.ContainsKey(m_UserID.ID, inventoryId))
             {
                 return false;
             }
-            m_Log.InfoFormat("Testing non-existence 10");
+            m_Log.Info("Testing non-existence 10");
             if (m_InventoryService.Folder.Content.TryGetValue(m_UserID.ID, inventoryId, out content))
             {
                 return false;
             }
-            m_Log.InfoFormat("Testing non-existence 11");
+            m_Log.Info("Testing non-existence 11");
             try
             {
                 content = m_InventoryService.Folder.Content[m_UserID.ID, inventoryId];
@@ -194,7 +245,7 @@ namespace SilverSim.Tests.Inventory
             {
                 /* this is the expected one */
             }
-            m_Log.InfoFormat("Testing non-existence 12");
+            m_Log.Info("Testing non-existence 12");
             resultContent = m_InventoryService.Folder.Content[m_UserID.ID, new UUID[] { inventoryId }];
             foreach(InventoryFolderContent checkItem in resultContent)
             {
@@ -214,27 +265,59 @@ namespace SilverSim.Tests.Inventory
             };
             m_BackendInventoryService.Folder.Add(testFolder);
 
-            m_Log.InfoFormat("Testing existence 1");
-            if (!m_InventoryService.Folder.ContainsKey(inventoryId))
+            m_Log.Info("Testing existence 1");
+            try
             {
-                return false;
+                if (!m_InventoryService.Folder.ContainsKey(inventoryId))
+                {
+                    return false;
+                }
+                if (!m_InventoryService.SupportsLegacyFunctions)
+                {
+                    m_Log.Error("Service does not specify legacy functions supported");
+                    return false;
+                }
+            }
+            catch (NotSupportedException)
+            {
+                if (m_InventoryService.SupportsLegacyFunctions)
+                {
+                    m_Log.Error("Service specifies legacy functions supported. Missing function.");
+                    return false;
+                }
             }
             m_Log.InfoFormat("Testing existence 2");
             if (!m_InventoryService.Folder.ContainsKey(m_UserID.ID, inventoryId))
             {
                 return false;
             }
-            m_Log.InfoFormat("Testing existence 3");
-            if (!m_InventoryService.Folder.TryGetValue(inventoryId, out folder))
+            m_Log.Info("Testing existence 3");
+            try
             {
-                return false;
+                if (!m_InventoryService.Folder.TryGetValue(inventoryId, out folder))
+                {
+                    return false;
+                }
+                if (!m_InventoryService.SupportsLegacyFunctions)
+                {
+                    m_Log.Error("Service does not specify legacy functions supported");
+                    return false;
+                }
+                if (!IsDataEqual(folder, testFolder))
+                {
+                    return false;
+                }
             }
-            if (!IsDataEqual(folder, testFolder))
+            catch (NotSupportedException)
             {
-                return false;
+                if (m_InventoryService.SupportsLegacyFunctions)
+                {
+                    m_Log.Error("Service specifies legacy functions supported. Missing function.");
+                    return false;
+                }
             }
 
-            m_Log.InfoFormat("Testing existence 4");
+            m_Log.Info("Testing existence 4");
             if (!m_InventoryService.Folder.TryGetValue(m_UserID.ID, inventoryId, out folder))
             {
                 return false;
@@ -243,11 +326,27 @@ namespace SilverSim.Tests.Inventory
             {
                 return false;
             }
-            m_Log.InfoFormat("Testing existence 5");
-            folder = m_InventoryService.Folder[inventoryId];
-            if (!IsDataEqual(folder, testFolder))
+            m_Log.Info("Testing existence 5");
+            try
             {
-                return false;
+                folder = m_InventoryService.Folder[inventoryId];
+                if (!m_InventoryService.SupportsLegacyFunctions)
+                {
+                    m_Log.Error("Service does not specify legacy functions supported");
+                    return false;
+                }
+                if (!IsDataEqual(folder, testFolder))
+                {
+                    return false;
+                }
+            }
+            catch (NotSupportedException)
+            {
+                if (m_InventoryService.SupportsLegacyFunctions)
+                {
+                    m_Log.Error("Service specifies legacy functions supported. Missing function.");
+                    return false;
+                }
             }
             m_Log.InfoFormat("Testing existence 6");
             folder = m_InventoryService.Folder[m_UserID.ID, inventoryId];
@@ -318,55 +417,100 @@ namespace SilverSim.Tests.Inventory
                 return false;
             }
 
-            m_Log.InfoFormat("Updating folder");
+            m_Log.Info("Updating folder");
             testFolder.Name = "Test Name 2";
 
             m_InventoryService.Folder.Update(testFolder);
 
-            m_Log.InfoFormat("Testing changes");
+            m_Log.Info("Testing changes");
             folder = m_InventoryService.Folder[m_UserID.ID, inventoryId];
             if (!IsDataEqual(folder, testFolder))
             {
                 return false;
             }
 
-            m_Log.InfoFormat("Deleting folder");
+            m_Log.Info("Deleting folder");
             m_InventoryService.Folder.Delete(m_UserID.ID, inventoryId);
 
-            m_Log.InfoFormat("Testing non-existence 1");
-            if (m_InventoryService.Folder.ContainsKey(inventoryId))
+            m_Log.Info("Testing non-existence 1");
+            try
             {
-                return false;
+                if (m_InventoryService.Folder.ContainsKey(inventoryId))
+                {
+                    return false;
+                }
+                if (!m_InventoryService.SupportsLegacyFunctions)
+                {
+                    m_Log.Error("Service does not specify legacy functions supported");
+                    return false;
+                }
+            }
+            catch (NotSupportedException)
+            {
+                if (m_InventoryService.SupportsLegacyFunctions)
+                {
+                    m_Log.Error("Service specifies legacy functions supported. Missing function.");
+                    return false;
+                }
             }
 
-            m_Log.InfoFormat("Testing non-existence 2");
+            m_Log.Info("Testing non-existence 2");
             if (m_InventoryService.Folder.ContainsKey(m_UserID.ID, inventoryId))
             {
                 return false;
             }
 
-            m_Log.InfoFormat("Testing non-existence 3");
-            if (m_InventoryService.Folder.TryGetValue(inventoryId, out folder))
+            m_Log.Info("Testing non-existence 3");
+            try
             {
-                return false;
+                if (m_InventoryService.Folder.TryGetValue(inventoryId, out folder))
+                {
+                    return false;
+                }
+                if (!m_InventoryService.SupportsLegacyFunctions)
+                {
+                    m_Log.Error("Service does not specify legacy functions supported");
+                    return false;
+                }
+            }
+            catch (NotSupportedException)
+            {
+                if (m_InventoryService.SupportsLegacyFunctions)
+                {
+                    m_Log.Error("Service specifies legacy functions supported. Missing function.");
+                    return false;
+                }
             }
 
-            m_Log.InfoFormat("Testing non-existence 4");
+            m_Log.Info("Testing non-existence 4");
             if (m_InventoryService.Folder.TryGetValue(m_UserID.ID, inventoryId, out folder))
             {
                 return false;
             }
-            m_Log.InfoFormat("Testing non-existence 5");
+            m_Log.Info("Testing non-existence 5");
             try
             {
                 folder = m_InventoryService.Folder[inventoryId];
                 return false;
             }
+            catch (NotSupportedException)
+            {
+                if (m_InventoryService.SupportsLegacyFunctions)
+                {
+                    m_Log.Error("Service specifies legacy functions supported. Missing function.");
+                    return false;
+                }
+            }
             catch (InventoryFolderNotFoundException)
             {
                 /* this is the okay case */
+                if (!m_InventoryService.SupportsLegacyFunctions)
+                {
+                    m_Log.Error("Service does not specify legacy functions supported");
+                    return false;
+                }
             }
-            m_Log.InfoFormat("Testing non-existence 6");
+            m_Log.Info("Testing non-existence 6");
             try
             {
                 folder = m_InventoryService.Folder[m_UserID.ID, inventoryId];
@@ -377,7 +521,7 @@ namespace SilverSim.Tests.Inventory
                 /* this is the okay case */
             }
 
-            m_Log.InfoFormat("Testing non-existence 7");
+            m_Log.Info("Testing non-existence 7");
             result = m_InventoryService.Folder.GetFolders(m_UserID.ID, rootFolder.ID);
             foreach (InventoryFolder checkItem in result)
             {
@@ -386,7 +530,7 @@ namespace SilverSim.Tests.Inventory
                     return false;
                 }
             }
-            m_Log.InfoFormat("Testing non-existence 8");
+            m_Log.Info("Testing non-existence 8");
             result = m_InventoryService.Folder.Content[m_UserID.ID, rootFolder.ID].Folders;
             foreach (InventoryFolder checkItem in result)
             {
@@ -395,17 +539,17 @@ namespace SilverSim.Tests.Inventory
                     return false;
                 }
             }
-            m_Log.InfoFormat("Testing non-existence 9");
+            m_Log.Info("Testing non-existence 9");
             if (m_InventoryService.Folder.Content.ContainsKey(m_UserID.ID, inventoryId))
             {
                 return false;
             }
-            m_Log.InfoFormat("Testing non-existence 10");
+            m_Log.Info("Testing non-existence 10");
             if (m_InventoryService.Folder.Content.TryGetValue(m_UserID.ID, inventoryId, out content))
             {
                 return false;
             }
-            m_Log.InfoFormat("Testing non-existence 11");
+            m_Log.Info("Testing non-existence 11");
             try
             {
                 content = m_InventoryService.Folder.Content[m_UserID.ID, inventoryId];
@@ -415,7 +559,7 @@ namespace SilverSim.Tests.Inventory
             {
                 /* this is the expected one */
             }
-            m_Log.InfoFormat("Testing non-existence 12");
+            m_Log.Info("Testing non-existence 12");
             resultContent = m_InventoryService.Folder.Content[m_UserID.ID, new UUID[] { inventoryId }];
             foreach (InventoryFolderContent checkItem in resultContent)
             {
@@ -425,50 +569,95 @@ namespace SilverSim.Tests.Inventory
                 }
             }
 
-            m_Log.InfoFormat("Creating the folder");
+            m_Log.Info("Creating the folder");
             m_BackendInventoryService.Folder.Add(testFolder);
 
-            m_Log.InfoFormat("Deleting folder");
+            m_Log.Info("Deleting folder");
             List<UUID> deleted = m_InventoryService.Folder.Delete(m_UserID.ID, new List<UUID> { inventoryId });
             if (!deleted.Contains(inventoryId))
             {
                 return false;
             }
 
-            m_Log.InfoFormat("Testing non-existence 1");
-            if (m_InventoryService.Folder.ContainsKey(inventoryId))
+            m_Log.Info("Testing non-existence 1");
+            try
             {
-                return false;
+                if (m_InventoryService.Folder.ContainsKey(inventoryId))
+                {
+                    return false;
+                }
+                if (!m_InventoryService.SupportsLegacyFunctions)
+                {
+                    m_Log.Error("Service does not specify legacy functions supported");
+                    return false;
+                }
+            }
+            catch (NotSupportedException)
+            {
+                if (m_InventoryService.SupportsLegacyFunctions)
+                {
+                    m_Log.Error("Service specifies legacy functions supported. Missing function.");
+                    return false;
+                }
             }
 
-            m_Log.InfoFormat("Testing non-existence 2");
+            m_Log.Info("Testing non-existence 2");
             if (m_InventoryService.Folder.ContainsKey(m_UserID.ID, inventoryId))
             {
                 return false;
             }
 
-            m_Log.InfoFormat("Testing non-existence 3");
-            if (m_InventoryService.Folder.TryGetValue(inventoryId, out folder))
+            m_Log.Info("Testing non-existence 3");
+            try
             {
-                return false;
+                if (m_InventoryService.Folder.TryGetValue(inventoryId, out folder))
+                {
+                    return false;
+                }
+                if (!m_InventoryService.SupportsLegacyFunctions)
+                {
+                    m_Log.Error("Service does not specify legacy functions supported");
+                    return false;
+                }
+            }
+            catch (NotSupportedException)
+            {
+                if (m_InventoryService.SupportsLegacyFunctions)
+                {
+                    m_Log.Error("Service specifies legacy functions supported. Missing function.");
+                    return false;
+                }
             }
 
-            m_Log.InfoFormat("Testing non-existence 4");
+            m_Log.Info("Testing non-existence 4");
             if (m_InventoryService.Folder.TryGetValue(m_UserID.ID, inventoryId, out folder))
             {
                 return false;
             }
-            m_Log.InfoFormat("Testing non-existence 5");
+            m_Log.Info("Testing non-existence 5");
             try
             {
                 folder = m_InventoryService.Folder[inventoryId];
                 return false;
             }
+            catch (NotSupportedException)
+            {
+                if (m_InventoryService.SupportsLegacyFunctions)
+                {
+                    m_Log.Error("Service specifies legacy functions supported. Missing function.");
+                    return false;
+                }
+            }
             catch (InventoryFolderNotFoundException)
             {
                 /* this is the okay case */
+                if (!m_InventoryService.SupportsLegacyFunctions)
+                {
+                    m_Log.Error("Service does not specify legacy functions supported");
+                    return false;
+                }
             }
-            m_Log.InfoFormat("Testing non-existence 6");
+            m_Log.Info("Testing non-existence 6");
             try
             {
                 folder = m_InventoryService.Folder[m_UserID.ID, inventoryId];
@@ -478,7 +667,7 @@ namespace SilverSim.Tests.Inventory
             {
                 /* this is the okay case */
             }
-            m_Log.InfoFormat("Testing non-existence 7");
+            m_Log.Info("Testing non-existence 7");
             result = m_InventoryService.Folder.GetFolders(m_UserID.ID, rootFolder.ID);
             foreach (InventoryFolder checkItem in result)
             {
@@ -487,7 +676,7 @@ namespace SilverSim.Tests.Inventory
                     return false;
                 }
             }
-            m_Log.InfoFormat("Testing non-existence 8");
+            m_Log.Info("Testing non-existence 8");
             result = m_InventoryService.Folder.Content[m_UserID.ID, rootFolder.ID].Folders;
             foreach (InventoryFolder checkItem in result)
             {
@@ -496,17 +685,17 @@ namespace SilverSim.Tests.Inventory
                     return false;
                 }
             }
-            m_Log.InfoFormat("Testing non-existence 9");
+            m_Log.Info("Testing non-existence 9");
             if (m_InventoryService.Folder.Content.ContainsKey(m_UserID.ID, inventoryId))
             {
                 return false;
             }
-            m_Log.InfoFormat("Testing non-existence 10");
+            m_Log.Info("Testing non-existence 10");
             if (m_InventoryService.Folder.Content.TryGetValue(m_UserID.ID, inventoryId, out content))
             {
                 return false;
             }
-            m_Log.InfoFormat("Testing non-existence 11");
+            m_Log.Info("Testing non-existence 11");
             try
             {
                 content = m_InventoryService.Folder.Content[m_UserID.ID, inventoryId];
@@ -516,7 +705,7 @@ namespace SilverSim.Tests.Inventory
             {
                 /* this is the expected one */
             }
-            m_Log.InfoFormat("Testing non-existence 12");
+            m_Log.Info("Testing non-existence 12");
             resultContent = m_InventoryService.Folder.Content[m_UserID.ID, new UUID[] { inventoryId }];
             foreach (InventoryFolderContent checkItem in resultContent)
             {

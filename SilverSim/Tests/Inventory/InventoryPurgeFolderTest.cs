@@ -27,6 +27,7 @@ using SilverSim.Tests.Extensions;
 using SilverSim.Types;
 using SilverSim.Types.Asset;
 using SilverSim.Types.Inventory;
+using System;
 using System.Reflection;
 
 namespace SilverSim.Tests.Inventory
@@ -83,26 +84,45 @@ namespace SilverSim.Tests.Inventory
             m_InventoryService.Folder.Add(testFolder);
             inventoryId = testFolder.ID;
 
-            m_Log.InfoFormat("Testing existence 1");
-            if (!m_InventoryService.Folder.ContainsKey(inventoryId))
+            m_Log.Info("Testing existence 1");
+            if (!m_InventoryService.Folder.ContainsKey(m_UserID.ID, inventoryId))
             {
                 return false;
             }
 
-            m_Log.InfoFormat("Purging folder");
-            m_InventoryService.Folder.Purge(testFolder.ID);
+            m_Log.Info("Purging folder");
+            m_InventoryService.Folder.Purge(m_UserID.ID, testFolder.ID);
 
-            m_Log.InfoFormat("Testing existence 1");
-            if (!m_InventoryService.Folder.ContainsKey(inventoryId))
+            m_Log.Info("Testing existence 1");
+            if (!m_InventoryService.Folder.ContainsKey(m_UserID.ID, inventoryId))
             {
                 return false;
             }
 
-            m_Log.InfoFormat("Deleting folder");
+            m_Log.Info("Testing Purge(UUID) API available based on SupportsLegacyFunctions");
+            try
+            {
+                m_InventoryService.Folder.Purge(testFolder.ID);
+                if (!m_InventoryService.SupportsLegacyFunctions)
+                {
+                    m_Log.Error("Service does not specify legacy functions supported");
+                    return false;
+                }
+            }
+            catch (NotSupportedException)
+            {
+                if (m_InventoryService.SupportsLegacyFunctions)
+                {
+                    m_Log.Error("Service specifies legacy functions supported. Missing function.");
+                    return false;
+                }
+            }
+
+            m_Log.Info("Deleting folder");
             m_InventoryService.Folder.Delete(m_UserID.ID, inventoryId);
 
-            m_Log.InfoFormat("Testing non-existence 1");
-            if (m_InventoryService.Folder.ContainsKey(inventoryId))
+            m_Log.Info("Testing non-existence 1");
+            if (m_InventoryService.Folder.ContainsKey(m_UserID.ID, inventoryId))
             {
                 return false;
             }
