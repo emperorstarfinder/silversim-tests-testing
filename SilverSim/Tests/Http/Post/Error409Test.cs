@@ -29,9 +29,9 @@ using System.Collections.Generic;
 using System.Net;
 using System.Reflection;
 
-namespace SilverSim.Tests.Http
+namespace SilverSim.Tests.Http.Post
 {
-    public sealed class ErrorTest : ITest
+    public sealed class Error409Test : ITest
     {
         private static readonly ILog m_Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         private BaseHttpServer m_HttpServer;
@@ -49,24 +49,33 @@ namespace SilverSim.Tests.Http
         public bool Run()
         {
             m_HttpServer.UriHandlers.Add("/test", HttpHandler);
-            m_Log.InfoFormat("Testing HTTP GET error responses");
+            m_Log.InfoFormat("Testing HTTP POST error responses");
             for (m_SendStatusCode = HttpStatusCode.MultipleChoices; m_SendStatusCode < HttpStatusCode.HttpVersionNotSupported; ++m_SendStatusCode)
             {
                 var headers = new Dictionary<string, string>();
                 try
                 {
-                    new HttpClient.Get(m_HttpServer.ServerURI + "test")
+                    HttpStatusCode statuscode = new HttpClient.Post(m_HttpServer.ServerURI + "test", "text/plain", string.Empty)
                     {
                         TimeoutMs = 60000,
                         ConnectionMode = m_SendStatusCode == HttpStatusCode.GatewayTimeout ? HttpClient.ConnectionModeEnum.Close : HttpClient.ConnectionModeEnum.Keepalive,
-                        Headers = headers
-                    }.ExecuteRequest();
-                    m_Log.ErrorFormat("Got unexpected success at connection {0}", m_SendStatusCode);
-                    return false;
+                        Headers = headers,
+                        DisableExceptions = HttpClient.Request.DisableExceptionFlags.DisableConflict
+                    }.ExecuteStatusRequest();
+                    if(statuscode != m_SendStatusCode)
+                    {
+                        m_Log.ErrorFormat("Got wrong status at connection {0}: {1}", m_SendStatusCode, statuscode);
+                        return false;
+                    }
                 }
                 catch(System.Web.HttpException e)
                 {
-                    if(e.GetHttpCode() != (int)m_SendStatusCode)
+                    if(e.GetHttpCode() == (int)HttpStatusCode.NotFound || e.GetHttpCode() == (int)HttpStatusCode.Conflict)
+                    {
+                        m_Log.ErrorFormat("Got exception at connection {0}: {1}: {2}: {3}", m_SendStatusCode, e.GetType().FullName, e.Message, e.StackTrace);
+                        return false;
+                    }
+                    else if(e.GetHttpCode() != (int)m_SendStatusCode)
                     {
                         m_Log.ErrorFormat("Got wrong status at connection {0}: {1}: {2}: {3}", m_SendStatusCode, e.GetType().FullName, e.Message, e.StackTrace);
                         return false;

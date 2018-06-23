@@ -49,7 +49,6 @@ namespace SilverSim.Tests.Http
         public bool Run()
         {
             m_HttpServer.UriHandlers.Add("/test", HttpHandler);
-            int numConns = m_HttpServer.AcceptedConnectionsCount;
             m_Log.InfoFormat("Testing HTTP GET error responses");
             for (m_SendStatusCode = HttpStatusCode.MultipleChoices; m_SendStatusCode < HttpStatusCode.HttpVersionNotSupported; ++m_SendStatusCode)
             {
