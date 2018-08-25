@@ -21,13 +21,18 @@
 
 using log4net;
 using SilverSim.Main.Common;
+using SilverSim.Scene.Types.Object;
 using SilverSim.Scene.Types.Script;
 using SilverSim.Scene.Types.Script.Events;
+using SilverSim.Scripting.Common;
 using SilverSim.Scripting.Lsl;
 using SilverSim.Tests.Extensions;
 using SilverSim.Tests.Scripting;
 using SilverSim.Types;
+using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Text;
 
 namespace SilverSim.Tests.Lsl
 {
@@ -196,6 +201,49 @@ namespace SilverSim.Tests.Lsl
                 {
                     return 0;
                 }
+            }
+        }
+
+        [APIExtension("Testing", "_testing_injectscript")]
+        public int InjectScript(ScriptInstance instance, string name, string filename, int startparameter)
+        {
+            lock(instance)
+            {
+                ObjectPartInventoryItem item = new ObjectPartInventoryItem(instance.Item)
+                {
+                    Name = name
+                };
+                UUID assetid = UUID.Random;
+                item.AssetID = assetid;
+
+                IScriptAssembly scriptAssembly = null;
+                try
+                {
+                    using (var reader = new StreamReader(filename, new UTF8Encoding(false)))
+                    {
+                        scriptAssembly = CompilerRegistry.ScriptCompilers.Compile(AppDomain.CurrentDomain, UGUI.Unknown, assetid, reader, includeOpen: instance.Part.OpenScriptInclude);
+                    }
+                    m_Log.InfoFormat("Compilation of injected {1} ({0}) successful", assetid, name);
+                }
+                catch (CompilerException e)
+                {
+                    m_Log.ErrorFormat("Compilation of injected {1} ({0}) failed: {2}", assetid, name, e.Message);
+                    m_Log.WarnFormat("Stack Trace:\n{0}", e.StackTrace.ToString());
+                    return 0;
+                }
+                catch (Exception e)
+                {
+                    m_Log.ErrorFormat("Compilation of injected {1} ({0}) failed: {2}", assetid, name, e.Message);
+                    m_Log.WarnFormat("Stack Trace:\n{0}", e.StackTrace.ToString());
+                    return 0;
+                }
+
+                ScriptInstance scriptInstance = scriptAssembly.Instantiate(instance.Part, item);
+                instance.Part.Inventory.Add(item);
+                item.ScriptInstance = scriptInstance;
+                item.ScriptInstance.Start(startparameter);
+
+                return 1;
             }
         }
     }
