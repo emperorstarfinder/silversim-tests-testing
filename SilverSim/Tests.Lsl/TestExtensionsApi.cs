@@ -209,7 +209,7 @@ namespace SilverSim.Tests.Lsl
         {
             lock(instance)
             {
-                ObjectPartInventoryItem item = new ObjectPartInventoryItem(instance.Item)
+                ObjectPartInventoryItem item = new ObjectPartInventoryItem(UUID.Random, instance.Item)
                 {
                     Name = name
                 };
@@ -238,11 +238,29 @@ namespace SilverSim.Tests.Lsl
                     return 0;
                 }
 
-                ScriptInstance scriptInstance = scriptAssembly.Instantiate(instance.Part, item);
+                ScriptInstance scriptInstance;
+                try
+                {
+                    scriptInstance = scriptAssembly.Instantiate(instance.Part, item);
+                }
+                catch(Exception e)
+                {
+                    m_Log.ErrorFormat("Instancing of injected {1} ({0}) failed: {2}", assetid, name, e.Message);
+                    m_Log.WarnFormat("Stack Trace:\n{0}", e.StackTrace.ToString());
+                    return 0;
+                }
                 instance.Part.Inventory.Add(item);
                 item.ScriptInstance = scriptInstance;
-                item.ScriptInstance.Start(startparameter);
-
+                try
+                {
+                    item.ScriptInstance.Start(startparameter);
+                }
+                catch (Exception e)
+                {
+                    m_Log.ErrorFormat("Starting of injected {1} ({0}) failed: {2}", assetid, name, e.Message);
+                    m_Log.WarnFormat("Stack Trace:\n{0}", e.StackTrace.ToString());
+                    return 0;
+                }
                 return 1;
             }
         }
