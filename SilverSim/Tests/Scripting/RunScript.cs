@@ -76,6 +76,9 @@ namespace SilverSim.Tests.Scripting
         private UGUIWithName m_EstateOwner;
         private RegionAccess m_RegionAccess;
         private string m_RegionName;
+        private string m_ProductName;
+        private GridVector m_RegionLocation;
+        private GridVector m_RegionSize;
         private string m_ObjectName;
         private string m_ObjectDescription;
         private UUID m_ItemID;
@@ -175,6 +178,9 @@ namespace SilverSim.Tests.Scripting
 
             m_ObjectID = UUID.Parse(config.GetString("ID", UUID.Random.ToString()));
             m_RegionName = config.GetString("RegionName", "Testing Region");
+            m_ProductName = config.GetString("RegionProductName", "Mainland");
+            m_RegionLocation = new GridVector(config.GetString("RegionLocation", "10000,10000"), 256);
+            m_RegionSize = new GridVector(config.GetString("RegionSize", "1,1"), 256);
             m_RegionAccess = (RegionAccess)Enum.Parse(typeof(RegionAccess), config.GetString("RegionAccess", "PG"));
             m_RegionPort = config.GetInt("RegionPort", 9300);
             m_Runner = loader.GetServicesByValue<TestRunner>()[0];
@@ -569,9 +575,9 @@ namespace SilverSim.Tests.Scripting
                 {
                     Name = m_RegionName,
                     ID = m_RegionID,
-                    Location = new GridVector { GridX = 10000, GridY = 10000 },
-                    Size = new GridVector { X = 256, Y = 256 },
-                    ProductName = "Mainland",
+                    Location = m_RegionLocation,
+                    Size = m_RegionSize,
+                    ProductName = m_ProductName,
                     ServerPort = (uint)m_RegionPort,
                     Owner = m_RegionOwner,
                     Flags = RegionFlags.RegionOnline,
