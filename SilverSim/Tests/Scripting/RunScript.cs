@@ -167,8 +167,8 @@ namespace SilverSim.Tests.Scripting
 
             m_TimeoutMs = config.GetInt("RunTimeout", 1000);
             m_RegionID = UUID.Parse(config.GetString("RegionID"));
-            m_RegionOwner = new UGUIWithName(config.GetString("RegionOwner"));
-            m_EstateOwner = new UGUIWithName(config.GetString("EstateOwner", m_RegionOwner.ToString()));
+            m_RegionOwner = new UGUIWithName(config.GetString("RegionOwner")) { IsAuthoritative = true };
+            m_EstateOwner = new UGUIWithName(config.GetString("EstateOwner", m_RegionOwner.ToString())) { IsAuthoritative = true };
             m_EstateID = (uint)config.GetInt("EstateID", 100);
             m_EstateName = config.GetString("EstateName", "My Estate");
 
@@ -196,11 +196,11 @@ namespace SilverSim.Tests.Scripting
             m_AvatarNameService.Store(m_RegionOwner);
             m_AvatarNameService.Store(m_EstateOwner);
 
-            m_ObjectOwner = new UGUIWithName(config.GetString("ObjectOwner"));
+            m_ObjectOwner = new UGUIWithName(config.GetString("ObjectOwner")) { IsAuthoritative = true };
             m_AvatarNameService.Store(m_ObjectOwner);
             if (config.Contains("ObjectCreator"))
             {
-                m_ObjectCreator = new UGUIWithName(config.GetString("ObjectCreator"));
+                m_ObjectCreator = new UGUIWithName(config.GetString("ObjectCreator")) { IsAuthoritative = true };
                 m_AvatarNameService.Store(m_ObjectCreator);
             }
             else
@@ -209,7 +209,7 @@ namespace SilverSim.Tests.Scripting
             }
             if (config.Contains("ObjectLastOwner"))
             {
-                m_ObjectLastOwner = new UGUIWithName(config.GetString("ObjectLastOwner"));
+                m_ObjectLastOwner = new UGUIWithName(config.GetString("ObjectLastOwner")) { IsAuthoritative = true };
                 m_AvatarNameService.Store(m_ObjectLastOwner);
             }
             else
@@ -217,11 +217,11 @@ namespace SilverSim.Tests.Scripting
                 m_ObjectLastOwner = m_ObjectOwner;
             }
 
-            m_ScriptOwner = new UGUIWithName(config.GetString("ScriptOwner"));
+            m_ScriptOwner = new UGUIWithName(config.GetString("ScriptOwner")) { IsAuthoritative = true };
             m_AvatarNameService.Store(m_ScriptOwner);
             if (config.Contains("ScriptCreator"))
             {
-                m_ScriptCreator = new UGUIWithName(config.GetString("ScriptCreator"));
+                m_ScriptCreator = new UGUIWithName(config.GetString("ScriptCreator")) { IsAuthoritative = true };
                 m_AvatarNameService.Store(m_ScriptCreator);
             }
             else
@@ -230,7 +230,7 @@ namespace SilverSim.Tests.Scripting
             }
             if (config.Contains("ScriptLastOwner"))
             {
-                m_ScriptLastOwner = new UGUIWithName(config.GetString("ScriptLastOwner"));
+                m_ScriptLastOwner = new UGUIWithName(config.GetString("ScriptLastOwner")) { IsAuthoritative = true };
                 m_AvatarNameService.Store(m_ScriptLastOwner);
             }
             else
@@ -310,15 +310,21 @@ namespace SilverSim.Tests.Scripting
         private void AddAdditionalInventory(ObjectPart part, string sectionName)
         {
             IConfig config = m_Loader.Config.Configs[sectionName];
+            var creator = new UGUIWithName(config.GetString("Creator", m_ObjectCreator.ToString())) { IsAuthoritative = true };
+            var owner = new UGUIWithName(config.GetString("Owner", m_ObjectOwner.ToString())) { IsAuthoritative = true };
+            var lastOwner = new UGUIWithName(config.GetString("LastOwner", m_ObjectLastOwner.ToString())) { IsAuthoritative = true };
+            m_AvatarNameService.Store(creator);
+            m_AvatarNameService.Store(owner);
+            m_AvatarNameService.Store(lastOwner);
             var item = new ObjectPartInventoryItem
             {
                 Name = config.GetString("Name"),
                 Description = config.GetString("Description", string.Empty),
                 AssetID = new UUID(config.GetString("AssetID", UUID.Random.ToString())),
                 AssetTypeName = config.GetString("AssetType"),
-                Creator = new UGUI(config.GetString("Creator", m_ObjectCreator.ToString())),
-                Owner = new UGUI(config.GetString("Owner", m_ObjectOwner.ToString())),
-                LastOwner = new UGUI(config.GetString("LastOwner", m_ObjectLastOwner.ToString())),
+                Creator = creator,
+                Owner = owner,
+                LastOwner = lastOwner,
                 InventoryTypeName = config.GetString("InventoryType"),
                 Flags = (InventoryFlags)config.GetInt("Flags", 0),
                 IsGroupOwned = config.GetBoolean("IsGroupOwned", false)
@@ -349,17 +355,17 @@ namespace SilverSim.Tests.Scripting
             string objectDescription = config.GetString("ObjectDescription", "");
             string scriptDescription = config.GetString("ScriptDescription", "");
 
-            var objectOwner = new UGUIWithName(config.GetString("ObjectOwner", m_ObjectOwner.ToString()));
+            var objectOwner = new UGUIWithName(config.GetString("ObjectOwner", m_ObjectOwner.ToString())) { IsAuthoritative = true };
             m_AvatarNameService.Store(objectOwner);
-            var objectCreator = new UGUIWithName(config.GetString("ObjectCreator", m_ObjectCreator.ToString()));
+            var objectCreator = new UGUIWithName(config.GetString("ObjectCreator", m_ObjectCreator.ToString())) { IsAuthoritative = true };
             m_AvatarNameService.Store(objectCreator);
-            var objectLastOwner = new UGUIWithName(config.GetString("ObjectLastOwner", m_ObjectLastOwner.ToString()));
+            var objectLastOwner = new UGUIWithName(config.GetString("ObjectLastOwner", m_ObjectLastOwner.ToString())) { IsAuthoritative = true };
             m_AvatarNameService.Store(objectLastOwner);
-            var scriptOwner = new UGUIWithName(config.GetString("ScriptOwner", m_ScriptOwner.ToString()));
+            var scriptOwner = new UGUIWithName(config.GetString("ScriptOwner", m_ScriptOwner.ToString())) { IsAuthoritative = true };
             m_AvatarNameService.Store(scriptOwner);
-            var scriptCreator = new UGUIWithName(config.GetString("ScriptCreator", m_ScriptCreator.ToString()));
+            var scriptCreator = new UGUIWithName(config.GetString("ScriptCreator", m_ScriptCreator.ToString())) { IsAuthoritative = true };
             m_AvatarNameService.Store(scriptCreator);
-            var scriptLastOwner = new UGUIWithName(config.GetString("ScriptLastOwner", m_ScriptLastOwner.ToString()));
+            var scriptLastOwner = new UGUIWithName(config.GetString("ScriptLastOwner", m_ScriptLastOwner.ToString())) { IsAuthoritative = true };
             m_AvatarNameService.Store(scriptLastOwner);
             int startParameter = config.GetInt("StartParameter", m_StartParameter);
 
