@@ -74,6 +74,7 @@ namespace SilverSim.Tests.Scripting
         private UGUIWithName m_ScriptLastOwner;
         private UGUIWithName m_ScriptCreator;
         private UGUIWithName m_EstateOwner;
+        private RegionAccess m_RegionAccess;
         private string m_RegionName;
         private string m_ObjectName;
         private string m_ObjectDescription;
@@ -174,6 +175,7 @@ namespace SilverSim.Tests.Scripting
 
             m_ObjectID = UUID.Parse(config.GetString("ID", UUID.Random.ToString()));
             m_RegionName = config.GetString("RegionName", "Testing Region");
+            m_RegionAccess = (RegionAccess)Enum.Parse(typeof(RegionAccess), config.GetString("RegionAccess", "PG"));
             m_RegionPort = config.GetInt("RegionPort", 9300);
             m_Runner = loader.GetServicesByValue<TestRunner>()[0];
             m_Position = Vector3.Parse(config.GetString("Position", "<128, 128, 23>"));
@@ -572,7 +574,8 @@ namespace SilverSim.Tests.Scripting
                     ProductName = "Mainland",
                     ServerPort = (uint)m_RegionPort,
                     Owner = m_RegionOwner,
-                    Flags = RegionFlags.RegionOnline
+                    Flags = RegionFlags.RegionOnline,
+                    Access = m_RegionAccess
                 };
                 m_RegionStorage.RegisterRegion(rInfo);
             }
