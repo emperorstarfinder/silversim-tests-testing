@@ -32,6 +32,7 @@ using SilverSim.Scene.Types.Script;
 using SilverSim.Scene.Types.Script.Events;
 using SilverSim.Scripting.Common;
 using SilverSim.ServiceInterfaces.Asset;
+using SilverSim.ServiceInterfaces.AvatarName;
 using SilverSim.ServiceInterfaces.Estate;
 using SilverSim.ServiceInterfaces.Experience;
 using SilverSim.ServiceInterfaces.Grid;
@@ -64,15 +65,15 @@ namespace SilverSim.Tests.Scripting
         private UUID m_RegionID;
         private readonly ManualResetEvent m_RunTimeoutEvent = new ManualResetEvent(false);
         private TestRunner m_Runner;
-        private UGUI m_RegionOwner;
+        private UGUIWithName m_RegionOwner;
         private UUID m_ObjectID;
-        private UGUI m_ObjectOwner;
-        private UGUI m_ObjectLastOwner;
-        private UGUI m_ObjectCreator;
-        private UGUI m_ScriptOwner;
-        private UGUI m_ScriptLastOwner;
-        private UGUI m_ScriptCreator;
-        private UGUI m_EstateOwner;
+        private UGUIWithName m_ObjectOwner;
+        private UGUIWithName m_ObjectLastOwner;
+        private UGUIWithName m_ObjectCreator;
+        private UGUIWithName m_ScriptOwner;
+        private UGUIWithName m_ScriptLastOwner;
+        private UGUIWithName m_ScriptCreator;
+        private UGUIWithName m_EstateOwner;
         private string m_RegionName;
         private string m_ObjectName;
         private string m_ObjectDescription;
@@ -89,6 +90,7 @@ namespace SilverSim.Tests.Scripting
         private GridServiceInterface m_RegionStorage;
         private SceneFactoryInterface m_SceneFactory;
         private EstateServiceInterface m_EstateService;
+        private AvatarNameServiceInterface m_AvatarNameService;
         private SceneList m_Scenes;
         private Timer m_KillTimer;
         private int m_StartParameter;
@@ -165,8 +167,8 @@ namespace SilverSim.Tests.Scripting
 
             m_TimeoutMs = config.GetInt("RunTimeout", 1000);
             m_RegionID = UUID.Parse(config.GetString("RegionID"));
-            m_RegionOwner = new UGUI(config.GetString("RegionOwner"));
-            m_EstateOwner = new UGUI(config.GetString("EstateOwner", m_RegionOwner.ToString()));
+            m_RegionOwner = new UGUIWithName(config.GetString("RegionOwner"));
+            m_EstateOwner = new UGUIWithName(config.GetString("EstateOwner", m_RegionOwner.ToString()));
             m_EstateID = (uint)config.GetInt("EstateID", 100);
             m_EstateName = config.GetString("EstateName", "My Estate");
 
@@ -189,11 +191,17 @@ namespace SilverSim.Tests.Scripting
             m_RegionStorage = loader.GetService<GridServiceInterface>("RegionStorage");
             m_SceneFactory = loader.GetService<SceneFactoryInterface>("DefaultSceneImplementation");
             m_EstateService = loader.GetService<EstateServiceInterface>("EstateService");
+            m_AvatarNameService = loader.GetService<AvatarNameServiceInterface>("AvatarNameStorage");
 
-            m_ObjectOwner = new UGUI(config.GetString("ObjectOwner"));
+            m_AvatarNameService.Store(m_RegionOwner);
+            m_AvatarNameService.Store(m_EstateOwner);
+
+            m_ObjectOwner = new UGUIWithName(config.GetString("ObjectOwner"));
+            m_AvatarNameService.Store(m_ObjectOwner);
             if (config.Contains("ObjectCreator"))
             {
-                m_ObjectCreator = new UGUI(config.GetString("ObjectCreator"));
+                m_ObjectCreator = new UGUIWithName(config.GetString("ObjectCreator"));
+                m_AvatarNameService.Store(m_ObjectCreator);
             }
             else
             {
@@ -201,17 +209,20 @@ namespace SilverSim.Tests.Scripting
             }
             if (config.Contains("ObjectLastOwner"))
             {
-                m_ObjectLastOwner = new UGUI(config.GetString("ObjectLastOwner"));
+                m_ObjectLastOwner = new UGUIWithName(config.GetString("ObjectLastOwner"));
+                m_AvatarNameService.Store(m_ObjectLastOwner);
             }
             else
             {
                 m_ObjectLastOwner = m_ObjectOwner;
             }
 
-            m_ScriptOwner = new UGUI(config.GetString("ScriptOwner"));
-            if(config.Contains("ScriptCreator"))
+            m_ScriptOwner = new UGUIWithName(config.GetString("ScriptOwner"));
+            m_AvatarNameService.Store(m_ScriptOwner);
+            if (config.Contains("ScriptCreator"))
             {
-                m_ScriptCreator = new UGUI(config.GetString("ScriptCreator"));
+                m_ScriptCreator = new UGUIWithName(config.GetString("ScriptCreator"));
+                m_AvatarNameService.Store(m_ScriptCreator);
             }
             else
             {
@@ -219,7 +230,8 @@ namespace SilverSim.Tests.Scripting
             }
             if (config.Contains("ScriptLastOwner"))
             {
-                m_ScriptLastOwner = new UGUI(config.GetString("ScriptLastOwner"));
+                m_ScriptLastOwner = new UGUIWithName(config.GetString("ScriptLastOwner"));
+                m_AvatarNameService.Store(m_ScriptLastOwner);
             }
             else
             {
@@ -337,12 +349,18 @@ namespace SilverSim.Tests.Scripting
             string objectDescription = config.GetString("ObjectDescription", "");
             string scriptDescription = config.GetString("ScriptDescription", "");
 
-            var objectOwner = new UGUI(config.GetString("ObjectOwner", m_ObjectOwner.ToString()));
-            var objectCreator = new UGUI(config.GetString("ObjectCreator", m_ObjectCreator.ToString()));
-            var objectLastOwner = new UGUI(config.GetString("ObjectLastOwner", m_ObjectLastOwner.ToString()));
-            var scriptOwner = new UGUI(config.GetString("ScriptOwner", m_ScriptOwner.ToString()));
-            var scriptCreator = new UGUI(config.GetString("ScriptCreator", m_ScriptCreator.ToString()));
-            var scriptLastOwner = new UGUI(config.GetString("ScriptLastOwner", m_ScriptLastOwner.ToString()));
+            var objectOwner = new UGUIWithName(config.GetString("ObjectOwner", m_ObjectOwner.ToString()));
+            m_AvatarNameService.Store(objectOwner);
+            var objectCreator = new UGUIWithName(config.GetString("ObjectCreator", m_ObjectCreator.ToString()));
+            m_AvatarNameService.Store(objectCreator);
+            var objectLastOwner = new UGUIWithName(config.GetString("ObjectLastOwner", m_ObjectLastOwner.ToString()));
+            m_AvatarNameService.Store(objectLastOwner);
+            var scriptOwner = new UGUIWithName(config.GetString("ScriptOwner", m_ScriptOwner.ToString()));
+            m_AvatarNameService.Store(scriptOwner);
+            var scriptCreator = new UGUIWithName(config.GetString("ScriptCreator", m_ScriptCreator.ToString()));
+            m_AvatarNameService.Store(scriptCreator);
+            var scriptLastOwner = new UGUIWithName(config.GetString("ScriptLastOwner", m_ScriptLastOwner.ToString()));
+            m_AvatarNameService.Store(scriptLastOwner);
             int startParameter = config.GetInt("StartParameter", m_StartParameter);
 
             InventoryPermissionsMask objectPermissionsBase = GetPermissions(config, "ObjectPermisionsBase", m_ObjectPermissionsBase);
