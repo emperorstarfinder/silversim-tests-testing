@@ -205,7 +205,7 @@ namespace SilverSim.Tests.Lsl
         }
 
         [APIExtension("Testing", "_test_InjectScript")]
-        public int InjectScript(ScriptInstance instance, string name, string filename, int startparameter, UUID experienceID)
+        public int InjectScript(ScriptInstance instance, string name, string filename, int startparameter, LSLKey experienceID)
         {
             lock (instance)
             {
