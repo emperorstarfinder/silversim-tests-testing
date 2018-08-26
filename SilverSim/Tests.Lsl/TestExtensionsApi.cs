@@ -205,6 +205,68 @@ namespace SilverSim.Tests.Lsl
         }
 
         [APIExtension("Testing", "_test_InjectScript")]
+        public int InjectScript(ScriptInstance instance, string name, string filename, int startparameter, UUID experienceID)
+        {
+            lock (instance)
+            {
+                UUID assetid = UUID.Random;
+                ObjectPartInventoryItem item = new ObjectPartInventoryItem(UUID.Random, instance.Item)
+                {
+                    Name = name,
+                    AssetID = assetid,
+                    ExperienceID = experienceID
+                };
+
+                IScriptAssembly scriptAssembly = null;
+                try
+                {
+                    using (var reader = new StreamReader(filename, new UTF8Encoding(false)))
+                    {
+                        scriptAssembly = CompilerRegistry.ScriptCompilers.Compile(AppDomain.CurrentDomain, UGUI.Unknown, assetid, reader, includeOpen: instance.Part.OpenScriptInclude);
+                    }
+                    m_Log.InfoFormat("Compilation of injected {1} ({0}) successful", assetid, name);
+                }
+                catch (CompilerException e)
+                {
+                    m_Log.ErrorFormat("Compilation of injected {1} ({0}) failed: {2}", assetid, name, e.Message);
+                    m_Log.WarnFormat("Stack Trace:\n{0}", e.StackTrace.ToString());
+                    return 0;
+                }
+                catch (Exception e)
+                {
+                    m_Log.ErrorFormat("Compilation of injected {1} ({0}) failed: {2}", assetid, name, e.Message);
+                    m_Log.WarnFormat("Stack Trace:\n{0}", e.StackTrace.ToString());
+                    return 0;
+                }
+
+                ScriptInstance scriptInstance;
+                try
+                {
+                    scriptInstance = scriptAssembly.Instantiate(instance.Part, item);
+                }
+                catch (Exception e)
+                {
+                    m_Log.ErrorFormat("Instancing of injected {1} ({0}) failed: {2}", assetid, name, e.Message);
+                    m_Log.WarnFormat("Stack Trace:\n{0}", e.StackTrace.ToString());
+                    return 0;
+                }
+                instance.Part.Inventory.Add(item);
+                item.ScriptInstance = scriptInstance;
+                try
+                {
+                    item.ScriptInstance.Start(startparameter);
+                }
+                catch (Exception e)
+                {
+                    m_Log.ErrorFormat("Starting of injected {1} ({0}) failed: {2}", assetid, name, e.Message);
+                    m_Log.WarnFormat("Stack Trace:\n{0}", e.StackTrace.ToString());
+                    return 0;
+                }
+                return 1;
+            }
+        }
+
+        [APIExtension("Testing", "_test_InjectScript")]
         public int InjectScript(ScriptInstance instance, string name, string filename, int startparameter)
         {
             lock(instance)
