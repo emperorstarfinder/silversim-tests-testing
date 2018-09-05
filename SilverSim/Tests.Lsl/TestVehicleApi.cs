@@ -71,6 +71,9 @@ namespace SilverSim.Tests.Lsl
             public double WalkableCoefficientC { get; set; }
             public double WalkableCoefficientD { get; set; }
 
+            public double Damage { get; set; }
+            public bool HasCausedDamage { get; set; }
+
             public byte[] TerseData { get; }
 
             public DetectedTypeFlags DetectedType { get; }
