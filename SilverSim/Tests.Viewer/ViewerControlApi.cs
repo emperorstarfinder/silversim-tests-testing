@@ -34,7 +34,6 @@ using SilverSim.ServiceInterfaces.Account;
 using SilverSim.ServiceInterfaces.Asset;
 using SilverSim.ServiceInterfaces.Friends;
 using SilverSim.ServiceInterfaces.Grid;
-using SilverSim.ServiceInterfaces.GridUser;
 using SilverSim.ServiceInterfaces.IM;
 using SilverSim.ServiceInterfaces.Inventory;
 using SilverSim.ServiceInterfaces.PortControl;
@@ -45,6 +44,7 @@ using SilverSim.Tests.Viewer.UDP;
 using SilverSim.Threading;
 using SilverSim.Types;
 using SilverSim.Types.Account;
+using SilverSim.Types.Agent;
 using SilverSim.Types.Grid;
 using SilverSim.Types.ServerURIs;
 using SilverSim.Viewer.Core;
@@ -133,7 +133,6 @@ namespace SilverSim.Tests.Viewer
         readonly string m_AgentProfileServiceName;
         readonly string m_AgentFriendsServiceName;
         readonly string m_PresenceServiceName;
-        readonly string m_GridUserServiceName;
         readonly string m_GridServiceName;
         readonly string m_OfflineIMServiceName;
         readonly string m_UserAccountServiceName;
@@ -144,7 +143,6 @@ namespace SilverSim.Tests.Viewer
         FriendsServiceInterface m_AgentFriendsService;
         UserAgentServiceInterface m_AgentUserAgentService;
         PresenceServiceInterface m_PresenceService;
-        GridUserServiceInterface m_GridUserService;
         GridServiceInterface m_GridService;
         OfflineIMServiceInterface m_OfflineIMService;
         UserAccountServiceInterface m_UserAccountService;
@@ -170,7 +168,6 @@ namespace SilverSim.Tests.Viewer
             m_AgentProfileServiceName = ownSection.GetString("ProfileService", string.Empty);
             m_AgentFriendsServiceName = ownSection.GetString("FriendsService");
             m_PresenceServiceName = ownSection.GetString("PresenceService");
-            m_GridUserServiceName = ownSection.GetString("GridUserService");
             m_GridServiceName = ownSection.GetString("GridService");
             m_OfflineIMServiceName = ownSection.GetString("OfflineIMService", string.Empty);
             m_UserAccountServiceName = ownSection.GetString("UserAccountService");
@@ -179,16 +176,13 @@ namespace SilverSim.Tests.Viewer
         private sealed class LocalUserAgentService : UserAgentServiceInterface, IDisplayNameAccessor
         {
             readonly PresenceServiceInterface m_PresenceService;
-            readonly GridUserServiceInterface m_GridUserService;
             readonly UserAccountServiceInterface m_UserAccountService;
 
             public LocalUserAgentService(
                 PresenceServiceInterface presenceService, 
-                GridUserServiceInterface gridUserService,
                 UserAccountServiceInterface userAccountService)
             {
                 m_PresenceService = presenceService;
-                m_GridUserService = gridUserService;
                 m_UserAccountService = userAccountService;
             }
 
@@ -223,6 +217,11 @@ namespace SilverSim.Tests.Viewer
             }
 
             public override DestinationInfo GetHomeRegion(UGUI user)
+            {
+                throw new NotImplementedException();
+            }
+
+            public override void SetHomeRegion(UGUI user, UserRegionData info)
             {
                 throw new NotImplementedException();
             }
@@ -295,14 +294,13 @@ namespace SilverSim.Tests.Viewer
             }
             m_AgentFriendsService = loader.GetService<FriendsServiceInterface>(m_AgentFriendsServiceName);
             m_PresenceService = loader.GetService<PresenceServiceInterface>(m_PresenceServiceName);
-            m_GridUserService = loader.GetService<GridUserServiceInterface>(m_GridUserServiceName);
             m_GridService = loader.GetService<GridServiceInterface>(m_GridServiceName);
             if (m_OfflineIMServiceName?.Length != 0)
             {
                 m_OfflineIMService = loader.GetService<OfflineIMServiceInterface>(m_OfflineIMServiceName);
             }
             m_UserAccountService = loader.GetService<UserAccountServiceInterface>(m_UserAccountServiceName);
-            m_AgentUserAgentService = new LocalUserAgentService(m_PresenceService, m_GridUserService, m_UserAccountService);
+            m_AgentUserAgentService = new LocalUserAgentService(m_PresenceService, m_UserAccountService);
 
             m_Scenes = loader.Scenes;
             m_Commands = loader.CommandRegistry;

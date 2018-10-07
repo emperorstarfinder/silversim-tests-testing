@@ -27,6 +27,7 @@ using SilverSim.Tests.Viewer.UDP;
 using SilverSim.Threading;
 using SilverSim.Types;
 using SilverSim.Types.Account;
+using SilverSim.Types.Agent;
 using SilverSim.Types.Grid;
 using SilverSim.Types.Presence;
 using SilverSim.Viewer.Core;
@@ -217,7 +218,6 @@ namespace SilverSim.Tests.Viewer
                     m_AgentFriendsService,
                     m_AgentUserAgentService,
                     m_PresenceService,
-                    m_GridUserService,
                     m_GridService
                 };
                 if (m_AgentProfileService != null)
@@ -306,16 +306,19 @@ namespace SilverSim.Tests.Viewer
                 }
                 /* make agent a root agent */
                 agent.SceneID = scene.ID;
-                if (null != m_GridUserService)
+                try
                 {
-                    try
+                    agent.UserAgentService.SetLastRegion(agent.Owner, new UserRegionData
                     {
-                        m_GridUserService.SetPosition(agent.Owner, scene.ID, agent.GlobalPosition, agent.LookAt);
-                    }
-                    catch (Exception e)
-                    {
-                        m_Log.Warn("Could not contact GridUserService", e);
-                    }
+                        RegionID = scene.ID,
+                        Position = agent.GlobalPosition,
+                        LookAt = agent.LookAt,
+                        GatekeeperURI = new URI(scene.GatekeeperURI)
+                    });
+                }
+                catch (Exception e)
+                {
+                    m_Log.Warn("Could not contact UserAgentService", e);
                 }
 
                 try
