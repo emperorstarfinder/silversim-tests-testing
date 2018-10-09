@@ -22,6 +22,7 @@
 using log4net;
 using Nini.Config;
 using SilverSim.Main.Common;
+using SilverSim.Main.Common.Log;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -40,6 +41,36 @@ namespace SilverSim.Tests.Extensions
         string m_XUnitResultsFileName = string.Empty;
         string m_NUnitResultsFileName = string.Empty;
         ConfigurationLoader m_Loader;
+        StringBuilder m_LogOutput = new StringBuilder();
+        readonly object m_LogOutputLock = new object();
+
+        private string GetLog()
+        {
+            string output;
+            lock(m_LogOutputLock)
+            {
+                output = m_LogOutput.ToString();
+                m_LogOutput.Clear();
+            }
+            return output;
+        }
+
+        private void ClearLog()
+        {
+            lock (m_LogOutputLock)
+            {
+                m_LogOutput.Clear();
+            }
+        }
+
+        public void AddLog(DateTime date, string levelname, string loggername, string renderedmessage)
+        {
+            lock(m_LogOutputLock)
+            {
+                m_LogOutput.AppendFormat("{0} {1}  {2}: {3}\n", date.ToShortDateString(), levelname, loggername, renderedmessage);
+            }
+        }
+
         public struct TestResult
         {
             public string Name;
@@ -76,7 +107,8 @@ namespace SilverSim.Tests.Extensions
         {
             bool failed = false;
             var failedtests = new List<string>();
-            foreach(ITest test in m_Tests)
+            LogController.AddLogAction(AddLog);
+            foreach (ITest test in m_Tests)
             {
                 var tr = new TestResult
                 {
@@ -88,41 +120,45 @@ namespace SilverSim.Tests.Extensions
                 m_Log.Info("********************************************************************************");
                 try
                 {
+                    ClearLog();
                     test.Setup();
 
                     if (test.Run())
                     {
+                        tr.Message = "Success\n\nLog:\n" + GetLog();
+                        tr.Result = true;
+
                         m_Log.Info("********************************************************************************");
                         m_Log.InfoFormat("Executed test {0} with SUCCESS", test.GetType().FullName);
                         m_Log.Info("********************************************************************************");
-                        tr.Result = true;
-                        tr.Message = "Success";
                     }
                     else
                     {
+                        failed = true;
+                        tr.Message = "Failure\n\nLog:\n" + GetLog();
+                        tr.Result = false;
+                        failedtests.Add(test.GetType().FullName);
+
                         m_Log.Info("********************************************************************************");
                         m_Log.ErrorFormat("Executed test {0} with FAILURE", test.GetType().FullName);
                         m_Log.Info("********************************************************************************");
-                        failed = true;
-                        tr.Message = "Failure";
-                        tr.Result = false;
-                        failedtests.Add(test.GetType().FullName);
                     }
                 }
                 catch(Exception e)
                 {
-                    m_Log.Info("********************************************************************************");
-                    m_Log.InfoFormat("Executed test {0} with FAILURE", test.GetType().FullName);
-                    m_Log.ErrorFormat("Exception {0}: {1}\n{2}", e.GetType().FullName, e.ToString(), e.StackTrace.ToString());
-                    m_Log.Info("********************************************************************************");
                     failed = true;
-                    tr.Message = string.Format("Exception {0}: {1}\n{2}", e.GetType().FullName, e.ToString(), e.StackTrace.ToString());
+                    tr.Message = string.Format("Exception {0}: {1}\n{2}\n\nLog:\n", e.GetType().FullName, e.ToString(), e.StackTrace.ToString()) + GetLog();
                     tr.Result = false;
                     tr.StackTrace = e.StackTrace;
                     if (!failedtests.Contains(test.GetType().FullName))
                     {
                         failedtests.Add(test.GetType().FullName);
                     }
+
+                    m_Log.Info("********************************************************************************");
+                    m_Log.InfoFormat("Executed test {0} with FAILURE", test.GetType().FullName);
+                    m_Log.ErrorFormat("Exception {0}: {1}\n{2}", e.GetType().FullName, e.ToString(), e.StackTrace.ToString());
+                    m_Log.Info("********************************************************************************");
                 }
 
                 try
@@ -136,7 +172,7 @@ namespace SilverSim.Tests.Extensions
                     m_Log.ErrorFormat("Exception {0}: {1}\n{2}", e.GetType().FullName, e.ToString(), e.StackTrace.ToString());
                     m_Log.Info("********************************************************************************");
                     failed = true;
-                    tr.Message = string.Format("Exception {0}: {1}\n{2}", e.GetType().FullName, e.ToString(), e.StackTrace.ToString());
+                    tr.Message = string.Format("Exception {0}: {1}\n{2}\n\nLog:\n", e.GetType().FullName, e.ToString(), e.StackTrace.ToString()) + GetLog();
                     tr.Result = false;
                     tr.StackTrace = e.StackTrace;
                     if (!failedtests.Contains(test.GetType().FullName))
