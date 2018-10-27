@@ -273,16 +273,6 @@ namespace SilverSim.Tests.Viewer
             {
                 return new List<UUID>();
             }
-
-            public override void VerifyAgent(UUID sessionID, string token)
-            {
-                /* intentionally not implemented */
-            }
-
-            public override void VerifyClient(UUID sessionID, string token)
-            {
-                /* intentionally not implemented */
-            }
         }
 
         public void Startup(ConfigurationLoader loader)
