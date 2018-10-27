@@ -59,7 +59,7 @@ namespace SilverSim.Tests.Viewer.UDP
             throw new NotSupportedException();
         }
 
-        public override void Remove(UUID scopeID, UUID accountID)
+        public override void Remove(UUID accountID)
         {
             throw new NotSupportedException();
         }

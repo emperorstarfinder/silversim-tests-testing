@@ -23,23 +23,19 @@ using log4net;
 using Nini.Config;
 using SilverSim.Main.Common;
 using SilverSim.ServiceInterfaces.Account;
-using SilverSim.ServiceInterfaces.Presence;
-using SilverSim.ServiceInterfaces.Traveling;
+using SilverSim.ServiceInterfaces.UserSession;
 using SilverSim.Tests.Extensions;
 using SilverSim.Types;
 using SilverSim.Types.Account;
-using SilverSim.Types.Presence;
-using SilverSim.Types.TravelingData;
 using System;
 using System.Reflection;
 
 namespace SilverSim.Tests.PresenceInit
 {
-    public class PresenceInit : ITest
+    public class UserSessionInit : ITest
     {
         private static readonly ILog m_Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-        PresenceServiceInterface m_PresenceService;
-        TravelingDataServiceInterface m_TravelingDataService;
+        UserSessionServiceInterface m_UserSessionService;
         UserAccountServiceInterface m_UserAccountService;
         UGUIWithName m_UserID;
         UUID m_SessionID;
@@ -49,8 +45,7 @@ namespace SilverSim.Tests.PresenceInit
         public void Startup(ConfigurationLoader loader)
         {
             IConfig config = loader.Config.Configs[GetType().FullName];
-            m_PresenceService = loader.GetService<PresenceServiceInterface>(config.GetString("PresenceService", "PresenceService"));
-            m_TravelingDataService = loader.GetService<TravelingDataServiceInterface>(config.GetString("TravelingDataService", "TravelingDataService"));
+            m_UserSessionService = loader.GetService<UserSessionServiceInterface>(config.GetString("UserSessionService", "UserSessionService"));
             m_UserAccountService = loader.GetService<UserAccountServiceInterface>(config.GetString("UserAccountService", "UserAccountService"));
             m_UserID = new UGUIWithName(config.GetString("User"));
             m_SessionID = new UUID(config.GetString("SessionID"));
@@ -86,39 +81,14 @@ namespace SilverSim.Tests.PresenceInit
                 return false;
             }
 
-            m_Log.Info("Create Presence");
+            m_Log.Info("Create UserSession");
             try
             {
-                var presence = new PresenceInfo
-                {
-                    UserID = m_UserID,
-                    SessionID = m_SessionID,
-                    SecureSessionID = m_SecureSessionID
-                };
-                m_PresenceService.Login(presence);
+                m_UserSessionService.CreateSession(m_UserID, m_ClientIPAddress, m_SessionID, m_SecureSessionID);
             }
             catch(Exception e)
             {
-                m_Log.Error("Presence failed", e);
-                return false;
-            }
-
-            m_Log.Info("Create TravelingInfo");
-            try
-            {
-                var travelinginfo = new TravelingDataInfo
-                {
-                    UserID = m_UserID.ID,
-                    SessionID = m_SessionID,
-                    ClientIPAddress = m_ClientIPAddress,
-                    GridExternalName = "http://127.0.0.1:9300/",
-                    ServiceToken = UUID.Random.ToString()
-                };
-                m_TravelingDataService.Store(travelinginfo);
-            }
-            catch(Exception e)
-            {
-                m_Log.Error("TravelingInfo failed", e);
+                m_Log.Error("UserSession failed", e);
                 return false;
             }
 

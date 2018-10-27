@@ -112,8 +112,8 @@ namespace SilverSim.Tests.Viewer.Inventory
         public override IInventoryItemServiceInterface Item => m_FetchInventory2;
         public override IInventoryFolderServiceInterface Folder => m_FetchInventoryDescendents2;
 
-        public override void Remove(UUID scopeID, UUID accountID) =>
-            m_AISv3.Remove(scopeID, accountID);
+        public override void Remove(UUID accountID) =>
+            m_AISv3.Remove(accountID);
 
         public override List<InventoryItem> GetActiveGestures(UUID principalID) =>
             m_AISv3.GetActiveGestures(principalID);

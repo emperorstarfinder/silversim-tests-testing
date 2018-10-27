@@ -23,13 +23,13 @@ using SilverSim.Scene.Types.Agent;
 using SilverSim.Scene.Types.Scene;
 using SilverSim.Scene.Types.Script;
 using SilverSim.Scripting.Lsl;
+using SilverSim.ServiceInterfaces.UserSession;
 using SilverSim.Tests.Viewer.UDP;
 using SilverSim.Threading;
 using SilverSim.Types;
 using SilverSim.Types.Account;
 using SilverSim.Types.Agent;
 using SilverSim.Types.Grid;
-using SilverSim.Types.Presence;
 using SilverSim.Viewer.Core;
 using SilverSim.Viewer.Messages;
 using SilverSim.Viewer.Messages.Circuit;
@@ -198,26 +198,20 @@ namespace SilverSim.Tests.Viewer
                     Mac = mac
                 };
                 UserAccount userAccount;
-                if (!m_UserAccountService.TryGetValue(UUID.Zero, agentId, out userAccount))
+                if (!m_UserAccountService.TryGetValue(agentId, out userAccount))
                 {
                     m_Log.InfoFormat("User account {0} does not exist", agentId.ToString());
                     return new ViewerAgentAccessor();
                 }
 
-                var presenceInfo = new PresenceInfo
-                {
-                    RegionID = regionId,
-                    SecureSessionID = secureSessionId,
-                    SessionID = sessionId,
-                    UserID = userAccount.Principal
-                };
+                var presenceInfo = m_UserSessionService.CreateSession(userAccount.Principal, string.Empty, sessionId.AsUUID, secureSessionId.AsUUID);
                 var serviceList = new AgentServiceList
                 {
                     m_AgentAssetService,
                     m_AgentInventoryService,
                     m_AgentFriendsService,
                     m_AgentUserAgentService,
-                    m_PresenceService,
+                    new StandalonePresenceService(m_UserAccountService, userAccount.Principal, m_UserSessionService, presenceInfo.SessionID),
                     m_GridService
                 };
                 if (m_AgentProfileService != null)
@@ -235,9 +229,8 @@ namespace SilverSim.Tests.Viewer
                     userAccount.Principal.FirstName,
                     userAccount.Principal.LastName,
                     userAccount.Principal.HomeURI,
-                    sessionId.AsUUID,
-                    secureSessionId.AsUUID,
-                    serviceSessionId,
+                    presenceInfo.SessionID,
+                    presenceInfo.SecureSessionID,
                     clientInfo,
                     userAccount,
                     serviceList);
@@ -323,12 +316,12 @@ namespace SilverSim.Tests.Viewer
 
                 try
                 {
-                    m_PresenceService.Report(new PresenceInfo
+                    m_UserAccountService.SetPosition(agent.Owner.ID, new UserRegionData
                     {
-                        UserID = agent.Owner,
-                        SessionID = agent.SessionID,
-                        SecureSessionID = secureSessionId.AsUUID,
-                        RegionID = scene.ID
+                        RegionID = scene.ID,
+                        Position = agent.GlobalPosition,
+                        LookAt = agent.LookAt,
+                        GatekeeperURI = new URI(scene.GatekeeperURI)
                     });
                 }
                 catch (Exception e)

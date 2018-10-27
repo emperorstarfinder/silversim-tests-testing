@@ -58,13 +58,13 @@ namespace SilverSim.Tests.Maptile
             var location = new GridVector(256000, 256000);
             MaptileData result;
             m_Log.Info("Testing non-existence 1");
-            if(m_MaptileService.TryGetValue(UUID.Zero, location, 1, out result))
+            if(m_MaptileService.TryGetValue(location, 1, out result))
             {
                 return false;
             }
 
             m_Log.Info("Testing non-existence 2");
-            if(m_MaptileService.GetUpdateTimes(UUID.Zero, location, location, 1).Count != 0)
+            if(m_MaptileService.GetUpdateTimes(location, location, 1).Count != 0)
             {
                 return false;
             }
@@ -74,7 +74,6 @@ namespace SilverSim.Tests.Maptile
                 ContentType = "application/octet-stream",
                 Data = new byte[] { 1, 2, 3, 4 },
                 Location = location,
-                ScopeID = UUID.Zero,
                 ZoomLevel = 1,
                 LastUpdate = Date.Now
             };
@@ -83,7 +82,7 @@ namespace SilverSim.Tests.Maptile
             m_MaptileService.Store(testData);
 
             m_Log.Info("Testing existence 1");
-            if (!m_MaptileService.TryGetValue(UUID.Zero, location, 1, out result))
+            if (!m_MaptileService.TryGetValue(location, 1, out result))
             {
                 return false;
             }
@@ -96,7 +95,7 @@ namespace SilverSim.Tests.Maptile
 
             m_Log.Info("Testing existence 2");
             List<MaptileInfo> reslist;
-            reslist = m_MaptileService.GetUpdateTimes(UUID.Zero, location, location, 1);
+            reslist = m_MaptileService.GetUpdateTimes(location, location, 1);
             if(reslist.Count != 1)
             {
                 return false;
@@ -108,16 +107,16 @@ namespace SilverSim.Tests.Maptile
             }
 
             m_Log.Info("Remove maptile");
-            m_MaptileService.Remove(UUID.Zero, location, 1);
+            m_MaptileService.Remove(location, 1);
 
             m_Log.Info("Testing non-existence 1");
-            if (m_MaptileService.TryGetValue(UUID.Zero, location, 1, out result))
+            if (m_MaptileService.TryGetValue(location, 1, out result))
             {
                 return false;
             }
 
             m_Log.Info("Testing non-existence 2");
-            if (m_MaptileService.GetUpdateTimes(UUID.Zero, location, location, 1).Count != 0)
+            if (m_MaptileService.GetUpdateTimes(location, location, 1).Count != 0)
             {
                 return false;
             }
@@ -143,11 +142,6 @@ namespace SilverSim.Tests.Maptile
             if (a.ZoomLevel != b.ZoomLevel)
             {
                 mismatches.Add("ZoomLevel");
-            }
-
-            if (a.ScopeID != b.ScopeID)
-            {
-                mismatches.Add("ScopeID");
             }
 
             if(!a.Data.SequenceEqual(b.Data))
@@ -181,11 +175,6 @@ namespace SilverSim.Tests.Maptile
             if(a.ZoomLevel != b.ZoomLevel)
             {
                 mismatches.Add("ZoomLevel");
-            }
-
-            if(a.ScopeID != b.ScopeID)
-            {
-                mismatches.Add("ScopeID");
             }
 
             if(mismatches.Count != 0)

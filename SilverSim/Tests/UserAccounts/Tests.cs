@@ -52,11 +52,6 @@ namespace SilverSim.Tests.UserAccounts
                 m_Log.WarnFormat("UserAccount.Principal.ID does not match {0} != {1}", ua.Principal.ID, "22334455-1122-1122-1122-112233445566");
                 result = false;
             }
-            if(ua.ScopeID != UUID.Parse("33445566-1122-1122-1122-112233445566"))
-            {
-                m_Log.WarnFormat("UserAccount.ScopeID does not match {0} != {!}", ua.ScopeID, "33445566-1122-1122-1122-112233445566");
-                result = false;
-            }
             if(ua.Principal.FirstName != "First")
             {
                 m_Log.WarnFormat("UserAccount.First does not match {0} != First", ua.Principal.FirstName);
@@ -95,33 +90,31 @@ namespace SilverSim.Tests.UserAccounts
         {
             m_Log.Info("Setting up test data");
             UUID userID = UUID.Parse("22334455-1122-1122-1122-112233445566");
-            UUID scopeID = UUID.Parse("33445566-1122-1122-1122-112233445566");
             var ua = new UserAccount
             {
                 Principal = new UGUIWithName { ID = userID, FirstName = "First", LastName = "Last" },
                 Email = "email@example.com",
-                ScopeID = scopeID
             };
             /* DO NOT test HomeURI or ServiceURLs here, these are generated in a completely different code location */
 
             m_Backend.Add(ua);
 
             m_Log.Info("Testing retrieval by email");
-            ua = m_Service[scopeID, "email@example.com"];
+            ua = m_Service["email@example.com"];
             if(!CheckTestData(ua))
             {
                 return false;
             }
 
             m_Log.Info("Testing retrieval by ID");
-            ua = m_Service[scopeID, userID];
+            ua = m_Service[userID];
             if (!CheckTestData(ua))
             {
                 return false;
             }
 
             m_Log.Info("Testing retrieval by name");
-            ua = m_Service[scopeID, "First", "Last"];
+            ua = m_Service["First", "Last"];
             if (!CheckTestData(ua))
             {
                 return false;

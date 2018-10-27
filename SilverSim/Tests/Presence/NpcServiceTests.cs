@@ -88,7 +88,7 @@ namespace SilverSim.Tests.Presence
             }
 
             m_Log.Info("---- Verify entry to be removed ----");
-            m_PresenceService.Remove(UUID.Zero, pInfo.Npc.ID);
+            m_PresenceService.Remove(pInfo.Npc.ID);
             if (!CheckNonExistence(pInfo))
             {
                 return false;
