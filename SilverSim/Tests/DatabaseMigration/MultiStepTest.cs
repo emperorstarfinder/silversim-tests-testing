@@ -24,7 +24,6 @@ using Nini.Config;
 using SilverSim.Main.Common;
 using SilverSim.ServiceInterfaces.Database;
 using SilverSim.Tests.Extensions;
-using System;
 using System.Collections.Generic;
 using System.Reflection;
 
