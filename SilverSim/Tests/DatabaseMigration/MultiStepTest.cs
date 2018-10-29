@@ -44,9 +44,9 @@ namespace SilverSim.Tests.DatabaseMigration
 
         public bool Run()
         {
-            uint targettingMigration = 1;
             foreach (IDBServiceInterface service in m_MigratableServices)
             {
+                uint targettingMigration = 1;
                 do
                 {
                     m_MigratorTestControl.DeleteTablesBefore = true;
