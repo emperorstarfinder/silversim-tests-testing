@@ -37,6 +37,7 @@ namespace SilverSim.Tests.UserSession
     {
         private static readonly ILog m_Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         private UserSessionServiceInterface m_UserSessionService;
+        private readonly UUID sessionID = new UUID("11223344-1122-1122-1122-112233445566");
 
         public void Startup(ConfigurationLoader loader)
         {
@@ -51,16 +52,15 @@ namespace SilverSim.Tests.UserSession
 
         public void Cleanup()
         {
-
+            m_UserSessionService.Remove(sessionID);
         }
 
         public bool Run()
         {
-            UUID sessionID = new UUID("11223344-1122-1122-1122-112233445566");
             UUID secureSessionID = new UUID("11223344-1122-1122-1133-112233445566");
             UGUIWithName uguiname = new UGUIWithName("11223344-1111-1122-1122-112233445566", "http://example.com/;Example Com");
             UGUI ugui = new UGUI(uguiname);
-            string clientipaddress = "127.0.0.1";
+            const string clientipaddress = "127.0.0.1";
 
             m_Log.Info("Creating session");
             UserSessionInfo createdSession = m_UserSessionService.CreateSession(uguiname, clientipaddress, sessionID, secureSessionID);
