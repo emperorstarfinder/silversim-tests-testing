@@ -36,6 +36,7 @@ using SilverSim.Viewer.Messages.Circuit;
 using SilverSim.Viewer.Messages.Telehub;
 using SilverSim.Viewer.Messages.Teleport;
 using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
 
@@ -146,7 +147,6 @@ namespace SilverSim.Tests.Viewer
             LSLKey agentId,
             LSLKey sessionId,
             LSLKey secureSessionId,
-            string serviceSessionId,
             string viewerChannel,
             string viewerVersion,
             string id0,
@@ -211,7 +211,7 @@ namespace SilverSim.Tests.Viewer
                     m_AgentInventoryService,
                     m_AgentFriendsService,
                     m_AgentUserAgentService,
-                    new StandalonePresenceService(m_UserAccountService, userAccount.Principal, m_UserSessionService, presenceInfo.SessionID),
+                    new StandalonePresenceService(m_UserAccountService, userAccount.Principal, m_UserSessionService, presenceInfo.SessionID, new List<IUserSessionStatusHandler>()),
                     m_GridService
                 };
                 if (m_AgentProfileService != null)
