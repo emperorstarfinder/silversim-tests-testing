@@ -89,8 +89,7 @@ namespace SilverSim.Tests.Scripting
         private Vector3 m_Position;
         private Quaternion m_Rotation;
         private int m_RegionPort;
-        private string m_ExperienceName;
-        private UUID m_ExperienceID;
+        private UEI m_ExperienceID;
         private GridServiceInterface m_RegionStorage;
         private SceneFactoryInterface m_SceneFactory;
         private EstateServiceInterface m_EstateService;
@@ -190,8 +189,10 @@ namespace SilverSim.Tests.Scripting
             m_ItemID = UUID.Parse(config.GetString("ScriptItemID", UUID.Random.ToString()));
             m_ObjectName = config.GetString("ObjectName", "Object");
             m_ScriptName = config.GetString("ScriptName", "Script");
-            m_ExperienceName = config.GetString("ExperienceName", "My Experience");
-            UUID.TryParse(config.GetString("ExperienceID", UUID.Zero.ToString()), out m_ExperienceID);
+            string experienceName = config.GetString("ExperienceName", "My Experience");
+            UUID experienceID;
+            UUID.TryParse(config.GetString("ExperienceID", UUID.Zero.ToString()), out experienceID);
+            m_ExperienceID = new UEI(experienceID, experienceName, null);
 
             m_ObjectDescription = config.GetString("ObjectDescription", "");
             m_ScriptDescription = config.GetString("ScriptDescription", "");
@@ -357,8 +358,10 @@ namespace SilverSim.Tests.Scripting
             string scriptName = config.GetString("ScriptName", "Script");
             string experienceName = config.GetString("ExperienceName", "My Experience");
             UUID itemID = UUID.Parse(config.GetString("ScriptItemID", UUID.Zero.ToString()));
-            UUID experienceID;
-            UUID.TryParse(config.GetString("ExperienceID", m_ExperienceID.ToString()), out experienceID);
+            UEI experienceID;
+            UUID expID;
+            UUID.TryParse(config.GetString("ExperienceID", m_ExperienceID.ToString()), out expID);
+            experienceID = new UEI(expID, experienceName, null);
 
             string objectDescription = config.GetString("ObjectDescription", "");
             string scriptDescription = config.GetString("ScriptDescription", "");
@@ -438,7 +441,6 @@ namespace SilverSim.Tests.Scripting
                         experienceService.Add(new ExperienceInfo
                         {
                             ID = experienceID,
-                            Name = experienceName,
                             Creator = scriptOwner,
                             Owner = scriptOwner,
                             Properties = ExperiencePropertyFlags.Grid /* make this grid-wide since otherwise we have to configure a lot more */
@@ -447,7 +449,7 @@ namespace SilverSim.Tests.Scripting
                 }
                 else
                 {
-                    experienceID = UUID.Zero;
+                    experienceID = UEI.Unknown;
                 }
             }
             catch (Exception e)
@@ -622,12 +624,11 @@ namespace SilverSim.Tests.Scripting
                 if(success)
                 {
                     ExperienceServiceInterface experienceService = scene.ExperienceService;
-                    if(null != experienceService)
+                    if(experienceService != null)
                     {
                         experienceService.Add(new ExperienceInfo
                         {
                             ID = m_ExperienceID,
-                            Name = m_ExperienceName,
                             Creator = m_ScriptOwner,
                             Owner = m_ScriptOwner,
                             Properties = ExperiencePropertyFlags.Grid /* make this grid-wide since otherwise we have to configure a lot more */
@@ -635,7 +636,7 @@ namespace SilverSim.Tests.Scripting
                     }
                     else
                     {
-                        m_ExperienceID = UUID.Zero;
+                        m_ExperienceID = UEI.Unknown;
                     }
                 }
             }

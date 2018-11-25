@@ -168,7 +168,7 @@ namespace SilverSim.Tests.Lsl
                 {
                     Name = name,
                     AssetID = assetid,
-                    ExperienceID = experienceID
+                    ExperienceID = new UEI(experienceID.ToString())
                 };
 
                 IScriptAssembly scriptAssembly = null;

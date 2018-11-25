@@ -44,6 +44,7 @@ namespace SilverSim.Tests.Experience
         UGI m_Group = new UGI("11223344-1111-2222-3333-444444444444", "Experience Group", null);
         UUID m_GroupID = new UUID("11223344-1122-1122-1122-112233445566");
         UUID m_InsigniaID = new UUID("11223344-1122-1122-1122-112233445577");
+        UEI m_UEI;
 
         public void Startup(ConfigurationLoader loader)
         {
@@ -51,6 +52,7 @@ namespace SilverSim.Tests.Experience
             m_ExperienceServiceName = config.GetString("ExperienceService", "ExperienceService");
 
             m_ExperienceService = loader.GetService<ExperienceServiceInterface>(m_ExperienceServiceName);
+            m_UEI = new UEI(m_ExperienceID, "Name", new Uri("http://example.com/"));
         }
 
         public void Setup()
@@ -81,9 +83,14 @@ namespace SilverSim.Tests.Experience
                 unequal.Add(string.Format("Owner ({0}!={1})", gInfo.Owner.ToString(), testGroupInfo.Owner.ToString()));
             }
 
-            if (gInfo.Name != testGroupInfo.Name)
+            if (gInfo.ID.ExperienceName != testGroupInfo.ID.ExperienceName)
             {
                 unequal.Add("Name");
+            }
+
+            if(gInfo.ID.HomeURI == null || testGroupInfo.ID.HomeURI == null || gInfo.ID.HomeURI.ToString() != testGroupInfo.ID.HomeURI.ToString())
+            {
+                unequal.Add("HomeURI");
             }
 
             if (gInfo.Description != testGroupInfo.Description)
@@ -118,6 +125,7 @@ namespace SilverSim.Tests.Experience
             ExperienceInfo gInfo;
             ExperienceInfo testGInfo;
 
+
             m_Log.Info("Checking for experience non-existence 1");
             try
             {
@@ -135,13 +143,18 @@ namespace SilverSim.Tests.Experience
                 return false;
             }
 
+            m_Log.Info("Checking for experience non-existence 3");
+            if (m_ExperienceService.TryGetValue(m_UEI, out gInfo))
+            {
+                return false;
+            }
+
             gInfo = new ExperienceInfo()
             {
-                Name = "Name",
                 Description = "Description",
                 Owner = m_Owner,
                 Creator = m_Creator,
-                ID = m_ExperienceID,
+                ID = m_UEI,
                 LogoID = m_InsigniaID,
                 Group = m_Group,
                 Maturity = RegionAccess.Mature,
@@ -171,10 +184,20 @@ namespace SilverSim.Tests.Experience
                 return false;
             }
 
+            m_Log.Info("Checking for experience existence 3");
+            if (!m_ExperienceService.TryGetValue(m_UEI, out gInfo))
+            {
+                return false;
+            }
+            if (!CheckForEquality(gInfo, testGInfo))
+            {
+                return false;
+            }
+
             try
             {
                 m_Log.Info("Delete experience");
-                m_ExperienceService.Remove(m_Owner, m_ExperienceID);
+                m_ExperienceService.Remove(m_Owner, m_UEI);
             }
             catch (NotSupportedException)
             {
@@ -184,7 +207,7 @@ namespace SilverSim.Tests.Experience
             m_Log.Info("Checking for experience non-existence 1");
             try
             {
-                gInfo = m_ExperienceService[m_ExperienceID];
+                gInfo = m_ExperienceService[m_UEI];
                 return false;
             }
             catch (KeyNotFoundException)
@@ -198,6 +221,12 @@ namespace SilverSim.Tests.Experience
                 return false;
             }
 
+            m_Log.Info("Checking for experience non-existence 3");
+            if (m_ExperienceService.TryGetValue(m_UEI, out gInfo))
+            {
+                return false;
+            }
+
             return true;
         }
 
@@ -205,7 +234,7 @@ namespace SilverSim.Tests.Experience
         {
             try
             {
-                m_ExperienceService.Remove(m_Owner, m_ExperienceID);
+                m_ExperienceService.Remove(m_Owner, m_UEI);
             }
             catch
             {
