@@ -33,10 +33,10 @@ namespace SilverSim.Tests.SimulationData
         public override bool Run()
         {
             var regionID = new UUID("12345678-1234-1234-1234-123456789012");
-            var experienceID = new UUID("11223344-1122-1122-1122-112233445566");
-            var experienceID2 = new UUID("11223344-1122-1122-1122-112233445567");
+            var experienceID = new UEI("11223344-1122-1122-1122-112233445566");
+            var experienceID2 = new UEI("11223344-1122-1122-1122-112233445567");
             bool trusted;
-            List<UUID> res;
+            List<UEI> res;
 
             m_Log.Info("Testing non-existence 1A");
             if(!SimulationData.TrustedExperiences.TryGetValue(regionID, experienceID, out trusted) || trusted)
