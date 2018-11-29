@@ -117,7 +117,11 @@ namespace SilverSim.Tests.Experience
             {
                 unequal.Add("SlUrl");
             }
-            return true;
+            if (unequal.Count != 0)
+            {
+                m_Log.InfoFormat("Equality not given! {0}", string.Join(" ", unequal));
+            }
+            return unequal.Count == 0;
         }
 
         public bool Run()
