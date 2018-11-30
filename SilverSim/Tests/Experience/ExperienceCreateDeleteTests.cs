@@ -65,57 +65,57 @@ namespace SilverSim.Tests.Experience
 
             if (!gInfo.ID.Equals(testGroupInfo.ID))
             {
-                unequal.Add("ExperienceID");
+                unequal.Add($"ExperienceID ({gInfo.ID}!={testGroupInfo.ID})");
             }
 
             if(gInfo.Properties != testGroupInfo.Properties)
             {
-                unequal.Add("Properties");
+                unequal.Add($"Properties ({gInfo.Properties}!={testGroupInfo.Properties})");
             }
 
             if (gInfo.Owner != testGroupInfo.Owner)
             {
-                unequal.Add(string.Format("Owner ({0}!={1})", gInfo.Owner.ToString(), testGroupInfo.Owner.ToString()));
+                unequal.Add($"Owner ({gInfo.Owner}!={testGroupInfo.Owner})");
             }
 
             if (gInfo.Creator != testGroupInfo.Creator)
             {
-                unequal.Add(string.Format("Owner ({0}!={1})", gInfo.Owner.ToString(), testGroupInfo.Owner.ToString()));
+                unequal.Add($"Creator ({gInfo.Owner}!={testGroupInfo.Owner})");
             }
 
             if (gInfo.ID.ExperienceName != testGroupInfo.ID.ExperienceName)
             {
-                unequal.Add("Name");
+                unequal.Add($"Name ({gInfo.ID.ExperienceName}!={testGroupInfo.ID.ExperienceName})");
             }
 
             if(gInfo.ID.HomeURI == null || testGroupInfo.ID.HomeURI == null || gInfo.ID.HomeURI.ToString() != testGroupInfo.ID.HomeURI.ToString())
             {
-                unequal.Add("HomeURI");
+                unequal.Add($"HomeURI ({gInfo.ID.HomeURI}!={testGroupInfo.ID.HomeURI})");
             }
 
             if (gInfo.Description != testGroupInfo.Description)
             {
-                unequal.Add("Description");
+                unequal.Add($"Description ({gInfo.Description}!={testGroupInfo.Description})");
             }
 
             if (gInfo.Group != testGroupInfo.Group)
             {
-                unequal.Add("Group");
+                unequal.Add($"Group ({gInfo.Group}!={testGroupInfo.Group})");
             }
 
             if (gInfo.LogoID != testGroupInfo.LogoID)
             {
-                unequal.Add("LogoID");
+                unequal.Add($"LogoID ({gInfo.LogoID}!={testGroupInfo.LogoID})");
             }
 
             if (gInfo.Marketplace != testGroupInfo.Marketplace)
             {
-                unequal.Add("Marketplace");
+                unequal.Add($"Marketplace ({gInfo.Marketplace}!={testGroupInfo.Marketplace}");
             }
 
             if (gInfo.SlUrl != testGroupInfo.SlUrl)
             {
-                unequal.Add("SlUrl");
+                unequal.Add($"SlUrl ({gInfo.SlUrl}!={testGroupInfo.SlUrl})");
             }
             if (unequal.Count != 0)
             {
