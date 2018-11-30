@@ -63,12 +63,17 @@ namespace SilverSim.Tests.Experience
         {
             var unequal = new List<string>();
 
-            if (!gInfo.ID.Equals(testGroupInfo.ID))
+            if (!gInfo.ID.ID.Equals(testGroupInfo.ID.ID))
             {
-                unequal.Add($"ExperienceID ({gInfo.ID}!={testGroupInfo.ID})");
+                unequal.Add($"ExperienceID ({gInfo.ID.ID}!={testGroupInfo.ID.ID})");
             }
 
-            if(gInfo.Properties != testGroupInfo.Properties)
+            if (!gInfo.ID.ExperienceName.Equals(testGroupInfo.ID.ExperienceName))
+            {
+                unequal.Add($"ExperienceName ({gInfo.ID.ExperienceName}!={testGroupInfo.ID.ExperienceName})");
+            }
+
+            if (gInfo.Properties != testGroupInfo.Properties)
             {
                 unequal.Add($"Properties ({gInfo.Properties}!={testGroupInfo.Properties})");
             }
@@ -153,7 +158,7 @@ namespace SilverSim.Tests.Experience
                 return false;
             }
 
-            gInfo = new ExperienceInfo()
+            gInfo = new ExperienceInfo
             {
                 Description = "Description",
                 Owner = m_Owner,
