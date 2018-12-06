@@ -30,12 +30,8 @@ using SilverSim.Types;
 using SilverSim.Viewer.Messages;
 using SilverSim.Viewer.Messages.Image;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Web;
 
 namespace SilverSim.Tests.Viewer
@@ -319,7 +315,7 @@ namespace SilverSim.Tests.Viewer
                         Data = new ByteArrayApi.ByteArray(data)
                     });
                 }
-                catch (HttpException e)
+                catch (HttpException)
                 {
                     reqInfo.ViewerConn.PostEvent(new TextureReceivedEvent
                     {
