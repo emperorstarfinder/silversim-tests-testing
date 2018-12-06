@@ -61,8 +61,15 @@ namespace SilverSim.Tests.Viewer
             public AgentInfo(Message m, uint circuitCode)
             {
                 AgentID = m.CircuitAgentID;
-                CircuitCode = CircuitCode;
+                CircuitCode = (int)circuitCode;
                 RegionID = m.CircuitSceneID;
+            }
+
+            public AgentInfo(UUID agentID, UUID regionID, uint circuitCode)
+            {
+                AgentID = agentID;
+                RegionID = regionID;
+                CircuitCode = (int)circuitCode;
             }
         }
 

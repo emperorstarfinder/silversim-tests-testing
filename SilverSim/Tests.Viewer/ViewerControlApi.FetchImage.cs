@@ -19,6 +19,7 @@
 // obligated to do so. If you do not wish to do so, delete this
 // exception statement from your version.
 
+using SilverSim.Http.Client;
 using SilverSim.Scene.Types.Script;
 using SilverSim.Scene.Types.Script.Events;
 using SilverSim.Scripting.Lsl;
@@ -33,7 +34,9 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
+using System.Web;
 
 namespace SilverSim.Tests.Viewer
 {
@@ -139,7 +142,9 @@ namespace SilverSim.Tests.Viewer
             vc.PostEvent(new TextureReceivedEvent
             {
                 Agent = new AgentInfo(m, circuitCode),
-                TextureID = res.ID
+                TextureID = res.ID,
+                Success = 0,
+                Data = new ByteArrayApi.ByteArray()
             });
         }
 
@@ -217,9 +222,9 @@ namespace SilverSim.Tests.Viewer
 
                     viewerCircuit.SendMessage(reqImage);
 
-                    return true.ToLSLBoolean();
+                    return 1;
                 }
-                return false.ToLSLBoolean();
+                return 0;
             }
         }
 
@@ -255,11 +260,80 @@ namespace SilverSim.Tests.Viewer
 
                     viewerCircuit.SendMessage(reqImage);
 
-                    return true.ToLSLBoolean();
+                    return 1;
                 }
-                return false.ToLSLBoolean();
+                return 0;
             }
         }
 
+        private sealed class UrlDownloadInfoRequest
+        {
+            public ViewerConnection ViewerConn;
+            public AgentInfo Agent;
+            public UUID TextureID;
+            public string TextureUrl;
+        }
+
+        [APIExtension("ViewerControl", APIUseAsEnum.MemberFunction, "RequestTextureViaCap")]
+        public void RequestTextureViaCap(
+            ScriptInstance instance,
+            ViewerAgentAccessor agent,
+            string capsUrl,
+            LSLKey textureID)
+        {
+            lock(instance)
+            {
+                ViewerConnection vc;
+                ViewerCircuit viewerCircuit;
+                if (m_Clients.TryGetValue(agent.AgentID, out vc) &&
+                    vc.ViewerCircuits.TryGetValue(agent.CircuitCode, out viewerCircuit))
+                {
+                    ThreadPool.QueueUserWorkItem(RequestTextureHandler, new UrlDownloadInfoRequest
+                    {
+                        ViewerConn = vc,
+                        Agent = new AgentInfo(agent.AgentID, viewerCircuit.RegionData.RegionID, viewerCircuit.CircuitCode),
+                        TextureID = textureID.AsUUID,
+                        TextureUrl = capsUrl
+                    });
+                }
+            }
+        }
+
+        private void RequestTextureHandler(object o)
+        {
+            UrlDownloadInfoRequest reqInfo = (UrlDownloadInfoRequest)o;
+            try
+            {
+                try
+                {
+                    byte[] data = new HttpClient.Get($"{reqInfo.TextureUrl}?texture_id={reqInfo.TextureID}")
+                    {
+                        TimeoutMs = 20000
+                    }.ExecuteBinaryRequest();
+
+                    reqInfo.ViewerConn.PostEvent(new TextureReceivedEvent
+                    {
+                        Agent = reqInfo.Agent,
+                        TextureID = reqInfo.TextureID,
+                        Success = 1,
+                        Data = new ByteArrayApi.ByteArray(data)
+                    });
+                }
+                catch (HttpException e)
+                {
+                    reqInfo.ViewerConn.PostEvent(new TextureReceivedEvent
+                    {
+                        Agent = reqInfo.Agent,
+                        TextureID = reqInfo.TextureID,
+                        Success = 0,
+                        Data = new ByteArrayApi.ByteArray()
+                    });
+                }
+            }
+            catch
+            {
+                /* intentionally ignore */
+            }
+        }
     }
 }
