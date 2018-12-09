@@ -339,7 +339,8 @@ namespace SilverSim.Tests.Viewer
                 var viewerCircuit = new ViewerCircuit(vc.ClientUDP, (uint)circuitCode, sessionId.AsUUID, agentId, regionEndPoint);
                 vc.ClientUDP.AddCircuit(viewerCircuit);
                 viewerCircuit.Start();
-                viewerCircuit.MessageRouting.Add(MessageType.RegionHandshake, (m) => HandleLogoutReply(m, (uint)circuitCode, vc));
+                viewerCircuit.MessageRouting.Add(MessageType.RegionHandshake, (m) => RegionHandshakeReceivedEvent.HandleRegionHandshake(m, vc, (uint)circuitCode));
+                viewerCircuit.MessageRouting.Add(MessageType.RegionInfo, (m) => RegionInfoReceivedEvent.HandleRegionInfo(m, vc, (uint)circuitCode));
                 viewerCircuit.SendMessage(useCircuit);
                 viewerCircuit.MessageRouting.Add(MessageType.LogoutReply, (m) => HandleLogoutReply(m, (uint)circuitCode, vc));
                 viewerCircuit.MessageRouting.Add(MessageType.TelehubInfo, (m) => TelehubInfoReceivedEvent.ToScriptEvent((TelehubInfo)m, vc, (uint)circuitCode));

@@ -73,7 +73,108 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
+        #region regioninfo_received event
+        [APIExtension("ViewerControl", "regioninfodata")]
+        [APIDisplayName("regioninfodata")]
+        [APIIsVariableType]
+        [APIAccessibleMembers]
+        public class RegionInfoData
+        {
+            private readonly RegionInfo m_Msg;
+
+            public RegionInfoData(RegionInfo m)
+            {
+                m_Msg = m;
+            }
+
+            public string SimName => m_Msg.SimName;
+            public int EstateID => (int)m_Msg.EstateID;
+            public int ParentEstateID => (int)m_Msg.ParentEstateID;
+            public int RegionFlags => (int)m_Msg.RegionFlags;
+            public int SimAccess => (int)m_Msg.SimAccess;
+            public int MaxAgents => (int)m_Msg.MaxAgents;
+            public double BillableFactor => m_Msg.BillableFactor;
+            public double ObjectBonusFactor => m_Msg.ObjectBonusFactor;
+            public double WaterHeight => m_Msg.WaterHeight;
+            public double TerrainRaiseLimit => m_Msg.TerrainRaiseLimit;
+            public double TerrainLowerLimit => m_Msg.TerrainLowerLimit;
+            public int PricePerMeter => m_Msg.PricePerMeter;
+            public int RedirectGridX => m_Msg.RedirectGridX;
+            public int RedirectGridY => m_Msg.RedirectGridY;
+            public int UseEstateSun => m_Msg.UseEstateSun.ToLSLBoolean();
+            public double SunHour => m_Msg.SunHour;
+            public string ProductSKU => m_Msg.ProductSKU;
+            public string ProductName => m_Msg.ProductName;
+            public int HardMaxAgents => (int)m_Msg.HardMaxAgents;
+            public int HardMaxObjects => (int)m_Msg.HardMaxObjects;
+            public long RegionFlagsExtended => m_Msg.RegionFlagsExtended.Count != 0 ? (long)m_Msg.RegionFlagsExtended[0] : 0;
+        }
+
+        [TranslatedScriptEvent("regioninfo_received")]
+        public class RegionInfoReceivedEvent : IScriptEvent
+        {
+            [TranslatedScriptEventParameter(0)]
+            public AgentInfo Agent;
+
+            [TranslatedScriptEventParameter(1)]
+            public RegionInfoData RegionData;
+
+            public static void HandleRegionInfo(Message m, ViewerConnection vc, uint circuitCode)
+            {
+                var msg = (RegionInfo)m;
+                vc.PostEvent(new RegionInfoReceivedEvent
+                {
+                    Agent = new AgentInfo(m, circuitCode),
+                    RegionData = new RegionInfoData(msg)
+                });
+            }
+        }
+
+        [APIExtension("ViewerControl", "regioninfo_received")]
+        [StateEventDelegate]
+        public delegate void RegionInfoReceived(
+            [Description("Agent info")]
+            AgentInfo agent,
+            LSLKey regionID,
+            RegionInfoData regionData);
+        #endregion
+
         #region regionhandshake_received event
+        [APIExtension("ViewerControl", "regionhandshakedata")]
+        [APIDisplayName("regionhandshakedata")]
+        [APIIsVariableType]
+        [APIAccessibleMembers]
+        public sealed class RegionHandshakeData
+        {
+            private readonly RegionHandshake m_Msg;
+
+            public RegionHandshakeData(RegionHandshake m)
+            {
+                m_Msg = m;
+            }
+
+            public int RegionFlags => (int)m_Msg.RegionFlags;
+            public int SimAccess => (int)m_Msg.SimAccess;
+            public string SimName => m_Msg.SimName;
+            public LSLKey SimOwner => m_Msg.SimOwner;
+            public int IsEstateManager => m_Msg.IsEstateManager.ToLSLBoolean();
+            public double WaterHeight => m_Msg.WaterHeight;
+            public double BillableFactor => m_Msg.BillableFactor;
+            public LSLKey CacheID => m_Msg.CacheID;
+            public AnArray TerrainBase => new AnArray { m_Msg.TerrainBase0, m_Msg.TerrainBase1, m_Msg.TerrainBase2, m_Msg.TerrainBase3 };
+            public AnArray TerrainDetail => new AnArray { m_Msg.TerrainDetail0, m_Msg.TerrainDetail1, m_Msg.TerrainDetail2, m_Msg.TerrainDetail3 };
+            public AnArray TerrainStartHeight => new AnArray { m_Msg.TerrainStartHeight00, m_Msg.TerrainStartHeight01, m_Msg.TerrainStartHeight10, m_Msg.TerrainStartHeight11 };
+            public AnArray TerrainHeightRange => new AnArray { m_Msg.TerrainHeightRange00, m_Msg.TerrainHeightRange01, m_Msg.TerrainHeightRange10, m_Msg.TerrainHeightRange11 };
+            public LSLKey RegionID => m_Msg.RegionID;
+            public int CPUClassID => m_Msg.CPUClassID;
+            public int CPURatio => m_Msg.CPURatio;
+            public string ColoName => m_Msg.ColoName;
+            public string ProductSKU => m_Msg.ProductSKU;
+            public string ProductName => m_Msg.ProductName;
+            public long RegionFlagsExtended => m_Msg.RegionExtData.Count > 0 ? (long)m_Msg.RegionExtData[0].RegionFlagsExtended : 0;
+            public long RegionProtocols => m_Msg.RegionExtData.Count > 0 ? (long)m_Msg.RegionExtData[0].RegionProtocols : 0;
+        }
+
         [TranslatedScriptEvent("regionhandshake_received")]
         public class RegionHandshakeReceivedEvent : IScriptEvent
         {
@@ -83,13 +184,17 @@ namespace SilverSim.Tests.Viewer
             [TranslatedScriptEventParameter(1)]
             public LSLKey RegionID;
 
+            [TranslatedScriptEventParameter(2)]
+            public RegionHandshakeData RegionData;
+
             public static void HandleRegionHandshake(Message m, ViewerConnection vc, uint circuitCode)
             {
                 var msg = (RegionHandshake)m;
                 vc.PostEvent(new RegionHandshakeReceivedEvent
                 {
                     Agent = new AgentInfo(m, circuitCode),
-                    RegionID = msg.RegionID
+                    RegionID = msg.RegionID,
+                    RegionData = new RegionHandshakeData(msg)
                 });
             }
         }
@@ -98,7 +203,9 @@ namespace SilverSim.Tests.Viewer
         [StateEventDelegate]
         public delegate void RegionHandshakeReceived(
             [Description("Agent info")]
-            AgentInfo agent);
+            AgentInfo agent,
+            LSLKey regionID,
+            RegionHandshakeData regionData);
         #endregion
 
         #region logoutreply_received
