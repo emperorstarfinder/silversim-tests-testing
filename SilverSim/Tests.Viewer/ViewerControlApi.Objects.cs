@@ -969,5 +969,37 @@ namespace SilverSim.Tests.Viewer
                 }
             }
         }
+
+        [APIExtension("ViewerControl", APIUseAsEnum.MemberFunction, "SendObjectImage")]
+        public void SendObjectShape(
+            ScriptInstance instance,
+            ViewerAgentAccessor agent,
+            int localID,
+            string mediaURL,
+            TextureEntryContainer textureEntry)
+        {
+            lock (instance)
+            {
+                ViewerConnection vc;
+                ViewerCircuit viewerCircuit;
+                if (m_Clients.TryGetValue(agent.AgentID, out vc) &&
+                    vc.ViewerCircuits.TryGetValue(agent.CircuitCode, out viewerCircuit))
+                {
+                    var d = new ObjectImage.ObjectDataEntry
+                    {
+                        ObjectLocalID = (uint)localID,
+                        MediaURL = mediaURL,
+                        TextureEntry = textureEntry.GetBytes()
+                    };
+                    var m = new ObjectImage
+                    {
+                        AgentID = agent.AgentID,
+                        SessionID = viewerCircuit.SessionID
+                    };
+                    m.ObjectData.Add(d);
+                    viewerCircuit.SendMessage(m);
+                }
+            }
+        }
     }
 }
