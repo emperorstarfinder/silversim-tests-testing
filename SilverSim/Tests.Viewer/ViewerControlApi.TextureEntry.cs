@@ -140,7 +140,7 @@ namespace SilverSim.Tests.Viewer
                 set { m_Face.OffsetV = (float)value; }
             }
 
-            public float RepeatU
+            public double RepeatU
             {
                 get { return m_Face.RepeatU; }
                 set { m_Face.RepeatU = (float)value; }
