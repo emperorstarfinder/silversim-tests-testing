@@ -341,6 +341,7 @@ namespace SilverSim.Tests.Viewer
                 viewerCircuit.Start();
                 viewerCircuit.MessageRouting.Add(MessageType.RegionHandshake, (m) => RegionHandshakeReceivedEvent.HandleRegionHandshake(m, vc, (uint)circuitCode));
                 viewerCircuit.MessageRouting.Add(MessageType.RegionInfo, (m) => RegionInfoReceivedEvent.HandleRegionInfo(m, vc, (uint)circuitCode));
+                viewerCircuit.MessageRouting.Add(MessageType.AgentMovementComplete, (m) => AgentMovementCompleteReceivedEvent.HandleAgentMovementComplete(m, vc, (uint)circuitCode));
                 viewerCircuit.SendMessage(useCircuit);
                 viewerCircuit.MessageRouting.Add(MessageType.LogoutReply, (m) => HandleLogoutReply(m, (uint)circuitCode, vc));
                 viewerCircuit.MessageRouting.Add(MessageType.TelehubInfo, (m) => TelehubInfoReceivedEvent.ToScriptEvent((TelehubInfo)m, vc, (uint)circuitCode));

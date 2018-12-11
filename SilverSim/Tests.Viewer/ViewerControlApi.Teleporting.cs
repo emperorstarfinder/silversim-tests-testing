@@ -24,6 +24,7 @@ using SilverSim.Scripting.Lsl;
 using SilverSim.Tests.Viewer.UDP;
 using SilverSim.Types;
 using SilverSim.Types.Grid;
+using SilverSim.Viewer.Messages.Circuit;
 using SilverSim.Viewer.Messages.Teleport;
 
 namespace SilverSim.Tests.Viewer
@@ -45,15 +46,14 @@ namespace SilverSim.Tests.Viewer
                 if (m_Clients.TryGetValue(agent.AgentID, out vc) &&
                     vc.ViewerCircuits.TryGetValue(agent.CircuitCode, out viewerCircuit))
                 {
-                    var req = new TeleportRequest
+                    viewerCircuit.SendMessage(new TeleportRequest
                     {
                         AgentID = viewerCircuit.AgentID,
                         SessionID = viewerCircuit.SessionID,
                         RegionID = regionId.AsUUID,
                         Position = position,
                         LookAt = lookAt
-                    };
-                    viewerCircuit.SendMessage(req);
+                    });
                 }
             }
         }
@@ -72,14 +72,13 @@ namespace SilverSim.Tests.Viewer
                 if (m_Clients.TryGetValue(agent.AgentID, out vc) &&
                     vc.ViewerCircuits.TryGetValue(agent.CircuitCode, out viewerCircuit))
                 {
-                    var req = new TeleportLureRequest
+                    viewerCircuit.SendMessage(new TeleportLureRequest
                     {
                         AgentID = viewerCircuit.AgentID,
                         SessionID = viewerCircuit.SessionID,
                         LureID = lureID,
                         TeleportFlags = (TeleportFlags)teleportFlags
-                    };
-                    viewerCircuit.SendMessage(req);
+                    });
                 }
             }
         }
@@ -100,15 +99,14 @@ namespace SilverSim.Tests.Viewer
                 if (m_Clients.TryGetValue(agent.AgentID, out vc) &&
                     vc.ViewerCircuits.TryGetValue(agent.CircuitCode, out viewerCircuit))
                 {
-                    var req = new TeleportLocationRequest
+                    viewerCircuit.SendMessage(new TeleportLocationRequest
                     {
                         AgentID = viewerCircuit.AgentID,
                         SessionID = viewerCircuit.SessionID,
                         GridPosition = new GridVector((uint)gridLocation.X, (uint)gridLocation.Y),
                         Position = position,
                         LookAt = lookAt
-                    };
-                    viewerCircuit.SendMessage(req);
+                    });
                 }
             }
         }
@@ -126,13 +124,34 @@ namespace SilverSim.Tests.Viewer
                 if (m_Clients.TryGetValue(agent.AgentID, out vc) &&
                     vc.ViewerCircuits.TryGetValue(agent.CircuitCode, out viewerCircuit))
                 {
-                    var req = new TeleportLandmarkRequest
+                    viewerCircuit.SendMessage(new TeleportLandmarkRequest
                     {
                         AgentID = viewerCircuit.AgentID,
                         SessionID = viewerCircuit.SessionID,
                         LandmarkID = landmarkId.AsUUID
-                    };
-                    viewerCircuit.SendMessage(req);
+                    });
+                }
+            }
+        }
+
+        [APIExtension("ViewerControl", APIUseAsEnum.MemberFunction, "SendCompleteAgentMovement")]
+        public void SendCmpleteAgentMovement(
+            ScriptInstance instance,
+            ViewerAgentAccessor agent)
+        {
+            lock (instance)
+            {
+                ViewerConnection vc;
+                ViewerCircuit viewerCircuit;
+                if (m_Clients.TryGetValue(agent.AgentID, out vc) &&
+                    vc.ViewerCircuits.TryGetValue(agent.CircuitCode, out viewerCircuit))
+                {
+                    viewerCircuit.SendMessage(new CompleteAgentMovement
+                    {
+                        AgentID = viewerCircuit.AgentID,
+                        SessionID = viewerCircuit.SessionID,
+                        CircuitCode = viewerCircuit.CircuitCode
+                    });
                 }
             }
         }

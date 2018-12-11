@@ -29,6 +29,7 @@ using SilverSim.Viewer.Messages.Alert;
 using SilverSim.Viewer.Messages.Avatar;
 using SilverSim.Viewer.Messages.Camera;
 using SilverSim.Viewer.Messages.Chat;
+using SilverSim.Viewer.Messages.Circuit;
 using SilverSim.Viewer.Messages.Common;
 using SilverSim.Viewer.Messages.Economy;
 using SilverSim.Viewer.Messages.Estate;
@@ -72,6 +73,60 @@ namespace SilverSim.Tests.Viewer
                 CircuitCode = (int)circuitCode;
             }
         }
+
+        #region agentmovementcomplete_received
+        [TranslatedScriptEvent("agentmovementcomplete_received")]
+        public class AgentMovementCompleteReceivedEvent : IScriptEvent
+        {
+            [TranslatedScriptEventParameter(0)]
+            public AgentInfo Agent;
+
+            [TranslatedScriptEventParameter(1)]
+            public Vector3 Position;
+
+            [TranslatedScriptEventParameter(2)]
+            public Vector3 LookAt;
+
+            [TranslatedScriptEventParameter(3)]
+            public int GridX;
+
+            [TranslatedScriptEventParameter(4)]
+            public int GridY;
+
+            [TranslatedScriptEventParameter(5)]
+            public int Timestamp;
+
+            [TranslatedScriptEventParameter(6)]
+            public string ChannelVersion;
+
+            public static void HandleAgentMovementComplete(Message m, ViewerConnection vc, uint circuitCode)
+            {
+                var msg = (AgentMovementComplete)m;
+                vc.PostEvent(new AgentMovementCompleteReceivedEvent
+                {
+                    Agent = new AgentInfo(m, circuitCode),
+                    Position = msg.Position,
+                    LookAt = msg.LookAt,
+                    GridX = msg.GridPosition.GridX,
+                    GridY = msg.GridPosition.GridY,
+                    Timestamp = (int)msg.Timestamp,
+                    ChannelVersion = msg.ChannelVersion
+                });
+            }
+        }
+
+        [APIExtension("ViewerControl", "agentmovementcomplete_received")]
+        [StateEventDelegate]
+        public delegate void AgentMovementCompleteReceived(
+            [Description("Agent info")]
+            AgentInfo agent,
+            Vector3 position,
+            Vector3 lookat,
+            int gridX,
+            int gridY,
+            int timestamp,
+            string channelVersion);
+        #endregion
 
         #region regioninfo_received event
         [APIExtension("ViewerControl", "regioninfodata")]
