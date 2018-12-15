@@ -1804,6 +1804,7 @@ namespace SilverSim.Tests.Viewer
         #endregion
 
         #region grantgodlikepowers_received
+        [TranslatedScriptEvent("grantgodlikepowers_received")]
         public class GrantGodlikePowersReceivedEvent : IScriptEvent
         {
             [TranslatedScriptEventParameter(0)]
@@ -1824,6 +1825,48 @@ namespace SilverSim.Tests.Viewer
                 });
             }
         }
+
+        [APIExtension("ViewerControl", "grantgodlikepowers_received")]
+        [StateEventDelegate]
+        public delegate void GrantGodlikePowersReceived(
+            AgentInfo agent,
+            int godLevel,
+            LSLKey token);
+        #endregion
+
+        #region objectupdate_received
+        public class ObjectUpdateReceivedEvent : IScriptEvent
+        {
+            [TranslatedScriptEventParameter(0)]
+            public AgentInfo Agent;
+            [TranslatedScriptEventParameter(1)]
+            public double TimeDilation;
+            [TranslatedScriptEventParameter(2)]
+            public VcObjectDataList ObjectList = new VcObjectDataList();
+
+            public static void ToScriptEvent(Message m, ViewerConnection vc, uint circuitCode)
+            {
+                var res = (ObjectUpdate)m;
+                var ev = new ObjectUpdateReceivedEvent
+                {
+                    Agent = new AgentInfo(m, circuitCode),
+                    TimeDilation = res.TimeDilation / 65535.0
+                };
+
+                foreach (UnreliableObjectUpdate.ObjData d in res.ObjectData)
+                {
+                    ev.ObjectList.Add(new VcObjectData(d));
+                }
+                vc.PostEvent(ev);
+            }
+        }
+
+        [APIExtension("ViewerControl", "objectupdate_received")]
+        [StateEventDelegate]
+        public delegate void ObjectUpdateReceived(
+            AgentInfo agent,
+            double timeDilation,
+            VcObjectDataList objectlist);
         #endregion
 
         [TranslatedScriptEventsInfo]
@@ -1867,7 +1910,10 @@ namespace SilverSim.Tests.Viewer
             typeof(ForceObjectSelectReceivedEvent),
             typeof(ObjectAnimationReceivedEvent),
             typeof(MoneyBalanceReplyReceivedEvent),
-            typeof(GrantGodlikePowersReceivedEvent)
+            typeof(GrantGodlikePowersReceivedEvent),
+            typeof(RegionInfoReceivedEvent),
+            typeof(AgentMovementCompleteReceivedEvent),
+            typeof(ObjectUpdateReceivedEvent)
         };
     }
 }

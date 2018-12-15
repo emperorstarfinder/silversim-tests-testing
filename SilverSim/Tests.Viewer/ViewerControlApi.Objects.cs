@@ -21,11 +21,16 @@
 
 using SilverSim.Scene.Types.Script;
 using SilverSim.Scripting.Lsl;
+using SilverSim.Scripting.Lsl.Api.ByteString;
+using SilverSim.Scripting.Lsl.Api.Primitive;
+using SilverSim.Scripting.Lsl.Api.Primitive.Properties;
 using SilverSim.Tests.Viewer.UDP;
 using SilverSim.Types;
 using SilverSim.Types.Inventory;
 using SilverSim.Types.Primitive;
 using SilverSim.Viewer.Messages.Object;
+using System;
+using System.Collections.Generic;
 
 namespace SilverSim.Tests.Viewer
 {
@@ -1000,6 +1005,141 @@ namespace SilverSim.Tests.Viewer
                     viewerCircuit.SendMessage(m);
                 }
             }
+        }
+
+        [APIExtension("ViewerControl", "objectshape")]
+        [APIDisplayName("objectshape")]
+        [APIIsVariableType]
+        [APIAccessibleMembers]
+        public sealed class VcObjectShape
+        {
+            public int LocalID;
+
+            public int PathCurve;
+            public int ProfileCurve;
+            public int PathBegin;// 0 to 1, quanta = 0.01
+            public int PathEnd; // 0 to 1, quanta = 0.01
+            public int PathScaleX; // 0 to 1, quanta = 0.01
+            public int PathScaleY; // 0 to 1, quanta = 0.01
+            public int PathShearX; // -.5 to .5, quanta = 0.01
+            public int PathShearY; // -.5 to .5, quanta = 0.01
+            public int PathTwist;  // -1 to 1, quanta = 0.01
+            public int PathTwistBegin; // -1 to 1, quanta = 0.01
+            public int PathRadiusOffset; // -1 to 1, quanta = 0.01
+            public int PathTaperX; // -1 to 1, quanta = 0.01
+            public int PathTaperY; // -1 to 1, quanta = 0.01
+            public int PathRevolutions; // 0 to 3, quanta = 0.015
+            public int PathSkew; // -1 to 1, quanta = 0.01
+            public int ProfileBegin; // 0 to 1, quanta = 0.01
+            public int ProfileEnd; // 0 to 1, quanta = 0.01
+            public int ProfileHollow; // 0 to 1, quanta = 0.01
+        }
+
+        [APIExtension("ViewerControl", "objectdata")]
+        [APIDisplayName("objectdata")]
+        [APIIsVariableType]
+        [APIAccessibleMembers]
+        public sealed class VcObjectData
+        {
+            public int LocalID;
+
+            public int State;
+            public LSLKey FullID = new LSLKey();
+            public int CRC;
+            public int PCode;
+            public int Material;
+            public int ClickAction;
+            public Vector3 Scale;
+            public ByteArrayApi.ByteArray ObjectData = new ByteArrayApi.ByteArray();
+            public int ParentID;
+            public PrimitiveFlags UpdateFlags;
+            public VcObjectShape ObjectShape = new VcObjectShape();
+            public TextureEntryContainer TextureEntry = new TextureEntryContainer();
+            public ByteArrayApi.ByteArray TextureAnim = new ByteArrayApi.ByteArray();
+            public string NameValue = string.Empty;
+            public ByteArrayApi.ByteArray Data = new ByteArrayApi.ByteArray();
+            public string Text = string.Empty;
+            public Vector3 TextColor;
+            public double TextAlpha;
+            public string MediaURL = string.Empty;
+            public ByteArrayApi.ByteArray PSBlock = new ByteArrayApi.ByteArray();
+            public ByteArrayApi.ByteArray ExtraParams = new ByteArrayApi.ByteArray();
+            public LSLKey LoopedSound = new LSLKey();
+            public LSLKey OwnerID = new LSLKey();
+            public double Gain;
+            public int Flags;
+            public double Radius;
+            public int JointType;
+            public Vector3 JointPivot;
+            public Vector3 JointAxisOrAnchor;
+
+            public VcObjectData()
+            {
+
+            }
+
+            public VcObjectData(UnreliableObjectUpdate.ObjData d)
+            {
+                LocalID = (int)d.LocalID;
+                State = d.State;
+                FullID = d.FullID;
+                CRC = (int)d.CRC;
+                PCode = (int)d.PCode;
+                Material = (int)d.Material;
+                ClickAction = (int)d.ClickAction;
+                Scale = d.Scale;
+                ObjectData = new ByteArrayApi.ByteArray(d.ObjectData);
+                ParentID = (int)d.ParentID;
+                UpdateFlags = d.UpdateFlags;
+                ObjectShape = new VcObjectShape
+                {
+                    LocalID = (int)d.LocalID,
+
+                    PathCurve = d.PathCurve,
+                    ProfileCurve = d.ProfileCurve,
+                    PathBegin = d.PathBegin,
+                    PathEnd = d.PathEnd,
+                    PathScaleX = d.PathScaleX,
+                    PathScaleY = d.PathScaleY,
+                    PathShearX = d.PathShearX,
+                    PathShearY = d.PathShearY,
+                    PathTwist = d.PathTwist,
+                    PathTwistBegin = d.PathTwistBegin,
+                    PathRadiusOffset = d.PathRadiusOffset,
+                    PathTaperX = d.PathTaperX,
+                    PathTaperY = d.PathTaperY,
+                    PathRevolutions = d.PathRevolutions,
+                    PathSkew = d.PathSkew,
+                    ProfileBegin = d.ProfileBegin,
+                    ProfileEnd = d.ProfileEnd,
+                    ProfileHollow = d.ProfileHollow
+                };
+                TextureEntry = new TextureEntryContainer(new TextureEntry(d.TextureEntry));
+                TextureAnim = new ByteArrayApi.ByteArray(d.TextureAnim);
+                NameValue = d.NameValue;
+                Data = new ByteArrayApi.ByteArray(d.Data);
+                Text = d.Text;
+                TextColor = d.TextColor;
+                TextAlpha = d.TextColor.A;
+                MediaURL = d.MediaURL;
+                PSBlock = new ByteArrayApi.ByteArray(d.PSBlock);
+                ExtraParams = new ByteArrayApi.ByteArray(d.ExtraParams);
+                LoopedSound = d.LoopedSound;
+                OwnerID = d.OwnerID;
+                Gain = d.Gain;
+                Flags = (int)d.Flags;
+                Radius = d.Radius;
+                JointType = d.JointType;
+                JointPivot = d.JointPivot;
+                JointAxisOrAnchor = d.JointAxisOrAnchor;
+            }
+        }
+
+        [APIExtension("ViewerControl", "objectdatalist")]
+        [APIAccessibleMembers("Count")]
+        [APIIsVariableType]
+        public class VcObjectDataList : List<VcObjectData>
+        {
         }
     }
 }
