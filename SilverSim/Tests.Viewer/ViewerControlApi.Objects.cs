@@ -1136,6 +1136,7 @@ namespace SilverSim.Tests.Viewer
         }
 
         [APIExtension("ViewerControl", "objectdatalist")]
+        [APIDisplayName("objectdatalist")]
         [APIAccessibleMembers("Count")]
         [APIIsVariableType]
         public class VcObjectDataList : List<VcObjectData>
