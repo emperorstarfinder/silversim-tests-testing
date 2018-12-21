@@ -26,6 +26,7 @@ using SilverSim.ServiceInterfaces.Maptile;
 using SilverSim.Tests.Extensions;
 using SilverSim.Types;
 using SilverSim.Types.Maptile;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -166,7 +167,7 @@ namespace SilverSim.Tests.Maptile
                 mismatches.Add("Location");
             }
 
-            if(a.LastUpdate.AsULong != b.LastUpdate.AsULong)
+            if(Math.Abs((long)a.LastUpdate.AsULong - (long)b.LastUpdate.AsULong) > 1)
             {
                 m_Log.InfoFormat("LastUpdate mismatch {0} != {1}", a.LastUpdate.AsULong, b.LastUpdate.AsULong);
                 mismatches.Add("LastUpdate");
