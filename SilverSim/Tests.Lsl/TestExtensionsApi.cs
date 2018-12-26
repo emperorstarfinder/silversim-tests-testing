@@ -68,6 +68,34 @@ namespace SilverSim.Tests.Lsl
             }
         }
 
+        [APIExtension("Testing", "_test_ObjectKey2LocalId")]
+        public int TestObjectKey2LocalId(ScriptInstance instance, LSLKey key)
+        {
+            lock(instance)
+            {
+                ObjectPart part;
+                if(instance.Part.ObjectGroup.Scene.Primitives.TryGetValue(key, out part))
+                {
+                    return (int)part.LocalID[instance.Part.ObjectGroup.Scene.ID];
+                }
+            }
+            return 0;
+        }
+
+        [APIExtension("Testing", "_test_LocalId2ObjectKey")]
+        public LSLKey TestObjectLocalId2Key(ScriptInstance instance, int localid)
+        {
+            lock(instance)
+            {
+                ObjectPart part;
+                if(instance.Part.ObjectGroup.Scene.Primitives.TryGetValue((uint)localid, out part))
+                {
+                    return part.ID;
+                }
+            }
+            return UUID.Zero;
+        }
+
         [APIExtension("Testing", "_test_setserverparam")]
         public void TestSetServerParam(ScriptInstance instance, string paraname, string paravalue)
         {
