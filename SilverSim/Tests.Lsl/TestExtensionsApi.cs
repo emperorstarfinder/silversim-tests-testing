@@ -20,15 +20,18 @@
 // exception statement from your version.
 
 using log4net;
+using Nini.Config;
 using SilverSim.Main.Common;
 using SilverSim.Scene.Types.Object;
 using SilverSim.Scene.Types.Script;
 using SilverSim.Scene.Types.Script.Events;
 using SilverSim.Scripting.Common;
 using SilverSim.Scripting.Lsl;
+using SilverSim.ServiceInterfaces.Asset;
 using SilverSim.Tests.Extensions;
 using SilverSim.Tests.Scripting;
 using SilverSim.Types;
+using SilverSim.Types.Asset;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -42,9 +45,11 @@ namespace SilverSim.Tests.Lsl
     public class TestExtensionsApi : IScriptApi, IPlugin
     {
         private static readonly ILog m_Log = LogManager.GetLogger("SCRIPT");
-        ConfigurationLoader m_Loader;
-        TestRunner m_TestRunner;
-        RunScript m_ScriptRunner;
+        private ConfigurationLoader m_Loader;
+        private TestRunner m_TestRunner;
+        private RunScript m_ScriptRunner;
+        private AssetServiceInterface m_AssetService;
+        private readonly string m_AssetServiceName;
 
         [APIExtension("Testing")]
         public const int LOG_INFO = 0;
@@ -57,9 +62,15 @@ namespace SilverSim.Tests.Lsl
         [APIExtension("Testing")]
         public const int LOG_DEBUG = 4;
 
+        public TestExtensionsApi(IConfig config)
+        {
+            m_AssetServiceName = config.GetString("AssetService", "AssetService");
+        }
+
         public void Startup(ConfigurationLoader loader)
         {
             m_Loader = loader;
+            loader.GetService(m_AssetServiceName, out m_AssetService);
             m_TestRunner = m_Loader.GetServicesByValue<TestRunner>()[0];
             List<RunScript> scriptrunners = m_Loader.GetServicesByValue<RunScript>();
             if(scriptrunners.Count > 0)
@@ -204,6 +215,15 @@ namespace SilverSim.Tests.Lsl
                 {
                     using (var reader = new StreamReader(filename, new UTF8Encoding(false)))
                     {
+                        m_AssetService.Store(new AssetData
+                        {
+                            ID = assetid,
+                            Type = AssetType.LSLText,
+                            Data = reader.ReadToEnd().ToUTF8Bytes()
+                        });
+                    }
+                    using (var reader = new StreamReader(filename, new UTF8Encoding(false)))
+                    {
                         scriptAssembly = CompilerRegistry.ScriptCompilers.Compile(AppDomain.CurrentDomain, UGUI.Unknown, assetid, reader, includeOpen: instance.Part.OpenScriptInclude);
                     }
                     m_Log.InfoFormat("Compilation of injected {1} ({0}) successful", assetid, name);
@@ -260,9 +280,20 @@ namespace SilverSim.Tests.Lsl
                 UUID assetid = UUID.Random;
                 item.AssetID = assetid;
 
+
+
                 IScriptAssembly scriptAssembly = null;
                 try
                 {
+                    using (var reader = new StreamReader(filename, new UTF8Encoding(false)))
+                    {
+                        m_AssetService.Store(new AssetData
+                        {
+                            ID = assetid,
+                            Type = AssetType.LSLText,
+                            Data = reader.ReadToEnd().ToUTF8Bytes()
+                        });
+                    }
                     using (var reader = new StreamReader(filename, new UTF8Encoding(false)))
                     {
                         scriptAssembly = CompilerRegistry.ScriptCompilers.Compile(AppDomain.CurrentDomain, UGUI.Unknown, assetid, reader, includeOpen: instance.Part.OpenScriptInclude);
