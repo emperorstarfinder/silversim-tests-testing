@@ -353,7 +353,7 @@ namespace SilverSim.Tests.Scripting
             Vector3 position = Vector3.Parse(config.GetString("Position", m_Position.ToString()));
             Quaternion rotation = Quaternion.Parse(config.GetString("Rotation", m_Rotation.ToString()));
             UUID objectid = UUID.Parse(config.GetString("ID", UUID.Random.ToString()));
-
+            int scriptPin = config.GetInt("ScriptAccessPin", 0);
             string objectName = config.GetString("ObjectName", sectionName);
             string scriptName = config.GetString("ScriptName", "Script");
             string experienceName = config.GetString("ExperienceName", "My Experience");
@@ -486,6 +486,7 @@ namespace SilverSim.Tests.Scripting
                 part.NextOwnerMask = objectPermissionsNext;
                 part.EveryoneMask = objectPermissionsEveryone;
                 part.GroupMask = objectPermissionsGroup;
+                part.ScriptAccessPin = scriptPin;
 
                 var item = new ObjectPartInventoryItem(itemID)
                 {
