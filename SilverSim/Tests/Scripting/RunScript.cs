@@ -408,23 +408,27 @@ namespace SilverSim.Tests.Scripting
             IScriptAssembly scriptAssembly = null;
             if (!string.IsNullOrEmpty(scriptFile))
             {
+                if(itemID == UUID.Zero)
+                {
+                    itemID = UUID.Random;
+                }
                 try
                 {
-                    using (var reader = new StreamReader(m_ScriptFile, new UTF8Encoding(false)))
+                    using (var reader = new StreamReader(scriptFile, new UTF8Encoding(false)))
                     {
                         scriptAssembly = CompilerRegistry.ScriptCompilers.Compile(AppDomain.CurrentDomain, UGUI.Unknown, m_AssetID, reader);
                     }
-                    m_Log.InfoFormat("Compilation of {1} ({0}) successful", m_AssetID, m_ScriptFile);
+                    m_Log.InfoFormat("Compilation of {1} ({0}) successful", m_AssetID, scriptFile);
                 }
                 catch (CompilerException e)
                 {
-                    m_Log.ErrorFormat("Compilation of {1} ({0}) failed: {2}", m_AssetID, m_ScriptFile, e.Message);
+                    m_Log.ErrorFormat("Compilation of {1} ({0}) failed: {2}", m_AssetID, scriptFile, e.Message);
                     m_Log.WarnFormat("Stack Trace:\n{0}", e.StackTrace.ToString());
                     return false;
                 }
                 catch (Exception e)
                 {
-                    m_Log.ErrorFormat("Compilation of {1} ({0}) failed: {2}", m_AssetID, m_ScriptFile, e.Message);
+                    m_Log.ErrorFormat("Compilation of {1} ({0}) failed: {2}", m_AssetID, scriptFile, e.Message);
                     m_Log.WarnFormat("Stack Trace:\n{0}", e.StackTrace.ToString());
                     return false;
                 }
