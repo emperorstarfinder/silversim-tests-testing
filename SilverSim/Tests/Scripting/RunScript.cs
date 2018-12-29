@@ -82,6 +82,7 @@ namespace SilverSim.Tests.Scripting
         private string m_ObjectName;
         private string m_ObjectDescription;
         private UUID m_ItemID;
+        private UUID m_RezzingObjID;
         private string m_ScriptName;
         private string m_ScriptDescription;
         private string m_EstateName;
@@ -187,6 +188,7 @@ namespace SilverSim.Tests.Scripting
             m_Rotation = Quaternion.Parse(config.GetString("Rotation", "<0,0,0,1>"));
 
             m_ItemID = UUID.Parse(config.GetString("ScriptItemID", UUID.Random.ToString()));
+            m_RezzingObjID = UUID.Parse(config.GetString("RezzingObjectID", UUID.Zero.ToString()));
             m_ObjectName = config.GetString("ObjectName", "Object");
             m_ScriptName = config.GetString("ScriptName", "Script");
             string experienceName = config.GetString("ExperienceName", "My Experience");
@@ -358,6 +360,7 @@ namespace SilverSim.Tests.Scripting
             string scriptName = config.GetString("ScriptName", "Script");
             string experienceName = config.GetString("ExperienceName", "My Experience");
             UUID itemID = UUID.Parse(config.GetString("ScriptItemID", UUID.Zero.ToString()));
+            UUID rezzingObjID = UUID.Parse(config.GetString("RezzingObjectID", UUID.Zero.ToString()));
             UEI experienceID;
             UUID expID;
             UUID.TryParse(config.GetString("ExperienceID", m_ExperienceID.ToString()), out expID);
@@ -470,7 +473,10 @@ namespace SilverSim.Tests.Scripting
 
             try
             {
-                var grp = new ObjectGroup();
+                var grp = new ObjectGroup
+                {
+                    RezzingObjectID = rezzingObjID
+                };
                 var part = new ObjectPart(objectid);
                 grp.Add(1, part.ID, part);
                 part.ObjectGroup = grp;
@@ -696,7 +702,10 @@ namespace SilverSim.Tests.Scripting
                 if (success)
                 {
                     {
-                        var grp = new ObjectGroup();
+                        var grp = new ObjectGroup
+                        {
+                            RezzingObjectID = m_RezzingObjID
+                        };
                         var part = new ObjectPart(m_ObjectID);
                         grp.Add(1, part.ID, part);
                         part.ObjectGroup = grp;
