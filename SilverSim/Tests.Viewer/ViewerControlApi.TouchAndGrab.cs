@@ -23,8 +23,6 @@ using SilverSim.Scene.Types.Script;
 using SilverSim.Scripting.Lsl;
 using SilverSim.Tests.Viewer.UDP;
 using SilverSim.Types;
-using SilverSim.Viewer.Messages;
-using SilverSim.Viewer.Messages.Chat;
 using SilverSim.Viewer.Messages.Object;
 
 namespace SilverSim.Tests.Viewer

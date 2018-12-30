@@ -384,6 +384,8 @@ namespace SilverSim.Tests.Viewer
                 viewerCircuit.MessageRouting.Add(MessageType.ObjectAnimation, (m) => ObjectAnimationReceivedEvent.ToScriptEvent(m, vc, (uint)circuitCode));
                 viewerCircuit.MessageRouting.Add(MessageType.MoneyBalanceReply, (m) => MoneyBalanceReplyReceivedEvent.ToScriptEvent(m, vc, (uint)circuitCode));
                 viewerCircuit.MessageRouting.Add(MessageType.GrantGodlikePowers, (m) => GrantGodlikePowersReceivedEvent.ToScriptEvent(m, vc, (uint)circuitCode));
+                viewerCircuit.MessageRouting.Add(MessageType.ParcelInfoReply, (m) => ParcelInfoReplyReceivedEvent.ToScriptEvent(m, vc, (uint)circuitCode));
+                viewerCircuit.MessageRouting.Add(MessageType.ParcelObjectOwnersReply, (m) => ParcelObjectOwnersReplyReceivedEvent.ToScriptEvent(m, vc, (uint)circuitCode));
                 viewerCircuit.MessageRouting.Add(MessageType.ImageData, (m) => HandleImageData(m, vc, (uint)circuitCode));
                 viewerCircuit.MessageRouting.Add(MessageType.ImagePacket, (m) => HandleImagePacket(m, vc, (uint)circuitCode));
                 viewerCircuit.MessageRouting.Add(MessageType.ImageNotInDatabase, (m) => HandleImageNotInDatabase(m, vc, (uint)circuitCode));

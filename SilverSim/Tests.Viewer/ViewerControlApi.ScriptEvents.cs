@@ -1837,6 +1837,7 @@ namespace SilverSim.Tests.Viewer
         #endregion
 
         #region objectupdate_received
+        [TranslatedScriptEvent("objectupdate_received")]
         public class ObjectUpdateReceivedEvent : IScriptEvent
         {
             [TranslatedScriptEventParameter(0)]
@@ -1911,6 +1912,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
+        [TranslatedScriptEvent("parcelinforeply_received")]
         public class ParcelInfoReplyReceivedEvent : IScriptEvent
         {
             [TranslatedScriptEventParameter(0)]
@@ -1936,7 +1938,7 @@ namespace SilverSim.Tests.Viewer
             ParcelInfoReplyData parcelData);
         #endregion
 
-        #region parcelinforeply_received
+        #region parcelobjectownersreply_received
         [APIExtension("ViewerControl", "parcelobjectownersreplydata")]
         [APIDisplayName("parcelobjectownersreplydata")]
         [APIIsVariableType]
@@ -1968,6 +1970,7 @@ namespace SilverSim.Tests.Viewer
         {
         }
 
+        [TranslatedScriptEvent("parcelobjectownersreply_received")]
         public class ParcelObjectOwnersReplyReceivedEvent : IScriptEvent
         {
             [TranslatedScriptEventParameter(0)]
@@ -1997,6 +2000,53 @@ namespace SilverSim.Tests.Viewer
         public delegate void ParcelObjectOwnersReplyReceived(
             AgentInfo agent,
             ParcelObjectOwnersReplyDataList data);
+        #endregion
+
+        #region simulatorviewertimemessage_received
+        [TranslatedScriptEvent("simulatorviewertimemessage_received")]
+        public class SimulatorViewerTimeMessageReceivedEvent : IScriptEvent
+        {
+            [TranslatedScriptEventParameter(0)]
+            public AgentInfo Agent;
+            [TranslatedScriptEventParameter(1)]
+            public long UsecSinceStart;
+            [TranslatedScriptEventParameter(2)]
+            public int SecPerDay;
+            [TranslatedScriptEventParameter(3)]
+            public int SecPerYear;
+            [TranslatedScriptEventParameter(4)]
+            public Vector3 SunDirection;
+            [TranslatedScriptEventParameter(5)]
+            public double SunPhase;
+            [TranslatedScriptEventParameter(6)]
+            public Vector3 SunAngVelocity;
+
+            public static void ToScriptEvent(Message m, ViewerConnection vc, uint circuitCode)
+            {
+                var res = (SimulatorViewerTimeMessage)m;
+                vc.PostEvent(new SimulatorViewerTimeMessageReceivedEvent
+                {
+                    Agent = new AgentInfo(m, circuitCode),
+                    UsecSinceStart = (long)res.UsecSinceStart,
+                    SecPerDay = (int)res.SecPerDay,
+                    SecPerYear = (int)res.SecPerYear,
+                    SunDirection = res.SunDirection,
+                    SunPhase = res.SunPhase,
+                    SunAngVelocity = res.SunAngVelocity
+                });
+            }
+        }
+
+        [APIExtension("ViewerControl", "simulatorviewertimemessage_received")]
+        [StateEventDelegate]
+        public delegate void SimulatorViewerTimeMessageReceived(
+            AgentInfo agent,
+            long usecSinceStart,
+            int secPerDay,
+            int secPerYear,
+            Vector3 sunDirection,
+            double sunPhase,
+            Vector3 sunAngVelocity);
         #endregion
 
         [TranslatedScriptEventsInfo]
