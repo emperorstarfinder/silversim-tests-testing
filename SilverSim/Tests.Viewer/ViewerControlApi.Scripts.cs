@@ -39,7 +39,7 @@ namespace SilverSim.Tests.Viewer
                 ViewerConnection vc;
                 ViewerCircuit viewerCircuit;
                 if (m_Clients.TryGetValue(agent.AgentID, out vc) &&
-                    vc.ViewerCircuits.TryGetValue(agent.CircuitCode, out viewerCircuit))
+                    vc.ViewerCircuits.TryGetValue((uint)agent.CircuitCode, out viewerCircuit))
                 {
                     viewerCircuit.SendMessage(new ForceScriptControlRelease
                     {
@@ -62,7 +62,7 @@ namespace SilverSim.Tests.Viewer
                 ViewerConnection vc;
                 ViewerCircuit viewerCircuit;
                 if (m_Clients.TryGetValue(agent.AgentID, out vc) &&
-                    vc.ViewerCircuits.TryGetValue(agent.CircuitCode, out viewerCircuit))
+                    vc.ViewerCircuits.TryGetValue((uint)agent.CircuitCode, out viewerCircuit))
                 {
                     viewerCircuit.SendMessage(new GetScriptRunning
                     {
@@ -85,7 +85,7 @@ namespace SilverSim.Tests.Viewer
                 ViewerConnection vc;
                 ViewerCircuit viewerCircuit;
                 if (m_Clients.TryGetValue(agent.AgentID, out vc) &&
-                    vc.ViewerCircuits.TryGetValue(agent.CircuitCode, out viewerCircuit))
+                    vc.ViewerCircuits.TryGetValue((uint)agent.CircuitCode, out viewerCircuit))
                 {
                     viewerCircuit.SendMessage(new RevokePermissions
                     {
@@ -111,7 +111,7 @@ namespace SilverSim.Tests.Viewer
                 ViewerConnection vc;
                 ViewerCircuit viewerCircuit;
                 if (m_Clients.TryGetValue(agent.AgentID, out vc) &&
-                    vc.ViewerCircuits.TryGetValue(agent.CircuitCode, out viewerCircuit))
+                    vc.ViewerCircuits.TryGetValue((uint)agent.CircuitCode, out viewerCircuit))
                 {
                     viewerCircuit.SendMessage(new ScriptAnswerYes
                     {
@@ -139,7 +139,7 @@ namespace SilverSim.Tests.Viewer
                 ViewerConnection vc;
                 ViewerCircuit viewerCircuit;
                 if (m_Clients.TryGetValue(agent.AgentID, out vc) &&
-                    vc.ViewerCircuits.TryGetValue(agent.CircuitCode, out viewerCircuit))
+                    vc.ViewerCircuits.TryGetValue((uint)agent.CircuitCode, out viewerCircuit))
                 {
                     viewerCircuit.SendMessage(new ScriptDialogReply
                     {
@@ -166,7 +166,7 @@ namespace SilverSim.Tests.Viewer
                 ViewerConnection vc;
                 ViewerCircuit viewerCircuit;
                 if (m_Clients.TryGetValue(agent.AgentID, out vc) &&
-                    vc.ViewerCircuits.TryGetValue(agent.CircuitCode, out viewerCircuit))
+                    vc.ViewerCircuits.TryGetValue((uint)agent.CircuitCode, out viewerCircuit))
                 {
                     viewerCircuit.SendMessage(new ScriptReset
                     {
@@ -192,7 +192,7 @@ namespace SilverSim.Tests.Viewer
                 ViewerConnection vc;
                 ViewerCircuit viewerCircuit;
                 if (m_Clients.TryGetValue(agent.AgentID, out vc) &&
-                    vc.ViewerCircuits.TryGetValue(agent.CircuitCode, out viewerCircuit))
+                    vc.ViewerCircuits.TryGetValue((uint)agent.CircuitCode, out viewerCircuit))
                 {
                     viewerCircuit.SendMessage(new SetScriptRunning
                     {

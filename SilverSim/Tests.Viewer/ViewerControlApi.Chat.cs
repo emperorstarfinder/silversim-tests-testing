@@ -87,7 +87,7 @@ namespace SilverSim.Tests.Viewer
                 ViewerConnection vc;
                 ViewerCircuit viewerCircuit;
                 if (m_Clients.TryGetValue(agent.AgentID, out vc) &&
-                    vc.ViewerCircuits.TryGetValue(agent.CircuitCode, out viewerCircuit))
+                    vc.ViewerCircuits.TryGetValue((uint)agent.CircuitCode, out viewerCircuit))
                 {
                     viewerCircuit.SendMessage(new ChatFromViewer
                     {
@@ -204,7 +204,7 @@ namespace SilverSim.Tests.Viewer
                 ViewerConnection vc;
                 ViewerCircuit viewerCircuit;
                 if (m_Clients.TryGetValue(agent.AgentID, out vc) &&
-                    vc.ViewerCircuits.TryGetValue(agent.CircuitCode, out viewerCircuit))
+                    vc.ViewerCircuits.TryGetValue((uint)agent.CircuitCode, out viewerCircuit))
                 {
                     viewerCircuit.SendMessage(new ImprovedInstantMessage
                     {
@@ -237,7 +237,7 @@ namespace SilverSim.Tests.Viewer
                 ViewerConnection vc;
                 ViewerCircuit viewerCircuit;
                 if (m_Clients.TryGetValue(agent.AgentID, out vc) &&
-                    vc.ViewerCircuits.TryGetValue(agent.CircuitCode, out viewerCircuit))
+                    vc.ViewerCircuits.TryGetValue((uint)agent.CircuitCode, out viewerCircuit))
                 {
                     viewerCircuit.SendMessage(new RetrieveInstantMessages
                     {

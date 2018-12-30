@@ -118,22 +118,27 @@ namespace SilverSim.Tests.Viewer
         [APIExtension("ViewerControl", "vieweragent")]
         [APIDisplayName("vieweragent")]
         [APIAccessibleMembers]
+        [APIIsVariableType]
         [Serializable]
         public class ViewerAgentAccessor
         {
             public UUID AgentID { get; }
-            public uint CircuitCode { get; }
+            public int CircuitCode { get; }
             public string CapsPath { get; }
+            public LSLKey SessionId { get; }
+            public LSLKey SecureSessionId { get; }
 
             public ViewerAgentAccessor()
             {
             }
 
-            public ViewerAgentAccessor(UUID agentID, uint circuitCode, string capsPath)
+            public ViewerAgentAccessor(UUID agentID, int circuitCode, string capsPath, LSLKey sessionId, LSLKey secureSessionId)
             {
                 AgentID = agentID;
                 CircuitCode = circuitCode;
                 CapsPath = capsPath;
+                SessionId = sessionId;
+                SecureSessionId = secureSessionId;
             }
 
             public static implicit operator bool(ViewerAgentAccessor vc) => vc.AgentID != UUID.Zero;
@@ -390,7 +395,7 @@ namespace SilverSim.Tests.Viewer
                 viewerCircuit.MessageRouting.Add(MessageType.ImagePacket, (m) => HandleImagePacket(m, vc, (uint)circuitCode));
                 viewerCircuit.MessageRouting.Add(MessageType.ImageNotInDatabase, (m) => HandleImageNotInDatabase(m, vc, (uint)circuitCode));
                 vc.ViewerCircuits.Add((uint)circuitCode, viewerCircuit);
-                return new ViewerAgentAccessor(agent.ID, (uint)circuitCode, capsPath);
+                return new ViewerAgentAccessor(agent.ID, circuitCode, capsPath, sessionId.AsUUID, secureSessionId.AsUUID);
             }
         }
 
@@ -413,7 +418,7 @@ namespace SilverSim.Tests.Viewer
                 ViewerConnection vc;
                 ViewerCircuit viewerCircuit;
                 if (m_Clients.TryGetValue(agent.AgentID, out vc) &&
-                    vc.ViewerCircuits.TryGetValue(agent.CircuitCode, out viewerCircuit))
+                    vc.ViewerCircuits.TryGetValue((uint)agent.CircuitCode, out viewerCircuit))
                 {
                     var logoutreq = new LogoutRequest
                     {

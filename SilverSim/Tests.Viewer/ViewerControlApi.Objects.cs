@@ -58,7 +58,7 @@ namespace SilverSim.Tests.Viewer
                 ViewerConnection vc;
                 ViewerCircuit viewerCircuit;
                 if (m_Clients.TryGetValue(agent.AgentID, out vc) &&
-                    vc.ViewerCircuits.TryGetValue(agent.CircuitCode, out viewerCircuit))
+                    vc.ViewerCircuits.TryGetValue((uint)agent.CircuitCode, out viewerCircuit))
                 {
                     viewerCircuit.SendMessage(new ObjectAdd
                     {
@@ -110,7 +110,7 @@ namespace SilverSim.Tests.Viewer
                 ViewerConnection vc;
                 ViewerCircuit viewerCircuit;
                 if (m_Clients.TryGetValue(agent.AgentID, out vc) &&
-                    vc.ViewerCircuits.TryGetValue(agent.CircuitCode, out viewerCircuit))
+                    vc.ViewerCircuits.TryGetValue((uint)agent.CircuitCode, out viewerCircuit))
                 {
                     viewerCircuit.SendMessage(new BuyObjectInventory
                     {
@@ -137,7 +137,7 @@ namespace SilverSim.Tests.Viewer
                 ViewerConnection vc;
                 ViewerCircuit viewerCircuit;
                 if (m_Clients.TryGetValue(agent.AgentID, out vc) &&
-                    vc.ViewerCircuits.TryGetValue(agent.CircuitCode, out viewerCircuit) &&
+                    vc.ViewerCircuits.TryGetValue((uint)agent.CircuitCode, out viewerCircuit) &&
                     objectData.Count % 3 == 0)
                 {
                     var ev = new ObjectBuy
@@ -199,7 +199,7 @@ namespace SilverSim.Tests.Viewer
                 ViewerConnection vc;
                 ViewerCircuit viewerCircuit;
                 if (m_Clients.TryGetValue(agent.AgentID, out vc) &&
-                    vc.ViewerCircuits.TryGetValue(agent.CircuitCode, out viewerCircuit))
+                    vc.ViewerCircuits.TryGetValue((uint)agent.CircuitCode, out viewerCircuit))
                 {
                     viewerCircuit.SendMessage(new DeRezObject
                     {
@@ -227,7 +227,7 @@ namespace SilverSim.Tests.Viewer
                 ViewerConnection vc;
                 ViewerCircuit viewerCircuit;
                 if (m_Clients.TryGetValue(agent.AgentID, out vc) &&
-                    vc.ViewerCircuits.TryGetValue(agent.CircuitCode, out viewerCircuit))
+                    vc.ViewerCircuits.TryGetValue((uint)agent.CircuitCode, out viewerCircuit))
                 {
                     viewerCircuit.SendMessage(new DetachAttachmentIntoInv
                     {
@@ -249,7 +249,7 @@ namespace SilverSim.Tests.Viewer
                 ViewerConnection vc;
                 ViewerCircuit viewerCircuit;
                 if (m_Clients.TryGetValue(agent.AgentID, out vc) &&
-                    vc.ViewerCircuits.TryGetValue(agent.CircuitCode, out viewerCircuit) &&
+                    vc.ViewerCircuits.TryGetValue((uint)agent.CircuitCode, out viewerCircuit) &&
                     (objectData.Count % 2) == 0)
                 {
                     var m = new ObjectCategory
@@ -281,7 +281,7 @@ namespace SilverSim.Tests.Viewer
                 ViewerConnection vc;
                 ViewerCircuit viewerCircuit;
                 if (m_Clients.TryGetValue(agent.AgentID, out vc) &&
-                    vc.ViewerCircuits.TryGetValue(agent.CircuitCode, out viewerCircuit) &&
+                    vc.ViewerCircuits.TryGetValue((uint)agent.CircuitCode, out viewerCircuit) &&
                     (objectData.Count % 2) == 0)
                 {
                     var m = new ObjectClickAction
@@ -314,7 +314,7 @@ namespace SilverSim.Tests.Viewer
                 ViewerConnection vc;
                 ViewerCircuit viewerCircuit;
                 if (m_Clients.TryGetValue(agent.AgentID, out vc) &&
-                    vc.ViewerCircuits.TryGetValue(agent.CircuitCode, out viewerCircuit))
+                    vc.ViewerCircuits.TryGetValue((uint)agent.CircuitCode, out viewerCircuit))
                 {
                     var m = new ObjectDelete
                     {
@@ -342,7 +342,7 @@ namespace SilverSim.Tests.Viewer
                 ViewerConnection vc;
                 ViewerCircuit viewerCircuit;
                 if (m_Clients.TryGetValue(agent.AgentID, out vc) &&
-                    vc.ViewerCircuits.TryGetValue(agent.CircuitCode, out viewerCircuit))
+                    vc.ViewerCircuits.TryGetValue((uint)agent.CircuitCode, out viewerCircuit))
                 {
                     var m = new ObjectDelink
                     {
@@ -369,7 +369,7 @@ namespace SilverSim.Tests.Viewer
                 ViewerConnection vc;
                 ViewerCircuit viewerCircuit;
                 if (m_Clients.TryGetValue(agent.AgentID, out vc) &&
-                    vc.ViewerCircuits.TryGetValue(agent.CircuitCode, out viewerCircuit) &&
+                    vc.ViewerCircuits.TryGetValue((uint)agent.CircuitCode, out viewerCircuit) &&
                     objectData.Count % 2 == 0)
                 {
                     var m = new ObjectDescription
@@ -401,7 +401,7 @@ namespace SilverSim.Tests.Viewer
                 ViewerConnection vc;
                 ViewerCircuit viewerCircuit;
                 if (m_Clients.TryGetValue(agent.AgentID, out vc) &&
-                    vc.ViewerCircuits.TryGetValue(agent.CircuitCode, out viewerCircuit))
+                    vc.ViewerCircuits.TryGetValue((uint)agent.CircuitCode, out viewerCircuit))
                 {
                     var m = new ObjectDetach
                     {
@@ -428,7 +428,7 @@ namespace SilverSim.Tests.Viewer
                 ViewerConnection vc;
                 ViewerCircuit viewerCircuit;
                 if (m_Clients.TryGetValue(agent.AgentID, out vc) &&
-                    vc.ViewerCircuits.TryGetValue(agent.CircuitCode, out viewerCircuit))
+                    vc.ViewerCircuits.TryGetValue((uint)agent.CircuitCode, out viewerCircuit))
                 {
                     var m = new ObjectDetach
                     {
@@ -458,7 +458,7 @@ namespace SilverSim.Tests.Viewer
                 ViewerConnection vc;
                 ViewerCircuit viewerCircuit;
                 if (m_Clients.TryGetValue(agent.AgentID, out vc) &&
-                    vc.ViewerCircuits.TryGetValue(agent.CircuitCode, out viewerCircuit))
+                    vc.ViewerCircuits.TryGetValue((uint)agent.CircuitCode, out viewerCircuit))
                 {
                     var m = new ObjectDuplicate
                     {
@@ -497,7 +497,7 @@ namespace SilverSim.Tests.Viewer
                 ViewerConnection vc;
                 ViewerCircuit viewerCircuit;
                 if (m_Clients.TryGetValue(agent.AgentID, out vc) &&
-                    vc.ViewerCircuits.TryGetValue(agent.CircuitCode, out viewerCircuit))
+                    vc.ViewerCircuits.TryGetValue((uint)agent.CircuitCode, out viewerCircuit))
                 {
                     var m = new ObjectDuplicateOnRay
                     {
@@ -535,7 +535,7 @@ namespace SilverSim.Tests.Viewer
                 ViewerConnection vc;
                 ViewerCircuit viewerCircuit;
                 if (m_Clients.TryGetValue(agent.AgentID, out vc) &&
-                    vc.ViewerCircuits.TryGetValue(agent.CircuitCode, out viewerCircuit))
+                    vc.ViewerCircuits.TryGetValue((uint)agent.CircuitCode, out viewerCircuit))
                 {
                     var m = new ObjectExportSelected
                     {
@@ -566,7 +566,7 @@ namespace SilverSim.Tests.Viewer
                 ViewerConnection vc;
                 ViewerCircuit viewerCircuit;
                 if (m_Clients.TryGetValue(agent.AgentID, out vc) &&
-                    vc.ViewerCircuits.TryGetValue(agent.CircuitCode, out viewerCircuit))
+                    vc.ViewerCircuits.TryGetValue((uint)agent.CircuitCode, out viewerCircuit))
                 {
                     var m = new ObjectFlagUpdate
                     {
@@ -601,7 +601,7 @@ namespace SilverSim.Tests.Viewer
                 ViewerConnection vc;
                 ViewerCircuit viewerCircuit;
                 if (m_Clients.TryGetValue(agent.AgentID, out vc) &&
-                    vc.ViewerCircuits.TryGetValue(agent.CircuitCode, out viewerCircuit))
+                    vc.ViewerCircuits.TryGetValue((uint)agent.CircuitCode, out viewerCircuit))
                 {
                     var m = new ObjectFlagUpdate
                     {
@@ -637,7 +637,7 @@ namespace SilverSim.Tests.Viewer
                 ViewerConnection vc;
                 ViewerCircuit viewerCircuit;
                 if (m_Clients.TryGetValue(agent.AgentID, out vc) &&
-                    vc.ViewerCircuits.TryGetValue(agent.CircuitCode, out viewerCircuit))
+                    vc.ViewerCircuits.TryGetValue((uint)agent.CircuitCode, out viewerCircuit))
                 {
                     var m = new ObjectGroup
                     {
@@ -701,7 +701,7 @@ namespace SilverSim.Tests.Viewer
                 ViewerConnection vc;
                 ViewerCircuit viewerCircuit;
                 if (m_Clients.TryGetValue(agent.AgentID, out vc) &&
-                    vc.ViewerCircuits.TryGetValue(agent.CircuitCode, out viewerCircuit) &&
+                    vc.ViewerCircuits.TryGetValue((uint)agent.CircuitCode, out viewerCircuit) &&
                     objectImageList.Count <= 255)
                 {
                     var m = new ObjectImage
@@ -735,7 +735,7 @@ namespace SilverSim.Tests.Viewer
                 ViewerConnection vc;
                 ViewerCircuit viewerCircuit;
                 if (m_Clients.TryGetValue(agent.AgentID, out vc) &&
-                    vc.ViewerCircuits.TryGetValue(agent.CircuitCode, out viewerCircuit) &&
+                    vc.ViewerCircuits.TryGetValue((uint)agent.CircuitCode, out viewerCircuit) &&
                     objectData.Count % 2 == 0)
                 {
                     var m = new ObjectIncludeInSearch
@@ -767,7 +767,7 @@ namespace SilverSim.Tests.Viewer
                 ViewerConnection vc;
                 ViewerCircuit viewerCircuit;
                 if (m_Clients.TryGetValue(agent.AgentID, out vc) &&
-                    vc.ViewerCircuits.TryGetValue(agent.CircuitCode, out viewerCircuit))
+                    vc.ViewerCircuits.TryGetValue((uint)agent.CircuitCode, out viewerCircuit))
                 {
                     var m = new ObjectLink
                     {
@@ -794,7 +794,7 @@ namespace SilverSim.Tests.Viewer
                 ViewerConnection vc;
                 ViewerCircuit viewerCircuit;
                 if (m_Clients.TryGetValue(agent.AgentID, out vc) &&
-                    vc.ViewerCircuits.TryGetValue(agent.CircuitCode, out viewerCircuit) &&
+                    vc.ViewerCircuits.TryGetValue((uint)agent.CircuitCode, out viewerCircuit) &&
                     objectData.Count % 2 == 0)
                 {
                     var m = new ObjectMaterial
@@ -827,7 +827,7 @@ namespace SilverSim.Tests.Viewer
                 ViewerConnection vc;
                 ViewerCircuit viewerCircuit;
                 if (m_Clients.TryGetValue(agent.AgentID, out vc) &&
-                    vc.ViewerCircuits.TryGetValue(agent.CircuitCode, out viewerCircuit) &&
+                    vc.ViewerCircuits.TryGetValue((uint)agent.CircuitCode, out viewerCircuit) &&
                     objectData.Count % 2 == 0)
                 {
                     var m = new ObjectName
@@ -863,7 +863,7 @@ namespace SilverSim.Tests.Viewer
                 ViewerConnection vc;
                 ViewerCircuit viewerCircuit;
                 if (m_Clients.TryGetValue(agent.AgentID, out vc) &&
-                    vc.ViewerCircuits.TryGetValue(agent.CircuitCode, out viewerCircuit))
+                    vc.ViewerCircuits.TryGetValue((uint)agent.CircuitCode, out viewerCircuit))
                 {
                     var m = new ObjectOwner
                     {
@@ -894,7 +894,7 @@ namespace SilverSim.Tests.Viewer
                 ViewerConnection vc;
                 ViewerCircuit viewerCircuit;
                 if (m_Clients.TryGetValue(agent.AgentID, out vc) &&
-                    vc.ViewerCircuits.TryGetValue(agent.CircuitCode, out viewerCircuit) &&
+                    vc.ViewerCircuits.TryGetValue((uint)agent.CircuitCode, out viewerCircuit) &&
                     objectData.Count % 4 == 0)
                 {
                     var m = new ObjectPermissions
@@ -929,7 +929,7 @@ namespace SilverSim.Tests.Viewer
                 ViewerConnection vc;
                 ViewerCircuit viewerCircuit;
                 if (m_Clients.TryGetValue(agent.AgentID, out vc) &&
-                    vc.ViewerCircuits.TryGetValue(agent.CircuitCode, out viewerCircuit) &&
+                    vc.ViewerCircuits.TryGetValue((uint)agent.CircuitCode, out viewerCircuit) &&
                     objectData.Count % 6 == 0)
                 {
                     var m = new ObjectPhysicsProperties();
@@ -962,7 +962,7 @@ namespace SilverSim.Tests.Viewer
                 ViewerConnection vc;
                 ViewerCircuit viewerCircuit;
                 if (m_Clients.TryGetValue(agent.AgentID, out vc) &&
-                    vc.ViewerCircuits.TryGetValue(agent.CircuitCode, out viewerCircuit) &&
+                    vc.ViewerCircuits.TryGetValue((uint)agent.CircuitCode, out viewerCircuit) &&
                     objectData.Count % 4 == 0)
                 {
                     var m = new MultipleObjectUpdate
@@ -1025,7 +1025,7 @@ namespace SilverSim.Tests.Viewer
                 ViewerConnection vc;
                 ViewerCircuit viewerCircuit;
                 if (m_Clients.TryGetValue(agent.AgentID, out vc) &&
-                    vc.ViewerCircuits.TryGetValue(agent.CircuitCode, out viewerCircuit) &&
+                    vc.ViewerCircuits.TryGetValue((uint)agent.CircuitCode, out viewerCircuit) &&
                     objectData.Count % 2 == 0)
                 {
                     var m = new ObjectPosition
@@ -1057,7 +1057,7 @@ namespace SilverSim.Tests.Viewer
                 ViewerConnection vc;
                 ViewerCircuit viewerCircuit;
                 if (m_Clients.TryGetValue(agent.AgentID, out vc) &&
-                    vc.ViewerCircuits.TryGetValue(agent.CircuitCode, out viewerCircuit) &&
+                    vc.ViewerCircuits.TryGetValue((uint)agent.CircuitCode, out viewerCircuit) &&
                     objectData.Count % 2 == 0)
                 {
                     var m = new ObjectRotation
@@ -1089,7 +1089,7 @@ namespace SilverSim.Tests.Viewer
                 ViewerConnection vc;
                 ViewerCircuit viewerCircuit;
                 if (m_Clients.TryGetValue(agent.AgentID, out vc) &&
-                    vc.ViewerCircuits.TryGetValue(agent.CircuitCode, out viewerCircuit) &&
+                    vc.ViewerCircuits.TryGetValue((uint)agent.CircuitCode, out viewerCircuit) &&
                     objectData.Count % 3 == 0)
                 {
                     var m = new ObjectSaleInfo
@@ -1122,7 +1122,7 @@ namespace SilverSim.Tests.Viewer
                 ViewerConnection vc;
                 ViewerCircuit viewerCircuit;
                 if (m_Clients.TryGetValue(agent.AgentID, out vc) &&
-                    vc.ViewerCircuits.TryGetValue(agent.CircuitCode, out viewerCircuit) &&
+                    vc.ViewerCircuits.TryGetValue((uint)agent.CircuitCode, out viewerCircuit) &&
                     objectData.Count % 2 == 0)
                 {
                     var m = new ObjectScale
@@ -1155,7 +1155,7 @@ namespace SilverSim.Tests.Viewer
                 ViewerConnection vc;
                 ViewerCircuit viewerCircuit;
                 if (m_Clients.TryGetValue(agent.AgentID, out vc) &&
-                    vc.ViewerCircuits.TryGetValue(agent.CircuitCode, out viewerCircuit))
+                    vc.ViewerCircuits.TryGetValue((uint)agent.CircuitCode, out viewerCircuit))
                 {
                     var m = new RequestObjectPropertiesFamily
                     {
@@ -1221,7 +1221,7 @@ namespace SilverSim.Tests.Viewer
                 ViewerConnection vc;
                 ViewerCircuit viewerCircuit;
                 if (m_Clients.TryGetValue(agent.AgentID, out vc) &&
-                    vc.ViewerCircuits.TryGetValue(agent.CircuitCode, out viewerCircuit))
+                    vc.ViewerCircuits.TryGetValue((uint)agent.CircuitCode, out viewerCircuit))
                 {
                     var m = new ObjectShape
                     {

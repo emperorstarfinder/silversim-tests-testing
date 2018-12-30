@@ -198,7 +198,7 @@ namespace SilverSim.Tests.Viewer
                 ViewerConnection vc;
                 ViewerCircuit viewerCircuit;
                 if (m_Clients.TryGetValue(agent.AgentID, out vc) &&
-                    vc.ViewerCircuits.TryGetValue(agent.CircuitCode, out viewerCircuit) &&
+                    vc.ViewerCircuits.TryGetValue((uint)agent.CircuitCode, out viewerCircuit) &&
                     !m_ActiveImageTransfers.ContainsKey(textureID.AsUUID))
                 {
                     m_ActiveImageTransfers[textureID.AsUUID] = new ImageReceiveInfo();
@@ -236,7 +236,7 @@ namespace SilverSim.Tests.Viewer
                 ViewerConnection vc;
                 ViewerCircuit viewerCircuit;
                 if (m_Clients.TryGetValue(agent.AgentID, out vc) &&
-                    vc.ViewerCircuits.TryGetValue(agent.CircuitCode, out viewerCircuit) &&
+                    vc.ViewerCircuits.TryGetValue((uint)agent.CircuitCode, out viewerCircuit) &&
                     m_ActiveImageTransfers.ContainsKey(textureID.AsUUID))
                 {
                     m_ActiveImageTransfers.Remove(textureID.AsUUID);
@@ -282,7 +282,7 @@ namespace SilverSim.Tests.Viewer
                 ViewerConnection vc;
                 ViewerCircuit viewerCircuit;
                 if (m_Clients.TryGetValue(agent.AgentID, out vc) &&
-                    vc.ViewerCircuits.TryGetValue(agent.CircuitCode, out viewerCircuit))
+                    vc.ViewerCircuits.TryGetValue((uint)agent.CircuitCode, out viewerCircuit))
                 {
                     ThreadPool.QueueUserWorkItem(RequestTextureHandler, new UrlDownloadInfoRequest
                     {
