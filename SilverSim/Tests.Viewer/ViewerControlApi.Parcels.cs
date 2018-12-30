@@ -22,6 +22,7 @@
 using SilverSim.Scene.Types.Script;
 using SilverSim.Scripting.Lsl;
 using SilverSim.Tests.Viewer.UDP;
+using SilverSim.Types;
 using SilverSim.Viewer.Messages.Parcel;
 
 namespace SilverSim.Tests.Viewer
@@ -45,7 +46,7 @@ namespace SilverSim.Tests.Viewer
                     {
                         AgentID = agent.AgentID,
                         SessionID = viewerCircuit.SessionID,
-                        ParcelID = parcelID.AsUUID
+                        ParcelID = new ParcelID(parcelID.AsUUID.GetBytes(), 0)
                     });
                 }
             }
