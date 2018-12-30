@@ -37,9 +37,11 @@ namespace SilverSim.Tests.Viewer
         [APIExtension("ViewerControl")]
         public const int VC_AGENT_INVENTORY_FETCH_CAPS = 1;
         [APIExtension("ViewerControl")]
-        public const int VC_AGENT_INVENTORY_MIXED_AISV3 = 2;
+        public const int VC_AGENT_INVENTORY_FETCH_AND_CREATE_CAPS = 2;
         [APIExtension("ViewerControl")]
-        public const int VC_AGENT_INVENTORY_FULL_AISV3 = 3;
+        public const int VC_AGENT_INVENTORY_MIXED_AISV3 = 3;
+        [APIExtension("ViewerControl")]
+        public const int VC_AGENT_INVENTORY_FULL_AISV3 = 4;
 
         [APIExtension("ViewerControl", APIUseAsEnum.MemberFunction, "GetAgentInventory")]
         public AgentInventoryApi.AgentInventory GetAgentInventory(
@@ -68,6 +70,7 @@ namespace SilverSim.Tests.Viewer
                     string aisv3_agent_uri = seedResponse.TryGetValue("InventoryAPIv3", out value) ? value.ToString() : string.Empty;
                     string fetchinventory2_agent_uri = seedResponse.TryGetValue("FetchInventory2", out value) ? value.ToString() : string.Empty;
                     string fetchinventorydescendents2_agent_uri = seedResponse.TryGetValue("FetchInventoryDescendents2", out value) ? value.ToString() : string.Empty;
+                    string createinventorycategory_agent_uri = seedResponse.TryGetValue("CreateInventoryCategory", out value) ? value.ToString() : string.Empty;
 
                     if (inventoryOption >= VC_AGENT_INVENTORY_FULL_AISV3 && !string.IsNullOrEmpty(aisv3_agent_uri))
                     {
@@ -77,6 +80,11 @@ namespace SilverSim.Tests.Viewer
                     if(inventoryOption >= VC_AGENT_INVENTORY_FETCH_CAPS && !string.IsNullOrEmpty(fetchinventory2_agent_uri) &&
                         !string.IsNullOrEmpty(fetchinventorydescendents2_agent_uri))
                     {
+                        if (inventoryOption >= VC_AGENT_INVENTORY_FETCH_AND_CREATE_CAPS && !string.IsNullOrEmpty(createinventorycategory_agent_uri))
+                        {
+                            return new AgentInventoryApi.AgentInventory(instance, new InventoryV2Client(viewerCircuit, fetchinventorydescendents2_agent_uri, fetchinventory2_agent_uri, createinventorycategory_agent_uri, rootFolderID), new UGUI(viewerCircuit.AgentID), false);
+                        }
+
                         return new AgentInventoryApi.AgentInventory(instance, new InventoryV2Client(viewerCircuit, fetchinventorydescendents2_agent_uri, fetchinventory2_agent_uri, rootFolderID), new UGUI(viewerCircuit.AgentID), false);
                     }
 

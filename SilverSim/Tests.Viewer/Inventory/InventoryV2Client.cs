@@ -97,6 +97,41 @@ namespace SilverSim.Tests.Viewer.Inventory
                 m_UdpClient.Update(folder);
         }
 
+        public class InvAPI2CreateCatFolder : CreateInventoryCategoryClient
+        {
+            private readonly IInventoryFolderServiceInterface m_UdpClient;
+
+            public InvAPI2CreateCatFolder(UUID rootfolderid, string fetch_uri, string create_uri, IInventoryFolderServiceInterface udpClient)
+                : base(rootfolderid, fetch_uri, create_uri)
+            {
+                m_UdpClient = udpClient;
+            }
+
+            public override void Add(InventoryFolder folder) =>
+                m_UdpClient.Add(folder);
+
+            public override void Delete(UUID principalID, UUID folderID) =>
+                m_UdpClient.Delete(principalID, folderID);
+
+            public override List<UUID> Delete(UUID principalID, List<UUID> folderIDs) =>
+                m_UdpClient.Delete(principalID, folderIDs);
+
+            public override InventoryTree Copy(UUID principalID, UUID folderID, UUID toFolderID) =>
+                m_UdpClient.Copy(principalID, folderID, toFolderID);
+
+            public override void Move(UUID principalID, UUID folderID, UUID toFolderID) =>
+                m_UdpClient.Move(principalID, folderID, toFolderID);
+
+            public override void Purge(UUID folderID) =>
+                m_UdpClient.Purge(folderID);
+
+            public override void Purge(UUID principalID, UUID folderID) =>
+                m_UdpClient.Purge(principalID, folderID);
+
+            public override void Update(InventoryFolder folder) =>
+                m_UdpClient.Update(folder);
+        }
+
         public InventoryV2Client(
             ViewerCircuit viewerCircuit,
             string fetchInventoryDescendentsUri,
@@ -106,6 +141,18 @@ namespace SilverSim.Tests.Viewer.Inventory
         {
             m_FetchInventory2 = new InvAPI2Item(fetchInventoryUri, base.Item);
             m_FetchInventoryDescendents2 = new InvAPI2Folder(rootFolderID, fetchInventoryDescendentsUri, base.Folder);
+        }
+
+        public InventoryV2Client(
+            ViewerCircuit viewerCircuit,
+            string fetchInventoryDescendentsUri,
+            string fetchInventoryUri,
+            string createInventoryCategoryUri,
+            UUID rootFolderID)
+            : base(viewerCircuit, rootFolderID)
+        {
+            m_FetchInventory2 = new InvAPI2Item(fetchInventoryUri, base.Item);
+            m_FetchInventoryDescendents2 = new InvAPI2CreateCatFolder(rootFolderID, fetchInventoryDescendentsUri, createInventoryCategoryUri, base.Folder);
         }
 
         public override IInventoryItemServiceInterface Item => m_FetchInventory2;
