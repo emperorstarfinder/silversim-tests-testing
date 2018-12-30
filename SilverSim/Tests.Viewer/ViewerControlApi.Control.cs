@@ -80,7 +80,7 @@ namespace SilverSim.Tests.Viewer
         public void SendSetAlwaysRun(
             ScriptInstance instance,
             ViewerAgentAccessor agent,
-            bool alwaysRun)
+            int alwaysRun)
         {
             lock (instance)
             {
@@ -93,7 +93,7 @@ namespace SilverSim.Tests.Viewer
                     {
                         AgentID = viewerCircuit.AgentID,
                         SessionID = viewerCircuit.SessionID,
-                        AlwaysRun = alwaysRun
+                        AlwaysRun = alwaysRun != 0
                     });
                 }
             }
