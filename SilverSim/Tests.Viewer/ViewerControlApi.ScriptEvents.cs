@@ -38,6 +38,7 @@ using SilverSim.Viewer.Messages.God;
 using SilverSim.Viewer.Messages.IM;
 using SilverSim.Viewer.Messages.Names;
 using SilverSim.Viewer.Messages.Object;
+using SilverSim.Viewer.Messages.Parcel;
 using SilverSim.Viewer.Messages.Region;
 using SilverSim.Viewer.Messages.Script;
 using SilverSim.Viewer.Messages.Sound;
@@ -1869,51 +1870,117 @@ namespace SilverSim.Tests.Viewer
             VcObjectDataList objectlist);
         #endregion
 
+        #region parcelinforeply_received
+        [APIExtension("ViewerControl", "parcelinforeplydata")]
+        [APIDisplayName("parcelinforeplydata")]
+        [APIIsVariableType]
+        [APIAccessibleMembers]
+        [Serializable]
+        public class ParcelInfoReplyData
+        {
+            public LSLKey ParcelID { get; }
+            public LSLKey OwnerID { get; }
+            public string Name { get; }
+            public string Description { get; }
+            public int ActualArea { get; }
+            public int BillableArea { get; }
+            public int Flags { get; }
+            public Vector3 GlobalPos { get; }
+            public string SimName { get; }
+            public LSLKey SnapshotID { get; }
+            public double Dwell { get; }
+            public int SalePrice { get; }
+            public int AuctionID { get; }
+
+            public ParcelInfoReplyData(ParcelInfoReply msg)
+            {
+                ParcelID = new UUID(msg.ParcelID.GetBytes(), 0);
+                OwnerID = msg.OwnerID;
+                Name = msg.Name;
+                Description = msg.Description;
+                ActualArea = msg.ActualArea;
+                BillableArea = msg.BillableArea;
+                Flags = msg.Flags;
+                GlobalPos = msg.GlobalPosition;
+                SimName = msg.SimName;
+                SnapshotID = msg.SnapshotID;
+                Dwell = msg.Dwell;
+                SalePrice = msg.SalePrice;
+                AuctionID = (int)msg.AuctionID;
+            }
+        }
+
+        public class ParcelInfoReplyReceivedEvent : IScriptEvent
+        {
+            [TranslatedScriptEventParameter(0)]
+            public AgentInfo Agent;
+            [TranslatedScriptEventParameter(1)]
+            public ParcelInfoReplyData ParcelData;
+
+            public static void ToScriptEvent(Message m, ViewerConnection vc, uint circuitCode)
+            {
+                var res = (ParcelInfoReply)m;
+                vc.PostEvent(new ParcelInfoReplyReceivedEvent
+                {
+                    Agent = new AgentInfo(m, circuitCode),
+                    ParcelData = new ParcelInfoReplyData(res)
+                });
+            }
+        }
+
+        [APIExtension("ViewerControl", "parcelinforeply_received")]
+        [StateEventDelegate]
+        public delegate void ParcelInfoReplyReceived(
+            AgentInfo agent,
+            ParcelInfoReplyData parcelData);
+        #endregion
+
         [TranslatedScriptEventsInfo]
         public static readonly Type[] TranslatedEvents = new Type[] {
-            typeof(RegionHandshakeReceivedEvent),
-            typeof(LogoutReplyReceivedEvent),
-            typeof(TelehubInfoReceivedEvent),
-            typeof(TeleportLocalReceivedEvent),
-            typeof(EconomyDataReceivedEvent),
-            typeof(TeleportProgressReceivedEvent),
-            typeof(TeleportStartReceivedEvent),
-            typeof(TeleportFailedReceivedEvent),
-            typeof(AlertMessageReceivedEvent),
             typeof(AgentDataUpdateReceivedEvent),
-            typeof(HealthMessageReceivedEvent),
+            typeof(AgentMovementCompleteReceivedEvent),
+            typeof(AlertMessageReceivedEvent),
+            typeof(AttachedSoundGainChangeReceivedEvent),
+            typeof(AttachedSoundReceivedEvent),
             typeof(AvatarAnimationReceivedEvent),
             typeof(AvatarSitResponseReceivedEvent),
             typeof(CameraConstraintReceivedEvent),
-            typeof(ClearFollowCamPropertiesReceivedEvent),
-            typeof(SetFollowCamPropertiesReceivedEvent),
             typeof(ChatFromSimulatorReceivedEvent),
+            typeof(ClearFollowCamPropertiesReceivedEvent),
+            typeof(DeRezAckReceivedEvent),
+            typeof(EconomyDataReceivedEvent),
             typeof(EstateCovenantReplyReceivedEvent),
-            typeof(LoadURLReceivedEvent),
-            typeof(ScriptTeleportRequestReceivedEvent),
-            typeof(ScriptQuestionReceivedEvent),
-            typeof(ScriptDialogReceivedEvent),
-            typeof(ScriptControlChangeReceivedEvent),
-            typeof(PreloadSoundReceivedEvent),
-            typeof(AttachedSoundReceivedEvent),
-            typeof(SoundTriggerReceivedEvent),
-            typeof(AttachedSoundGainChangeReceivedEvent),
             typeof(FeatureDisabledReceivedEvent),
-            typeof(PayPriceReplyReceivedEvent),
-            typeof(KillObjectReceivedEvent),
-            typeof(OnlineNotificationReceivedEvent),
-            typeof(OfflineNotificationReceivedEvent),
+            typeof(ForceObjectSelectReceivedEvent),
+            typeof(GrantGodlikePowersReceivedEvent),
+            typeof(HealthMessageReceivedEvent),
             typeof(ImprovedInstantMessageReceivedEvent),
+            typeof(KillObjectReceivedEvent),
+            typeof(LoadURLReceivedEvent),
+            typeof(LogoutReplyReceivedEvent),
+            typeof(MoneyBalanceReplyReceivedEvent),
+            typeof(ObjectAnimationReceivedEvent),
+            typeof(ObjectUpdateReceivedEvent),
+            typeof(OfflineNotificationReceivedEvent),
+            typeof(OnlineNotificationReceivedEvent),
+            typeof(ParcelInfoReplyReceivedEvent),
+            typeof(PayPriceReplyReceivedEvent),
+            typeof(PreloadSoundReceivedEvent),
+            typeof(RegionHandshakeReceivedEvent),
+            typeof(RegionInfoReceivedEvent),
+            typeof(ScriptControlChangeReceivedEvent),
+            typeof(ScriptDialogReceivedEvent),
+            typeof(ScriptQuestionReceivedEvent),
+            typeof(ScriptTeleportRequestReceivedEvent),
+            typeof(SetFollowCamPropertiesReceivedEvent),
+            typeof(SoundTriggerReceivedEvent),
+            typeof(TelehubInfoReceivedEvent),
+            typeof(TeleportLocalReceivedEvent),
+            typeof(TeleportProgressReceivedEvent),
+            typeof(TeleportStartReceivedEvent),
+            typeof(TeleportFailedReceivedEvent),
             typeof(UUIDGroupNameReplyReceivedEvent),
             typeof(UUIDNameReplyReceivedEvent),
-            typeof(DeRezAckReceivedEvent),
-            typeof(ForceObjectSelectReceivedEvent),
-            typeof(ObjectAnimationReceivedEvent),
-            typeof(MoneyBalanceReplyReceivedEvent),
-            typeof(GrantGodlikePowersReceivedEvent),
-            typeof(RegionInfoReceivedEvent),
-            typeof(AgentMovementCompleteReceivedEvent),
-            typeof(ObjectUpdateReceivedEvent)
         };
     }
 }

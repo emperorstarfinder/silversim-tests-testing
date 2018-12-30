@@ -22,14 +22,11 @@
 using SilverSim.Scene.Types.Script;
 using SilverSim.Scripting.Lsl;
 using SilverSim.Scripting.Lsl.Api.ByteString;
-using SilverSim.Scripting.Lsl.Api.Primitive;
-using SilverSim.Scripting.Lsl.Api.Primitive.Properties;
 using SilverSim.Tests.Viewer.UDP;
 using SilverSim.Types;
 using SilverSim.Types.Inventory;
 using SilverSim.Types.Primitive;
 using SilverSim.Viewer.Messages.Object;
-using System;
 using System.Collections.Generic;
 
 namespace SilverSim.Tests.Viewer
