@@ -55,6 +55,8 @@ namespace SilverSim.Tests.Viewer
         [APIExtension("ViewerControl", "agentinfo")]
         [APIDisplayName("agentinfo")]
         [APIAccessibleMembers]
+        [APIIsVariableType]
+        [Serializable]
         public sealed class AgentInfo
         {
             public LSLKey AgentID { get; }

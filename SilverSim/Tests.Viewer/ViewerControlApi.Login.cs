@@ -120,6 +120,7 @@ namespace SilverSim.Tests.Viewer
         [APIAccessibleMembers]
         [APIIsVariableType]
         [Serializable]
+        [ImplementsCustomTypecasts]
         public class ViewerAgentAccessor
         {
             public UUID AgentID { get; }
@@ -141,6 +142,7 @@ namespace SilverSim.Tests.Viewer
                 SecureSessionId = secureSessionId;
             }
 
+            [APIExtension("ViewerControl", "vieweragent")]
             public static implicit operator bool(ViewerAgentAccessor vc) => vc.AgentID != UUID.Zero;
         }
 
