@@ -323,7 +323,6 @@ namespace SilverSim.Tests.Viewer
 
                 try
                 {
-                    m_Log.DebugFormat("GatekeeperURI {0}", scene.GatekeeperURI);
                     m_UserAccountService.SetPosition(agent.Owner.ID, new UserRegionData
                     {
                         RegionID = scene.ID,
