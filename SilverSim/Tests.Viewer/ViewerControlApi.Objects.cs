@@ -28,11 +28,74 @@ using SilverSim.Types.Inventory;
 using SilverSim.Types.Primitive;
 using SilverSim.Viewer.Messages.Object;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace SilverSim.Tests.Viewer
 {
     public partial class ViewerControlApi
     {
+        [APIExtension("ViewerControl", APIUseAsEnum.MemberFunction, "SendObjectAdd")]
+        public void SendObjectAdd(
+            ScriptInstance instance,
+            ViewerAgentAccessor agent,
+            LSLKey groupID,
+            int pcode,
+            int material,
+            int addFlags,
+            VcObjectShape shapeData,
+            int bypassRaycast,
+            Vector3 rayStart,
+            Vector3 rayEnd,
+            LSLKey rayTargetID,
+            int rayEndIsIntersection,
+            Vector3 scale,
+            Quaternion rotation,
+            int state)
+        {
+            lock (instance)
+            {
+                ViewerConnection vc;
+                ViewerCircuit viewerCircuit;
+                if (m_Clients.TryGetValue(agent.AgentID, out vc) &&
+                    vc.ViewerCircuits.TryGetValue(agent.CircuitCode, out viewerCircuit))
+                {
+                    viewerCircuit.SendMessage(new ObjectAdd
+                    {
+                        AgentID = agent.AgentID,
+                        SessionID = viewerCircuit.SessionID,
+                        GroupID = groupID.AsUUID,
+                        PCode = (PrimitiveCode)pcode,
+                        Material = (PrimitiveMaterial)material,
+                        AddFlags = (uint)addFlags,
+                        PathCurve = (byte)shapeData.PathCurve,
+                        ProfileCurve = (byte)shapeData.ProfileCurve,
+                        PathBegin = (ushort)shapeData.PathBegin,
+                        PathEnd = (ushort)shapeData.PathEnd,
+                        PathScaleX = (byte)shapeData.PathScaleX,
+                        PathScaleY = (byte)shapeData.PathScaleY,
+                        PathShearX = (byte)shapeData.PathShearX,
+                        PathShearY = (byte)shapeData.PathShearY,
+                        PathTwist = (sbyte)shapeData.PathTwist,
+                        PathTwistBegin = (sbyte)shapeData.PathTwistBegin,
+                        PathRadiusOffset = (sbyte)shapeData.PathRadiusOffset,
+                        PathTaperX = (sbyte)shapeData.PathTaperX,
+                        PathTaperY = (sbyte)shapeData.PathTaperY,
+                        PathRevolutions = (byte)shapeData.PathRevolutions,
+                        PathSkew = (sbyte)shapeData.PathSkew,
+                        ProfileBegin = (ushort)shapeData.ProfileBegin,
+                        ProfileEnd = (ushort)shapeData.ProfileEnd,
+                        ProfileHollow = (ushort)shapeData.ProfileHollow,
+                        BypassRaycast = bypassRaycast != 0,
+                        RayStart = rayStart,
+                        RayEnd = rayEnd,
+                        RayEndIsIntersection = rayEndIsIntersection != 0,
+                        Scale = scale,
+                        Rotation = rotation,
+                        State = (byte)state});
+                }
+            }
+        }
+
         [APIExtension("ViewerControl", APIUseAsEnum.MemberFunction, "SendBuyObjectInventory")]
         public void SendBuyObjectInventory(
             ScriptInstance instance,
@@ -817,6 +880,70 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
+        [APIExtension("ViewerControl", APIUseAsEnum.MemberFunction, "SendMultipleObjectUpdate")]
+        public void SendMultipleObjectUpdate(
+            ScriptInstance instance,
+            ViewerAgentAccessor agent,
+            [Description("4 elements stride (localid, position, rotation, scale) if one of the last three is not set to a vector/rotation it is disabled")]
+            AnArray objectData)
+        {
+            lock (instance)
+            {
+                ViewerConnection vc;
+                ViewerCircuit viewerCircuit;
+                if (m_Clients.TryGetValue(agent.AgentID, out vc) &&
+                    vc.ViewerCircuits.TryGetValue(agent.CircuitCode, out viewerCircuit) &&
+                    objectData.Count % 4 == 0)
+                {
+                    var m = new MultipleObjectUpdate
+                    {
+                        AgentID = agent.AgentID,
+                        SessionID = viewerCircuit.SessionID,
+                    };
+                    for (int i = 0; i < objectData.Count; i += 4)
+                    {
+                        var d = new MultipleObjectUpdate.ObjectDataEntry();
+                        IValue position = objectData[i + 1];
+                        IValue rotation = objectData[i + 2];
+                        IValue scale = objectData[i + 3];
+                        int dataSize = 0;
+                        if(position is Vector3)
+                        {
+                            dataSize += 12;
+                        }
+                        if (rotation is Quaternion)
+                        {
+                            dataSize += 12;
+                        }
+                        if (scale is Vector3)
+                        {
+                            dataSize += 12;
+                        }
+
+                        byte[] datablock = new byte[dataSize];
+                        int dataPos = 0;
+                        if(position is Vector3)
+                        {
+                            ((Vector3)position).ToBytes(datablock, dataPos);
+                            dataPos += 12;
+                        }
+                        if (rotation is Quaternion)
+                        {
+                            ((Quaternion)rotation).ToBytes(datablock, dataPos);
+                            dataPos += 12;
+                        }
+                        if (scale is Vector3)
+                        {
+                            ((Vector3)scale).ToBytes(datablock, dataPos);
+                        }
+                        d.Data = datablock;
+                        m.ObjectData.Add(d);
+                    }
+                    viewerCircuit.SendMessage(m);
+                }
+            }
+        }
+
         [APIExtension("ViewerControl", APIUseAsEnum.MemberFunction, "SendObjectPosition")]
         public void SendObjectPosition(
             ScriptInstance instance,
@@ -1012,12 +1139,12 @@ namespace SilverSim.Tests.Viewer
         {
             public int LocalID;
 
-            public int PathCurve;
-            public int ProfileCurve;
+            public int PathCurve = 16;
+            public int ProfileCurve = 1;
             public int PathBegin;// 0 to 1, quanta = 0.01
             public int PathEnd; // 0 to 1, quanta = 0.01
-            public int PathScaleX; // 0 to 1, quanta = 0.01
-            public int PathScaleY; // 0 to 1, quanta = 0.01
+            public int PathScaleX = 100; // 0 to 1, quanta = 0.01
+            public int PathScaleY = 100; // 0 to 1, quanta = 0.01
             public int PathShearX; // -.5 to .5, quanta = 0.01
             public int PathShearY; // -.5 to .5, quanta = 0.01
             public int PathTwist;  // -1 to 1, quanta = 0.01

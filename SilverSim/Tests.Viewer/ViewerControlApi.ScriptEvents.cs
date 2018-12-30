@@ -45,6 +45,7 @@ using SilverSim.Viewer.Messages.Sound;
 using SilverSim.Viewer.Messages.Telehub;
 using SilverSim.Viewer.Messages.Teleport;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 
 namespace SilverSim.Tests.Viewer
@@ -1935,6 +1936,69 @@ namespace SilverSim.Tests.Viewer
             ParcelInfoReplyData parcelData);
         #endregion
 
+        #region parcelinforeply_received
+        [APIExtension("ViewerControl", "parcelobjectownersreplydata")]
+        [APIDisplayName("parcelobjectownersreplydata")]
+        [APIIsVariableType]
+        [APIAccessibleMembers]
+        [Serializable]
+        public class ParcelObjectOwnersReplyData
+        {
+            public LSLKey OwnerID { get; }
+            public bool IsGroupOwned { get; }
+            public int Count { get; }
+            public bool IsOnline { get; }
+
+            public ParcelObjectOwnersReplyData(ParcelObjectOwnersReply.DataEntry d)
+            {
+                OwnerID = d.OwnerID;
+                IsGroupOwned = d.IsGroupOwned;
+                Count = d.Count;
+                IsOnline = d.IsOnline;
+            }
+        }
+
+        [APIExtension("ViewerControl", "parcelobjectownersreplydatalist")]
+        [APIDisplayName("parcelobjectownersreplydatalist")]
+        [APIIsVariableType]
+        [APIAccessibleMembers]
+        [Serializable]
+        [APICloneOnAssignment]
+        public class ParcelObjectOwnersReplyDataList : List<ParcelObjectOwnersReplyData>
+        {
+        }
+
+        public class ParcelObjectOwnersReplyReceivedEvent : IScriptEvent
+        {
+            [TranslatedScriptEventParameter(0)]
+            public AgentInfo Agent;
+            [TranslatedScriptEventParameter(1)]
+            public ParcelObjectOwnersReplyDataList Data = new ParcelObjectOwnersReplyDataList();
+
+            public static void ToScriptEvent(Message m, ViewerConnection vc, uint circuitCode)
+            {
+                var res = (ParcelObjectOwnersReply)m;
+                var e = new ParcelObjectOwnersReplyReceivedEvent
+                {
+                    Agent = new AgentInfo(m, circuitCode)
+                };
+
+                foreach(ParcelObjectOwnersReply.DataEntry entry in res.Data)
+                {
+                    e.Data.Add(new ParcelObjectOwnersReplyData(entry));
+                }
+
+                vc.PostEvent(e);
+            }
+        }
+
+        [APIExtension("ViewerControl", "parcelobjectownersreply_received")]
+        [StateEventDelegate]
+        public delegate void ParcelObjectOwnersReplyReceived(
+            AgentInfo agent,
+            ParcelObjectOwnersReplyDataList data);
+        #endregion
+
         [TranslatedScriptEventsInfo]
         public static readonly Type[] TranslatedEvents = new Type[] {
             typeof(AgentDataUpdateReceivedEvent),
@@ -1964,6 +2028,7 @@ namespace SilverSim.Tests.Viewer
             typeof(OfflineNotificationReceivedEvent),
             typeof(OnlineNotificationReceivedEvent),
             typeof(ParcelInfoReplyReceivedEvent),
+            typeof(ParcelObjectOwnersReplyReceivedEvent),
             typeof(PayPriceReplyReceivedEvent),
             typeof(PreloadSoundReceivedEvent),
             typeof(RegionHandshakeReceivedEvent),

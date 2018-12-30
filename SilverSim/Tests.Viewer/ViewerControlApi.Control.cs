@@ -76,6 +76,29 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
+        [APIExtension("ViewerControl", APIUseAsEnum.MemberFunction, "SendSetAlwaysRun")]
+        public void SendSetAlwaysRun(
+            ScriptInstance instance,
+            ViewerAgentAccessor agent,
+            bool alwaysRun)
+        {
+            lock (instance)
+            {
+                ViewerConnection vc;
+                ViewerCircuit viewerCircuit;
+                if (m_Clients.TryGetValue(agent.AgentID, out vc) &&
+                    vc.ViewerCircuits.TryGetValue(agent.CircuitCode, out viewerCircuit))
+                {
+                    viewerCircuit.SendMessage(new SetAlwaysRun
+                    {
+                        AgentID = viewerCircuit.AgentID,
+                        SessionID = viewerCircuit.SessionID,
+                        AlwaysRun = alwaysRun
+                    });
+                }
+            }
+        }
+
         [APIExtension("ViewerControl", APIUseAsEnum.MemberFunction, "SendAgentUpdate")]
         public void SendAgentUpdate(
             ScriptInstance instance,

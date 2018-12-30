@@ -23,17 +23,18 @@ using SilverSim.Scene.Types.Script;
 using SilverSim.Scripting.Lsl;
 using SilverSim.Tests.Viewer.UDP;
 using SilverSim.Types;
-using SilverSim.Viewer.Messages.Parcel;
+using SilverSim.Viewer.Messages.Agent;
 
 namespace SilverSim.Tests.Viewer
 {
     public partial class ViewerControlApi
     {
-        [APIExtension("ViewerControl", APIUseAsEnum.MemberFunction, "SendParcelInfoRequest")]
-        public void SendParcelInfoRequest(
+        [APIExtension("ViewerControl", APIUseAsEnum.MemberFunction, "SendAgentRequestSit")]
+        public void SendAgentRequestSit(
             ScriptInstance instance,
             ViewerAgentAccessor agent,
-            LSLKey parcelID)
+            LSLKey targetID,
+            Vector3 offset)
         {
             lock (instance)
             {
@@ -42,21 +43,21 @@ namespace SilverSim.Tests.Viewer
                 if (m_Clients.TryGetValue(agent.AgentID, out vc) &&
                     vc.ViewerCircuits.TryGetValue(agent.CircuitCode, out viewerCircuit))
                 {
-                    viewerCircuit.SendMessage(new ParcelInfoRequest
+                    viewerCircuit.SendMessage(new AgentRequestSit
                     {
                         AgentID = agent.AgentID,
                         SessionID = viewerCircuit.SessionID,
-                        ParcelID = new ParcelID(parcelID.AsUUID.GetBytes(), 0)
+                        TargetID = targetID,
+                        Offset = offset
                     });
                 }
             }
         }
 
-        [APIExtension("ViewerControl", APIUseAsEnum.MemberFunction, "SendParcelObjectOwnersRequest")]
-        public void SendParcelObjectOwnersRequest(
+        [APIExtension("ViewerControl", APIUseAsEnum.MemberFunction, "SendAgentSit")]
+        public void SendAgentSit(
             ScriptInstance instance,
-            ViewerAgentAccessor agent,
-            int parcelLocalID)
+            ViewerAgentAccessor agent)
         {
             lock (instance)
             {
@@ -65,11 +66,10 @@ namespace SilverSim.Tests.Viewer
                 if (m_Clients.TryGetValue(agent.AgentID, out vc) &&
                     vc.ViewerCircuits.TryGetValue(agent.CircuitCode, out viewerCircuit))
                 {
-                    viewerCircuit.SendMessage(new ParcelObjectOwnersRequest
+                    viewerCircuit.SendMessage(new AgentSit
                     {
                         AgentID = agent.AgentID,
                         SessionID = viewerCircuit.SessionID,
-                        ParcelLocalID = parcelLocalID
                     });
                 }
             }
