@@ -49,6 +49,11 @@ namespace SilverSim.Tests.Viewer
                 m_TextureEntry = entry;
             }
 
+            public TextureEntryContainer(TextureEntryContainer entry)
+            {
+                m_TextureEntry = new TextureEntry(entry.m_TextureEntry);
+            }
+
             public byte[] GetBytes() => m_TextureEntry.GetBytes();
 
             public TextureEntryFaceContainer this[int index] => new TextureEntryFaceContainer(m_TextureEntry[(uint)index]);

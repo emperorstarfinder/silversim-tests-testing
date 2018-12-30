@@ -27,6 +27,7 @@ using SilverSim.Types;
 using SilverSim.Types.Inventory;
 using SilverSim.Types.Primitive;
 using SilverSim.Viewer.Messages.Object;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 
@@ -653,6 +654,75 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
+        [APIExtension("ViewerControl", "objectimagedata")]
+        [APIDisplayName("objectimagedata")]
+        [APIAccessibleMembers]
+        [APICloneOnAssignment]
+        [APIIsVariableType]
+        [Serializable]
+        public sealed class ObjectImageData
+        {
+            public int LocalID;
+            public string MediaURL = string.Empty;
+            public TextureEntryContainer TextureEntry = new TextureEntryContainer();
+
+            public ObjectImageData()
+            {
+            }
+
+            public ObjectImageData(ObjectImageData src)
+            {
+                LocalID = src.LocalID;
+                MediaURL = src.MediaURL;
+                TextureEntry = new TextureEntryContainer(src.TextureEntry);
+            }
+        }
+
+        [APIExtension("ViewerControl", "objectimagedatalist")]
+        [APIDisplayName("objectimagedatalist")]
+        [APIIsVariableType]
+        [APIAccessibleMembers]
+        [APICloneOnAssignment]
+        public sealed class ObjectImageDataList : List<ObjectImageData>
+        {
+        }
+
+        [APIExtension("ViewerControl", APIUseAsEnum.MemberFunction, "Add")]
+        public void AddObjectImageData(ObjectImageDataList list, ObjectImageData data) => list.Add(data);
+
+        [APIExtension("ViewerControl", APIUseAsEnum.MemberFunction, "SendObjectImage")]
+        public void SendObjectImage(
+            ScriptInstance instance,
+            ViewerAgentAccessor agent,
+            ObjectImageDataList objectImageList)
+        {
+            lock (instance)
+            {
+                ViewerConnection vc;
+                ViewerCircuit viewerCircuit;
+                if (m_Clients.TryGetValue(agent.AgentID, out vc) &&
+                    vc.ViewerCircuits.TryGetValue(agent.CircuitCode, out viewerCircuit) &&
+                    objectImageList.Count <= 255)
+                {
+                    var m = new ObjectImage
+                    {
+                        AgentID = agent.AgentID,
+                        SessionID = viewerCircuit.SessionID,
+                    };
+                    foreach(ObjectImageData data in objectImageList)
+                    {
+                        m.ObjectData.Add(new ObjectImage.ObjectDataEntry
+                        {
+                            ObjectLocalID = (uint)data.LocalID,
+                            MediaURL = data.MediaURL,
+                            TextureEntry = data.TextureEntry.GetBytes()
+                        });
+                    }
+                    viewerCircuit.SendMessage(m);
+                }
+            }
+        }
+
         [APIExtension("ViewerControl", APIUseAsEnum.MemberFunction, "SendObjectIncludeInSearch")]
         public void SendObjectIncludeInSearch(
             ScriptInstance instance,
@@ -1099,42 +1169,11 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension("ViewerControl", APIUseAsEnum.MemberFunction, "SendObjectImage")]
-        public void SendObjectShape(
-            ScriptInstance instance,
-            ViewerAgentAccessor agent,
-            int localID,
-            string mediaURL,
-            TextureEntryContainer textureEntry)
-        {
-            lock (instance)
-            {
-                ViewerConnection vc;
-                ViewerCircuit viewerCircuit;
-                if (m_Clients.TryGetValue(agent.AgentID, out vc) &&
-                    vc.ViewerCircuits.TryGetValue(agent.CircuitCode, out viewerCircuit))
-                {
-                    var d = new ObjectImage.ObjectDataEntry
-                    {
-                        ObjectLocalID = (uint)localID,
-                        MediaURL = mediaURL,
-                        TextureEntry = textureEntry.GetBytes()
-                    };
-                    var m = new ObjectImage
-                    {
-                        AgentID = agent.AgentID,
-                        SessionID = viewerCircuit.SessionID
-                    };
-                    m.ObjectData.Add(d);
-                    viewerCircuit.SendMessage(m);
-                }
-            }
-        }
-
         [APIExtension("ViewerControl", "objectshape")]
         [APIDisplayName("objectshape")]
         [APIIsVariableType]
         [APIAccessibleMembers]
+        [Serializable]
         public sealed class VcObjectShape
         {
             public int LocalID;
@@ -1157,6 +1196,66 @@ namespace SilverSim.Tests.Viewer
             public int ProfileBegin; // 0 to 1, quanta = 0.01
             public int ProfileEnd; // 0 to 1, quanta = 0.01
             public int ProfileHollow; // 0 to 1, quanta = 0.01
+        }
+
+        [APIExtension("ViewerControl", "objectshapelist")]
+        [APIDisplayName("objectshapelist")]
+        [APIIsVariableType]
+        [APIAccessibleMembers]
+        [Serializable]
+        public class VcObjectShapeList : List<VcObjectShape>
+        {
+        }
+
+        [APIExtension("ViewerControl", APIUseAsEnum.MemberFunction, "Add")]
+        public void AddObjectShapeData(VcObjectShapeList list, VcObjectShape data) => list.Add(data);
+
+        [APIExtension("ViewerControl", APIUseAsEnum.MemberFunction, "SendObjectShape")]
+        public void SendObjectShape(
+            ScriptInstance instance,
+            ViewerAgentAccessor agent,
+            VcObjectShapeList shapelist)
+        {
+            lock (instance)
+            {
+                ViewerConnection vc;
+                ViewerCircuit viewerCircuit;
+                if (m_Clients.TryGetValue(agent.AgentID, out vc) &&
+                    vc.ViewerCircuits.TryGetValue(agent.CircuitCode, out viewerCircuit))
+                {
+                    var m = new ObjectShape
+                    {
+                        AgentID = agent.AgentID,
+                        SessionID = viewerCircuit.SessionID
+                    };
+                    foreach(VcObjectShape shape in shapelist)
+                    {
+                        m.ObjectData.Add(new ObjectShape.Data
+                        {
+                            ObjectLocalID = (ushort)shape.LocalID,
+                            PathCurve = (byte)shape.PathCurve,
+                            ProfileCurve = (byte)shape.ProfileCurve,
+                            PathBegin = (ushort)shape.PathBegin,
+                            PathEnd = (ushort)shape.PathEnd,
+                            PathScaleX = (byte)shape.PathScaleX,
+                            PathScaleY = (byte)shape.PathScaleY,
+                            PathShearX = (byte)shape.PathShearX,
+                            PathShearY = (byte)shape.PathShearY,
+                            PathTwist = (sbyte)shape.PathTwist,
+                            PathTwistBegin = (sbyte)shape.PathTwistBegin,
+                            PathRadiusOffset = (sbyte)shape.PathRadiusOffset,
+                            PathTaperX = (sbyte)shape.PathTaperX,
+                            PathTaperY = (sbyte)shape.PathTaperY,
+                            PathRevolutions = (byte)shape.PathRevolutions,
+                            PathSkew = (sbyte)shape.PathSkew,
+                            ProfileBegin = (ushort)shape.ProfileBegin,
+                            ProfileEnd = (ushort)shape.ProfileEnd,
+                            ProfileHollow = (ushort)shape.ProfileHollow
+                        });
+                    }
+                    viewerCircuit.SendMessage(m);
+                }
+            }
         }
 
         [APIExtension("ViewerControl", "objectdata")]
