@@ -135,7 +135,7 @@ namespace SilverSim.Tests.Viewer
         }
 
         [APIExtension("ViewerControl", APIUseAsEnum.MemberFunction, "SendCompleteAgentMovement")]
-        public void SendCmpleteAgentMovement(
+        public void SendCompleteAgentMovement(
             ScriptInstance instance,
             ViewerAgentAccessor agent)
         {
