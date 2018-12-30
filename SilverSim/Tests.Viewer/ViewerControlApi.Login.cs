@@ -95,7 +95,7 @@ namespace SilverSim.Tests.Viewer
             {
                 var acc = new UserAccount
                 {
-                    Principal = new UGUIWithName { ID = UUID.Random, FirstName = firstName, LastName = lastName }
+                    Principal = new UGUIWithName { ID = UUID.Random, FirstName = firstName, LastName = lastName, HomeURI = new Uri(HomeURI) }
                 };
                 m_UserAccountService.Add(acc);
                 return acc.Principal.ID;
@@ -323,6 +323,7 @@ namespace SilverSim.Tests.Viewer
 
                 try
                 {
+                    m_Log.DebugFormat("GatekeeperURI {0}", scene.GatekeeperURI);
                     m_UserAccountService.SetPosition(agent.Owner.ID, new UserRegionData
                     {
                         RegionID = scene.ID,

@@ -274,6 +274,8 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
+        private string HomeURI;
+
         public void Startup(ConfigurationLoader loader)
         {
             m_AgentInventoryService = loader.GetService<InventoryServiceInterface>(m_AgentInventoryServiceName);
@@ -292,6 +294,7 @@ namespace SilverSim.Tests.Viewer
             m_UserAccountService = loader.GetService<UserAccountServiceInterface>(m_UserAccountServiceName);
             m_AgentUserAgentService = new LocalUserAgentService(m_UserSessionService, m_UserAccountService);
 
+            HomeURI = loader.HomeURI;
             m_Scenes = loader.Scenes;
             m_Commands = loader.CommandRegistry;
             m_CapsRedirector = loader.CapsRedirector;

@@ -139,10 +139,12 @@ namespace SilverSim.Tests.Scripting
             }
         }
 
+        private string m_GatekeeperURI;
         public void Startup(ConfigurationLoader loader)
         {
             m_Scenes = loader.Scenes;
             m_Loader = loader;
+            m_GatekeeperURI = loader.GatekeeperURI;
             IConfig config = loader.Config.Configs[GetType().FullName];
 
             /* we use same asset id keying here so to make them compatible with the other scripts */
@@ -594,7 +596,8 @@ namespace SilverSim.Tests.Scripting
                     ServerPort = (uint)m_RegionPort,
                     Owner = m_RegionOwner,
                     Flags = RegionFlags.RegionOnline,
-                    Access = m_RegionAccess
+                    Access = m_RegionAccess,
+                    GridURI = m_GatekeeperURI
                 };
                 m_RegionStorage.RegisterRegion(rInfo);
             }
