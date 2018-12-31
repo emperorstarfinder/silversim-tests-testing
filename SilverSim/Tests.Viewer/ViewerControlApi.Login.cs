@@ -229,6 +229,14 @@ namespace SilverSim.Tests.Viewer
                 {
                     serviceList.Add(m_OfflineIMService);
                 }
+                if(m_AgentExperienceService != null)
+                {
+                    serviceList.Add(m_AgentExperienceService);
+                }
+                if(m_AgentGroupsService != null)
+                {
+                    serviceList.Add(m_AgentGroupsService);
+                }
 
                 var agent = new ViewerAgent(
                     m_Scenes,

@@ -32,8 +32,10 @@ using SilverSim.Scene.Types.Script.Events;
 using SilverSim.Scripting.Lsl;
 using SilverSim.ServiceInterfaces.Account;
 using SilverSim.ServiceInterfaces.Asset;
+using SilverSim.ServiceInterfaces.Experience;
 using SilverSim.ServiceInterfaces.Friends;
 using SilverSim.ServiceInterfaces.Grid;
+using SilverSim.ServiceInterfaces.Groups;
 using SilverSim.ServiceInterfaces.IM;
 using SilverSim.ServiceInterfaces.Inventory;
 using SilverSim.ServiceInterfaces.PortControl;
@@ -126,30 +128,34 @@ namespace SilverSim.Tests.Viewer
             return vc;
         }
 
-        RwLockedDictionary<UUID, ViewerConnection> m_Clients = new RwLockedDictionary<UUID, ViewerConnection>();
+        private RwLockedDictionary<UUID, ViewerConnection> m_Clients = new RwLockedDictionary<UUID, ViewerConnection>();
 
-        readonly string m_AgentInventoryServiceName;
-        readonly string m_AgentAssetServiceName;
-        readonly string m_AgentProfileServiceName;
-        readonly string m_AgentFriendsServiceName;
-        readonly string m_UserSessionServiceName;
-        readonly string m_GridServiceName;
-        readonly string m_OfflineIMServiceName;
-        readonly string m_UserAccountServiceName;
+        private readonly string m_AgentInventoryServiceName;
+        private readonly string m_AgentAssetServiceName;
+        private readonly string m_AgentProfileServiceName;
+        private readonly string m_AgentFriendsServiceName;
+        private readonly string m_UserSessionServiceName;
+        private readonly string m_GridServiceName;
+        private readonly string m_OfflineIMServiceName;
+        private readonly string m_UserAccountServiceName;
+        private readonly string m_AgentExperienceServiceName;
+        private readonly string m_AgentGroupsServiceName;
 
-        InventoryServiceInterface m_AgentInventoryService;
-        AssetServiceInterface m_AgentAssetService;
-        ProfileServiceInterface m_AgentProfileService;
-        FriendsServiceInterface m_AgentFriendsService;
-        UserAgentServiceInterface m_AgentUserAgentService;
-        UserSessionServiceInterface m_UserSessionService;
-        GridServiceInterface m_GridService;
-        OfflineIMServiceInterface m_OfflineIMService;
-        UserAccountServiceInterface m_UserAccountService;
-        SceneList m_Scenes;
-        CommandRegistry m_Commands;
-        CapsHttpRedirector m_CapsRedirector;
-        List<IProtocolExtender> m_PacketHandlerPlugins = new List<IProtocolExtender>();
+        private InventoryServiceInterface m_AgentInventoryService;
+        private AssetServiceInterface m_AgentAssetService;
+        private ProfileServiceInterface m_AgentProfileService;
+        private FriendsServiceInterface m_AgentFriendsService;
+        private UserAgentServiceInterface m_AgentUserAgentService;
+        private UserSessionServiceInterface m_UserSessionService;
+        private GridServiceInterface m_GridService;
+        private OfflineIMServiceInterface m_OfflineIMService;
+        private UserAccountServiceInterface m_UserAccountService;
+        private ExperienceServiceInterface m_AgentExperienceService;
+        private GroupsServiceInterface m_AgentGroupsService;
+        private SceneList m_Scenes;
+        private CommandRegistry m_Commands;
+        private CapsHttpRedirector m_CapsRedirector;
+        private List<IProtocolExtender> m_PacketHandlerPlugins = new List<IProtocolExtender>();
 
         public ShutdownOrder ShutdownOrder => ShutdownOrder.BeforeLogoutAgents;
 
@@ -171,6 +177,8 @@ namespace SilverSim.Tests.Viewer
             m_GridServiceName = ownSection.GetString("GridService");
             m_OfflineIMServiceName = ownSection.GetString("OfflineIMService", string.Empty);
             m_UserAccountServiceName = ownSection.GetString("UserAccountService");
+            m_AgentExperienceServiceName = ownSection.GetString("ExperienceService", string.Empty);
+            m_AgentGroupsServiceName = ownSection.GetString("GroupsService", string.Empty);
         }
 
         private sealed class LocalUserAgentService : UserAgentServiceInterface, IDisplayNameAccessor
@@ -290,6 +298,14 @@ namespace SilverSim.Tests.Viewer
             if (m_OfflineIMServiceName?.Length != 0)
             {
                 m_OfflineIMService = loader.GetService<OfflineIMServiceInterface>(m_OfflineIMServiceName);
+            }
+            if(m_AgentExperienceServiceName?.Length != 0)
+            {
+                loader.GetService(m_AgentExperienceServiceName, out m_AgentExperienceService);
+            }
+            if (m_AgentGroupsServiceName?.Length != 0)
+            {
+                loader.GetService(m_AgentGroupsServiceName, out m_AgentGroupsService);
             }
             m_UserAccountService = loader.GetService<UserAccountServiceInterface>(m_UserAccountServiceName);
             m_AgentUserAgentService = new LocalUserAgentService(m_UserSessionService, m_UserAccountService);
