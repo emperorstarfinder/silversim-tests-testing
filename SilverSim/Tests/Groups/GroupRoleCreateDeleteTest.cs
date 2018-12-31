@@ -416,7 +416,7 @@ namespace SilverSim.Tests.Groups
             testrole.Description = "Test Description 2";
             testrole.Title = "Test Title 2";
             testrole.Powers |= GroupPowers.AssignMember;
-            m_GroupsService.Roles.Add(m_Founder, testrole);
+            m_GroupsService.Roles.Update(m_Founder, testrole);
 
             m_Log.Info("Deleting role Test");
             m_GroupsService.Roles.Delete(m_Founder, new UGI(m_GroupID), testrole.ID);
