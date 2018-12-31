@@ -211,7 +211,7 @@ namespace SilverSim.Tests.Viewer
                     return new ViewerAgentAccessor();
                 }
 
-                var presenceInfo = m_UserSessionService.CreateSession(userAccount.Principal, string.Empty, sessionId.AsUUID, secureSessionId.AsUUID);
+                var presenceInfo = m_UserSessionService.CreateSession(userAccount.Principal, clientIP, sessionId.AsUUID, secureSessionId.AsUUID);
                 var serviceList = new AgentServiceList
                 {
                     m_AgentAssetService,
