@@ -226,7 +226,7 @@ namespace SilverSim.Tests.Groups
                 m_Log.Info("not supported");
             }
 
-            m_Log.Info("Testing non-existence of invite 5");
+            m_Log.Info("Testing existence of invite 5");
             try
             {
                 if ((invites = m_GroupsService.Invites[m_Founder, m_Invitee]).Count != 1)
@@ -272,7 +272,7 @@ namespace SilverSim.Tests.Groups
                 m_Log.Info("not supported");
             }
 
-            m_Log.Info("Deleting role Test");
+            m_Log.Info("Deleting invite");
             m_GroupsService.Invites.Delete(m_Founder, testinvite.ID);
 
             m_Log.Info("Testing non-existence of invite 1");
