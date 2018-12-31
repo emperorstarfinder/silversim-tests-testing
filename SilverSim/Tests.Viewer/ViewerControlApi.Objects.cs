@@ -28,6 +28,7 @@ using SilverSim.Types.Inventory;
 using SilverSim.Types.Primitive;
 using SilverSim.Viewer.Messages.Object;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 
@@ -1273,7 +1274,12 @@ namespace SilverSim.Tests.Viewer
             public int Material;
             public int ClickAction;
             public Vector3 Scale;
-            public ByteArrayApi.ByteArray ObjectData = new ByteArrayApi.ByteArray();
+            public Vector3 Position;
+            public Quaternion Rotation;
+            public Vector3 Velocity;
+            public Vector3 AngularVelocity;
+            public Vector3 Acceleration;
+            //public ByteArrayApi.ByteArray ObjectData = new ByteArrayApi.ByteArray();
             public int ParentID;
             public PrimitiveFlags UpdateFlags;
             public VcObjectShape ObjectShape = new VcObjectShape();
@@ -1298,7 +1304,6 @@ namespace SilverSim.Tests.Viewer
 
             public VcObjectData()
             {
-
             }
 
             public VcObjectData(UnreliableObjectUpdate.ObjData d)
@@ -1311,7 +1316,14 @@ namespace SilverSim.Tests.Viewer
                 Material = (int)d.Material;
                 ClickAction = (int)d.ClickAction;
                 Scale = d.Scale;
-                ObjectData = new ByteArrayApi.ByteArray(d.ObjectData);
+                if(d.ObjectData.Length >= 60)
+                {
+                    Position = new Vector3(d.ObjectData, 0);
+                    Velocity = new Vector3(d.ObjectData, 12);
+                    Acceleration = new Vector3(d.ObjectData, 24);
+                    Rotation = new Quaternion(d.ObjectData, 36, true);
+                    AngularVelocity = new Vector3(d.ObjectData, 48);
+                }
                 ParentID = (int)d.ParentID;
                 UpdateFlags = d.UpdateFlags;
                 ObjectShape = new VcObjectShape
@@ -1356,6 +1368,195 @@ namespace SilverSim.Tests.Viewer
                 JointPivot = d.JointPivot;
                 JointAxisOrAnchor = d.JointAxisOrAnchor;
             }
+
+            public static VcObjectData FromUpdateCompressed(byte[] compressed)
+            {
+                var data = new VcObjectData
+                {
+                    FullID = new UUID(compressed, 0),
+                    LocalID = (int)LEToUInt32(compressed, 16),
+                    PCode = compressed[20],
+                    State = compressed[21],
+                    CRC = (int)LEToUInt32(compressed, 22),
+                    Material = compressed[26],
+                    ClickAction = compressed[27],
+                    Scale = new Vector3(compressed, 28),
+                    Position = new Vector3(compressed, 40),
+                    Rotation = new Quaternion(compressed, 52, true),
+                    OwnerID = new UUID(compressed, 68), /* 68 + 16 */
+                };
+                int offset = 84;
+                var compressedFlags = (ObjectUpdateCompressed.CompressedFlags)LEToUInt32(compressed, 64);
+
+                if ((compressedFlags & ObjectUpdateCompressed.CompressedFlags.HasAngularVelocity) != 0)
+                {
+                    data.AngularVelocity = new Vector3(compressed, offset);
+                    offset += 12;
+                }
+
+                if((compressedFlags & ObjectUpdateCompressed.CompressedFlags.HasParent) != 0)
+                {
+                    Array.Reverse(compressed, offset, 4);
+                    data.ParentID = (int)BitConverter.ToUInt32(compressed, offset);
+                    offset += 4;
+                }
+
+                if ((compressedFlags & ObjectUpdateCompressed.CompressedFlags.Tree) != 0)
+                {
+                    ++offset;
+                }
+
+                if ((compressedFlags & ObjectUpdateCompressed.CompressedFlags.ScratchPad) != 0)
+                {
+                    byte len = compressed[offset++];
+                    offset += len;
+                }
+
+                if((compressedFlags & ObjectUpdateCompressed.CompressedFlags.HasText) != 0)
+                {
+                    int endpos;
+                    for(endpos = offset; compressed[endpos] != 0; ++endpos)
+                    {
+                    }
+                    data.Text = compressed.FromUTF8Bytes(offset, endpos - offset);
+                    offset = endpos + 1;
+                    ColorAlpha textcolor = new ColorAlpha
+                    {
+                        R_AsByte = compressed[offset],
+                        G_AsByte = compressed[offset + 1],
+                        B_AsByte = compressed[offset + 2],
+                        A_AsByte = (byte)(255 - compressed[offset + 3])
+                    };
+                    data.TextColor = textcolor;
+                    data.TextAlpha = textcolor.A;
+                    offset += 4;
+                }
+
+                if((compressedFlags & ObjectUpdateCompressed.CompressedFlags.MediaURL) != 0)
+                {
+                    int endpos;
+                    for (endpos = offset; compressed[endpos] != 0; ++endpos)
+                    {
+                    }
+                    data.MediaURL = compressed.FromUTF8Bytes(offset, endpos - offset);
+                    offset = endpos + 1;
+                }
+
+                if((compressedFlags & ObjectUpdateCompressed.CompressedFlags.HasParticles) != 0)
+                {
+                    byte[] particledata = new byte[86];
+                    Buffer.BlockCopy(compressed, offset, particledata, 0, 86);
+                    offset += 86;
+                    data.PSBlock = new ByteArrayApi.ByteArray(particledata);
+                }
+
+                int extrastart = offset;
+                uint elemcount = compressed[offset + 1];
+                while(elemcount-- != 0)
+                {
+                    int blocklen = (int)LEToUInt32(compressed, offset);
+                    offset += 4 + blocklen;
+                }
+                byte[] extraparam = new byte[offset - extrastart];
+                Buffer.BlockCopy(compressed, extrastart, extraparam, 0, offset - extrastart);
+                data.ExtraParams = new ByteArrayApi.ByteArray(extraparam);
+
+                if((compressedFlags & ObjectUpdateCompressed.CompressedFlags.HasSound) != 0)
+                {
+                    data.LoopedSound = new UUID(compressed, offset);
+                    offset += 16;
+                    if (!BitConverter.IsLittleEndian)
+                    {
+                        Array.Reverse(compressed, offset, 4);
+                    }
+                    data.Gain = BitConverter.ToSingle(compressed, offset);
+                    offset += 4;
+                    data.Flags = compressed[offset++];
+                    if (!BitConverter.IsLittleEndian)
+                    {
+                        Array.Reverse(compressed, offset, 4);
+                    }
+                    data.Radius = BitConverter.ToSingle(compressed, offset);
+                    offset += 4;
+                }
+
+                /* NameValue */
+                if((compressedFlags & ObjectUpdateCompressed.CompressedFlags.HasNameValues) != 0)
+                {
+                    int endpos;
+                    for (endpos = offset; compressed[endpos] != 0; ++endpos)
+                    {
+                    }
+                    data.NameValue = compressed.FromUTF8Bytes(offset, endpos - offset);
+                    offset = endpos + 1;
+                }
+
+                /* Shape */
+                data.ObjectShape = new VcObjectShape
+                {
+                    PathCurve = compressed[offset],
+                    PathBegin = LEToUInt16(compressed, offset + 1),
+                    PathEnd = LEToUInt16(compressed, offset + 3),
+                    PathScaleX = compressed[offset + 5],
+                    PathScaleY = compressed[offset + 6],
+                    PathShearX = compressed[offset + 7],
+                    PathShearY = compressed[offset + 8],
+                    PathTwist = (sbyte)compressed[offset + 9],
+                    PathTwistBegin = (sbyte)compressed[offset + 10],
+                    PathRadiusOffset = (sbyte)compressed[offset + 11],
+                    PathTaperX = (sbyte)compressed[offset + 12],
+                    PathTaperY = (sbyte)compressed[offset + 13],
+                    PathRevolutions = compressed[offset + 14],
+                    PathSkew = (sbyte)compressed[offset + 15],
+                    ProfileCurve = compressed[offset + 16],
+                    ProfileBegin = LEToUInt16(compressed, offset + 17),
+                    ProfileEnd = LEToUInt16(compressed, offset + 19),
+                    ProfileHollow = LEToUInt16(compressed, offset + 21)
+                };
+                offset += 23;
+
+                int textureEntrySize = (int)LEToUInt32(compressed, offset);
+                offset += 4;
+                data.TextureEntry = new TextureEntryContainer(new TextureEntry(compressed, offset, textureEntrySize));
+                offset += textureEntrySize;
+
+                if((compressedFlags & ObjectUpdateCompressed.CompressedFlags.TextureAnimation) != 0)
+                {
+                    int textureAnimEntrySize = (int)LEToUInt32(compressed, offset);
+                    offset += 4;
+                    byte[] texAnimData = new byte[textureAnimEntrySize];
+                    Buffer.BlockCopy(compressed, offset, texAnimData, 0, textureAnimEntrySize);
+                    data.TextureAnim = new ByteArrayApi.ByteArray(texAnimData);
+                    offset += textureAnimEntrySize;
+                }
+                return data;
+            }
+        }
+
+        private static uint LEToUInt32(byte[] data, int offset)
+        {
+            if(!BitConverter.IsLittleEndian)
+            {
+                byte[] nd = new byte[4];
+                Buffer.BlockCopy(data, offset, nd, 0, 4);
+                Array.Reverse(nd);
+                data = nd;
+                offset = 0;
+            }
+            return BitConverter.ToUInt32(data, offset);
+        }
+
+        private static ushort LEToUInt16(byte[] data, int offset)
+        {
+            if (!BitConverter.IsLittleEndian)
+            {
+                byte[] nd = new byte[2];
+                Buffer.BlockCopy(data, offset, nd, 0, 2);
+                Array.Reverse(nd);
+                data = nd;
+                offset = 0;
+            }
+            return BitConverter.ToUInt16(data, offset);
         }
 
         [APIExtension("ViewerControl", "objectdatalist")]
@@ -1364,6 +1565,30 @@ namespace SilverSim.Tests.Viewer
         [APIIsVariableType]
         public class VcObjectDataList : List<VcObjectData>
         {
+            public sealed class LSLEnumerator : IEnumerator<VcObjectData>
+            {
+                private readonly VcObjectDataList Src;
+                private int Position = -1;
+
+                public LSLEnumerator(VcObjectDataList src)
+                {
+                    Src = src;
+                }
+
+                public VcObjectData Current => Src[Position];
+
+                object IEnumerator.Current => Current;
+
+                public void Dispose()
+                {
+                }
+
+                public bool MoveNext() => ++Position < Src.Count;
+
+                public void Reset() => Position = -1;
+            }
+
+            public LSLEnumerator GetLslForeachEnumerator() => new LSLEnumerator(this);
         }
     }
 }

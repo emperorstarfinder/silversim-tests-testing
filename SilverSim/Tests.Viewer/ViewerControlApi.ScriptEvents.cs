@@ -1847,22 +1847,26 @@ namespace SilverSim.Tests.Viewer
             [TranslatedScriptEventParameter(1)]
             public double TimeDilation;
             [TranslatedScriptEventParameter(2)]
-            public VcObjectDataList ObjectList = new VcObjectDataList();
+            public readonly VcObjectDataList ObjectList = new VcObjectDataList();
 
             public static void ToScriptEvent(Message m, ViewerConnection vc, uint circuitCode)
             {
-                var res = (ObjectUpdate)m;
-                var ev = new ObjectUpdateReceivedEvent
+                ObjectUpdate ou = m as ObjectUpdate;
+                if (ou != null)
                 {
-                    Agent = new AgentInfo(m, circuitCode),
-                    TimeDilation = res.TimeDilation / 65535.0
-                };
+                    var ev = new ObjectUpdateReceivedEvent
+                    {
+                        Agent = new AgentInfo(m, circuitCode),
+                        TimeDilation = ou.TimeDilation / 65535.0
+                    };
 
-                foreach (UnreliableObjectUpdate.ObjData d in res.ObjectData)
-                {
-                    ev.ObjectList.Add(new VcObjectData(d));
+                    foreach (UnreliableObjectUpdate.ObjData d in ou.ObjectData)
+                    {
+                        ev.ObjectList.Add(new VcObjectData(d));
+                    }
+                    vc.PostEvent(ev);
                 }
-                vc.PostEvent(ev);
+                ObjectUpdateCompressed ouc = m as ObjectUpdateCompressed;
             }
         }
 
