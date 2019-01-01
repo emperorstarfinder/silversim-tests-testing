@@ -749,7 +749,7 @@ namespace SilverSim.Tests.Viewer
         public delegate void AvatarAnimationReceived(
             AgentInfo agent,
             LSLKey sender,
-            AnArray animationData);
+            AvatarAnimationDataList animationData);
         #endregion
 
         #region avatarsitresponse_received
@@ -1827,7 +1827,7 @@ namespace SilverSim.Tests.Viewer
         public delegate void ObjectAnimationReceived(
             AgentInfo agent,
             LSLKey sender,
-            AnArray animationData);
+            ObjectAnimationDataList animationData);
         #endregion
 
         #region moneybalancereply_received
