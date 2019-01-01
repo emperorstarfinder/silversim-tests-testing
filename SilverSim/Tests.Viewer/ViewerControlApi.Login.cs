@@ -123,7 +123,7 @@ namespace SilverSim.Tests.Viewer
         [ImplementsCustomTypecasts]
         public class ViewerAgentAccessor
         {
-            public UUID AgentID { get; }
+            public LSLKey AgentID { get; }
             public int CircuitCode { get; }
             public string CapsPath { get; }
             public LSLKey SessionId { get; }
@@ -131,6 +131,9 @@ namespace SilverSim.Tests.Viewer
 
             public ViewerAgentAccessor()
             {
+                AgentID = new LSLKey();
+                SessionId = new LSLKey();
+                SecureSessionId = new LSLKey();
             }
 
             public ViewerAgentAccessor(UUID agentID, int circuitCode, string capsPath, LSLKey sessionId, LSLKey secureSessionId)
@@ -143,7 +146,7 @@ namespace SilverSim.Tests.Viewer
             }
 
             [APIExtension("ViewerControl", "vieweragent")]
-            public static implicit operator bool(ViewerAgentAccessor vc) => vc.AgentID != UUID.Zero;
+            public static implicit operator bool(ViewerAgentAccessor vc) => (bool)vc.AgentID;
         }
 
         [APIExtension("ViewerControl", "vcLoginAgent")]
