@@ -45,6 +45,7 @@ using SilverSim.Viewer.Messages.Sound;
 using SilverSim.Viewer.Messages.Telehub;
 using SilverSim.Viewer.Messages.Teleport;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 
@@ -665,6 +666,52 @@ namespace SilverSim.Tests.Viewer
         #endregion
 
         #region avataranimation_received
+        [APIExtension("ViewerControl", "avataranimationdata")]
+        [APIDisplayName("avataranimationdata")]
+        [APIIsVariableType]
+        [APIAccessibleMembers]
+        [APICloneOnAssignment]
+        [Serializable]
+        public sealed class AvatarAnimationDataBlock
+        {
+            public LSLKey AnimID = new LSLKey();
+            public int SequenceID;
+            public UUID ObjectID;
+        }
+
+        [APIExtension("ViewerControl", "avataranimationdatalist")]
+        [APIDisplayName("avataranimationdatalist")]
+        [APIIsVariableType]
+        [APIAccessibleMembers("Count")]
+        [Serializable]
+        public sealed class AvatarAnimationDataList : List<AvatarAnimationDataBlock>
+        {
+            public sealed class LSLEnumerator : IEnumerator<AvatarAnimationDataBlock>
+            {
+                private readonly AvatarAnimationDataList Src;
+                private int Position = -1;
+
+                public LSLEnumerator(AvatarAnimationDataList src)
+                {
+                    Src = src;
+                }
+
+                public AvatarAnimationDataBlock Current => Src[Position];
+
+                object IEnumerator.Current => Current;
+
+                public void Dispose()
+                {
+                }
+
+                public bool MoveNext() => ++Position < Src.Count;
+
+                public void Reset() => Position = -1;
+            }
+
+            public LSLEnumerator GetLslForeachEnumerator() => new LSLEnumerator(this);
+        }
+
         [TranslatedScriptEvent("avataranimation_received")]
         public class AvatarAnimationReceivedEvent : IScriptEvent
         {
@@ -673,7 +720,7 @@ namespace SilverSim.Tests.Viewer
             [TranslatedScriptEventParameter(1)]
             public LSLKey Sender = new LSLKey();
             [TranslatedScriptEventParameter(2)]
-            public AnArray AnimationData = new AnArray();
+            public AvatarAnimationDataList AnimationData = new AvatarAnimationDataList();
 
             public static void ToScriptEvent(Message m, ViewerConnection vc, uint circuitCode)
             {
@@ -686,9 +733,12 @@ namespace SilverSim.Tests.Viewer
 
                 foreach (AvatarAnimation.AnimationData ad in res.AnimationList)
                 {
-                    ev.AnimationData.Add(new LSLKey(ad.AnimID));
-                    ev.AnimationData.Add((int)ad.AnimSequenceID);
-                    ev.AnimationData.Add(new LSLKey(ad.ObjectID));
+                    ev.AnimationData.Add(new AvatarAnimationDataBlock
+                    {
+                        AnimID = ad.AnimID,
+                        SequenceID = (int)ad.AnimSequenceID,
+                        ObjectID = ad.ObjectID
+                    });
                 }
                 vc.PostEvent(ev);
             }
@@ -1697,6 +1747,51 @@ namespace SilverSim.Tests.Viewer
         #endregion
 
         #region objectanimation_received
+        [APIExtension("ViewerControl", "objectanimationdata")]
+        [APIDisplayName("objectanimationdata")]
+        [APIIsVariableType]
+        [APIAccessibleMembers]
+        [APICloneOnAssignment]
+        [Serializable]
+        public sealed class ObjectAnimationDataBlock
+        {
+            public LSLKey AnimID = new LSLKey();
+            public int SequenceID;
+        }
+
+        [APIExtension("ViewerControl", "animationdatalist")]
+        [APIDisplayName("animationdatalist")]
+        [APIIsVariableType]
+        [APIAccessibleMembers("Count")]
+        [Serializable]
+        public sealed class ObjectAnimationDataList : List<ObjectAnimationDataBlock>
+        {
+            public sealed class LSLEnumerator : IEnumerator<ObjectAnimationDataBlock>
+            {
+                private readonly ObjectAnimationDataList Src;
+                private int Position = -1;
+
+                public LSLEnumerator(ObjectAnimationDataList src)
+                {
+                    Src = src;
+                }
+
+                public ObjectAnimationDataBlock Current => Src[Position];
+
+                object IEnumerator.Current => Current;
+
+                public void Dispose()
+                {
+                }
+
+                public bool MoveNext() => ++Position < Src.Count;
+
+                public void Reset() => Position = -1;
+            }
+
+            public LSLEnumerator GetLslForeachEnumerator() => new LSLEnumerator(this);
+        }
+
         [TranslatedScriptEvent("objectanimation_received")]
         public class ObjectAnimationReceivedEvent : IScriptEvent
         {
@@ -1705,7 +1800,7 @@ namespace SilverSim.Tests.Viewer
             [TranslatedScriptEventParameter(1)]
             public LSLKey Sender;
             [TranslatedScriptEventParameter(2)]
-            public AnArray AnimationData;
+            public ObjectAnimationDataList AnimationData = new ObjectAnimationDataList();
 
             public static void ToScriptEvent(Message m, ViewerConnection vc, uint circuitCode)
             {
@@ -1717,8 +1812,11 @@ namespace SilverSim.Tests.Viewer
                 };
                 foreach(ObjectAnimation.AnimationData d in res.AnimationList)
                 {
-                    ev.AnimationData.Add(new LSLKey(d.AnimID));
-                    ev.AnimationData.Add((int)d.AnimSequenceID);
+                    ev.AnimationData.Add(new ObjectAnimationDataBlock
+                    {
+                        AnimID = d.AnimID,
+                        SequenceID = (int)d.AnimSequenceID
+                    });
                 }
                 vc.PostEvent(ev);
             }
@@ -1974,6 +2072,30 @@ namespace SilverSim.Tests.Viewer
         [APICloneOnAssignment]
         public class ParcelObjectOwnersReplyDataList : List<ParcelObjectOwnersReplyData>
         {
+            public sealed class LSLEnumerator : IEnumerator<ParcelObjectOwnersReplyData>
+            {
+                private readonly ParcelObjectOwnersReplyDataList Src;
+                private int Position = -1;
+
+                public LSLEnumerator(ParcelObjectOwnersReplyDataList src)
+                {
+                    Src = src;
+                }
+
+                public ParcelObjectOwnersReplyData Current => Src[Position];
+
+                object IEnumerator.Current => Current;
+
+                public void Dispose()
+                {
+                }
+
+                public bool MoveNext() => ++Position < Src.Count;
+
+                public void Reset() => Position = -1;
+            }
+
+            public LSLEnumerator GetLslForeachEnumerator() => new LSLEnumerator(this);
         }
 
         [TranslatedScriptEvent("parcelobjectownersreply_received")]
