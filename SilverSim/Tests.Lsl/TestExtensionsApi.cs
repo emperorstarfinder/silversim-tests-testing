@@ -23,6 +23,7 @@ using log4net;
 using Nini.Config;
 using SilverSim.Main.Common;
 using SilverSim.Scene.Types.Object;
+using SilverSim.Scene.Types.Object.Parameters;
 using SilverSim.Scene.Types.Script;
 using SilverSim.Scene.Types.Script.Events;
 using SilverSim.Scripting.Common;
@@ -265,6 +266,24 @@ namespace SilverSim.Tests.Lsl
                     return 0;
                 }
                 return 1;
+            }
+        }
+
+        [APIExtension("Testing", "_test_EnableAnimesh")]
+        public void EnableAnimesh(ScriptInstance instance, LSLKey key, int enable)
+        {
+            lock(instance)
+            {
+                ObjectPart part;
+                if(instance.Part.ObjectGroup.Scene.Primitives.TryGetValue(key.AsUUID, out part))
+                {
+                    part.ExtendedMesh = new ExtendedMeshParams
+                    {
+                        Flags = enable != 0 ?
+                            ExtendedMeshParams.MeshFlags.AnimatedMeshEnabled :
+                            ExtendedMeshParams.MeshFlags.None
+                    };
+                }
             }
         }
 
