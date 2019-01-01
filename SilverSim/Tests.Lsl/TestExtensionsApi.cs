@@ -33,6 +33,7 @@ using SilverSim.Tests.Extensions;
 using SilverSim.Tests.Scripting;
 using SilverSim.Types;
 using SilverSim.Types.Asset;
+using SilverSim.Types.Primitive;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -277,12 +278,17 @@ namespace SilverSim.Tests.Lsl
                 ObjectPart part;
                 if(instance.Part.ObjectGroup.Scene.Primitives.TryGetValue(key.AsUUID, out part))
                 {
-                    part.ExtendedMesh = new ExtendedMeshParams
+                    ObjectPart.PrimitiveShape shape = part.Shape;
+                    if (shape.SculptType == PrimitiveSculptType.Mesh &&
+                        shape.Type == PrimitiveShapeType.Sculpt)
                     {
-                        Flags = enable != 0 ?
-                            ExtendedMeshParams.MeshFlags.AnimatedMeshEnabled :
-                            ExtendedMeshParams.MeshFlags.None
-                    };
+                        part.ExtendedMesh = new ExtendedMeshParams
+                        {
+                            Flags = enable != 0 ?
+                                ExtendedMeshParams.MeshFlags.AnimatedMeshEnabled :
+                                ExtendedMeshParams.MeshFlags.None
+                        };
+                    }
                 }
             }
         }
