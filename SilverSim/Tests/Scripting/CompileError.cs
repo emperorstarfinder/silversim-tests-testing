@@ -48,14 +48,10 @@ namespace SilverSim.Tests.Scripting
             m_ScriptFile = config.Get("ScriptFile", string.Empty);
             foreach (string key in config.GetKeys())
             {
-                if(key.StartsWith("Error"))
+                int line;
+                if(int.TryParse(key, out line))
                 {
-                    string val = config.GetString(key);
-                    int pos = val.IndexOf(';');
-                    if(pos >= 0)
-                    {
-                        m_ExpectedErrors.Add(int.Parse(val.Substring(0, pos)), val.Substring(pos + 1));
-                    }
+                    m_ExpectedErrors.Add(line, config.GetString(key));
                 }
             }
             CompilerRegistry.ScriptCompilers.DefaultCompilerName = config.GetString("DefaultCompiler");
@@ -96,8 +92,10 @@ namespace SilverSim.Tests.Scripting
                 m_Log.ErrorFormat("Compilation of {0} failed expectedly: {1}", m_ScriptFile, e.Message);
                 m_Log.WarnFormat("Stack Trace:\n{0}", e.StackTrace);
                 success = true;
+                m_Log.InfoFormat("***** Comparing expected error messages ({0}) *****", m_ExpectedErrors.Count);
                 foreach (KeyValuePair<int, string> kvp in m_ExpectedErrors)
                 {
+                    m_Log.InfoFormat("Checking expected line {0}", kvp.Key);
                     string msg;
                     if (e.Messages.TryGetValue(kvp.Key, out msg))
                     {
@@ -106,6 +104,10 @@ namespace SilverSim.Tests.Scripting
                             m_Log.ErrorFormat("Message for line {0} different: {1}", kvp.Key, msg);
                             success = false;
                         }
+                        else
+                        {
+                            m_Log.InfoFormat("good => {0}", kvp.Value);
+                        }
                     }
                     else
                     {
@@ -113,6 +115,7 @@ namespace SilverSim.Tests.Scripting
                         success = false;
                     }
                 }
+                m_Log.Info("***** Detecting unexpected error messages *****");
                 foreach (KeyValuePair<int, string> kvp in e.Messages)
                 {
                     if (!m_ExpectedErrors.ContainsKey(kvp.Key))
