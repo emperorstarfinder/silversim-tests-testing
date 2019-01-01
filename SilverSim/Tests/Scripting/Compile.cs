@@ -38,8 +38,8 @@ namespace SilverSim.Tests.Scripting
     {
         private static readonly ILog m_Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        Dictionary<UUID, string> Files = new Dictionary<UUID, string>();
-        TestRunner m_Runner;
+        private readonly Dictionary<UUID, string> Files = new Dictionary<UUID, string>();
+        private TestRunner m_Runner;
 
         public void Startup(ConfigurationLoader loader)
         {
