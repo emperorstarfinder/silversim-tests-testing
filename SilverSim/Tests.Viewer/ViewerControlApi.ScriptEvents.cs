@@ -1408,7 +1408,7 @@ namespace SilverSim.Tests.Viewer
             [TranslatedScriptEventParameter(0)]
             public AgentInfo Agent;
             [TranslatedScriptEventParameter(1)]
-            public AnArray LocalIDs;
+            public AnArray LocalIDs = new AnArray();
 
             public static void ToScriptEvent(Message m, ViewerConnection vc, uint circuitCode)
             {
