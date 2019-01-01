@@ -1759,8 +1759,8 @@ namespace SilverSim.Tests.Viewer
             public int SequenceID;
         }
 
-        [APIExtension("ViewerControl", "animationdatalist")]
-        [APIDisplayName("animationdatalist")]
+        [APIExtension("ViewerControl", "objectanimationdatalist")]
+        [APIDisplayName("objectanimationdatalist")]
         [APIIsVariableType]
         [APIAccessibleMembers("Count")]
         [Serializable]
