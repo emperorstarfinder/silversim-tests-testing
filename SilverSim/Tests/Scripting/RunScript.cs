@@ -946,12 +946,26 @@ namespace SilverSim.Tests.Scripting
 
         private void DebugChannelLog(ListenEvent ev)
         {
-            m_DebugChatLog.InfoFormat("{0} ({1}, {2} at {5}): {3}: {4}", ev.Name, ev.ID, ev.SourceType.ToString(), ev.Type.ToString(), ev.Message, ev.GlobalPosition.ToString());
+            if (ev.TargetID != UUID.Zero)
+            {
+                m_DebugChatLog.InfoFormat("{0} ({1}, {2} at {5}) to {6}: {3}: {4}", ev.Name, ev.ID, ev.SourceType.ToString(), ev.Type.ToString(), ev.Message, ev.GlobalPosition.ToString(), ev.TargetID);
+            }
+            else
+            {
+                m_DebugChatLog.InfoFormat("{0} ({1}, {2} at {5}): {3}: {4}", ev.Name, ev.ID, ev.SourceType.ToString(), ev.Type.ToString(), ev.Message, ev.GlobalPosition.ToString());
+            }
         }
 
         private void PublicChannelLog(ListenEvent ev)
         {
-            m_PublicChatLog.InfoFormat("{0} ({1}, {2} at {5}): {3}: {4}", ev.Name, ev.ID, ev.SourceType.ToString(), ev.Type.ToString(), ev.Message, ev.GlobalPosition.ToString());
+            if (ev.TargetID != UUID.Zero)
+            {
+                m_PublicChatLog.InfoFormat("{0} ({1}, {2} at {5}) to {6}: {3}: {4}", ev.Name, ev.ID, ev.SourceType.ToString(), ev.Type.ToString(), ev.Message, ev.GlobalPosition.ToString(), ev.TargetID);
+            }
+            else
+            {
+                m_PublicChatLog.InfoFormat("{0} ({1}, {2} at {5}): {3}: {4}", ev.Name, ev.ID, ev.SourceType.ToString(), ev.Type.ToString(), ev.Message, ev.GlobalPosition.ToString());
+            }
         }
 
         public void Shutdown()
