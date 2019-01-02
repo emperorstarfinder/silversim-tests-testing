@@ -31,6 +31,7 @@ using SilverSim.Scene.Types.Scene;
 using SilverSim.Scene.Types.Script;
 using SilverSim.Scene.Types.Script.Events;
 using SilverSim.Scripting.Common;
+using SilverSim.ServiceInterfaces.Account;
 using SilverSim.ServiceInterfaces.Asset;
 using SilverSim.ServiceInterfaces.AvatarName;
 using SilverSim.ServiceInterfaces.Estate;
@@ -38,6 +39,7 @@ using SilverSim.ServiceInterfaces.Experience;
 using SilverSim.ServiceInterfaces.Grid;
 using SilverSim.Tests.Extensions;
 using SilverSim.Types;
+using SilverSim.Types.Account;
 using SilverSim.Types.Asset;
 using SilverSim.Types.Estate;
 using SilverSim.Types.Experience;
@@ -95,6 +97,7 @@ namespace SilverSim.Tests.Scripting
         private SceneFactoryInterface m_SceneFactory;
         private EstateServiceInterface m_EstateService;
         private AvatarNameServiceInterface m_AvatarNameService;
+        private UserAccountServiceInterface m_UserAccountService;
         private SceneList m_Scenes;
         private Timer m_KillTimer;
         private int m_StartParameter;
@@ -205,9 +208,38 @@ namespace SilverSim.Tests.Scripting
             m_SceneFactory = loader.GetService<SceneFactoryInterface>("DefaultSceneImplementation");
             m_EstateService = loader.GetService<EstateServiceInterface>("EstateService");
             m_AvatarNameService = loader.GetService<AvatarNameServiceInterface>("AvatarNameStorage");
+            m_UserAccountService = loader.GetService<UserAccountServiceInterface>("UserAccountService");
 
             m_AvatarNameService.Store(m_RegionOwner);
             m_AvatarNameService.Store(m_EstateOwner);
+            try
+            {
+                m_UserAccountService.Add(new UserAccount
+                {
+                    Principal = m_RegionOwner,
+                    IsLocalToGrid = true,
+                });
+            }
+            catch
+            {
+                m_Log.Info("UserAccount creation failed for RegionOwner");
+            }
+
+            if(!m_EstateOwner.EqualsGrid(m_RegionOwner))
+            {
+                try
+                {
+                    m_UserAccountService.Add(new UserAccount
+                    {
+                        Principal = m_RegionOwner,
+                        IsLocalToGrid = true,
+                    });
+                }
+                catch
+                {
+                    m_Log.Info("UserAccount creation failed for EstateOwner");
+                }
+            }
 
             m_ObjectOwner = new UGUIWithName(config.GetString("ObjectOwner")) { IsAuthoritative = true };
             m_AvatarNameService.Store(m_ObjectOwner);
@@ -215,6 +247,18 @@ namespace SilverSim.Tests.Scripting
             {
                 m_ObjectCreator = new UGUIWithName(config.GetString("ObjectCreator")) { IsAuthoritative = true };
                 m_AvatarNameService.Store(m_ObjectCreator);
+                try
+                {
+                    m_UserAccountService.Add(new UserAccount
+                    {
+                        Principal = m_ObjectCreator,
+                        IsLocalToGrid = true,
+                    });
+                }
+                catch
+                {
+                    /* intentionally ignored */
+                }
             }
             else
             {
@@ -224,6 +268,18 @@ namespace SilverSim.Tests.Scripting
             {
                 m_ObjectLastOwner = new UGUIWithName(config.GetString("ObjectLastOwner")) { IsAuthoritative = true };
                 m_AvatarNameService.Store(m_ObjectLastOwner);
+                try
+                {
+                    m_UserAccountService.Add(new UserAccount
+                    {
+                        Principal = m_ObjectLastOwner,
+                        IsLocalToGrid = true,
+                    });
+                }
+                catch
+                {
+                    /* intentionally ignored */
+                }
             }
             else
             {
@@ -236,6 +292,18 @@ namespace SilverSim.Tests.Scripting
             {
                 m_ScriptCreator = new UGUIWithName(config.GetString("ScriptCreator")) { IsAuthoritative = true };
                 m_AvatarNameService.Store(m_ScriptCreator);
+                try
+                {
+                    m_UserAccountService.Add(new UserAccount
+                    {
+                        Principal = m_ScriptCreator,
+                        IsLocalToGrid = true,
+                    });
+                }
+                catch
+                {
+                    /* intentionally ignored */
+                }
             }
             else
             {
@@ -245,6 +313,18 @@ namespace SilverSim.Tests.Scripting
             {
                 m_ScriptLastOwner = new UGUIWithName(config.GetString("ScriptLastOwner")) { IsAuthoritative = true };
                 m_AvatarNameService.Store(m_ScriptLastOwner);
+                try
+                {
+                    m_UserAccountService.Add(new UserAccount
+                    {
+                        Principal = m_ScriptLastOwner,
+                        IsLocalToGrid = true,
+                    });
+                }
+                catch
+                {
+                    /* intentionally ignored */
+                }
             }
             else
             {
@@ -373,16 +453,88 @@ namespace SilverSim.Tests.Scripting
 
             var objectOwner = new UGUIWithName(config.GetString("ObjectOwner", m_ObjectOwner.ToString())) { IsAuthoritative = true };
             m_AvatarNameService.Store(objectOwner);
+            try
+            {
+                m_UserAccountService.Add(new UserAccount
+                {
+                    Principal = objectOwner,
+                    IsLocalToGrid = true,
+                });
+            }
+            catch
+            {
+                /* intentionally ignored */
+            }
             var objectCreator = new UGUIWithName(config.GetString("ObjectCreator", m_ObjectCreator.ToString())) { IsAuthoritative = true };
             m_AvatarNameService.Store(objectCreator);
+            try
+            {
+                m_UserAccountService.Add(new UserAccount
+                {
+                    Principal = objectCreator,
+                    IsLocalToGrid = true,
+                });
+            }
+            catch
+            {
+                /* intentionally ignored */
+            }
             var objectLastOwner = new UGUIWithName(config.GetString("ObjectLastOwner", m_ObjectLastOwner.ToString())) { IsAuthoritative = true };
             m_AvatarNameService.Store(objectLastOwner);
+            try
+            {
+                m_UserAccountService.Add(new UserAccount
+                {
+                    Principal = objectLastOwner,
+                    IsLocalToGrid = true,
+                });
+            }
+            catch
+            {
+                /* intentionally ignored */
+            }
             var scriptOwner = new UGUIWithName(config.GetString("ScriptOwner", m_ScriptOwner.ToString())) { IsAuthoritative = true };
             m_AvatarNameService.Store(scriptOwner);
+            try
+            {
+                m_UserAccountService.Add(new UserAccount
+                {
+                    Principal = scriptOwner,
+                    IsLocalToGrid = true,
+                });
+            }
+            catch
+            {
+                /* intentionally ignored */
+            }
             var scriptCreator = new UGUIWithName(config.GetString("ScriptCreator", m_ScriptCreator.ToString())) { IsAuthoritative = true };
             m_AvatarNameService.Store(scriptCreator);
+            try
+            {
+                m_UserAccountService.Add(new UserAccount
+                {
+                    Principal = scriptCreator,
+                    IsLocalToGrid = true,
+                });
+            }
+            catch
+            {
+                /* intentionally ignored */
+            }
             var scriptLastOwner = new UGUIWithName(config.GetString("ScriptLastOwner", m_ScriptLastOwner.ToString())) { IsAuthoritative = true };
             m_AvatarNameService.Store(scriptLastOwner);
+            try
+            {
+                m_UserAccountService.Add(new UserAccount
+                {
+                    Principal = scriptLastOwner,
+                    IsLocalToGrid = true,
+                });
+            }
+            catch
+            {
+                /* intentionally ignored */
+            }
             int startParameter = config.GetInt("StartParameter", m_StartParameter);
 
             InventoryPermissionsMask objectPermissionsBase = GetPermissions(config, "ObjectPermisionsBase", m_ObjectPermissionsBase);
