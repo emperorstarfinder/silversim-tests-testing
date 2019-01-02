@@ -33,6 +33,7 @@ using SilverSim.Types.Grid;
 using SilverSim.Viewer.Core;
 using SilverSim.Viewer.Messages;
 using SilverSim.Viewer.Messages.Circuit;
+using SilverSim.Viewer.Messages.God;
 using SilverSim.Viewer.Messages.Telehub;
 using SilverSim.Viewer.Messages.Teleport;
 using System;
@@ -435,12 +436,32 @@ namespace SilverSim.Tests.Viewer
                 if (m_Clients.TryGetValue(agent.AgentID, out vc) &&
                     vc.ViewerCircuits.TryGetValue((uint)agent.CircuitCode, out viewerCircuit))
                 {
-                    var logoutreq = new LogoutRequest
+                    viewerCircuit.SendMessage(new LogoutRequest
                     {
                         AgentID = viewerCircuit.AgentID,
                         SessionID = viewerCircuit.SessionID
-                    };
-                    viewerCircuit.SendMessage(logoutreq);
+                    });
+                }
+            }
+        }
+
+        [APIExtension("ViewerControl", APIUseAsEnum.MemberFunction, "SendRequestGodlikePowers")]
+        public void SendRequestGodlikePowers(ScriptInstance instance, ViewerAgentAccessor agent, int isgodlike, LSLKey token)
+        {
+            lock (instance)
+            {
+                ViewerConnection vc;
+                ViewerCircuit viewerCircuit;
+                if (m_Clients.TryGetValue(agent.AgentID, out vc) &&
+                    vc.ViewerCircuits.TryGetValue((uint)agent.CircuitCode, out viewerCircuit))
+                {
+                    viewerCircuit.SendMessage(new RequestGodlikePowers
+                    {
+                        AgentID = viewerCircuit.AgentID,
+                        SessionID = viewerCircuit.SessionID,
+                        IsGodlike = isgodlike != 0,
+                        Token = token
+                    });
                 }
             }
         }
