@@ -955,7 +955,7 @@ namespace SilverSim.Tests.Viewer
             string message);
         #endregion
 
-        #region
+        #region estatecovenantreply_received
         [TranslatedScriptEvent("estatecovenantreply_received")]
         public class EstateCovenantReplyReceivedEvent : IScriptEvent
         {
@@ -1496,7 +1496,7 @@ namespace SilverSim.Tests.Viewer
             [TranslatedScriptEventParameter(0)]
             public AgentInfo Agent;
             [TranslatedScriptEventParameter(1)]
-            public AnArray Agents;
+            public AnArray Agents = new AnArray();
 
             public static void ToScriptEvent(Message m, ViewerConnection vc, uint circuitCode)
             {
@@ -1527,7 +1527,7 @@ namespace SilverSim.Tests.Viewer
             [TranslatedScriptEventParameter(0)]
             public AgentInfo Agent;
             [TranslatedScriptEventParameter(1)]
-            public AnArray Agents;
+            public AnArray Agents = new AnArray();
 
             public static void ToScriptEvent(Message m, ViewerConnection vc, uint circuitCode)
             {
@@ -1726,7 +1726,7 @@ namespace SilverSim.Tests.Viewer
             [TranslatedScriptEventParameter(1)]
             public int ResetList;
             [TranslatedScriptEventParameter(2)]
-            public AnArray LocalIDs;
+            public AnArray LocalIDs = new AnArray();
 
             public static void ToScriptEvent(Message m, ViewerConnection vc, uint circuitCode)
             {
