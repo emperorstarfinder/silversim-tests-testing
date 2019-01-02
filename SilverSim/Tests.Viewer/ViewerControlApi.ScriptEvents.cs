@@ -1629,7 +1629,7 @@ namespace SilverSim.Tests.Viewer
             [TranslatedScriptEventParameter(0)]
             public AgentInfo Agent;
             [TranslatedScriptEventParameter(1)]
-            public AnArray Data;
+            public AnArray Data = new AnArray();
 
             public static void ToScriptEvent(Message m, ViewerConnection vc, uint circuitCode)
             {
@@ -1661,7 +1661,7 @@ namespace SilverSim.Tests.Viewer
             [TranslatedScriptEventParameter(0)]
             public AgentInfo Agent;
             [TranslatedScriptEventParameter(1)]
-            public AnArray Data;
+            public AnArray Data = new AnArray();
 
             public static void ToScriptEvent(Message m, ViewerConnection vc, uint circuitCode)
             {
