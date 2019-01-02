@@ -894,6 +894,13 @@ namespace SilverSim.Tests.Viewer
         #endregion
 
         #region chatfromsimulator_received
+        [APIExtension("ViewerControl")]
+        public const int CHAT_SOURCE_TYPE_SYSTEM = 0;
+        [APIExtension("ViewerControl")]
+        public const int CHAT_SOURCE_TYPE_AGENT = 1;
+        [APIExtension("ViewerControl")]
+        public const int CHAT_SOURCE_TYPE_OBJECT = 2;
+
         [TranslatedScriptEvent("chatfromsimulator_received")]
         public class ChatFromSimulatorReceivedEvent : IScriptEvent
         {
