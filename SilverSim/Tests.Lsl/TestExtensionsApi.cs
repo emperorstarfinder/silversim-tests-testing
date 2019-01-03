@@ -270,6 +270,21 @@ namespace SilverSim.Tests.Lsl
             }
         }
 
+        [APIExtension("Testing", "_test_GetInventoryItemID")]
+        public LSLKey GetInventoryKey(ScriptInstance instance, string item)
+        {
+            lock (instance)
+            {
+                ObjectPartInventoryItem objitem;
+                if (instance.Part.Inventory.TryGetValue(item, out objitem))
+                {
+                    return objitem.ID;
+                }
+                return UUID.Zero;
+            }
+        }
+
+
         [APIExtension("Testing", "_test_EnableAnimesh")]
         public void EnableAnimesh(ScriptInstance instance, LSLKey key, int enable)
         {
