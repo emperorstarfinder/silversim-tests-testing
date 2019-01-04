@@ -24,17 +24,12 @@ using SilverSim.Scripting.Lsl;
 using SilverSim.Tests.Viewer.UDP;
 using SilverSim.Types;
 using SilverSim.Viewer.Messages.Names;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SilverSim.Tests.Viewer
 {
     public partial class ViewerControlApi
     {
-        [APIExtension("ViewerControl", APIUseAsEnum.MemberFunction, "SendUUIDGroupNameRequest")]
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "SendUUIDGroupNameRequest")]
         public void SendUUIDGroupNameRequest(ScriptInstance instance, ViewerAgentAccessor agent, AnArray ids)
         {
             lock (instance)
@@ -54,7 +49,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension("ViewerControl", APIUseAsEnum.MemberFunction, "SendUUIDNameRequest")]
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "SendUUIDNameRequest")]
         public void SendUUIDNameRequest(ScriptInstance instance, ViewerAgentAccessor agent, AnArray ids)
         {
             lock (instance)

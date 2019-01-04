@@ -63,6 +63,7 @@ namespace SilverSim.Tests.Viewer
     public partial class ViewerControlApi : IScriptApi, IPlugin, IPluginShutdown
     {
         static readonly ILog m_Log = LogManager.GetLogger("VIEWER CONTROL");
+        public const string ExtensionName = "ViewerControl";
 
         public class ViewerConnection
         {

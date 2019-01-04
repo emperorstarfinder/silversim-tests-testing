@@ -45,48 +45,48 @@ namespace SilverSim.Tests.Viewer
 {
     public partial class ViewerControlApi
     {
-        [APIExtension("ViewerControl")]
+        [APIExtension(ExtensionName)]
         public const int TELEPORT_FLAGS_SETHOMETOTARGET = 1;
-        [APIExtension("ViewerControl")]
+        [APIExtension(ExtensionName)]
         public const int TELEPORT_FLAGS_SETLASTTOTARGET = 2;
-        [APIExtension("ViewerControl")]
+        [APIExtension(ExtensionName)]
         public const int TELEPORT_FLAGS_VIALURE = 4;
-        [APIExtension("ViewerControl")]
+        [APIExtension(ExtensionName)]
         public const int TELEPORT_FLAGS_VIALANDMARK = 8;
-        [APIExtension("ViewerControl")]
+        [APIExtension(ExtensionName)]
         public const int TELEPORT_FLAGS_VIALOCATION = 16;
-        [APIExtension("ViewerControl")]
+        [APIExtension(ExtensionName)]
         public const int TELEPORT_FLAGS_VIAHOME = 32;
-        [APIExtension("ViewerControl")]
+        [APIExtension(ExtensionName)]
         public const int TELEPORT_FLAGS_VIATELEHUB = 64;
-        [APIExtension("ViewerControl")]
+        [APIExtension(ExtensionName)]
         public const int TELEPORT_FLAGS_VIALOGIN = 128;
-        [APIExtension("ViewerControl")]
+        [APIExtension(ExtensionName)]
         public const int TELEPORT_FLAGS_VIAGODLIKELURE = 256;
-        [APIExtension("ViewerControl")]
+        [APIExtension(ExtensionName)]
         public const int TELEPORT_FLAGS_GODLIKE = 512;
-        [APIExtension("ViewerControl")]
+        [APIExtension(ExtensionName)]
         public const int TELEPORT_FLAGS_NINEONEONE = 1024;
-        [APIExtension("ViewerControl")]
+        [APIExtension(ExtensionName)]
         public const int TELEPORT_FLAGS_DISABLECANCEL = 2048;
-        [APIExtension("ViewerControl")]
+        [APIExtension(ExtensionName)]
         public const int TELEPORT_FLAGS_VIAREGIONID = 4096;
-        [APIExtension("ViewerControl")]
+        [APIExtension(ExtensionName)]
         public const int TELEPORT_FLAGS_ISFLYING = 8192;
-        [APIExtension("ViewerControl")]
+        [APIExtension(ExtensionName)]
         public const int TELEPORT_FLAGS_RESETHOME = 16384;
-        [APIExtension("ViewerControl")]
+        [APIExtension(ExtensionName)]
         public const int TELEPORT_FLAGS_FORCEREDIRECT = 32768;
-        [APIExtension("ViewerControl")]
+        [APIExtension(ExtensionName)]
         public const int TELEPORT_FLAGS_FINISHEDVIALURE = 67108864;
-        [APIExtension("ViewerControl")]
+        [APIExtension(ExtensionName)]
         public const int TELEPORT_FLAGS_FINISHEDVIANEWSIM = 268435456;
-        [APIExtension("ViewerControl")]
+        [APIExtension(ExtensionName)]
         public const int TELEPORT_FLAGS_FINISHEDVIASAMESIM = 536870912;
-        [APIExtension("ViewerControl")]
+        [APIExtension(ExtensionName)]
         public const int TELEPORT_FLAGS_VIAHGLOGIN = 1073741824;
 
-        [APIExtension("ViewerControl", "vcCreateAccount")]
+        [APIExtension(ExtensionName, "vcCreateAccount")]
         public LSLKey CreateAccount(
             ScriptInstance instance,
             string firstName,
@@ -103,7 +103,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension("ViewerControl", "vcSetAgentLimit")]
+        [APIExtension(ExtensionName, "vcSetAgentLimit")]
         public void SetAgentLimit(
             ScriptInstance instance,
             int agentlimit)
@@ -116,7 +116,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension("ViewerControl", "vieweragent")]
+        [APIExtension(ExtensionName, "vieweragent")]
         [APIDisplayName("vieweragent")]
         [APIAccessibleMembers]
         [APIIsVariableType]
@@ -150,7 +150,7 @@ namespace SilverSim.Tests.Viewer
             public static implicit operator bool(ViewerAgentAccessor vc) => (bool)vc.AgentID;
         }
 
-        [APIExtension("ViewerControl", "vcLoginAgent")]
+        [APIExtension(ExtensionName, "vcLoginAgent")]
         public ViewerAgentAccessor LoginAgent(
             ScriptInstance instance,
             int circuitCode,
@@ -426,7 +426,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension("ViewerControl", APIUseAsEnum.MemberFunction, "Logout")]
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "Logout")]
         public void LogoutAgent(ScriptInstance instance, ViewerAgentAccessor agent)
         {
             lock (instance)
@@ -445,7 +445,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension("ViewerControl", APIUseAsEnum.MemberFunction, "SendRequestGodlikePowers")]
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "SendRequestGodlikePowers")]
         public void SendRequestGodlikePowers(ScriptInstance instance, ViewerAgentAccessor agent, int isgodlike, LSLKey token)
         {
             lock (instance)

@@ -27,7 +27,7 @@ namespace SilverSim.Tests.Viewer
 {
     public partial class ViewerControlApi
     {
-        [APIExtension("ViewerControl", "textureentry")]
+        [APIExtension(ExtensionName, "textureentry")]
         [APIDisplayName("textureentry")]
         [APIAccessibleMembers]
         public sealed class TextureEntryContainer
@@ -54,25 +54,25 @@ namespace SilverSim.Tests.Viewer
             public TextureEntryFaceContainer this[int index] => new TextureEntryFaceContainer(m_TextureEntry[(uint)index]);
         }
 
-        [APIExtension("ViewerControl")]
+        [APIExtension(ExtensionName)]
         public const int VC_MAPPING_TYPE_DEFAULT = 0;
-        [APIExtension("ViewerControl")]
+        [APIExtension(ExtensionName)]
         public const int VC_MAPPING_TYPE_PLANAR = 2;
-        [APIExtension("ViewerControl")]
+        [APIExtension(ExtensionName)]
         public const int VC_MAPPING_TYPE_SPHERICAL = 4;
-        [APIExtension("ViewerControl")]
+        [APIExtension(ExtensionName)]
         public const int VC_MAPPING_TYPE_CYLINDRICAL = 6;
 
-        [APIExtension("ViewerControl")]
+        [APIExtension(ExtensionName)]
         public const int VC_SHININESS_NONE = 0;
-        [APIExtension("ViewerControl")]
+        [APIExtension(ExtensionName)]
         public const int VC_SHININESS_LOW = 64;
-        [APIExtension("ViewerControl")]
+        [APIExtension(ExtensionName)]
         public const int VC_SHININESS_MEDIUM = 128;
-        [APIExtension("ViewerControl")]
+        [APIExtension(ExtensionName)]
         public const int VC_SHININESS_HIGH = 192;
 
-        [APIExtension("ViewerControl", "textureentryface")]
+        [APIExtension(ExtensionName, "textureentryface")]
         [APIDisplayName("textureentryface")]
         [APIAccessibleMembers]
         public sealed class TextureEntryFaceContainer

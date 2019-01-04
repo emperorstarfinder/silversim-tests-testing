@@ -31,7 +31,7 @@ namespace SilverSim.Tests.Viewer
 {
     public partial class ViewerControlApi
     {
-        [APIExtension("ViewerControl", APIUseAsEnum.MemberFunction, "SendTeleportRequest")]
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "SendTeleportRequest")]
         public void SendTeleportRequest(
             ScriptInstance instance,
             ViewerAgentAccessor agent,
@@ -58,7 +58,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension("ViewerControl", APIUseAsEnum.MemberFunction, "SendTeleportLureRequest")]
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "SendTeleportLureRequest")]
         public void SendTeleportLureRequest(
             ScriptInstance instance,
             ViewerAgentAccessor agent,
@@ -83,7 +83,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension("ViewerControl", APIUseAsEnum.MemberFunction, "SendTeleportLocationRequest")]
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "SendTeleportLocationRequest")]
         public void SendTeleportLocationRequest(
             ScriptInstance instance,
             ViewerAgentAccessor agent,
@@ -111,7 +111,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension("ViewerControl", APIUseAsEnum.MemberFunction, "SendTeleportLocal")]
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "SendTeleportLocal")]
         public void SendTeleportLandmarkRequest(
             ScriptInstance instance,
             ViewerAgentAccessor agent,
@@ -134,7 +134,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension("ViewerControl", APIUseAsEnum.MemberFunction, "SendCompleteAgentMovement")]
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "SendCompleteAgentMovement")]
         public void SendCompleteAgentMovement(
             ScriptInstance instance,
             ViewerAgentAccessor agent)

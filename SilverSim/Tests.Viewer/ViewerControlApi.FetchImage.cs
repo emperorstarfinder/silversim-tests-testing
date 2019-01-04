@@ -55,7 +55,7 @@ namespace SilverSim.Tests.Viewer
             public ByteArrayApi.ByteArray Data;
         }
 
-        [APIExtension("ViewerControl", "texture_received")]
+        [APIExtension(ExtensionName, "texture_received")]
         [StateEventDelegate]
         public delegate void TextureReceived(
             [Description("Agent info")]
@@ -186,7 +186,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension("ViewerControl", APIUseAsEnum.MemberFunction, "RequestTextureViaCircuit")]
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "RequestTextureViaCircuit")]
         public int RequestTextureViaCircuit(
             ScriptInstance instance,
             ViewerAgentAccessor agent,
@@ -224,7 +224,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension("ViewerControl", APIUseAsEnum.MemberFunction, "AbortTextureViaCircuit")]
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "AbortTextureViaCircuit")]
         public int AbortTextureViaCircuit(
             ScriptInstance instance,
             ViewerAgentAccessor agent,
@@ -270,7 +270,7 @@ namespace SilverSim.Tests.Viewer
             public string TextureUrl;
         }
 
-        [APIExtension("ViewerControl", APIUseAsEnum.MemberFunction, "RequestTextureViaCap")]
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "RequestTextureViaCap")]
         public void RequestTextureViaCap(
             ScriptInstance instance,
             ViewerAgentAccessor agent,

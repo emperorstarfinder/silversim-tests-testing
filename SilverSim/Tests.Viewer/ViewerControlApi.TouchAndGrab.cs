@@ -29,7 +29,7 @@ namespace SilverSim.Tests.Viewer
 {
     public partial class ViewerControlApi
     {
-        [APIExtension("ViewerControl", APIUseAsEnum.MemberFunction, "SendObjectGrab")]
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "SendObjectGrab")]
         public void SendObjectGrab(
             ScriptInstance instance,
             ViewerAgentAccessor agent,
@@ -69,7 +69,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension("ViewerControl", APIUseAsEnum.MemberFunction, "SendObjectGrabUpdate")]
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "SendObjectGrabUpdate")]
         public void SendObjectGrabUpdate(
             ScriptInstance instance,
             ViewerAgentAccessor agent,
@@ -113,7 +113,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension("ViewerControl", APIUseAsEnum.MemberFunction, "SendObjectDeGrab")]
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "SendObjectDeGrab")]
         public void SendObjectDeGrab(
             ScriptInstance instance,
             ViewerAgentAccessor agent,
@@ -152,7 +152,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension("ViewerControl", APIUseAsEnum.MemberFunction, "SendObjectSelect")]
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "SendObjectSelect")]
         public void SendObjectSelect(
             ScriptInstance instance,
             ViewerAgentAccessor agent,
@@ -179,7 +179,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension("ViewerControl", APIUseAsEnum.MemberFunction, "SendObjectDeselect")]
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "SendObjectDeselect")]
         public void SendObjectDeselect(
             ScriptInstance instance,
             ViewerAgentAccessor agent,
@@ -206,7 +206,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension("ViewerControl", APIUseAsEnum.MemberFunction, "SendRequestPayPrice")]
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "SendRequestPayPrice")]
         public void SendRequestPayPrice(
             ScriptInstance instance,
             ViewerAgentAccessor agent,

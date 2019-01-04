@@ -53,7 +53,7 @@ namespace SilverSim.Tests.Viewer
 {
     public partial class ViewerControlApi
     {
-        [APIExtension("ViewerControl", "agentinfo")]
+        [APIExtension(ExtensionName, "agentinfo")]
         [APIDisplayName("agentinfo")]
         [APIAccessibleMembers]
         [APIIsVariableType]
@@ -120,7 +120,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension("ViewerControl", "agentmovementcomplete_received")]
+        [APIExtension(ExtensionName, "agentmovementcomplete_received")]
         [StateEventDelegate]
         public delegate void AgentMovementCompleteReceived(
             [Description("Agent info")]
@@ -134,7 +134,7 @@ namespace SilverSim.Tests.Viewer
         #endregion
 
         #region regioninfo_received event
-        [APIExtension("ViewerControl", "regioninfodata")]
+        [APIExtension(ExtensionName, "regioninfodata")]
         [APIDisplayName("regioninfodata")]
         [APIIsVariableType]
         [APIAccessibleMembers]
@@ -190,7 +190,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension("ViewerControl", "regioninfo_received")]
+        [APIExtension(ExtensionName, "regioninfo_received")]
         [StateEventDelegate]
         public delegate void RegionInfoReceived(
             [Description("Agent info")]
@@ -200,7 +200,7 @@ namespace SilverSim.Tests.Viewer
         #endregion
 
         #region regionhandshake_received event
-        [APIExtension("ViewerControl", "regionhandshakedata")]
+        [APIExtension(ExtensionName, "regionhandshakedata")]
         [APIDisplayName("regionhandshakedata")]
         [APIIsVariableType]
         [APIAccessibleMembers]
@@ -259,7 +259,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension("ViewerControl", "regionhandshake_received")]
+        [APIExtension(ExtensionName, "regionhandshake_received")]
         [StateEventDelegate]
         public delegate void RegionHandshakeReceived(
             [Description("Agent info")]
@@ -281,7 +281,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension("ViewerControl", "logoutreply_received")]
+        [APIExtension(ExtensionName, "logoutreply_received")]
         [StateEventDelegate]
         public delegate void LogoutReplyReceived(
             [Description("Agent info")]
@@ -324,7 +324,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension("ViewerControl", "telehubinfo_received")]
+        [APIExtension(ExtensionName, "telehubinfo_received")]
         [StateEventDelegate]
         public delegate void TelehubInfoReceived(
             AgentInfo agent,
@@ -359,7 +359,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension("ViewerControl", "teleportlocal_received")]
+        [APIExtension(ExtensionName, "teleportlocal_received")]
         [StateEventDelegate]
         public delegate void TeleportLocalReceived(
             AgentInfo agent,
@@ -391,7 +391,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension("ViewerControl", "teleportprogress_received")]
+        [APIExtension(ExtensionName, "teleportprogress_received")]
         [StateEventDelegate]
         public delegate void TeleportProgressReceived(
             AgentInfo agent,
@@ -419,7 +419,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension("ViewerControl", "teleportstart_received")]
+        [APIExtension(ExtensionName, "teleportstart_received")]
         [StateEventDelegate]
         public delegate void TeleportStartReceived(
             AgentInfo agent,
@@ -455,7 +455,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension("ViewerControl", "teleportfailed_received")]
+        [APIExtension(ExtensionName, "teleportfailed_received")]
         [StateEventDelegate]
         public delegate void TeleportFailedReceived(
             AgentInfo agent,
@@ -479,7 +479,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension("ViewerControl", "economydata_received")]
+        [APIExtension(ExtensionName, "economydata_received")]
         [StateEventDelegate]
         public delegate void EconomyDataReceived(
             AgentInfo agent);
@@ -514,7 +514,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension("ViewerControl", "alertmessage_received")]
+        [APIExtension(ExtensionName, "alertmessage_received")]
         [StateEventDelegate]
         public delegate void AlertMessageReceived(
             AgentInfo agent,
@@ -557,7 +557,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension("ViewerControl", "agentdataupdate_received")]
+        [APIExtension(ExtensionName, "agentdataupdate_received")]
         [StateEventDelegate]
         public delegate void AgentDataUpdateReceived(
             AgentInfo agent,
@@ -589,7 +589,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension("ViewerControl", "agentdropgroup_received")]
+        [APIExtension(ExtensionName, "agentdropgroup_received")]
         [StateEventDelegate]
         public delegate void AgentDropGroupReceived(
             AgentInfo agent,
@@ -629,7 +629,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension("ViewerControl", "coarselocationupdate_received")]
+        [APIExtension(ExtensionName, "coarselocationupdate_received")]
         [StateEventDelegate]
         public delegate void CoarseLocationUpdateReceived(
             AgentInfo agent,
@@ -658,7 +658,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension("ViewerControl", "healthmessage_received")]
+        [APIExtension(ExtensionName, "healthmessage_received")]
         [StateEventDelegate]
         public delegate void HealthMessageUpdateReceived(
             AgentInfo agent,
@@ -666,7 +666,7 @@ namespace SilverSim.Tests.Viewer
         #endregion
 
         #region avataranimation_received
-        [APIExtension("ViewerControl", "avataranimationdata")]
+        [APIExtension(ExtensionName, "avataranimationdata")]
         [APIDisplayName("avataranimationdata")]
         [APIIsVariableType]
         [APIAccessibleMembers]
@@ -679,13 +679,15 @@ namespace SilverSim.Tests.Viewer
             public UUID ObjectID;
         }
 
-        [APIExtension("ViewerControl", "avataranimationdatalist")]
+        [APIExtension(ExtensionName, "avataranimationdatalist")]
         [APIDisplayName("avataranimationdatalist")]
         [APIIsVariableType]
-        [APIAccessibleMembers("Count")]
+        [APIAccessibleMembers("Count", "Length")]
         [Serializable]
         public sealed class AvatarAnimationDataList : List<AvatarAnimationDataBlock>
         {
+            public int Length => Count;
+
             public sealed class LSLEnumerator : IEnumerator<AvatarAnimationDataBlock>
             {
                 private readonly AvatarAnimationDataList Src;
@@ -744,7 +746,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension("ViewerControl", "avataranimation_received")]
+        [APIExtension(ExtensionName, "avataranimation_received")]
         [StateEventDelegate]
         public delegate void AvatarAnimationReceived(
             AgentInfo agent,
@@ -790,7 +792,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension("ViewerControl", "avatarsitresponse_received")]
+        [APIExtension(ExtensionName, "avatarsitresponse_received")]
         [StateEventDelegate]
         public delegate void AvatarSitResponseReceived(
             AgentInfo agent,
@@ -823,7 +825,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension("ViewerControl", "cameraconstraint_received")]
+        [APIExtension(ExtensionName, "cameraconstraint_received")]
         [StateEventDelegate]
         public delegate void CameraConstraintReceived(
             AgentInfo agent,
@@ -850,7 +852,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension("ViewerControl", "clearfollowcamproperties_received")]
+        [APIExtension(ExtensionName, "clearfollowcamproperties_received")]
         [StateEventDelegate]
         public delegate void ClearFollowCamPropertiesReceived(
             AgentInfo agent,
@@ -885,7 +887,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension("ViewerControl", "setfollowcamproperties_received")]
+        [APIExtension(ExtensionName, "setfollowcamproperties_received")]
         [StateEventDelegate]
         public delegate void SetFollowCamPropertiesReceived(
             AgentInfo agent,
@@ -941,7 +943,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension("ViewerControl", "chatfromsimulator_received")]
+        [APIExtension(ExtensionName, "chatfromsimulator_received")]
         [StateEventDelegate]
         public delegate void ChatFromSimulatorReceived(
             AgentInfo agent,
@@ -984,7 +986,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension("ViewerControl", "estatecovenantreply_received")]
+        [APIExtension(ExtensionName, "estatecovenantreply_received")]
         [StateEventDelegate]
         public delegate void EstateCovenantReplyReceived(
             AgentInfo agent,
@@ -1029,7 +1031,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension("ViewerControl", "loadurl_received")]
+        [APIExtension(ExtensionName, "loadurl_received")]
         [StateEventDelegate]
         public delegate void LoadURLReceived(
             AgentInfo agent,
@@ -1070,7 +1072,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension("ViewerControl", "scriptteleportrequest_received")]
+        [APIExtension(ExtensionName, "scriptteleportrequest_received")]
         [StateEventDelegate]
         public delegate void ScriptTeleportRequestReceived(
             AgentInfo agent,
@@ -1115,7 +1117,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension("ViewerControl", "scriptquestion_received")]
+        [APIExtension(ExtensionName, "scriptquestion_received")]
         [StateEventDelegate]
         public delegate void ScriptQuestionReceived(
             AgentInfo agent,
@@ -1178,7 +1180,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension("ViewerControl", "scriptdialog_received")]
+        [APIExtension(ExtensionName, "scriptdialog_received")]
         [StateEventDelegate]
         public delegate void ScriptDialogReceived(
             AgentInfo agent,
@@ -1219,7 +1221,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension("ViewerControl", "scriptcontrolchange_received")]
+        [APIExtension(ExtensionName, "scriptcontrolchange_received")]
         [StateEventDelegate]
         public delegate void ScriptControlChangeReceived(AgentInfo agent, AnArray controlData);
         #endregion
@@ -1250,7 +1252,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension("ViewerControl", "preloadsound_received")]
+        [APIExtension(ExtensionName, "preloadsound_received")]
         [StateEventDelegate]
         public delegate void PreloadsoundReceived(
             AgentInfo agent,
@@ -1291,7 +1293,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension("ViewerControl", "attachedsound_received")]
+        [APIExtension(ExtensionName, "attachedsound_received")]
         [StateEventDelegate]
         public delegate void AttachedSoundReceived(
             AgentInfo agent,
@@ -1343,7 +1345,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension("ViewerControl", "soundtrigger_received")]
+        [APIExtension(ExtensionName, "soundtrigger_received")]
         [StateEventDelegate]
         public delegate void SoundTriggerReceived(
             AgentInfo agent,
@@ -1380,7 +1382,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension("ViewerControl", "attachedsoundgainchange_received")]
+        [APIExtension(ExtensionName, "attachedsoundgainchange_received")]
         [StateEventDelegate]
         public delegate void AttachedSoundGainChangeReceived(
             AgentInfo agent,
@@ -1411,7 +1413,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension("ViewerControl", "featuredisabled_received")]
+        [APIExtension(ExtensionName, "featuredisabled_received")]
         [StateEventDelegate]
         public delegate void FeatureDisabledReceived(
             AgentInfo agent,
@@ -1449,7 +1451,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension("ViewerControl", "paypricereply_received")]
+        [APIExtension(ExtensionName, "paypricereply_received")]
         [StateEventDelegate]
         public delegate void PayPriceReplyReceived(
             AgentInfo agent,
@@ -1482,7 +1484,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension("ViewerControl", "killobject_received")]
+        [APIExtension(ExtensionName, "killobject_received")]
         [StateEventDelegate]
         public delegate void KillObjectReceived(
             AgentInfo agent,
@@ -1513,7 +1515,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension("ViewerControl", "onlinenotification_received")]
+        [APIExtension(ExtensionName, "onlinenotification_received")]
         [StateEventDelegate]
         public delegate void OnlineNotificationReceived(
             AgentInfo agent,
@@ -1544,7 +1546,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension("ViewerControl", "offlinenotification_received")]
+        [APIExtension(ExtensionName, "offlinenotification_received")]
         [StateEventDelegate]
         public delegate void OfflineNotificationReceived(
             AgentInfo agent,
@@ -1604,7 +1606,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension("ViewerControl", "improvedinstantmessage_received")]
+        [APIExtension(ExtensionName, "improvedinstantmessage_received")]
         [StateEventDelegate]
         public delegate void ImprovedInstantMessageReceived(
             AgentInfo agent,
@@ -1647,7 +1649,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension("ViewerControl", "uuidgroupnamereply_received")]
+        [APIExtension(ExtensionName, "uuidgroupnamereply_received")]
         [StateEventDelegate]
         public delegate void UUIDGroupNameReplyReceived(
             AgentInfo agent,
@@ -1679,7 +1681,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension("ViewerControl", "uuidnamereply_received")]
+        [APIExtension(ExtensionName, "uuidnamereply_received")]
         [StateEventDelegate]
         public delegate void UUIDNameReplyReceived(
             AgentInfo agent, 
@@ -1709,7 +1711,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension("ViewerControl", "derezack_received")]
+        [APIExtension(ExtensionName, "derezack_received")]
         [StateEventDelegate]
         public delegate void DeRezAckReceived(
             AgentInfo agent,
@@ -1745,7 +1747,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension("ViewerControl", "forceobjectselect_received")]
+        [APIExtension(ExtensionName, "forceobjectselect_received")]
         [StateEventDelegate]
         public delegate void ForceObjectSelectReceived(
             AgentInfo agent,
@@ -1754,7 +1756,7 @@ namespace SilverSim.Tests.Viewer
         #endregion
 
         #region objectanimation_received
-        [APIExtension("ViewerControl", "objectanimationdata")]
+        [APIExtension(ExtensionName, "objectanimationdata")]
         [APIDisplayName("objectanimationdata")]
         [APIIsVariableType]
         [APIAccessibleMembers]
@@ -1766,13 +1768,15 @@ namespace SilverSim.Tests.Viewer
             public int SequenceID;
         }
 
-        [APIExtension("ViewerControl", "objectanimationdatalist")]
+        [APIExtension(ExtensionName, "objectanimationdatalist")]
         [APIDisplayName("objectanimationdatalist")]
         [APIIsVariableType]
-        [APIAccessibleMembers("Count")]
+        [APIAccessibleMembers("Count", "Length")]
         [Serializable]
         public sealed class ObjectAnimationDataList : List<ObjectAnimationDataBlock>
         {
+            public int Lenght => Count;
+
             public sealed class LSLEnumerator : IEnumerator<ObjectAnimationDataBlock>
             {
                 private readonly ObjectAnimationDataList Src;
@@ -1829,7 +1833,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension("ViewerControl", "objectanimation_received")]
+        [APIExtension(ExtensionName, "objectanimation_received")]
         [StateEventDelegate]
         public delegate void ObjectAnimationReceived(
             AgentInfo agent,
@@ -1893,7 +1897,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension("ViewerControl", "moneybalancereply_received")]
+        [APIExtension(ExtensionName, "moneybalancereply_received")]
         [StateEventDelegate]
         public delegate void MoneyBalanceReplyReceived(
             AgentInfo agent,
@@ -1935,7 +1939,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension("ViewerControl", "grantgodlikepowers_received")]
+        [APIExtension(ExtensionName, "grantgodlikepowers_received")]
         [StateEventDelegate]
         public delegate void GrantGodlikePowersReceived(
             AgentInfo agent,
@@ -1975,7 +1979,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension("ViewerControl", "objectupdate_received")]
+        [APIExtension(ExtensionName, "objectupdate_received")]
         [StateEventDelegate]
         public delegate void ObjectUpdateReceived(
             AgentInfo agent,
@@ -1984,7 +1988,7 @@ namespace SilverSim.Tests.Viewer
         #endregion
 
         #region parcelinforeply_received
-        [APIExtension("ViewerControl", "parcelinforeplydata")]
+        [APIExtension(ExtensionName, "parcelinforeplydata")]
         [APIDisplayName("parcelinforeplydata")]
         [APIIsVariableType]
         [APIAccessibleMembers]
@@ -2042,7 +2046,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension("ViewerControl", "parcelinforeply_received")]
+        [APIExtension(ExtensionName, "parcelinforeply_received")]
         [StateEventDelegate]
         public delegate void ParcelInfoReplyReceived(
             AgentInfo agent,
@@ -2050,7 +2054,7 @@ namespace SilverSim.Tests.Viewer
         #endregion
 
         #region parcelobjectownersreply_received
-        [APIExtension("ViewerControl", "parcelobjectownersreplydata")]
+        [APIExtension(ExtensionName, "parcelobjectownersreplydata")]
         [APIDisplayName("parcelobjectownersreplydata")]
         [APIIsVariableType]
         [APIAccessibleMembers]
@@ -2079,6 +2083,8 @@ namespace SilverSim.Tests.Viewer
         [APICloneOnAssignment]
         public class ParcelObjectOwnersReplyDataList : List<ParcelObjectOwnersReplyData>
         {
+            public int Length => Count;
+
             public sealed class LSLEnumerator : IEnumerator<ParcelObjectOwnersReplyData>
             {
                 private readonly ParcelObjectOwnersReplyDataList Src;
@@ -2130,7 +2136,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension("ViewerControl", "parcelobjectownersreply_received")]
+        [APIExtension(ExtensionName, "parcelobjectownersreply_received")]
         [StateEventDelegate]
         public delegate void ParcelObjectOwnersReplyReceived(
             AgentInfo agent,
@@ -2172,7 +2178,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension("ViewerControl", "simulatorviewertimemessage_received")]
+        [APIExtension(ExtensionName, "simulatorviewertimemessage_received")]
         [StateEventDelegate]
         public delegate void SimulatorViewerTimeMessageReceived(
             AgentInfo agent,

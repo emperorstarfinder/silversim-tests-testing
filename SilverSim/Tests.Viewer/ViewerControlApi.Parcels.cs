@@ -29,7 +29,7 @@ namespace SilverSim.Tests.Viewer
 {
     public partial class ViewerControlApi
     {
-        [APIExtension("ViewerControl", APIUseAsEnum.MemberFunction, "SendParcelInfoRequest")]
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "SendParcelInfoRequest")]
         public void SendParcelInfoRequest(
             ScriptInstance instance,
             ViewerAgentAccessor agent,
@@ -52,7 +52,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension("ViewerControl", APIUseAsEnum.MemberFunction, "SendParcelObjectOwnersRequest")]
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "SendParcelObjectOwnersRequest")]
         public void SendParcelObjectOwnersRequest(
             ScriptInstance instance,
             ViewerAgentAccessor agent,

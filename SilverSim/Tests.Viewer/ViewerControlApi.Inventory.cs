@@ -32,18 +32,18 @@ namespace SilverSim.Tests.Viewer
 {
     public partial class ViewerControlApi
     {
-        [APIExtension("ViewerControl")]
+        [APIExtension(ExtensionName)]
         public const int VC_AGENT_INVENTORY_UDP_ONLY = 0;
-        [APIExtension("ViewerControl")]
+        [APIExtension(ExtensionName)]
         public const int VC_AGENT_INVENTORY_FETCH_CAPS = 1;
-        [APIExtension("ViewerControl")]
+        [APIExtension(ExtensionName)]
         public const int VC_AGENT_INVENTORY_FETCH_AND_CREATE_CAPS = 2;
-        [APIExtension("ViewerControl")]
+        [APIExtension(ExtensionName)]
         public const int VC_AGENT_INVENTORY_MIXED_AISV3 = 3;
-        [APIExtension("ViewerControl")]
+        [APIExtension(ExtensionName)]
         public const int VC_AGENT_INVENTORY_FULL_AISV3 = 4;
 
-        [APIExtension("ViewerControl", APIUseAsEnum.MemberFunction, "GetAgentInventory")]
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "GetAgentInventory")]
         public AgentInventoryApi.AgentInventory GetAgentInventory(
             ScriptInstance instance,
             ViewerAgentAccessor agent,
@@ -51,7 +51,7 @@ namespace SilverSim.Tests.Viewer
             HashtableApi.Hashtable seedResponse) =>
             GetAgentInventory(instance, agent, rootFolderID, seedResponse, VC_AGENT_INVENTORY_FULL_AISV3);
 
-        [APIExtension("ViewerControl", APIUseAsEnum.MemberFunction, "GetAgentInventory")]
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "GetAgentInventory")]
         public AgentInventoryApi.AgentInventory GetAgentInventory(
             ScriptInstance instance,
             ViewerAgentAccessor agent,
@@ -95,7 +95,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension("ViewerControl", APIUseAsEnum.MemberFunction, "GetLibraryInventory")]
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "GetLibraryInventory")]
         public AgentInventoryApi.AgentInventory GetLibraryInventory(
             ScriptInstance instance,
             ViewerAgentAccessor agent,
@@ -105,7 +105,7 @@ namespace SilverSim.Tests.Viewer
             HashtableApi.Hashtable seedResponse) =>
             GetLibraryInventory(instance, agent, circuitCode, libraryAgentId, rootFolderID, seedResponse, VC_AGENT_INVENTORY_FULL_AISV3);
 
-        [APIExtension("ViewerControl", APIUseAsEnum.MemberFunction, "GetLibraryInventory")]
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "GetLibraryInventory")]
         public AgentInventoryApi.AgentInventory GetLibraryInventory(
             ScriptInstance instance,
             ViewerAgentAccessor agent,

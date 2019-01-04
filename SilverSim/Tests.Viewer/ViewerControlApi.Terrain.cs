@@ -33,7 +33,7 @@ namespace SilverSim.Tests.Viewer
 {
     public sealed partial class ViewerControlApi
     {
-        [APIExtension("ViewerControl", "modifylandparceldata")]
+        [APIExtension(ExtensionName, "modifylandparceldata")]
         [APIDisplayName("modifylandparceldata")]
         [APIIsVariableType]
         [APICloneOnAssignment]
@@ -48,7 +48,7 @@ namespace SilverSim.Tests.Viewer
             public double BrushSize;
         }
 
-        [APIExtension("ViewerControl", "modifylandparceldatalist")]
+        [APIExtension(ExtensionName, "modifylandparceldatalist")]
         [APIDisplayName("modifylandparceldatalist")]
         [APIIsVariableType]
         [APICloneOnAssignment]
@@ -56,12 +56,13 @@ namespace SilverSim.Tests.Viewer
         [Serializable]
         public sealed class ModifyLandParcelDataList : List<ModifyLandParcelData>
         {
+            public int Length => Count;
         }
 
-        [APIExtension("ViewerControl", APIUseAsEnum.MemberFunction, "Add")]
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "Add")]
         public void AddModifyLandParcelData(ModifyLandParcelDataList list, ModifyLandParcelData data) => list.Add(data);
 
-        [APIExtension("ViewerControl", APIUseAsEnum.MemberFunction, "SendModifyLand")]
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "SendModifyLand")]
         public void SendModifyLand(
             ScriptInstance instance,
             ViewerAgentAccessor agent,

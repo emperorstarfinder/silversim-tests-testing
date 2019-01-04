@@ -29,7 +29,7 @@ namespace SilverSim.Tests.Viewer
 {
     public partial class ViewerControlApi
     {
-        [APIExtension("ViewerControl", APIUseAsEnum.MemberFunction, "SendAgentRequestSit")]
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "SendAgentRequestSit")]
         public void SendAgentRequestSit(
             ScriptInstance instance,
             ViewerAgentAccessor agent,
@@ -54,7 +54,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension("ViewerControl", APIUseAsEnum.MemberFunction, "SendAgentSit")]
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "SendAgentSit")]
         public void SendAgentSit(
             ScriptInstance instance,
             ViewerAgentAccessor agent)

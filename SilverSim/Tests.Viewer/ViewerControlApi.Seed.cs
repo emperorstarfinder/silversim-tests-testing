@@ -32,7 +32,7 @@ namespace SilverSim.Tests.Viewer
 {
     public partial class ViewerControlApi
     {
-        [APIExtension("ViewerControl", "vcSeedRequest")]
+        [APIExtension(ExtensionName, "vcSeedRequest")]
         public HashtableApi.Hashtable SeedRequest(
             ScriptInstance instance,
             string seedCaps,

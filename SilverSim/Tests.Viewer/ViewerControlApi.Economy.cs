@@ -28,7 +28,7 @@ namespace SilverSim.Tests.Viewer
 {
     public partial class ViewerControlApi
     {
-        [APIExtension("ViewerControl", APIUseAsEnum.MemberFunction, "SendEconomyDataRequest")]
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "SendEconomyDataRequest")]
         public void SendEconomyDataRequest(
             ScriptInstance instance,
             ViewerAgentAccessor agent)

@@ -24,17 +24,12 @@ using SilverSim.Scripting.Lsl;
 using SilverSim.Tests.Viewer.UDP;
 using SilverSim.Types;
 using SilverSim.Viewer.Messages.Sound;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SilverSim.Tests.Viewer
 {
     public partial class ViewerControlApi
     {
-        [APIExtension("ViewerControl", APIUseAsEnum.MemberFunction, "SendSoundTrigger")]
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "SendSoundTrigger")]
         public void SendSoundTrigger(
             ScriptInstance instance,
             ViewerAgentAccessor agent,

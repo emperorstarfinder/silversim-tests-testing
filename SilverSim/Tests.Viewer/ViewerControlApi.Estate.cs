@@ -29,7 +29,7 @@ namespace SilverSim.Tests.Viewer
 {
     public partial class ViewerControlApi
     {
-        [APIExtension("ViewerControl", APIUseAsEnum.MemberFunction, "SendEstateCovenantRequest")]
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "SendEstateCovenantRequest")]
         public void SendEstateCovenantRequest(
             ScriptInstance instance,
             ViewerAgentAccessor agent)
@@ -50,7 +50,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension("ViewerControl", APIUseAsEnum.MemberFunction, "SendSimWideDeletes")]
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "SendSimWideDeletes")]
         public void SendSimWideDeletes(
             ScriptInstance instance,
             ViewerAgentAccessor agent,
