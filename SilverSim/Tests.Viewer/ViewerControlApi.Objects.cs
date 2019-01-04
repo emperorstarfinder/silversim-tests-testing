@@ -1293,7 +1293,7 @@ namespace SilverSim.Tests.Viewer
             public Vector3 TextColor;
             public double TextAlpha;
             public string MediaURL = string.Empty;
-            public ByteArrayApi.ByteArray PSBlock = new ByteArrayApi.ByteArray();
+            public ParticleSystemContainer ParticleSystem = new ParticleSystemContainer();
             public ByteArrayApi.ByteArray ExtraParams = new ByteArrayApi.ByteArray();
             public LSLKey LoopedSound = new LSLKey();
             public LSLKey OwnerID = new LSLKey();
@@ -1359,7 +1359,7 @@ namespace SilverSim.Tests.Viewer
                 TextColor = d.TextColor;
                 TextAlpha = d.TextColor.A;
                 MediaURL = d.MediaURL;
-                PSBlock = new ByteArrayApi.ByteArray(d.PSBlock);
+                ParticleSystem = new ParticleSystemContainer(d.PSBlock);
                 ExtraParams = new ByteArrayApi.ByteArray(d.ExtraParams);
                 LoopedSound = d.LoopedSound;
                 OwnerID = d.OwnerID;
@@ -1449,7 +1449,7 @@ namespace SilverSim.Tests.Viewer
                     byte[] particledata = new byte[86];
                     Buffer.BlockCopy(compressed, offset, particledata, 0, 86);
                     offset += 86;
-                    data.PSBlock = new ByteArrayApi.ByteArray(particledata);
+                    data.ParticleSystem = new ParticleSystemContainer(particledata);
                 }
 
                 int extrastart = offset;
