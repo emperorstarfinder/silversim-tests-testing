@@ -458,6 +458,17 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
+        [APIExtension("Testing", APIUseAsEnum.MemberFunction, "AssetExists")]
+        public int CheckAssetExists(ScriptInstance instance, ViewerAgentAccessor agent, LSLKey assetid)
+        {
+            lock (instance)
+            {
+                IAgent actagent;
+                return (instance.Part.ObjectGroup.Scene.Agents.TryGetValue(agent.AgentID, out actagent) &&
+                    actagent.AssetService.Exists(assetid)).ToLSLBoolean();
+            }
+        }
+
         [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "SendRequestGodlikePowers")]
         public void SendRequestGodlikePowers(ScriptInstance instance, ViewerAgentAccessor agent, int isgodlike, LSLKey token)
         {
