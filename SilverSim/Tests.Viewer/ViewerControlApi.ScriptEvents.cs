@@ -2620,6 +2620,7 @@ namespace SilverSim.Tests.Viewer
         }
 
         [APIExtension(ExtensionName, "parcelmediacommandmessage_received")]
+        [StateEventDelegate]
         public delegate void ParcelMediaCommandMessageReceived(
             ViewerAgentAccessor agent,
             int flags,
