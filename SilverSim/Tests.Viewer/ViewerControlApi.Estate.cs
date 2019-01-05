@@ -245,6 +245,36 @@ namespace SilverSim.Tests.Viewer
         }
 
         [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction)]
+        public void SendEstateChangeInfo(
+            ScriptInstance instance,
+            ViewerAgentAccessor agent,
+            string estateName,
+            int estateFlags,
+            double sunPos)
+        {
+            lock (instance)
+            {
+                ViewerConnection vc;
+                ViewerCircuit viewerCircuit;
+                if (m_Clients.TryGetValue(agent.AgentID, out vc) &&
+                    vc.ViewerCircuits.TryGetValue((uint)agent.CircuitCode, out viewerCircuit))
+                {
+                    var msg = new EstateOwnerMessage
+                    {
+                        AgentID = agent.AgentID,
+                        SessionID = viewerCircuit.SessionID,
+                        Method = "estatechangeinfo"
+                    };
+                    uint actSunPos = (uint)((sunPos + 6) * 1024.0);
+                    msg.ParamList.Add(estateName.ToUTF8Bytes());
+                    msg.ParamList.Add(((uint)estateFlags).ToString().ToUTF8Bytes());
+                    msg.ParamList.Add(actSunPos.ToString().ToUTF8Bytes());
+                    viewerCircuit.SendMessage(msg);
+                }
+            }
+        }
+
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction)]
         public void SendEstateAccessAddUser(ScriptInstance instance, ViewerAgentAccessor agent, LSLKey transactionid, LSLKey invoice, int allEstates, LSLKey user)
         {
             EstateAccessDeltaFlags flags = EstateAccessDeltaFlags.AddUser;

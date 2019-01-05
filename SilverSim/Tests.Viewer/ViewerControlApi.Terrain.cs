@@ -27,6 +27,7 @@ using SilverSim.Viewer.Messages.Generic;
 using SilverSim.Viewer.Messages.Land;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -175,6 +176,72 @@ namespace SilverSim.Tests.Viewer
                         Method = "terrain"
                     };
                     msg.ParamList.Add("swap".ToUTF8Bytes());
+                    viewerCircuit.SendMessage(msg);
+                }
+            }
+        }
+
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction)]
+        public void SendEstateTerrainDetail(
+            ScriptInstance instance,
+            ViewerAgentAccessor agent,
+            AnArray list)
+        {
+            if(list.Count % 2 != 0)
+            {
+                return;
+            }
+            lock (instance)
+            {
+                ViewerConnection vc;
+                ViewerCircuit viewerCircuit;
+                if (m_Clients.TryGetValue(agent.AgentID, out vc) &&
+                    vc.ViewerCircuits.TryGetValue((uint)agent.CircuitCode, out viewerCircuit))
+                {
+                    var msg = new EstateOwnerMessage
+                    {
+                        AgentID = agent.AgentID,
+                        SessionID = viewerCircuit.SessionID,
+                        Method = "texturedetail"
+                    };
+                    for(int i = 0; i < list.Count; i += 2)
+                    {
+                        msg.ParamList.Add($"{list[i].AsInt} {list[i + 1].AsUUID}".ToUTF8Bytes());
+                    }
+                    viewerCircuit.SendMessage(msg);
+                }
+            }
+        }
+
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction)]
+        public void SendEstateTerrainHeights(
+            ScriptInstance instance,
+            ViewerAgentAccessor agent,
+            AnArray list)
+        {
+            if (list.Count % 3 != 0)
+            {
+                return;
+            }
+            lock (instance)
+            {
+                ViewerConnection vc;
+                ViewerCircuit viewerCircuit;
+                if (m_Clients.TryGetValue(agent.AgentID, out vc) &&
+                    vc.ViewerCircuits.TryGetValue((uint)agent.CircuitCode, out viewerCircuit))
+                {
+                    var msg = new EstateOwnerMessage
+                    {
+                        AgentID = agent.AgentID,
+                        SessionID = viewerCircuit.SessionID,
+                        Method = "textureheights"
+                    };
+                    for (int i = 0; i < list.Count; i += 3)
+                    {
+                        double lowVal = list[i + 1].AsReal;
+                        double highVal = list[i + 2].AsReal;
+                        msg.ParamList.Add(string.Format(CultureInfo.InvariantCulture, "{0} {1} {2}", list[i].AsInt, lowVal, highVal).ToUTF8Bytes());
+                    }
                     viewerCircuit.SendMessage(msg);
                 }
             }
