@@ -22,6 +22,8 @@
 using SilverSim.Scene.Types.Script;
 using SilverSim.Scripting.Lsl;
 using SilverSim.Tests.Viewer.UDP;
+using SilverSim.Types;
+using SilverSim.Viewer.Messages.Generic;
 using SilverSim.Viewer.Messages.Land;
 using System;
 using System.Collections.Generic;
@@ -102,6 +104,78 @@ namespace SilverSim.Tests.Viewer
                     }
 
                     viewerCircuit.SendMessage(m);
+                }
+            }
+        }
+
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "SendTerrainBake")]
+        public void SendTerrainBake(
+            ScriptInstance instance,
+            ViewerAgentAccessor agent)
+        {
+            lock (instance)
+            {
+                ViewerConnection vc;
+                ViewerCircuit viewerCircuit;
+                if (m_Clients.TryGetValue(agent.AgentID, out vc) &&
+                    vc.ViewerCircuits.TryGetValue((uint)agent.CircuitCode, out viewerCircuit))
+                {
+                    var msg = new GodlikeMessage
+                    {
+                        AgentID = agent.AgentID,
+                        SessionID = viewerCircuit.SessionID,
+                        Method = "terrain"
+                    };
+                    msg.ParamList.Add("bake".ToUTF8Bytes());
+                    viewerCircuit.SendMessage(msg);
+                }
+            }
+        }
+
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "SendTerrainRevert")]
+        public void SendTerrainRevert(
+            ScriptInstance instance,
+            ViewerAgentAccessor agent)
+        {
+            lock (instance)
+            {
+                ViewerConnection vc;
+                ViewerCircuit viewerCircuit;
+                if (m_Clients.TryGetValue(agent.AgentID, out vc) &&
+                    vc.ViewerCircuits.TryGetValue((uint)agent.CircuitCode, out viewerCircuit))
+                {
+                    var msg = new GodlikeMessage
+                    {
+                        AgentID = agent.AgentID,
+                        SessionID = viewerCircuit.SessionID,
+                        Method = "terrain"
+                    };
+                    msg.ParamList.Add("revert".ToUTF8Bytes());
+                    viewerCircuit.SendMessage(msg);
+                }
+            }
+        }
+
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "SendTerrainSwap")]
+        public void SendTerrainSwap(
+            ScriptInstance instance,
+            ViewerAgentAccessor agent)
+        {
+            lock (instance)
+            {
+                ViewerConnection vc;
+                ViewerCircuit viewerCircuit;
+                if (m_Clients.TryGetValue(agent.AgentID, out vc) &&
+                    vc.ViewerCircuits.TryGetValue((uint)agent.CircuitCode, out viewerCircuit))
+                {
+                    var msg = new GodlikeMessage
+                    {
+                        AgentID = agent.AgentID,
+                        SessionID = viewerCircuit.SessionID,
+                        Method = "terrain"
+                    };
+                    msg.ParamList.Add("swap".ToUTF8Bytes());
+                    viewerCircuit.SendMessage(msg);
                 }
             }
         }
