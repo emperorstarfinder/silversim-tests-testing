@@ -371,10 +371,12 @@ namespace SilverSim.Tests.Viewer
                 viewerCircuit.MessageRouting.Add(MessageType.AvatarAnimation, (m) => AvatarAnimationReceivedEvent.ToScriptEvent(m, vc, accessor));
                 viewerCircuit.MessageRouting.Add(MessageType.AvatarSitResponse, (m) => AvatarSitResponseReceivedEvent.ToScriptEvent(m, vc, accessor));
                 viewerCircuit.MessageRouting.Add(MessageType.CameraConstraint, (m) => CameraConstraintReceivedEvent.ToScriptEvent(m, vc, accessor));
+                viewerCircuit.MessageRouting.Add(MessageType.ChangeUserRights, (m) => ChangeUserRightsReceivedEvent.ToScriptEvent(m, vc, accessor));
                 viewerCircuit.MessageRouting.Add(MessageType.ChatFromSimulator, (m) => ChatFromSimulatorReceivedEvent.ToScriptEvent(m, vc, accessor));
                 viewerCircuit.MessageRouting.Add(MessageType.ClearFollowCamProperties, (m) => ClearFollowCamPropertiesReceivedEvent.ToScriptEvent(m, vc, accessor));
                 viewerCircuit.MessageRouting.Add(MessageType.CoarseLocationUpdate, (m) => CoarseLocationUpdateReceivedEvent.ToScriptEvent(m, vc, accessor));
                 viewerCircuit.MessageRouting.Add(MessageType.DeRezAck, (m) => DeRezAckReceivedEvent.ToScriptEvent(m, vc, accessor));
+                viewerCircuit.MessageRouting.Add(MessageType.DisableSimulator, (m) => DisableSimulatorReceivedEvent.ToScriptEvent(m, vc, accessor));
                 viewerCircuit.MessageRouting.Add(MessageType.EconomyData, (m) => EconomyDataReceivedEvent.ToScriptEvent(m, vc, accessor));
                 viewerCircuit.MessageRouting.Add(MessageType.EstateCovenantReply, (m) => EstateCovenantReplyReceivedEvent.ToScriptEvent(m, vc, accessor));
                 viewerCircuit.MessageRouting.Add(MessageType.FeatureDisabled, (m) => FeatureDisabledReceivedEvent.ToScriptEvent(m, vc, accessor));
@@ -394,7 +396,10 @@ namespace SilverSim.Tests.Viewer
                 viewerCircuit.MessageRouting.Add(MessageType.ObjectUpdateCompressed, (m) => ObjectUpdateReceivedEvent.ToScriptEvent(m, vc, accessor));
                 viewerCircuit.MessageRouting.Add(MessageType.OfflineNotification, (m) => OfflineNotificationReceivedEvent.ToScriptEvent(m, vc, accessor));
                 viewerCircuit.MessageRouting.Add(MessageType.OnlineNotification, (m) => OnlineNotificationReceivedEvent.ToScriptEvent(m, vc, accessor));
+                viewerCircuit.MessageRouting.Add(MessageType.ParcelDwellReply, (m) => ParcelDwellReplyReceivedEvent.ToScriptEvent(m, vc, accessor));
                 viewerCircuit.MessageRouting.Add(MessageType.ParcelInfoReply, (m) => ParcelInfoReplyReceivedEvent.ToScriptEvent(m, vc, accessor));
+                viewerCircuit.MessageRouting.Add(MessageType.ParcelMediaCommandMessage, (m) => ParcelMediaCommandMessageReceivedEvent.ToScriptEvent(m, vc, accessor));
+                viewerCircuit.MessageRouting.Add(MessageType.ParcelMediaUpdate, (m) => ParcelMediaUpdateReceivedEvent.ToScriptEvent(m, vc, accessor));
                 viewerCircuit.MessageRouting.Add(MessageType.ParcelObjectOwnersReply, (m) => ParcelObjectOwnersReplyReceivedEvent.ToScriptEvent(m, vc, accessor));
                 viewerCircuit.MessageRouting.Add(MessageType.ParcelProperties, (m) => ParcelPropertiesReceivedEvent.ToScriptEvent(m, vc, accessor));
                 viewerCircuit.MessageRouting.Add(MessageType.PayPriceReply, (m) => PayPriceReplyReceivedEvent.ToScriptEvent(m, vc, accessor));

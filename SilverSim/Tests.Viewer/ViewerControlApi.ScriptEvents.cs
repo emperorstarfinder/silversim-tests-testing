@@ -2487,6 +2487,197 @@ namespace SilverSim.Tests.Viewer
             AnArray folderList);
         #endregion
 
+        #region disablesimulator_received
+        [TranslatedScriptEvent("disablesimulator_received")]
+        public class DisableSimulatorReceivedEvent : IScriptEvent
+        {
+            [TranslatedScriptEventParameter(0)]
+            public ViewerAgentAccessor Agent;
+
+            public static void ToScriptEvent(Message m, ViewerConnection vc, ViewerAgentAccessor agent)
+            {
+                vc.PostEvent(new DisableSimulatorReceivedEvent
+                {
+                    Agent = agent
+                });
+            }
+        }
+
+        [APIExtension(ExtensionName, "disablesimulator_received")]
+        [StateEventDelegate]
+        public delegate void DisableSimulatorReceived(
+            ViewerAgentAccessor agent);
+        #endregion
+
+        #region viewerfrozenmessage_received
+        [TranslatedScriptEvent("viewerfrozenmessage_received")]
+        public class ViewerFrozenMessageReceivedEvent : IScriptEvent
+        {
+            [TranslatedScriptEventParameter(0)]
+            public ViewerAgentAccessor Agent;
+            [TranslatedScriptEventParameter(1)]
+            public int Frozen;
+
+            public static void ToScriptEvent(Message m, ViewerConnection vc, ViewerAgentAccessor agent)
+            {
+                var msg = (ViewerFrozenMessage)m;
+                vc.PostEvent(new ViewerFrozenMessageReceivedEvent
+                {
+                    Agent = agent,
+                    Frozen = msg.Frozen.ToLSLBoolean()
+                });
+            }
+        }
+
+        [APIExtension(ExtensionName, "viewerfrozenmessage_received")]
+        [StateEventDelegate]
+        public delegate void ViewerFrozenMessageReceived(ViewerAgentAccessor agent, int frozen);
+        #endregion
+
+        #region changeuserrights_received
+        [TranslatedScriptEvent("changeuserrights_received")]
+        public class ChangeUserRightsReceivedEvent : IScriptEvent
+        {
+            [TranslatedScriptEventParameter(0)]
+            public ViewerAgentAccessor Agent;
+            [TranslatedScriptEventParameter(1)]
+            public AnArray StridedRightsList = new AnArray();
+
+            public static void ToScriptEvent(Message m, ViewerConnection vc, ViewerAgentAccessor agent)
+            {
+                var msg = (ChangeUserRights)m;
+                var ev = new ChangeUserRightsReceivedEvent
+                {
+                    Agent = agent
+                };
+
+                foreach(ChangeUserRights.RightsEntry d in msg.Rights)
+                {
+                    ev.StridedRightsList.Add(new LSLKey(d.AgentRelated));
+                    ev.StridedRightsList.Add((int)d.RelatedRights);
+                }
+                vc.PostEvent(ev);
+            }
+        }
+
+        [APIExtension(ExtensionName, "changeuserrights_received")]
+        [StateEventDelegate]
+        public delegate void ChangeUserRightsReceived(ViewerAgentAccessor agent, AnArray stridedRightsList);
+        #endregion
+
+        #region parcelwellreply_received
+        [TranslatedScriptEvent("parceldwellreply_received")]
+        public class ParcelDwellReplyReceivedEvent : IScriptEvent
+        {
+            [TranslatedScriptEventParameter(0)]
+            public ViewerAgentAccessor Agent;
+            [TranslatedScriptEventParameter(1)]
+            public LSLKey ParcelID;
+            [TranslatedScriptEventParameter(2)]
+            public double Dwell;
+
+            public static void ToScriptEvent(Message m, ViewerConnection vc, ViewerAgentAccessor agent)
+            {
+                var msg = (ParcelDwellReply)m;
+                vc.PostEvent(new ParcelDwellReplyReceivedEvent
+                {
+                    Agent = agent,
+                    ParcelID = new LSLKey(new UUID(msg.ParcelID.GetBytes(), 0)),
+                    Dwell = msg.Dwell
+                });
+            }
+        }
+
+        [APIExtension(ExtensionName, "parceldwellreply_received")]
+        [StateEventDelegate]
+        public delegate void ParcelDwellReplyReceived(ViewerAgentAccessor agent, LSLKey parcelID, double dwell);
+        #endregion
+
+        #region parcelmediacommandmessage_received
+        [TranslatedScriptEvent("parcelmediacommandmessage_received")]
+        public class ParcelMediaCommandMessageReceivedEvent : IScriptEvent
+        {
+            [TranslatedScriptEventParameter(0)]
+            public ViewerAgentAccessor Agent;
+            [TranslatedScriptEventParameter(1)]
+            public int Flags;
+            [TranslatedScriptEventParameter(2)]
+            public int Command;
+            [TranslatedScriptEventParameter(3)]
+            public double Time;
+
+            public static void ToScriptEvent(Message m, ViewerConnection vc, ViewerAgentAccessor agent)
+            {
+                var msg = (ParcelMediaCommandMessage)m;
+                vc.PostEvent(new ParcelMediaCommandMessageReceivedEvent
+                {
+                    Agent = agent,
+                    Flags = (int)msg.Flags,
+                    Command = (int)msg.Command,
+                    Time = msg.Time
+                });
+            }
+        }
+
+        [APIExtension(ExtensionName, "parcelmediacommandmessage_received")]
+        public delegate void ParcelMediaCommandMessageReceived(
+            ViewerAgentAccessor agent,
+            int flags,
+            int command,
+            double time);
+        #endregion
+
+        #region parcelmediaupdate_received
+        [TranslatedScriptEvent("parcelmediaupdate_received")]
+        public class ParcelMediaUpdateReceivedEvent : IScriptEvent
+        {
+            [TranslatedScriptEventParameter(0)]
+            public ViewerAgentAccessor Agent;
+            [TranslatedScriptEventParameter(1)]
+            public LSLKey MediaID;
+            [TranslatedScriptEventParameter(2)]
+            public int MediaAutoscale;
+            [TranslatedScriptEventParameter(3)]
+            public string MediaType;
+            [TranslatedScriptEventParameter(4)]
+            public string MediaDesc;
+            [TranslatedScriptEventParameter(5)]
+            public int MediaWidth;
+            [TranslatedScriptEventParameter(6)]
+            public int MediaHeight;
+            [TranslatedScriptEventParameter(7)]
+            public int MediaLoop;
+
+            public static void ToScriptEvent(Message m, ViewerConnection vc, ViewerAgentAccessor agent)
+            {
+                var msg = (ParcelMediaUpdate)m;
+                vc.PostEvent(new ParcelMediaUpdateReceivedEvent
+                {
+                    Agent = agent,
+                    MediaID = msg.MediaID,
+                    MediaAutoscale = msg.MediaAutoScale.ToLSLBoolean(),
+                    MediaType = msg.MediaType,
+                    MediaDesc = msg.MediaDesc,
+                    MediaWidth = msg.MediaWidth,
+                    MediaHeight = msg.MediaHeight,
+                    MediaLoop = msg.MediaLoop.ToLSLBoolean()
+                });
+            }
+        }
+
+        [APIExtension(ExtensionName, "parcelmediaupdate_received")]
+        [StateEventDelegate]
+        public delegate void ParcelMediaUpdateReceived(
+            ViewerAgentAccessor agent,
+            LSLKey mediaID,
+            int mediaAutoscale,
+            string mediaType,
+            string mediaDesc,
+            int mediaWidth,
+            int mediaHeight,
+            int mediaLoop);
+        #endregion
+
         [TranslatedScriptEventsInfo]
         public static readonly Type[] TranslatedEvents = new Type[] {
             typeof(AgentDataUpdateReceivedEvent),
@@ -2497,10 +2688,12 @@ namespace SilverSim.Tests.Viewer
             typeof(AvatarAnimationReceivedEvent),
             typeof(AvatarSitResponseReceivedEvent),
             typeof(CameraConstraintReceivedEvent),
+            typeof(ChangeUserRightsReceivedEvent),
             typeof(ChatFromSimulatorReceivedEvent),
             typeof(ClearFollowCamPropertiesReceivedEvent),
             typeof(CrossedRegionReceivedEvent),
             typeof(DeRezAckReceivedEvent),
+            typeof(DisableSimulatorReceivedEvent),
             typeof(EconomyDataReceivedEvent),
             typeof(EnableSimulatorReceivedEvent),
             typeof(EstablishAgentCommunicationReceivedEvent),
@@ -2520,7 +2713,10 @@ namespace SilverSim.Tests.Viewer
             typeof(ObjectUpdateReceivedEvent),
             typeof(OfflineNotificationReceivedEvent),
             typeof(OnlineNotificationReceivedEvent),
+            typeof(ParcelDwellReplyReceivedEvent),
             typeof(ParcelInfoReplyReceivedEvent),
+            typeof(ParcelMediaCommandMessageReceivedEvent),
+            typeof(ParcelMediaUpdateReceivedEvent),
             typeof(ParcelObjectOwnersReplyReceivedEvent),
             typeof(ParcelPropertiesReceivedEvent),
             typeof(ParcelVoiceInfoReceivedEvent),
@@ -2544,6 +2740,7 @@ namespace SilverSim.Tests.Viewer
             typeof(TeleportFailedReceivedEvent),
             typeof(UUIDGroupNameReplyReceivedEvent),
             typeof(UUIDNameReplyReceivedEvent),
+            typeof(ViewerFrozenMessageReceivedEvent)
         };
     }
 }
