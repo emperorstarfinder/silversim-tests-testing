@@ -33,6 +33,7 @@ using SilverSim.Types.Grid;
 using SilverSim.Viewer.Core;
 using SilverSim.Viewer.Messages;
 using SilverSim.Viewer.Messages.Circuit;
+using SilverSim.Viewer.Messages.Generic;
 using SilverSim.Viewer.Messages.God;
 using SilverSim.Viewer.Messages.Telehub;
 using SilverSim.Viewer.Messages.Teleport;
@@ -379,6 +380,7 @@ namespace SilverSim.Tests.Viewer
                 viewerCircuit.MessageRouting.Add(MessageType.DisableSimulator, (m) => DisableSimulatorReceivedEvent.ToScriptEvent(m, vc, accessor));
                 viewerCircuit.MessageRouting.Add(MessageType.EconomyData, (m) => EconomyDataReceivedEvent.ToScriptEvent(m, vc, accessor));
                 viewerCircuit.MessageRouting.Add(MessageType.EstateCovenantReply, (m) => EstateCovenantReplyReceivedEvent.ToScriptEvent(m, vc, accessor));
+                viewerCircuit.MessageRouting.Add(MessageType.EstateOwnerMessage, (m) => HandleEstateOwnerMessage((EstateOwnerMessage)m, vc, accessor));
                 viewerCircuit.MessageRouting.Add(MessageType.FeatureDisabled, (m) => FeatureDisabledReceivedEvent.ToScriptEvent(m, vc, accessor));
                 viewerCircuit.MessageRouting.Add(MessageType.ForceObjectSelect, (m) => ForceObjectSelectReceivedEvent.ToScriptEvent(m, vc, accessor));
                 viewerCircuit.MessageRouting.Add(MessageType.GrantGodlikePowers, (m) => GrantGodlikePowersReceivedEvent.ToScriptEvent(m, vc, accessor));

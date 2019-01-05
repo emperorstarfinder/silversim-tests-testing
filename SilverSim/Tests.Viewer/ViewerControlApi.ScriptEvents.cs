@@ -2698,6 +2698,8 @@ namespace SilverSim.Tests.Viewer
             typeof(EnableSimulatorReceivedEvent),
             typeof(EstablishAgentCommunicationReceivedEvent),
             typeof(EstateCovenantReplyReceivedEvent),
+            typeof(EstateOwnerMessageEstateUpdateInfoReceivedEvent),
+            typeof(EstateOwnerMessageSetExperienceReceivedEvent),
             typeof(EventQueueGetFinishedEvent),
             typeof(FeatureDisabledReceivedEvent),
             typeof(ForceObjectSelectReceivedEvent),
