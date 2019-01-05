@@ -215,6 +215,239 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "SendSetRegionDebug")]
+        public void SendSetRegionDebug(
+            ScriptInstance instance,
+            ViewerAgentAccessor agent,
+            int disableScripts,
+            int disableCollision,
+            int disablePhysics)
+        {
+            lock (instance)
+            {
+                ViewerConnection vc;
+                ViewerCircuit viewerCircuit;
+                if (m_Clients.TryGetValue(agent.AgentID, out vc) &&
+                    vc.ViewerCircuits.TryGetValue((uint)agent.CircuitCode, out viewerCircuit))
+                {
+                    var msg = new EstateOwnerMessage
+                    {
+                        AgentID = agent.AgentID,
+                        SessionID = viewerCircuit.SessionID,
+                        Method = "setregiondebug"
+                    };
+                    msg.ParamList.Add(disableScripts.Clamp(0, 1).ToString().ToUTF8Bytes());
+                    msg.ParamList.Add(disableCollision.Clamp(0, 1).ToString().ToUTF8Bytes());
+                    msg.ParamList.Add(disablePhysics.Clamp(0, 1).ToString().ToUTF8Bytes());
+                    viewerCircuit.SendMessage(msg);
+                }
+            }
+        }
+
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction)]
+        public void SendEstateAccessAddUser(ScriptInstance instance, ViewerAgentAccessor agent, LSLKey transactionid, LSLKey invoice, int allEstates, LSLKey user)
+        {
+            EstateAccessDeltaFlags flags = EstateAccessDeltaFlags.AddUser;
+            if(allEstates != 0)
+            {
+                flags |= EstateAccessDeltaFlags.AllEstates;
+            }
+            SendEstateAccess(instance, agent, transactionid, invoice, flags, user);
+        }
+
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction)]
+        public void SendEstateAccessRemoveUser(ScriptInstance instance, ViewerAgentAccessor agent, LSLKey transactionid, LSLKey invoice, int allEstates, LSLKey user)
+        {
+            EstateAccessDeltaFlags flags = EstateAccessDeltaFlags.RemoveUser;
+            if (allEstates != 0)
+            {
+                flags |= EstateAccessDeltaFlags.AllEstates;
+            }
+            SendEstateAccess(instance, agent, transactionid, invoice, flags, user);
+        }
+
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction)]
+        public void SendEstateAccessAddGroup(ScriptInstance instance, ViewerAgentAccessor agent, LSLKey transactionid, LSLKey invoice, int allEstates, LSLKey user)
+        {
+            EstateAccessDeltaFlags flags = EstateAccessDeltaFlags.AddGroup;
+            if (allEstates != 0)
+            {
+                flags |= EstateAccessDeltaFlags.AllEstates;
+            }
+            SendEstateAccess(instance, agent, transactionid, invoice, flags, user);
+        }
+
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction)]
+        public void SendEstateAccessRemoveGroup(ScriptInstance instance, ViewerAgentAccessor agent, LSLKey transactionid, LSLKey invoice, int allEstates, LSLKey user)
+        {
+            EstateAccessDeltaFlags flags = EstateAccessDeltaFlags.RemoveGroup;
+            if (allEstates != 0)
+            {
+                flags |= EstateAccessDeltaFlags.AllEstates;
+            }
+            SendEstateAccess(instance, agent, transactionid, invoice, flags, user);
+        }
+
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction)]
+        public void SendEstateAccessAddManager(ScriptInstance instance, ViewerAgentAccessor agent, LSLKey transactionid, LSLKey invoice, int allEstates, LSLKey user)
+        {
+            EstateAccessDeltaFlags flags = EstateAccessDeltaFlags.AddManager;
+            if (allEstates != 0)
+            {
+                flags |= EstateAccessDeltaFlags.AllEstates;
+            }
+            SendEstateAccess(instance, agent, transactionid, invoice, flags, user);
+        }
+
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction)]
+        public void SendEstateAccessRemoveManager(ScriptInstance instance, ViewerAgentAccessor agent, LSLKey transactionid, LSLKey invoice, int allEstates, LSLKey user)
+        {
+            EstateAccessDeltaFlags flags = EstateAccessDeltaFlags.RemoveManager;
+            if (allEstates != 0)
+            {
+                flags |= EstateAccessDeltaFlags.AllEstates;
+            }
+            SendEstateAccess(instance, agent, transactionid, invoice, flags, user);
+        }
+
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction)]
+        public void SendEstateAccessAddBan(ScriptInstance instance, ViewerAgentAccessor agent, LSLKey transactionid, LSLKey invoice, int allEstates, LSLKey user)
+        {
+            EstateAccessDeltaFlags flags = EstateAccessDeltaFlags.AddBan;
+            if (allEstates != 0)
+            {
+                flags |= EstateAccessDeltaFlags.AllEstates;
+            }
+            SendEstateAccess(instance, agent, transactionid, invoice, flags, user);
+        }
+
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction)]
+        public void SendEstateAccessRemoveBan(ScriptInstance instance, ViewerAgentAccessor agent, LSLKey transactionid, LSLKey invoice, int allEstates, LSLKey user)
+        {
+            EstateAccessDeltaFlags flags = EstateAccessDeltaFlags.RemoveBan;
+            if (allEstates != 0)
+            {
+                flags |= EstateAccessDeltaFlags.AllEstates;
+            }
+            SendEstateAccess(instance, agent, transactionid, invoice, flags, user);
+        }
+
+        private void SendEstateAccess(ScriptInstance instance, ViewerAgentAccessor agent, LSLKey transactionid, LSLKey invoice, EstateAccessDeltaFlags flags, LSLKey user)
+        {
+            lock (instance)
+            {
+                ViewerConnection vc;
+                ViewerCircuit viewerCircuit;
+                if (m_Clients.TryGetValue(agent.AgentID, out vc) &&
+                    vc.ViewerCircuits.TryGetValue((uint)agent.CircuitCode, out viewerCircuit))
+                {
+                    var msg = new EstateOwnerMessage
+                    {
+                        AgentID = agent.AgentID,
+                        SessionID = viewerCircuit.SessionID,
+                        Method = "estateaccessdelta",
+                        TransactionID = transactionid,
+                        Invoice = invoice
+                    };
+                    msg.ParamList.Add("0".ToUTF8Bytes());
+                    msg.ParamList.Add(((uint)flags).ToString().ToUTF8Bytes());
+                    msg.ParamList.Add(user.AsUUID.ToString().ToUTF8Bytes());
+                    viewerCircuit.SendMessage(msg);
+                }
+            }
+        }
+
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction)]
+        public void SendEstateExperienceAccessAddAllowed(ScriptInstance instance, ViewerAgentAccessor agent, LSLKey transactionid, LSLKey invoice, int allEstates, LSLKey experience)
+        {
+            EstateExperienceDeltaFlags flags = EstateExperienceDeltaFlags.AddAllowed;
+            if (allEstates != 0)
+            {
+                flags |= EstateExperienceDeltaFlags.AllEstates;
+            }
+            SendEstateExperienceAccess(instance, agent, transactionid, invoice, flags, experience);
+        }
+
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction)]
+        public void SendEstateExperienceAccessRemoveAllowed(ScriptInstance instance, ViewerAgentAccessor agent, LSLKey transactionid, LSLKey invoice, int allEstates, LSLKey experience)
+        {
+            EstateExperienceDeltaFlags flags = EstateExperienceDeltaFlags.RemoveAllowed;
+            if (allEstates != 0)
+            {
+                flags |= EstateExperienceDeltaFlags.AllEstates;
+            }
+            SendEstateExperienceAccess(instance, agent, transactionid, invoice, flags, experience);
+        }
+
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction)]
+        public void SendEstateExperienceAccessAddBlocked(ScriptInstance instance, ViewerAgentAccessor agent, LSLKey transactionid, LSLKey invoice, int allEstates, LSLKey experience)
+        {
+            EstateExperienceDeltaFlags flags = EstateExperienceDeltaFlags.AddBlocked;
+            if (allEstates != 0)
+            {
+                flags |= EstateExperienceDeltaFlags.AllEstates;
+            }
+            SendEstateExperienceAccess(instance, agent, transactionid, invoice, flags, experience);
+        }
+
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction)]
+        public void SendEstateExperienceAccessRemoveBlocked(ScriptInstance instance, ViewerAgentAccessor agent, LSLKey transactionid, LSLKey invoice, int allEstates, LSLKey experience)
+        {
+            EstateExperienceDeltaFlags flags = EstateExperienceDeltaFlags.RemoveBlocked;
+            if (allEstates != 0)
+            {
+                flags |= EstateExperienceDeltaFlags.AllEstates;
+            }
+            SendEstateExperienceAccess(instance, agent, transactionid, invoice, flags, experience);
+        }
+
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction)]
+        public void SendEstateExperienceAccessAddTrusted(ScriptInstance instance, ViewerAgentAccessor agent, LSLKey transactionid, LSLKey invoice, int allEstates, LSLKey experience)
+        {
+            EstateExperienceDeltaFlags flags = EstateExperienceDeltaFlags.AddTrusted;
+            if (allEstates != 0)
+            {
+                flags |= EstateExperienceDeltaFlags.AllEstates;
+            }
+            SendEstateExperienceAccess(instance, agent, transactionid, invoice, flags, experience);
+        }
+
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction)]
+        public void SendEstateExperienceAccessRemoveTrusted(ScriptInstance instance, ViewerAgentAccessor agent, LSLKey transactionid, LSLKey invoice, int allEstates, LSLKey experience)
+        {
+            EstateExperienceDeltaFlags flags = EstateExperienceDeltaFlags.RemoveTrusted;
+            if (allEstates != 0)
+            {
+                flags |= EstateExperienceDeltaFlags.AllEstates;
+            }
+            SendEstateExperienceAccess(instance, agent, transactionid, invoice, flags, experience);
+        }
+
+        private void SendEstateExperienceAccess(ScriptInstance instance, ViewerAgentAccessor agent, LSLKey transactionid, LSLKey invoice, EstateExperienceDeltaFlags flags, LSLKey experience)
+        {
+            lock (instance)
+            {
+                ViewerConnection vc;
+                ViewerCircuit viewerCircuit;
+                if (m_Clients.TryGetValue(agent.AgentID, out vc) &&
+                    vc.ViewerCircuits.TryGetValue((uint)agent.CircuitCode, out viewerCircuit))
+                {
+                    var msg = new EstateOwnerMessage
+                    {
+                        AgentID = agent.AgentID,
+                        SessionID = viewerCircuit.SessionID,
+                        Method = "estateexperiencedelta",
+                        TransactionID = transactionid,
+                        Invoice = invoice
+                    };
+                    msg.ParamList.Add("0".ToUTF8Bytes());
+                    msg.ParamList.Add(((uint)flags).ToString().ToUTF8Bytes());
+                    msg.ParamList.Add(experience.AsUUID.ToString().ToUTF8Bytes());
+                    viewerCircuit.SendMessage(msg);
+                }
+            }
+        }
+
         private void HandleEstateOwnerMessage(EstateOwnerMessage m, ViewerConnection vc, ViewerAgentAccessor agent)
         {
             try
