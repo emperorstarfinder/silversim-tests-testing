@@ -125,7 +125,7 @@ namespace SilverSim.Tests.Viewer
                                 }
                             }
                         }
-
+                        m_Log.Info("EQG finished");
                         m_ViewerConnection.PostEvent(new EventQueueGetFinishedEvent(
                             new AgentInfo(m_ViewerConnection.AgentID, m_SceneID, m_CircuitCode),
                             m_ReqID,
@@ -134,6 +134,7 @@ namespace SilverSim.Tests.Viewer
                 }
                 catch
                 {
+                    m_Log.Info("EQG abort");
                     m_ViewerConnection.PostEvent(new EventQueueGetFinishedEvent(
                         new AgentInfo(m_ViewerConnection.AgentID, m_SceneID, m_CircuitCode),
                         m_ReqID,
@@ -143,7 +144,7 @@ namespace SilverSim.Tests.Viewer
         }
 
         [TranslatedScriptEvent("eventqueueget_finished")]
-        public sealed class EventQueueGetFinishedEvent : IScriptEvent
+        public class EventQueueGetFinishedEvent : IScriptEvent
         {
             [TranslatedScriptEventParameter(0)]
             public AgentInfo Agent;

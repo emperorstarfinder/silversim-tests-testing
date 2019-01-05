@@ -2240,6 +2240,7 @@ namespace SilverSim.Tests.Viewer
             typeof(DeRezAckReceivedEvent),
             typeof(EconomyDataReceivedEvent),
             typeof(EstateCovenantReplyReceivedEvent),
+            typeof(EventQueueGetFinishedEvent),
             typeof(FeatureDisabledReceivedEvent),
             typeof(ForceObjectSelectReceivedEvent),
             typeof(GrantGodlikePowersReceivedEvent),
