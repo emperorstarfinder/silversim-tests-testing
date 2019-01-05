@@ -472,6 +472,55 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
+        #region setaccess
+        private void TranslateEstateOwnerMessageSetAccess(EstateOwnerMessage m, ViewerConnection vc, ViewerAgentAccessor agent)
+        {
+            if(m.ParamList.Count < 2)
+            {
+                return;
+            }
+            var res = new EstateOwnerMessageSetAccessReceivedEvent
+            {
+                Agent = agent,
+                TransactionID = m.TransactionID,
+                Invoice = m.Invoice
+            };
+
+            for(int i = 2; i < m.ParamList.Count; ++i)
+            {
+                res.List.Add(new LSLKey(UUID.Parse(m.ParamList[i].FromUTF8Bytes())));
+            }
+            vc.PostEvent(res);
+        }
+
+        [TranslatedScriptEvent("estateownermessage_setaccess_received")]
+        public class EstateOwnerMessageSetAccessReceivedEvent : IScriptEvent
+        {
+            [TranslatedScriptEventParameter(0)]
+            public ViewerAgentAccessor Agent;
+            [TranslatedScriptEventParameter(1)]
+            public LSLKey TransactionID;
+            [TranslatedScriptEventParameter(2)]
+            public LSLKey Invoice;
+            [TranslatedScriptEventParameter(3)]
+            public int EstateID;
+            [TranslatedScriptEventParameter(4)]
+            public int Flags;
+            [TranslatedScriptEventParameter(5)]
+            public AnArray List;
+        }
+
+        [APIExtension(ExtensionName, "estateownermessage_setaccess_received")]
+        [StateEventDelegate]
+        public delegate void EstateOwnerMessageSetAccessReceived(
+            ViewerAgentAccessor agent,
+            LSLKey transactionID,
+            LSLKey invoice,
+            int estateID,
+            int flags,
+            AnArray list);
+        #endregion
+
         #region estateupdateinfo
         private void TranslateEstateOwnerMessageEstateUpdateInfo(EstateOwnerMessage m, ViewerConnection vc, ViewerAgentAccessor agent)
         {
@@ -483,6 +532,8 @@ namespace SilverSim.Tests.Viewer
             vc.PostEvent(new EstateOwnerMessageEstateUpdateInfoReceivedEvent
             {
                 Agent = agent,
+                TransactionID = m.TransactionID,
+                Invoice = m.Invoice,
                 EstateName = m.ParamList[0].FromUTF8Bytes(),
                 EstateOwner = UUID.Parse(m.ParamList[1].FromUTF8Bytes()),
                 EstateID = int.Parse(m.ParamList[2].FromUTF8Bytes()),
@@ -502,24 +553,28 @@ namespace SilverSim.Tests.Viewer
             [TranslatedScriptEventParameter(0)]
             public ViewerAgentAccessor Agent;
             [TranslatedScriptEventParameter(1)]
-            public string EstateName;
+            public LSLKey TransactionID;
             [TranslatedScriptEventParameter(2)]
-            public LSLKey EstateOwner;
+            public LSLKey Invoice;
             [TranslatedScriptEventParameter(3)]
-            public int EstateID;
+            public string EstateName;
             [TranslatedScriptEventParameter(4)]
-            public int Flags;
+            public LSLKey EstateOwner;
             [TranslatedScriptEventParameter(5)]
-            public double SunPosition;
+            public int EstateID;
             [TranslatedScriptEventParameter(6)]
-            public int ParentEstateID;
+            public int Flags;
             [TranslatedScriptEventParameter(7)]
-            public LSLKey CovenantID;
+            public double SunPosition;
             [TranslatedScriptEventParameter(8)]
-            public long CovenantTimestamp;
+            public int ParentEstateID;
             [TranslatedScriptEventParameter(9)]
-            public int SendToAgentOnly;
+            public LSLKey CovenantID;
             [TranslatedScriptEventParameter(10)]
+            public long CovenantTimestamp;
+            [TranslatedScriptEventParameter(11)]
+            public int SendToAgentOnly;
+            [TranslatedScriptEventParameter(12)]
             public string AbuseEmail;
         }
 
@@ -527,6 +582,8 @@ namespace SilverSim.Tests.Viewer
         [StateEventDelegate]
         public delegate void EstateOwnerMessageEstateUpdateInfoReceived(
             ViewerAgentAccessor agent,
+            LSLKey transactionID,
+            LSLKey invoice,
             string estateName,
             LSLKey estateOwner,
             int estateID,
@@ -550,7 +607,7 @@ namespace SilverSim.Tests.Viewer
             {
                 Agent = agent,
                 TransactionID = m.TransactionID,
-                InvoiceID = m.Invoice,
+                Invoice = m.Invoice,
             };
 
             int blockedCount;
@@ -593,7 +650,7 @@ namespace SilverSim.Tests.Viewer
             [TranslatedScriptEventParameter(1)]
             public LSLKey TransactionID;
             [TranslatedScriptEventParameter(2)]
-            public LSLKey InvoiceID;
+            public LSLKey Invoice;
             [TranslatedScriptEventParameter(3)]
             public int EstateID;
             [TranslatedScriptEventParameter(4)]
@@ -608,6 +665,8 @@ namespace SilverSim.Tests.Viewer
         [StateEventDelegate]
         public delegate void EstateOwnerMessageSetExperienceReceived(
             ViewerAgentAccessor agent,
+            LSLKey transactionID,
+            LSLKey invoice,
             int estateID,
             AnArray allowed,
             AnArray blocked,
