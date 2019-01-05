@@ -2387,6 +2387,7 @@ namespace SilverSim.Tests.Viewer
         }
 
         [APIExtension(ExtensionName, "parcelproperties_received")]
+        [StateEventDelegate]
         public delegate void ParcelPropertiesReeived(
             AgentInfo agent,
             int requestResult,
