@@ -132,6 +132,48 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction)]
+        public void SendEstateSetRegionTerrain(
+            ScriptInstance instance,
+            ViewerAgentAccessor agent,
+            LSLKey transactionID,
+            LSLKey invoice,
+            double waterHeight,
+            double terrainRaiseLimit,
+            double terrainLowerLimit,
+            int isSunFixed,
+            double sunPosition,
+            int useEstateSun)
+        {
+            lock (instance)
+            {
+                ViewerConnection vc;
+                ViewerCircuit viewerCircuit;
+                if (m_Clients.TryGetValue(agent.AgentID, out vc) &&
+                    vc.ViewerCircuits.TryGetValue((uint)agent.CircuitCode, out viewerCircuit))
+                {
+                    var msg = new EstateOwnerMessage
+                    {
+                        AgentID = agent.AgentID,
+                        SessionID = viewerCircuit.SessionID,
+                        Method = "setregionterrain",
+                        TransactionID = transactionID,
+                        Invoice = invoice
+                    };
+                    msg.ParamList.Add(waterHeight.ToString(CultureInfo.InvariantCulture).ToUTF8Bytes());
+                    msg.ParamList.Add(terrainRaiseLimit.ToString(CultureInfo.InvariantCulture).ToUTF8Bytes());
+                    msg.ParamList.Add(terrainLowerLimit.ToString(CultureInfo.InvariantCulture).ToUTF8Bytes());
+                    msg.ParamList.Add(useEstateSun.Clamp(0, 1).ToString().ToUTF8Bytes());
+                    msg.ParamList.Add(isSunFixed.Clamp(0, 1).ToString().ToUTF8Bytes());
+                    msg.ParamList.Add(sunPosition.ToString(CultureInfo.InvariantCulture).ToUTF8Bytes());
+                    msg.ParamList.Add("0".ToUTF8Bytes());
+                    msg.ParamList.Add("0".ToUTF8Bytes());
+                    msg.ParamList.Add("6".ToUTF8Bytes());
+                    viewerCircuit.SendMessage(msg);
+                }
+            }
+        }
+
         [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "SendRegionRestart")]
         public void SendRegionRestart(
             ScriptInstance instance,
