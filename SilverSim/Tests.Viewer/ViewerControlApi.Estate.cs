@@ -244,6 +244,47 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "SendSetRegionInfo")]
+        public void SendSetRegionInfo(
+            ScriptInstance instance,
+            ViewerAgentAccessor agent,
+            int blockTerraform,
+            int blockFly,
+            int allowDamage,
+            int allowLandResell,
+            int agentLimit,
+            double objectBonus,
+            int access,
+            int restrictPushing,
+            int allowLandJoinDivide)
+        {
+            lock (instance)
+            {
+                ViewerConnection vc;
+                ViewerCircuit viewerCircuit;
+                if (m_Clients.TryGetValue(agent.AgentID, out vc) &&
+                    vc.ViewerCircuits.TryGetValue((uint)agent.CircuitCode, out viewerCircuit))
+                {
+                    var msg = new EstateOwnerMessage
+                    {
+                        AgentID = agent.AgentID,
+                        SessionID = viewerCircuit.SessionID,
+                        Method = "setregioninfo"
+                    };
+                    msg.ParamList.Add(blockTerraform.Clamp(0, 1).ToString().ToUTF8Bytes());
+                    msg.ParamList.Add(blockFly.Clamp(0, 1).ToString().ToUTF8Bytes());
+                    msg.ParamList.Add(allowDamage.Clamp(0, 1).ToString().ToUTF8Bytes());
+                    msg.ParamList.Add(allowLandResell.Clamp(0, 1).ToString().ToUTF8Bytes());
+                    msg.ParamList.Add(agentLimit.ToString().ToUTF8Bytes());
+                    msg.ParamList.Add(string.Format(CultureInfo.InvariantCulture, "{0}", objectBonus).ToUTF8Bytes());
+                    msg.ParamList.Add(access.ToString().ToUTF8Bytes());
+                    msg.ParamList.Add(restrictPushing.ToString().ToUTF8Bytes());
+                    msg.ParamList.Add(allowLandJoinDivide.ToString().ToUTF8Bytes());
+                    viewerCircuit.SendMessage(msg);
+                }
+            }
+        }
+
         [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction)]
         public void SendEstateChangeInfo(
             ScriptInstance instance,
