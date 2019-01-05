@@ -28,7 +28,11 @@ using SilverSim.Tests.Viewer.UDP;
 using SilverSim.Types;
 using SilverSim.Types.StructuredData.Llsd;
 using SilverSim.Viewer.Messages;
+using SilverSim.Viewer.Messages.Circuit;
+using SilverSim.Viewer.Messages.Object;
+using SilverSim.Viewer.Messages.Parcel;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -123,15 +127,48 @@ namespace SilverSim.Tests.Viewer
                                     Action<Message> handle;
                                     if(msgtype == "ObjectPhysicsProperties")
                                     {
-
+                                        var msg = (ObjectPhysicsProperties)m;
+                                        var ev = new ObjectPhysicsPropertiesReceivedEvent
+                                        {
+                                            Agent = m_ViewerAgent
+                                        };
+                                        foreach(ObjectPhysicsProperties.ObjectDataEntry d in msg.ObjectData)
+                                        {
+                                            ev.ObjectData.Add(new ObjectPhysicsPropertiesData
+                                            {
+                                                LocalID = (int)d.LocalID,
+                                                PhysicsShapeType = (int)d.PhysicsShapeType,
+                                                Density = d.Density,
+                                                Friction = d.Friction,
+                                                Restitution = d.Restitution,
+                                                GravityMultiplier = d.GravityMultiplier
+                                            });
+                                        }
                                     }
                                     else if(msgtype == "EstablishAgentCommunication")
                                     {
-
+                                        var msg = (EstablishAgentCommunication)m;
+                                        m_ViewerConnection.PostEvent(new EstablishAgentCommunicationReceivedEvent
+                                        {
+                                            Agent = m_ViewerAgent,
+                                            SimIpAndPort = msg.SimIpAndPort.ToString(),
+                                            SeedCapability = msg.SeedCapability,
+                                            GridPositionX = (int)msg.GridPosition.X,
+                                            GridPositionY = (int)msg.GridPosition.Y,
+                                            RegionSizeX = (int)msg.RegionSize.X,
+                                            RegionSizeY = (int)msg.RegionSize.Y
+                                        });
                                     }
                                     else if(msgtype == "ParcelVoiceInfo")
                                     {
-
+                                        var msg = (ParcelVoiceInfo)m;
+                                        m_ViewerConnection.PostEvent(new ParcelVoiceInfoReceivedEvent
+                                        {
+                                            Agent = m_ViewerAgent,
+                                            ParcelLocalId = msg.ParcelLocalId,
+                                            ChannelUri = msg.ChannelUri,
+                                            ChannelCredentials = msg.ChannelCredentials
+                                        });
                                     }
                                     else if(m_MessageRouting.TryGetValue(m.Number, out handle))
                                     {
@@ -140,7 +177,6 @@ namespace SilverSim.Tests.Viewer
                                 }
                             }
                         }
-                        m_Log.Info("EQG finished");
                         m_ViewerConnection.PostEvent(new EventQueueGetFinishedEvent(
                             m_ViewerAgent,
                             m_ReqID,
@@ -149,7 +185,6 @@ namespace SilverSim.Tests.Viewer
                 }
                 catch
                 {
-                    m_Log.Info("EQG abort");
                     m_ViewerConnection.PostEvent(new EventQueueGetFinishedEvent(
                         m_ViewerAgent,
                         m_ReqID,
@@ -170,6 +205,109 @@ namespace SilverSim.Tests.Viewer
             [TranslatedScriptEventParameter(3)]
             public string ChannelCredentials;
         }
+
+        [APIExtension(ExtensionName, "parcelvoiceinfo_received")]
+        [StateEventDelegate]
+        public delegate void ParcelVoiceInfoReceived(
+            ViewerAgentAccessor agent,
+            int parcelLocalId,
+            string channelUri,
+            string channelCredentials);
+
+        [APIExtension(ExtensionName)]
+        [APIDisplayName("objectphysicsproperties")]
+        [APIIsVariableType]
+        [APIAccessibleMembers]
+        [Serializable]
+        public class ObjectPhysicsPropertiesData
+        {
+            public int LocalID;
+            public int PhysicsShapeType;
+            public double Density;
+            public double Friction;
+            public double Restitution;
+            public double GravityMultiplier;
+        }
+
+        [APIExtension(ExtensionName)]
+        [APIDisplayName("objectphysicspropertieslist")]
+        [APIIsVariableType]
+        [APIAccessibleMembers]
+        [Serializable]
+        public class ObjectPhysicsPropertiesDataList : List<ObjectPhysicsPropertiesData>
+        {
+            public int Length => Count;
+
+            public sealed class LSLEnumerator : IEnumerator<ObjectPhysicsPropertiesData>
+            {
+                private readonly ObjectPhysicsPropertiesDataList Src;
+                private int Position = -1;
+
+                public LSLEnumerator(ObjectPhysicsPropertiesDataList src)
+                {
+                    Src = src;
+                }
+
+                public ObjectPhysicsPropertiesData Current => Src[Position];
+
+                object IEnumerator.Current => Current;
+
+                public void Dispose()
+                {
+                }
+
+                public bool MoveNext() => ++Position < Src.Count;
+
+                public void Reset() => Position = -1;
+            }
+
+            public LSLEnumerator GetLslForeachEnumerator() => new LSLEnumerator(this);
+        }
+
+        [TranslatedScriptEvent("objectphysicsproperties_received")]
+        public class ObjectPhysicsPropertiesReceivedEvent : IScriptEvent
+        {
+            [TranslatedScriptEventParameter(0)]
+            public ViewerAgentAccessor Agent;
+            [TranslatedScriptEventParameter(1)]
+            public ObjectPhysicsPropertiesDataList ObjectData = new ObjectPhysicsPropertiesDataList();
+        }
+
+        [APIExtension(ExtensionName, "objectphysicsproperties_received")]
+        [StateEventDelegate]
+        public delegate void ObjectPhysicsPropertiesReceived(
+            ViewerAgentAccessor agent,
+            ObjectPhysicsPropertiesDataList objectData);
+
+        [TranslatedScriptEvent("establishagentcommunication_received")]
+        public class EstablishAgentCommunicationReceivedEvent : IScriptEvent
+        {
+            [TranslatedScriptEventParameter(0)]
+            public ViewerAgentAccessor Agent;
+            [TranslatedScriptEventParameter(1)]
+            public string SimIpAndPort;
+            [TranslatedScriptEventParameter(2)]
+            public string SeedCapability;
+            [TranslatedScriptEventParameter(3)]
+            public int GridPositionX;
+            [TranslatedScriptEventParameter(4)]
+            public int GridPositionY;
+            [TranslatedScriptEventParameter(5)]
+            public int RegionSizeX;
+            [TranslatedScriptEventParameter(6)]
+            public int RegionSizeY;
+        }
+
+        [APIExtension(ExtensionName, "establishagentcommunication_received")]
+        [StateEventDelegate]
+        public delegate void EstablishAgentCommunicationRceived(
+            ViewerAgentAccessor agent,
+            string simipandport,
+            string seedcapability,
+            int gridPositionX,
+            int gridPositionY,
+            int regionSizeX,
+            int regionSizeY);
 
         [TranslatedScriptEvent("eventqueueget_finished")]
         public class EventQueueGetFinishedEvent : IScriptEvent

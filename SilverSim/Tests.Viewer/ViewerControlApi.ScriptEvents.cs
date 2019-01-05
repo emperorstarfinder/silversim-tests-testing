@@ -2055,7 +2055,6 @@ namespace SilverSim.Tests.Viewer
         [APIIsVariableType]
         [APIAccessibleMembers]
         [Serializable]
-        [APICloneOnAssignment]
         public class ParcelObjectOwnersReplyDataList : List<ParcelObjectOwnersReplyData>
         {
             public int Length => Count;
@@ -2504,6 +2503,7 @@ namespace SilverSim.Tests.Viewer
             typeof(DeRezAckReceivedEvent),
             typeof(EconomyDataReceivedEvent),
             typeof(EnableSimulatorReceivedEvent),
+            typeof(EstablishAgentCommunicationReceivedEvent),
             typeof(EstateCovenantReplyReceivedEvent),
             typeof(EventQueueGetFinishedEvent),
             typeof(FeatureDisabledReceivedEvent),
@@ -2516,12 +2516,14 @@ namespace SilverSim.Tests.Viewer
             typeof(LogoutReplyReceivedEvent),
             typeof(MoneyBalanceReplyReceivedEvent),
             typeof(ObjectAnimationReceivedEvent),
+            typeof(ObjectPhysicsPropertiesReceivedEvent),
             typeof(ObjectUpdateReceivedEvent),
             typeof(OfflineNotificationReceivedEvent),
             typeof(OnlineNotificationReceivedEvent),
             typeof(ParcelInfoReplyReceivedEvent),
             typeof(ParcelObjectOwnersReplyReceivedEvent),
             typeof(ParcelPropertiesReceivedEvent),
+            typeof(ParcelVoiceInfoReceivedEvent),
             typeof(PayPriceReplyReceivedEvent),
             typeof(PreloadSoundReceivedEvent),
             typeof(RegionHandshakeReceivedEvent),
