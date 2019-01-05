@@ -455,6 +455,7 @@ namespace SilverSim.Tests.Viewer
                 switch (m.Method)
                 {
                     case "setaccess":
+                        TranslateEstateOwnerMessageSetAccess(m, vc, agent);
                         break;
 
                     case "estateupdateinfo":
@@ -475,7 +476,7 @@ namespace SilverSim.Tests.Viewer
         #region setaccess
         private void TranslateEstateOwnerMessageSetAccess(EstateOwnerMessage m, ViewerConnection vc, ViewerAgentAccessor agent)
         {
-            if(m.ParamList.Count < 2)
+            if(m.ParamList.Count < 6)
             {
                 return;
             }
@@ -486,9 +487,27 @@ namespace SilverSim.Tests.Viewer
                 Invoice = m.Invoice
             };
 
-            for(int i = 2; i < m.ParamList.Count; ++i)
+            int offset = 6;
+            int allowedAgents = int.Parse(m.ParamList[2].FromUTF8Bytes());
+            int allowedGroups = int.Parse(m.ParamList[3].FromUTF8Bytes());
+            int bannedAgents = int.Parse(m.ParamList[4].FromUTF8Bytes());
+            int managers = int.Parse(m.ParamList[5].FromUTF8Bytes());
+
+            while(allowedAgents-- > 0)
             {
-                res.List.Add(new LSLKey(UUID.Parse(m.ParamList[i].FromUTF8Bytes())));
+                res.AllowedAgents.Add(new LSLKey(new UUID(m.ParamList[offset++], 0)));
+            }
+            while (allowedGroups-- > 0)
+            {
+                res.AllowedGroups.Add(new LSLKey(new UUID(m.ParamList[offset++], 0)));
+            }
+            while (bannedAgents-- > 0)
+            {
+                res.BannedAgents.Add(new LSLKey(new UUID(m.ParamList[offset++], 0)));
+            }
+            while (managers-- > 0)
+            {
+                res.Managers.Add(new LSLKey(new UUID(m.ParamList[offset++], 0)));
             }
             vc.PostEvent(res);
         }
@@ -507,7 +526,13 @@ namespace SilverSim.Tests.Viewer
             [TranslatedScriptEventParameter(4)]
             public int Flags;
             [TranslatedScriptEventParameter(5)]
-            public AnArray List;
+            public AnArray AllowedAgents = new AnArray();
+            [TranslatedScriptEventParameter(6)]
+            public AnArray AllowedGroups = new AnArray();
+            [TranslatedScriptEventParameter(7)]
+            public AnArray BannedAgents = new AnArray();
+            [TranslatedScriptEventParameter(8)]
+            public AnArray Managers = new AnArray();
         }
 
         [APIExtension(ExtensionName, "estateownermessage_setaccess_received")]
@@ -518,6 +543,7 @@ namespace SilverSim.Tests.Viewer
             LSLKey invoice,
             int estateID,
             int flags,
+            int remaining,
             AnArray list);
         #endregion
 
