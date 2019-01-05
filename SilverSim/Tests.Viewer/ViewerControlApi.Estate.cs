@@ -28,6 +28,7 @@ using SilverSim.Viewer.Messages.Estate;
 using SilverSim.Viewer.Messages.Generic;
 using SilverSim.Viewer.Messages.God;
 using System;
+using System.Globalization;
 
 namespace SilverSim.Tests.Viewer
 {
@@ -75,6 +76,141 @@ namespace SilverSim.Tests.Viewer
                         TargetID = targetID.AsUUID,
                         Flags = (SimWideDeletes.DeleteFlags)flags
                     });
+                }
+            }
+        }
+
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "SendEstateChangeCovenantID")]
+        public void SendEstateSimulatorMessage(
+            ScriptInstance instance,
+            ViewerAgentAccessor agent,
+            LSLKey id)
+        {
+            lock (instance)
+            {
+                ViewerConnection vc;
+                ViewerCircuit viewerCircuit;
+                if (m_Clients.TryGetValue(agent.AgentID, out vc) &&
+                    vc.ViewerCircuits.TryGetValue((uint)agent.CircuitCode, out viewerCircuit))
+                {
+                    var msg = new EstateOwnerMessage
+                    {
+                        AgentID = agent.AgentID,
+                        SessionID = viewerCircuit.SessionID,
+                        Method = "estatechangecovenantid"
+                    };
+                    msg.ParamList.Add(id.AsUUID.GetBytes());
+                    viewerCircuit.SendMessage(msg);
+                }
+            }
+        }
+
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "SendEstateGetInfo")]
+        public void SendEstateGetInfo(
+            ScriptInstance instance,
+            ViewerAgentAccessor agent,
+            LSLKey transactionID)
+        {
+            lock (instance)
+            {
+                ViewerConnection vc;
+                ViewerCircuit viewerCircuit;
+                if (m_Clients.TryGetValue(agent.AgentID, out vc) &&
+                    vc.ViewerCircuits.TryGetValue((uint)agent.CircuitCode, out viewerCircuit))
+                {
+                    var msg = new EstateOwnerMessage
+                    {
+                        AgentID = agent.AgentID,
+                        SessionID = viewerCircuit.SessionID,
+                        Method = "getinfo",
+                        TransactionID = transactionID
+                    };
+                    viewerCircuit.SendMessage(msg);
+                }
+            }
+        }
+
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "SendRegionRestart")]
+        public void SendRegionRestart(
+            ScriptInstance instance,
+            ViewerAgentAccessor agent,
+            double timeToRestart)
+        {
+            lock (instance)
+            {
+                ViewerConnection vc;
+                ViewerCircuit viewerCircuit;
+                if (m_Clients.TryGetValue(agent.AgentID, out vc) &&
+                    vc.ViewerCircuits.TryGetValue((uint)agent.CircuitCode, out viewerCircuit))
+                {
+                    var msg = new EstateOwnerMessage
+                    {
+                        AgentID = agent.AgentID,
+                        SessionID = viewerCircuit.SessionID,
+                        Method = "restart"
+                    };
+                    msg.ParamList.Add(timeToRestart.ToString(CultureInfo.InvariantCulture).ToUTF8Bytes());
+                    viewerCircuit.SendMessage(msg);
+                }
+            }
+        }
+
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "SendEstateSimulatorMessage")]
+        public void SendEstateSimulatorMessage(
+            ScriptInstance instance,
+            ViewerAgentAccessor agent,
+            string message)
+        {
+            lock (instance)
+            {
+                ViewerConnection vc;
+                ViewerCircuit viewerCircuit;
+                if (m_Clients.TryGetValue(agent.AgentID, out vc) &&
+                    vc.ViewerCircuits.TryGetValue((uint)agent.CircuitCode, out viewerCircuit))
+                {
+                    var msg = new EstateOwnerMessage
+                    {
+                        AgentID = agent.AgentID,
+                        SessionID = viewerCircuit.SessionID,
+                        Method = "simulatormessage"
+                    };
+                    /* first four are unused for that case */
+                    msg.ParamList.Add(string.Empty.ToUTF8Bytes());
+                    msg.ParamList.Add(string.Empty.ToUTF8Bytes());
+                    msg.ParamList.Add(string.Empty.ToUTF8Bytes());
+                    msg.ParamList.Add(string.Empty.ToUTF8Bytes());
+                    msg.ParamList.Add(message.ToUTF8Bytes());
+                    viewerCircuit.SendMessage(msg);
+                }
+            }
+        }
+
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "SendEstateInstantMessage")]
+        public void SendEstateInstantMessage(
+            ScriptInstance instance,
+            ViewerAgentAccessor agent,
+            string message)
+        {
+            lock (instance)
+            {
+                ViewerConnection vc;
+                ViewerCircuit viewerCircuit;
+                if (m_Clients.TryGetValue(agent.AgentID, out vc) &&
+                    vc.ViewerCircuits.TryGetValue((uint)agent.CircuitCode, out viewerCircuit))
+                {
+                    var msg = new EstateOwnerMessage
+                    {
+                        AgentID = agent.AgentID,
+                        SessionID = viewerCircuit.SessionID,
+                        Method = "instantmessage"
+                    };
+                    /* first four are unused for that case */
+                    msg.ParamList.Add(string.Empty.ToUTF8Bytes());
+                    msg.ParamList.Add(string.Empty.ToUTF8Bytes());
+                    msg.ParamList.Add(string.Empty.ToUTF8Bytes());
+                    msg.ParamList.Add(string.Empty.ToUTF8Bytes());
+                    msg.ParamList.Add(message.ToUTF8Bytes());
+                    viewerCircuit.SendMessage(msg);
                 }
             }
         }
