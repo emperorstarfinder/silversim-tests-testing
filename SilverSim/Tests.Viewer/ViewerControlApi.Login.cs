@@ -117,6 +117,7 @@ namespace SilverSim.Tests.Viewer
         }
 
         [APIExtension(ExtensionName, "vieweragent")]
+        [APIExtension(ExtensionName, "agentinfo")]
         [APIDisplayName("vieweragent")]
         [APIAccessibleMembers]
         [APIIsVariableType]
@@ -129,6 +130,7 @@ namespace SilverSim.Tests.Viewer
             public string CapsPath { get; }
             public LSLKey SessionId { get; }
             public LSLKey SecureSessionId { get; }
+            public LSLKey RegionID { get; }
 
             public ViewerAgentAccessor()
             {
@@ -137,9 +139,10 @@ namespace SilverSim.Tests.Viewer
                 SecureSessionId = new LSLKey();
             }
 
-            public ViewerAgentAccessor(UUID agentID, int circuitCode, string capsPath, LSLKey sessionId, LSLKey secureSessionId)
+            public ViewerAgentAccessor(UUID agentID, UUID regionID, int circuitCode, string capsPath, LSLKey sessionId, LSLKey secureSessionId)
             {
                 AgentID = agentID;
+                RegionID = regionID;
                 CircuitCode = circuitCode;
                 CapsPath = capsPath;
                 SessionId = sessionId;
@@ -358,71 +361,72 @@ namespace SilverSim.Tests.Viewer
                 var viewerCircuit = new ViewerCircuit(vc.ClientUDP, (uint)circuitCode, sessionId.AsUUID, agentId, regionEndPoint);
                 vc.ClientUDP.AddCircuit(viewerCircuit);
                 viewerCircuit.Start();
-                viewerCircuit.MessageRouting.Add(MessageType.AgentDataUpdate, (m) => AgentDataUpdateReceivedEvent.ToScriptEvent(m, vc, (uint)circuitCode));
-                viewerCircuit.MessageRouting.Add(MessageType.AgentDropGroup, (m) => AgentDropGroupReceivedEvent.ToScriptEvent(m, vc, (uint)circuitCode));
-                viewerCircuit.MessageRouting.Add(MessageType.AgentMovementComplete, (m) => AgentMovementCompleteReceivedEvent.HandleAgentMovementComplete(m, vc, (uint)circuitCode));
-                viewerCircuit.MessageRouting.Add(MessageType.AlertMessage, (m) => AlertMessageReceivedEvent.ToScriptEvent(m, vc, (uint)circuitCode));
-                viewerCircuit.MessageRouting.Add(MessageType.AttachedSound, (m) => AttachedSoundReceivedEvent.ToScriptEvent(m, vc, (uint)circuitCode));
-                viewerCircuit.MessageRouting.Add(MessageType.AttachedSoundGainChange, (m) => AttachedSoundGainChangeReceivedEvent.ToScriptEvent(m, vc, (uint)circuitCode));
-                viewerCircuit.MessageRouting.Add(MessageType.AvatarAnimation, (m) => AvatarAnimationReceivedEvent.ToScriptEvent(m, vc, (uint)circuitCode));
-                viewerCircuit.MessageRouting.Add(MessageType.AvatarSitResponse, (m) => AvatarSitResponseReceivedEvent.ToScriptEvent(m, vc, (uint)circuitCode));
-                viewerCircuit.MessageRouting.Add(MessageType.CameraConstraint, (m) => CameraConstraintReceivedEvent.ToScriptEvent(m, vc, (uint)circuitCode));
-                viewerCircuit.MessageRouting.Add(MessageType.ChatFromSimulator, (m) => ChatFromSimulatorReceivedEvent.ToScriptEvent(m, vc, (uint)circuitCode));
-                viewerCircuit.MessageRouting.Add(MessageType.ClearFollowCamProperties, (m) => ClearFollowCamPropertiesReceivedEvent.ToScriptEvent(m, vc, (uint)circuitCode));
-                viewerCircuit.MessageRouting.Add(MessageType.CoarseLocationUpdate, (m) => CoarseLocationUpdateReceivedEvent.ToScriptEvent(m, vc, (uint)circuitCode));
-                viewerCircuit.MessageRouting.Add(MessageType.DeRezAck, (m) => DeRezAckReceivedEvent.ToScriptEvent(m, vc, (uint)circuitCode));
-                viewerCircuit.MessageRouting.Add(MessageType.EconomyData, (m) => EconomyDataReceivedEvent.ToScriptEvent(m, vc, (uint)circuitCode));
-                viewerCircuit.MessageRouting.Add(MessageType.EstateCovenantReply, (m) => EstateCovenantReplyReceivedEvent.ToScriptEvent(m, vc, (uint)circuitCode));
-                viewerCircuit.MessageRouting.Add(MessageType.FeatureDisabled, (m) => FeatureDisabledReceivedEvent.ToScriptEvent(m, vc, (uint)circuitCode));
-                viewerCircuit.MessageRouting.Add(MessageType.ForceObjectSelect, (m) => ForceObjectSelectReceivedEvent.ToScriptEvent(m, vc, (uint)circuitCode));
-                viewerCircuit.MessageRouting.Add(MessageType.GrantGodlikePowers, (m) => GrantGodlikePowersReceivedEvent.ToScriptEvent(m, vc, (uint)circuitCode));
-                viewerCircuit.MessageRouting.Add(MessageType.HealthMessage, (m) => HealthMessageReceivedEvent.ToScriptEvent(m, vc, (uint)circuitCode));
-                viewerCircuit.MessageRouting.Add(MessageType.ImageData, (m) => HandleImageData(m, vc, (uint)circuitCode));
-                viewerCircuit.MessageRouting.Add(MessageType.ImageNotInDatabase, (m) => HandleImageNotInDatabase(m, vc, (uint)circuitCode));
-                viewerCircuit.MessageRouting.Add(MessageType.ImagePacket, (m) => HandleImagePacket(m, vc, (uint)circuitCode));
-                viewerCircuit.MessageRouting.Add(MessageType.ImprovedInstantMessage, (m) => ImprovedInstantMessageReceivedEvent.ToScriptEvent(m, vc, (uint)circuitCode));
-                viewerCircuit.MessageRouting.Add(MessageType.KillObject, (m) => KillObjectReceivedEvent.ToScriptEvent(m, vc, (uint)circuitCode));
-                viewerCircuit.MessageRouting.Add(MessageType.LoadURL, (m) => LoadURLReceivedEvent.ToScriptEvent(m, vc, (uint)circuitCode));
-                viewerCircuit.MessageRouting.Add(MessageType.LogoutReply, (m) => HandleLogoutReply(m, (uint)circuitCode, vc));
-                viewerCircuit.MessageRouting.Add(MessageType.MoneyBalanceReply, (m) => MoneyBalanceReplyReceivedEvent.ToScriptEvent(m, vc, (uint)circuitCode));
-                viewerCircuit.MessageRouting.Add(MessageType.ObjectAnimation, (m) => ObjectAnimationReceivedEvent.ToScriptEvent(m, vc, (uint)circuitCode));
-                viewerCircuit.MessageRouting.Add(MessageType.ObjectUpdate, (m) => ObjectUpdateReceivedEvent.ToScriptEvent(m, vc, (uint)circuitCode));
-                viewerCircuit.MessageRouting.Add(MessageType.ObjectUpdateCompressed, (m) => ObjectUpdateReceivedEvent.ToScriptEvent(m, vc, (uint)circuitCode));
-                viewerCircuit.MessageRouting.Add(MessageType.OfflineNotification, (m) => OfflineNotificationReceivedEvent.ToScriptEvent(m, vc, (uint)circuitCode));
-                viewerCircuit.MessageRouting.Add(MessageType.OnlineNotification, (m) => OnlineNotificationReceivedEvent.ToScriptEvent(m, vc, (uint)circuitCode));
-                viewerCircuit.MessageRouting.Add(MessageType.ParcelInfoReply, (m) => ParcelInfoReplyReceivedEvent.ToScriptEvent(m, vc, (uint)circuitCode));
-                viewerCircuit.MessageRouting.Add(MessageType.ParcelObjectOwnersReply, (m) => ParcelObjectOwnersReplyReceivedEvent.ToScriptEvent(m, vc, (uint)circuitCode));
-                viewerCircuit.MessageRouting.Add(MessageType.ParcelProperties, (m) => ParcelPropertiesReceivedEvent.ToScriptEvent(m, vc, (uint)circuitCode));
-                viewerCircuit.MessageRouting.Add(MessageType.PayPriceReply, (m) => PayPriceReplyReceivedEvent.ToScriptEvent(m, vc, (uint)circuitCode));
-                viewerCircuit.MessageRouting.Add(MessageType.PreloadSound, (m) => PreloadSoundReceivedEvent.ToScriptEvent(m, vc, (uint)circuitCode));
-                viewerCircuit.MessageRouting.Add(MessageType.RegionHandshake, (m) => RegionHandshakeReceivedEvent.HandleRegionHandshake(m, vc, (uint)circuitCode));
-                viewerCircuit.MessageRouting.Add(MessageType.RegionInfo, (m) => RegionInfoReceivedEvent.HandleRegionInfo(m, vc, (uint)circuitCode));
-                viewerCircuit.MessageRouting.Add(MessageType.ScriptControlChange, (m) => ScriptControlChangeReceivedEvent.ToScriptEvent(m, vc, (uint)circuitCode));
-                viewerCircuit.MessageRouting.Add(MessageType.ScriptDialog, (m) => ScriptDialogReceivedEvent.ToScriptEvent(m, vc, (uint)circuitCode));
-                viewerCircuit.MessageRouting.Add(MessageType.ScriptQuestion, (m) => ScriptQuestionReceivedEvent.ToScriptEvent(m, vc, (uint)circuitCode));
-                viewerCircuit.MessageRouting.Add(MessageType.ScriptRunningReply, (m) => ScriptRunningReplyReceivedEvent.ToScriptEvent(m, vc, (uint)circuitCode));
-                viewerCircuit.MessageRouting.Add(MessageType.ScriptTeleportRequest, (m) => ScriptTeleportRequestReceivedEvent.ToScriptEvent(m, vc, (uint)circuitCode));
-                viewerCircuit.MessageRouting.Add(MessageType.SetFollowCamProperties, (m) => SetFollowCamPropertiesReceivedEvent.ToScriptEvent(m, vc, (uint)circuitCode));
-                viewerCircuit.MessageRouting.Add(MessageType.SoundTrigger, (m) => SoundTriggerReceivedEvent.ToScriptEvent(m, vc, (uint)circuitCode));
-                viewerCircuit.MessageRouting.Add(MessageType.TelehubInfo, (m) => TelehubInfoReceivedEvent.ToScriptEvent((TelehubInfo)m, vc, (uint)circuitCode));
-                viewerCircuit.MessageRouting.Add(MessageType.TeleportFailed, (m) => TeleportFailedReceivedEvent.ToScriptEvent(m, vc, (uint)circuitCode));
-                viewerCircuit.MessageRouting.Add(MessageType.TeleportLocal, (m) => TeleportLocalReceivedEvent.ToScriptEvent((TeleportLocal)m, vc, (uint)circuitCode));
-                viewerCircuit.MessageRouting.Add(MessageType.TeleportProgress, (m) => TeleportProgressReceivedEvent.ToScriptEvent(m, vc, (uint)circuitCode));
-                viewerCircuit.MessageRouting.Add(MessageType.TeleportStart, (m) => TeleportStartReceivedEvent.ToScriptEvent(m, vc, (uint)circuitCode));
-                viewerCircuit.MessageRouting.Add(MessageType.UUIDGroupNameReply, (m) => UUIDGroupNameReplyReceivedEvent.ToScriptEvent(m, vc, (uint)circuitCode));
-                viewerCircuit.MessageRouting.Add(MessageType.UUIDNameReply, (m) => UUIDNameReplyReceivedEvent.ToScriptEvent(m, vc, (uint)circuitCode));
+                var accessor = new ViewerAgentAccessor(agent.ID, scene.ID, circuitCode, capsPath, sessionId.AsUUID, secureSessionId.AsUUID);
+                viewerCircuit.MessageRouting.Add(MessageType.AgentDataUpdate, (m) => AgentDataUpdateReceivedEvent.ToScriptEvent(m, vc, accessor));
+                viewerCircuit.MessageRouting.Add(MessageType.AgentDropGroup, (m) => AgentDropGroupReceivedEvent.ToScriptEvent(m, vc, accessor));
+                viewerCircuit.MessageRouting.Add(MessageType.AgentMovementComplete, (m) => AgentMovementCompleteReceivedEvent.HandleAgentMovementComplete(m, vc, accessor));
+                viewerCircuit.MessageRouting.Add(MessageType.AlertMessage, (m) => AlertMessageReceivedEvent.ToScriptEvent(m, vc, accessor));
+                viewerCircuit.MessageRouting.Add(MessageType.AttachedSound, (m) => AttachedSoundReceivedEvent.ToScriptEvent(m, vc, accessor));
+                viewerCircuit.MessageRouting.Add(MessageType.AttachedSoundGainChange, (m) => AttachedSoundGainChangeReceivedEvent.ToScriptEvent(m, vc, accessor));
+                viewerCircuit.MessageRouting.Add(MessageType.AvatarAnimation, (m) => AvatarAnimationReceivedEvent.ToScriptEvent(m, vc, accessor));
+                viewerCircuit.MessageRouting.Add(MessageType.AvatarSitResponse, (m) => AvatarSitResponseReceivedEvent.ToScriptEvent(m, vc, accessor));
+                viewerCircuit.MessageRouting.Add(MessageType.CameraConstraint, (m) => CameraConstraintReceivedEvent.ToScriptEvent(m, vc, accessor));
+                viewerCircuit.MessageRouting.Add(MessageType.ChatFromSimulator, (m) => ChatFromSimulatorReceivedEvent.ToScriptEvent(m, vc, accessor));
+                viewerCircuit.MessageRouting.Add(MessageType.ClearFollowCamProperties, (m) => ClearFollowCamPropertiesReceivedEvent.ToScriptEvent(m, vc, accessor));
+                viewerCircuit.MessageRouting.Add(MessageType.CoarseLocationUpdate, (m) => CoarseLocationUpdateReceivedEvent.ToScriptEvent(m, vc, accessor));
+                viewerCircuit.MessageRouting.Add(MessageType.DeRezAck, (m) => DeRezAckReceivedEvent.ToScriptEvent(m, vc, accessor));
+                viewerCircuit.MessageRouting.Add(MessageType.EconomyData, (m) => EconomyDataReceivedEvent.ToScriptEvent(m, vc, accessor));
+                viewerCircuit.MessageRouting.Add(MessageType.EstateCovenantReply, (m) => EstateCovenantReplyReceivedEvent.ToScriptEvent(m, vc, accessor));
+                viewerCircuit.MessageRouting.Add(MessageType.FeatureDisabled, (m) => FeatureDisabledReceivedEvent.ToScriptEvent(m, vc, accessor));
+                viewerCircuit.MessageRouting.Add(MessageType.ForceObjectSelect, (m) => ForceObjectSelectReceivedEvent.ToScriptEvent(m, vc, accessor));
+                viewerCircuit.MessageRouting.Add(MessageType.GrantGodlikePowers, (m) => GrantGodlikePowersReceivedEvent.ToScriptEvent(m, vc, accessor));
+                viewerCircuit.MessageRouting.Add(MessageType.HealthMessage, (m) => HealthMessageReceivedEvent.ToScriptEvent(m, vc, accessor));
+                viewerCircuit.MessageRouting.Add(MessageType.ImageData, (m) => HandleImageData(m, vc, accessor));
+                viewerCircuit.MessageRouting.Add(MessageType.ImageNotInDatabase, (m) => HandleImageNotInDatabase(m, vc, accessor));
+                viewerCircuit.MessageRouting.Add(MessageType.ImagePacket, (m) => HandleImagePacket(m, vc, accessor));
+                viewerCircuit.MessageRouting.Add(MessageType.ImprovedInstantMessage, (m) => ImprovedInstantMessageReceivedEvent.ToScriptEvent(m, vc, accessor));
+                viewerCircuit.MessageRouting.Add(MessageType.KillObject, (m) => KillObjectReceivedEvent.ToScriptEvent(m, vc, accessor));
+                viewerCircuit.MessageRouting.Add(MessageType.LoadURL, (m) => LoadURLReceivedEvent.ToScriptEvent(m, vc, accessor));
+                viewerCircuit.MessageRouting.Add(MessageType.LogoutReply, (m) => HandleLogoutReply(m, vc, accessor));
+                viewerCircuit.MessageRouting.Add(MessageType.MoneyBalanceReply, (m) => MoneyBalanceReplyReceivedEvent.ToScriptEvent(m, vc, accessor));
+                viewerCircuit.MessageRouting.Add(MessageType.ObjectAnimation, (m) => ObjectAnimationReceivedEvent.ToScriptEvent(m, vc, accessor));
+                viewerCircuit.MessageRouting.Add(MessageType.ObjectUpdate, (m) => ObjectUpdateReceivedEvent.ToScriptEvent(m, vc, accessor));
+                viewerCircuit.MessageRouting.Add(MessageType.ObjectUpdateCompressed, (m) => ObjectUpdateReceivedEvent.ToScriptEvent(m, vc, accessor));
+                viewerCircuit.MessageRouting.Add(MessageType.OfflineNotification, (m) => OfflineNotificationReceivedEvent.ToScriptEvent(m, vc, accessor));
+                viewerCircuit.MessageRouting.Add(MessageType.OnlineNotification, (m) => OnlineNotificationReceivedEvent.ToScriptEvent(m, vc, accessor));
+                viewerCircuit.MessageRouting.Add(MessageType.ParcelInfoReply, (m) => ParcelInfoReplyReceivedEvent.ToScriptEvent(m, vc, accessor));
+                viewerCircuit.MessageRouting.Add(MessageType.ParcelObjectOwnersReply, (m) => ParcelObjectOwnersReplyReceivedEvent.ToScriptEvent(m, vc, accessor));
+                viewerCircuit.MessageRouting.Add(MessageType.ParcelProperties, (m) => ParcelPropertiesReceivedEvent.ToScriptEvent(m, vc, accessor));
+                viewerCircuit.MessageRouting.Add(MessageType.PayPriceReply, (m) => PayPriceReplyReceivedEvent.ToScriptEvent(m, vc, accessor));
+                viewerCircuit.MessageRouting.Add(MessageType.PreloadSound, (m) => PreloadSoundReceivedEvent.ToScriptEvent(m, vc, accessor));
+                viewerCircuit.MessageRouting.Add(MessageType.RegionHandshake, (m) => RegionHandshakeReceivedEvent.HandleRegionHandshake(m, vc, accessor));
+                viewerCircuit.MessageRouting.Add(MessageType.RegionInfo, (m) => RegionInfoReceivedEvent.HandleRegionInfo(m, vc, accessor));
+                viewerCircuit.MessageRouting.Add(MessageType.ScriptControlChange, (m) => ScriptControlChangeReceivedEvent.ToScriptEvent(m, vc, accessor));
+                viewerCircuit.MessageRouting.Add(MessageType.ScriptDialog, (m) => ScriptDialogReceivedEvent.ToScriptEvent(m, vc, accessor));
+                viewerCircuit.MessageRouting.Add(MessageType.ScriptQuestion, (m) => ScriptQuestionReceivedEvent.ToScriptEvent(m, vc, accessor));
+                viewerCircuit.MessageRouting.Add(MessageType.ScriptRunningReply, (m) => ScriptRunningReplyReceivedEvent.ToScriptEvent(m, vc, accessor));
+                viewerCircuit.MessageRouting.Add(MessageType.ScriptTeleportRequest, (m) => ScriptTeleportRequestReceivedEvent.ToScriptEvent(m, vc, accessor));
+                viewerCircuit.MessageRouting.Add(MessageType.SetFollowCamProperties, (m) => SetFollowCamPropertiesReceivedEvent.ToScriptEvent(m, vc, accessor));
+                viewerCircuit.MessageRouting.Add(MessageType.SoundTrigger, (m) => SoundTriggerReceivedEvent.ToScriptEvent(m, vc, accessor));
+                viewerCircuit.MessageRouting.Add(MessageType.TelehubInfo, (m) => TelehubInfoReceivedEvent.ToScriptEvent((TelehubInfo)m, vc, accessor));
+                viewerCircuit.MessageRouting.Add(MessageType.TeleportFailed, (m) => TeleportFailedReceivedEvent.ToScriptEvent(m, vc, accessor));
+                viewerCircuit.MessageRouting.Add(MessageType.TeleportLocal, (m) => TeleportLocalReceivedEvent.ToScriptEvent((TeleportLocal)m, vc, accessor));
+                viewerCircuit.MessageRouting.Add(MessageType.TeleportProgress, (m) => TeleportProgressReceivedEvent.ToScriptEvent(m, vc, accessor));
+                viewerCircuit.MessageRouting.Add(MessageType.TeleportStart, (m) => TeleportStartReceivedEvent.ToScriptEvent(m, vc, accessor));
+                viewerCircuit.MessageRouting.Add(MessageType.UUIDGroupNameReply, (m) => UUIDGroupNameReplyReceivedEvent.ToScriptEvent(m, vc, accessor));
+                viewerCircuit.MessageRouting.Add(MessageType.UUIDNameReply, (m) => UUIDNameReplyReceivedEvent.ToScriptEvent(m, vc, accessor));
                 vc.ViewerCircuits.Add((uint)circuitCode, viewerCircuit);
                 viewerCircuit.SendMessage(useCircuit);
-                return new ViewerAgentAccessor(agent.ID, circuitCode, capsPath, sessionId.AsUUID, secureSessionId.AsUUID);
+                return accessor;
             }
         }
 
-        private void HandleLogoutReply(Message m, uint circuitCode, ViewerConnection vc)
+        private void HandleLogoutReply(Message m, ViewerConnection vc, ViewerAgentAccessor accessor)
         {
             ViewerCircuit removeCircuit;
-            if (vc.ViewerCircuits.TryGetValue(circuitCode, out removeCircuit))
+            if (vc.ViewerCircuits.TryGetValue((uint)accessor.CircuitCode, out removeCircuit))
             {
-                vc.PostEvent(new LogoutReplyReceivedEvent(m, removeCircuit.CircuitCode));
+                vc.PostEvent(new LogoutReplyReceivedEvent(accessor));
                 removeCircuit.Stop();
                 vc.ClientUDP.RemoveCircuit(removeCircuit);
             }

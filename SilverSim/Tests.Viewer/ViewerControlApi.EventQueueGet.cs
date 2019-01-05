@@ -51,18 +51,20 @@ namespace SilverSim.Tests.Viewer
             private readonly UUID m_PartID;
             private readonly UUID m_ItemID;
             private readonly uint m_CircuitCode;
+            private readonly ViewerAgentAccessor m_ViewerAgent;
             private readonly ViewerConnection m_ViewerConnection;
             private Dictionary<MessageType, Action<Message>> m_MessageRouting;
 
             public EventQueueGet(
                 UUID reqid,
-                string url, 
-                uint circuitCode, 
-                int timeoutms, 
-                SceneList sceneList, 
-                UUID sceneID, 
-                UUID partID, 
-                UUID itemID, 
+                string url,
+                uint circuitCode,
+                int timeoutms,
+                SceneList sceneList,
+                UUID sceneID,
+                UUID partID,
+                UUID itemID,
+                ViewerAgentAccessor agent,
                 ViewerConnection vc,
                 Dictionary<MessageType, Action<Message>> messageRouting)
             {
@@ -74,6 +76,7 @@ namespace SilverSim.Tests.Viewer
                 m_SceneID = sceneID;
                 m_PartID = partID;
                 m_ItemID = itemID;
+                m_ViewerAgent = agent;
                 m_ViewerConnection = vc;
                 m_MessageRouting = messageRouting;
             }
@@ -118,7 +121,19 @@ namespace SilverSim.Tests.Viewer
                                     }
 
                                     Action<Message> handle;
-                                    if(m_MessageRouting.TryGetValue(m.Number, out handle))
+                                    if(msgtype == "ObjectPhysicsProperties")
+                                    {
+
+                                    }
+                                    else if(msgtype == "EstablishAgentCommunication")
+                                    {
+
+                                    }
+                                    else if(msgtype == "ParcelVoiceInfo")
+                                    {
+
+                                    }
+                                    else if(m_MessageRouting.TryGetValue(m.Number, out handle))
                                     {
                                         handle(m);
                                     }
@@ -127,7 +142,7 @@ namespace SilverSim.Tests.Viewer
                         }
                         m_Log.Info("EQG finished");
                         m_ViewerConnection.PostEvent(new EventQueueGetFinishedEvent(
-                            new AgentInfo(m_ViewerConnection.AgentID, m_SceneID, m_CircuitCode),
+                            m_ViewerAgent,
                             m_ReqID,
                             (int)statusCode));
                     }
@@ -136,24 +151,37 @@ namespace SilverSim.Tests.Viewer
                 {
                     m_Log.Info("EQG abort");
                     m_ViewerConnection.PostEvent(new EventQueueGetFinishedEvent(
-                        new AgentInfo(m_ViewerConnection.AgentID, m_SceneID, m_CircuitCode),
+                        m_ViewerAgent,
                         m_ReqID,
                         499));
                 }
             }
         }
 
+        [TranslatedScriptEvent("parcelvoiceinfo_received")]
+        public class ParcelVoiceInfoReceivedEvent : IScriptEvent
+        {
+            [TranslatedScriptEventParameter(0)]
+            public ViewerAgentAccessor Agent;
+            [TranslatedScriptEventParameter(1)]
+            public int ParcelLocalId;
+            [TranslatedScriptEventParameter(2)]
+            public string ChannelUri;
+            [TranslatedScriptEventParameter(3)]
+            public string ChannelCredentials;
+        }
+
         [TranslatedScriptEvent("eventqueueget_finished")]
         public class EventQueueGetFinishedEvent : IScriptEvent
         {
             [TranslatedScriptEventParameter(0)]
-            public AgentInfo Agent;
+            public ViewerAgentAccessor Agent;
             [TranslatedScriptEventParameter(1)]
             public LSLKey RequestID;
             [TranslatedScriptEventParameter(2)]
             public int StatusCode;
 
-            public EventQueueGetFinishedEvent(AgentInfo agentInfo, UUID requestID, int statusCode)
+            public EventQueueGetFinishedEvent(ViewerAgentAccessor agentInfo, UUID requestID, int statusCode)
             {
                 Agent = agentInfo;
                 RequestID = requestID;
@@ -164,7 +192,7 @@ namespace SilverSim.Tests.Viewer
         [APIExtension(ExtensionName, "eventqueueget_finished")]
         [StateEventDelegate]
         public delegate void EventQueueGetFinished(
-            AgentInfo agent,
+            ViewerAgentAccessor agent,
             LSLKey requestID,
             int httpStatusCode);
 
@@ -193,6 +221,7 @@ namespace SilverSim.Tests.Viewer
                         instance.Part.ObjectGroup.Scene.ID,
                         instance.Part.ID,
                         instance.Item.ID,
+                        agent,
                         vc,
                         viewerCircuit.MessageRouting).HandleRequest);
                 }

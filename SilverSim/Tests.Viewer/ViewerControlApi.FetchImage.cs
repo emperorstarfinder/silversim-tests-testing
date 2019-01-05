@@ -43,7 +43,7 @@ namespace SilverSim.Tests.Viewer
         public class TextureReceivedEvent : IScriptEvent
         {
             [TranslatedScriptEventParameter(0)]
-            public AgentInfo Agent;
+            public ViewerAgentAccessor Agent;
 
             [TranslatedScriptEventParameter(1)]
             public LSLKey TextureID;
@@ -59,7 +59,7 @@ namespace SilverSim.Tests.Viewer
         [StateEventDelegate]
         public delegate void TextureReceived(
             [Description("Agent info")]
-            AgentInfo agent,
+            ViewerAgentAccessor agent,
             [Description("Texture ID")]
             LSLKey textureID,
             [Description("Result")]
@@ -131,20 +131,20 @@ namespace SilverSim.Tests.Viewer
         }
         private readonly RwLockedDictionary<UUID, ImageReceiveInfo> m_ActiveImageTransfers = new RwLockedDictionary<UUID, ImageReceiveInfo>();
 
-        private void HandleImageNotInDatabase(Message m, ViewerConnection vc, uint circuitCode)
+        private void HandleImageNotInDatabase(Message m, ViewerConnection vc, ViewerAgentAccessor agent)
         {
             ImageNotInDatabase res = (ImageNotInDatabase)m;
             m_ActiveImageTransfers.Remove(res.ID);
             vc.PostEvent(new TextureReceivedEvent
             {
-                Agent = new AgentInfo(m, circuitCode),
+                Agent = agent,
                 TextureID = res.ID,
                 Success = 0,
                 Data = new ByteArrayApi.ByteArray()
             });
         }
 
-        private void HandleImageData(Message m, ViewerConnection vc, uint circuitCode)
+        private void HandleImageData(Message m, ViewerConnection vc, ViewerAgentAccessor agent)
         {
             ImageData res = (ImageData)m;
             ImageReceiveInfo info;
@@ -155,7 +155,7 @@ namespace SilverSim.Tests.Viewer
                 {
                     vc.PostEvent(new TextureReceivedEvent
                     {
-                        Agent = new AgentInfo(m, circuitCode),
+                        Agent = agent,
                         TextureID = res.ID,
                         Success = 1,
                         Data = new ByteArrayApi.ByteArray(info.Data)
@@ -165,7 +165,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        private void HandleImagePacket(Message m, ViewerConnection vc, uint circuitCode)
+        private void HandleImagePacket(Message m, ViewerConnection vc, ViewerAgentAccessor agent)
         {
             ImagePacket res = (ImagePacket)m;
             ImageReceiveInfo info;
@@ -176,7 +176,7 @@ namespace SilverSim.Tests.Viewer
                 {
                     vc.PostEvent(new TextureReceivedEvent
                     {
-                        Agent = new AgentInfo(m, circuitCode),
+                        Agent = agent,
                         TextureID = res.ID,
                         Success = 1,
                         Data = new ByteArrayApi.ByteArray(info.Data)
@@ -265,7 +265,7 @@ namespace SilverSim.Tests.Viewer
         private sealed class UrlDownloadInfoRequest
         {
             public ViewerConnection ViewerConn;
-            public AgentInfo Agent;
+            public ViewerAgentAccessor Agent;
             public UUID TextureID;
             public string TextureUrl;
         }
@@ -287,7 +287,7 @@ namespace SilverSim.Tests.Viewer
                     ThreadPool.QueueUserWorkItem(RequestTextureHandler, new UrlDownloadInfoRequest
                     {
                         ViewerConn = vc,
-                        Agent = new AgentInfo(agent.AgentID, viewerCircuit.RegionData.RegionID, viewerCircuit.CircuitCode),
+                        Agent = agent,
                         TextureID = textureID.AsUUID,
                         TextureUrl = capsUrl
                     });
