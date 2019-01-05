@@ -2190,6 +2190,41 @@ namespace SilverSim.Tests.Viewer
             Vector3 sunAngVelocity);
         #endregion
 
+        #region scriptrunningreply_received
+        [TranslatedScriptEvent("scriptrunningreply_received")]
+        public class ScriptRunningReplyReceivedEvent : IScriptEvent
+        {
+            [TranslatedScriptEventParameter(0)]
+            public AgentInfo Agent;
+            [TranslatedScriptEventParameter(1)]
+            public LSLKey ObjectID;
+            [TranslatedScriptEventParameter(2)]
+            public LSLKey ItemID;
+            [TranslatedScriptEventParameter(3)]
+            public int IsRunning;
+
+            public static void ToScriptEvent(Message m, ViewerConnection vc, uint circuitCode)
+            {
+                var res = (ScriptRunningReply)m;
+                vc.PostEvent(new ScriptRunningReplyReceivedEvent
+                {
+                    Agent = new AgentInfo(m, circuitCode),
+                    ObjectID = res.ObjectID,
+                    ItemID = res.ItemID,
+                    IsRunning = res.IsRunning.ToLSLBoolean()
+                });
+            }
+        }
+
+        [APIExtension(ExtensionName, "scriptrunningreply_received")]
+        [StateEventDelegate]
+        public delegate void ScriptRunningReplyReceived(
+            AgentInfo agent,
+            LSLKey objectID,
+            LSLKey itemID,
+            int isRunning);
+        #endregion
+
         [TranslatedScriptEventsInfo]
         public static readonly Type[] TranslatedEvents = new Type[] {
             typeof(AgentDataUpdateReceivedEvent),
@@ -2227,6 +2262,7 @@ namespace SilverSim.Tests.Viewer
             typeof(ScriptControlChangeReceivedEvent),
             typeof(ScriptDialogReceivedEvent),
             typeof(ScriptQuestionReceivedEvent),
+            typeof(ScriptRunningReplyReceivedEvent),
             typeof(ScriptTeleportRequestReceivedEvent),
             typeof(SetFollowCamPropertiesReceivedEvent),
             typeof(SimulatorViewerTimeMessageReceived),

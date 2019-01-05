@@ -189,7 +189,7 @@ namespace SilverSim.Tests.Viewer
                         viewerCircuit.CircuitCode,
                         timeoutms,
                         m_Scenes,
-                        vc.ClientUDP.Scene.ID,
+                        instance.Part.ObjectGroup.Scene.ID,
                         instance.Part.ID,
                         instance.Item.ID,
                         vc,

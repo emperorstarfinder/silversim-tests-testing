@@ -399,6 +399,7 @@ namespace SilverSim.Tests.Viewer
                 viewerCircuit.MessageRouting.Add(MessageType.ScriptControlChange, (m) => ScriptControlChangeReceivedEvent.ToScriptEvent(m, vc, (uint)circuitCode));
                 viewerCircuit.MessageRouting.Add(MessageType.ScriptDialog, (m) => ScriptDialogReceivedEvent.ToScriptEvent(m, vc, (uint)circuitCode));
                 viewerCircuit.MessageRouting.Add(MessageType.ScriptQuestion, (m) => ScriptQuestionReceivedEvent.ToScriptEvent(m, vc, (uint)circuitCode));
+                viewerCircuit.MessageRouting.Add(MessageType.ScriptRunningReply, (m) => ScriptRunningReplyReceivedEvent.ToScriptEvent(m, vc, (uint)circuitCode));
                 viewerCircuit.MessageRouting.Add(MessageType.ScriptTeleportRequest, (m) => ScriptTeleportRequestReceivedEvent.ToScriptEvent(m, vc, (uint)circuitCode));
                 viewerCircuit.MessageRouting.Add(MessageType.SetFollowCamProperties, (m) => SetFollowCamPropertiesReceivedEvent.ToScriptEvent(m, vc, (uint)circuitCode));
                 viewerCircuit.MessageRouting.Add(MessageType.SoundTrigger, (m) => SoundTriggerReceivedEvent.ToScriptEvent(m, vc, (uint)circuitCode));
