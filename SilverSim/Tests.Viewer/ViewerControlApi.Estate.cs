@@ -109,7 +109,8 @@ namespace SilverSim.Tests.Viewer
         public void SendEstateGetInfo(
             ScriptInstance instance,
             ViewerAgentAccessor agent,
-            LSLKey transactionID)
+            LSLKey transactionID,
+            LSLKey invoice)
         {
             lock (instance)
             {
@@ -123,7 +124,8 @@ namespace SilverSim.Tests.Viewer
                         AgentID = agent.AgentID,
                         SessionID = viewerCircuit.SessionID,
                         Method = "getinfo",
-                        TransactionID = transactionID
+                        TransactionID = transactionID,
+                        Invoice = invoice
                     };
                     viewerCircuit.SendMessage(msg);
                 }
