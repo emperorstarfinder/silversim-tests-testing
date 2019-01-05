@@ -2225,6 +2225,176 @@ namespace SilverSim.Tests.Viewer
             int isRunning);
         #endregion
 
+        #region parcelproperties_received
+        [APIExtension(ExtensionName, "parcelproperties")]
+        [APIDisplayName("parcelproperties")]
+        [APIIsVariableType]
+        [APIAccessibleMembers]
+        public sealed class ParcelPropertiesData
+        {
+            public int SelfCount;
+            public int OtherCount;
+            public int PublicCount;
+            public int LocalID;
+            public LSLKey OwnerID = new LSLKey();
+            public int IsGroupOwned;
+            public int AuctionID;
+            public long ClaimDate;
+            public int ClaimPrice;
+            public int RentPrice;
+            public Vector3 AABBMin;
+            public Vector3 AABBMax;
+            public ByteArrayApi.ByteArray Bitmap = new ByteArrayApi.ByteArray();
+            public int Area;
+            public int Status;
+            public int SimWideMaxPrims;
+            public int SimWideTotalPrims;
+            public int MaxPrims;
+            public int TotalPrims;
+            public int OwnerPrims;
+            public int GroupPrims;
+            public int OtherPrims;
+            public int SelectedPrims;
+            public double ParcelPrimBonus;
+            public int OtherCleanTime;
+            public int ParcelFlags;
+            public int SalePrice;
+            public string Name = string.Empty;
+            public string Description = string.Empty;
+            public string MusicURL = string.Empty;
+            public string MediaURL = string.Empty;
+            public LSLKey MediaID = new LSLKey();
+            public int MediaAutoscale;
+            public LSLKey GroupID = new LSLKey();
+            public int PassPrice;
+            public double PassHours;
+            public int Category;
+            public LSLKey AuthBuyerID = new LSLKey();
+            public LSLKey SnapshotID = new LSLKey();
+            public Vector3 UserLocation;
+            public Vector3 UserLookAt;
+            public int LandingType;
+            public int RegionPushOverride;
+            public int RegionDenyAnonymous;
+            public int RegionDenyIdentified;
+            public int RegionDenyTransacted;
+            public int RegionDenyAgeUnverified;
+            public int Privacy;
+            public int SeeAVs;
+            public int AnyAVSounds;
+            public int GroupAVSounds;
+            public string MediaDesc = string.Empty;
+            public int MediaWidth;
+            public int MediaHeight;
+            public int MediaLoop;
+            public string MediaType = string.Empty;
+            public int ObscureMedia;
+            public int ObscureMusic;
+
+            public ParcelPropertiesData()
+            {
+            }
+
+            public ParcelPropertiesData(ParcelProperties msg)
+            {
+                SelfCount = msg.SelfCount;
+                OtherCount = msg.OtherCount;
+                PublicCount = msg.PublicCount;
+                LocalID = msg.LocalID;
+                OwnerID = msg.OwnerID;
+                IsGroupOwned = msg.IsGroupOwned.ToLSLBoolean();
+                AuctionID = (int)msg.AuctionID;
+                ClaimDate = (long)msg.ClaimDate.DateTimeToUnixTime();
+                ClaimPrice = msg.ClaimPrice;
+                RentPrice = msg.RentPrice;
+                AABBMin = msg.AABBMin;
+                AABBMax = msg.AABBMax;
+                Bitmap = new ByteArrayApi.ByteArray(msg.Bitmap);
+                Area = msg.Area;
+                Status = (int)msg.Status;
+                SimWideMaxPrims = msg.SimWideMaxPrims;
+                SimWideTotalPrims = msg.SimWideTotalPrims;
+                MaxPrims = msg.MaxPrims;
+                TotalPrims = msg.TotalPrims;
+                OwnerPrims = msg.OwnerPrims;
+                GroupPrims = msg.GroupPrims;
+                OtherPrims = msg.OtherPrims;
+                SelectedPrims = msg.SelectedPrims;
+                ParcelPrimBonus = msg.ParcelPrimBonus;
+                OtherCleanTime = msg.OtherCleanTime;
+                ParcelFlags = (int)msg.ParcelFlags;
+                SalePrice = msg.SalePrice;
+                Name = msg.Name;
+                Description = msg.Description;
+                MusicURL = msg.MusicURL;
+                MediaURL = msg.MediaURL;
+                MediaID = msg.MediaID;
+                MediaAutoscale = msg.MediaAutoScale.ToLSLBoolean();
+                GroupID = msg.GroupID;
+                PassPrice = msg.PassPrice;
+                PassHours = msg.PassHours;
+                Category = (int)msg.Category;
+                AuthBuyerID = msg.AuthBuyerID;
+                SnapshotID = msg.SnapshotID;
+                UserLocation = msg.UserLocation;
+                UserLookAt = msg.UserLookAt;
+                LandingType = (int)msg.LandingType;
+                RegionPushOverride = msg.RegionPushOverride.ToLSLBoolean();
+                RegionDenyAnonymous = msg.RegionDenyAnonymous.ToLSLBoolean();
+                RegionDenyIdentified = msg.RegionDenyIdentified.ToLSLBoolean();
+                RegionDenyTransacted = msg.RegionDenyTransacted.ToLSLBoolean();
+                RegionDenyAgeUnverified = msg.RegionDenyAgeUnverified.ToLSLBoolean();
+                Privacy = msg.Privacy.ToLSLBoolean();
+                SeeAVs = msg.SeeAVs.ToLSLBoolean();
+                AnyAVSounds = msg.AnyAVSounds.ToLSLBoolean();
+                GroupAVSounds = msg.GroupAVSounds.ToLSLBoolean();
+                MediaDesc = msg.MediaDesc;
+                MediaWidth = msg.MediaWidth;
+                MediaHeight = msg.MediaHeight;
+                MediaLoop = msg.MediaLoop.ToLSLBoolean();
+                MediaType = msg.MediaType;
+                ObscureMedia = msg.ObscureMedia.ToLSLBoolean();
+                ObscureMusic = msg.ObscureMusic.ToLSLBoolean();
+            }
+        }
+
+        [TranslatedScriptEvent("parcelproperties_received")]
+        public class ParcelPropertiesReceivedEvent : IScriptEvent
+        {
+            [TranslatedScriptEventParameter(0)]
+            public AgentInfo Agent;
+            [TranslatedScriptEventParameter(1)]
+            public int RequestResult;
+            [TranslatedScriptEventParameter(2)]
+            public int SequenceID;
+            [TranslatedScriptEventParameter(3)]
+            public int SnapSelection;
+            [TranslatedScriptEventParameter(4)]
+            public ParcelPropertiesData ParcelData;
+
+            public static void ToScriptEvent(Message m, ViewerConnection vc, uint circuitCode)
+            {
+                var res = (ParcelProperties)m;
+                vc.PostEvent(new ParcelPropertiesReceivedEvent
+                {
+                    Agent = new AgentInfo(m, circuitCode),
+                    RequestResult = (int)res.RequestResult,
+                    SequenceID = res.SequenceID,
+                    SnapSelection = res.SnapSelection.ToLSLBoolean(),
+                    ParcelData = new ParcelPropertiesData(res)
+                });
+            }
+        }
+
+        [APIExtension(ExtensionName, "parcelproperties_received")]
+        public delegate void ParcelPropertiesReeived(
+            AgentInfo agent,
+            int requestResult,
+            int sequenceID,
+            int snapSelection,
+            ParcelPropertiesData parcelData);
+        #endregion
+
         [TranslatedScriptEventsInfo]
         public static readonly Type[] TranslatedEvents = new Type[] {
             typeof(AgentDataUpdateReceivedEvent),
@@ -2256,6 +2426,7 @@ namespace SilverSim.Tests.Viewer
             typeof(OnlineNotificationReceivedEvent),
             typeof(ParcelInfoReplyReceivedEvent),
             typeof(ParcelObjectOwnersReplyReceivedEvent),
+            typeof(ParcelPropertiesReceivedEvent),
             typeof(PayPriceReplyReceivedEvent),
             typeof(PreloadSoundReceivedEvent),
             typeof(RegionHandshakeReceivedEvent),

@@ -392,6 +392,7 @@ namespace SilverSim.Tests.Viewer
                 viewerCircuit.MessageRouting.Add(MessageType.OnlineNotification, (m) => OnlineNotificationReceivedEvent.ToScriptEvent(m, vc, (uint)circuitCode));
                 viewerCircuit.MessageRouting.Add(MessageType.ParcelInfoReply, (m) => ParcelInfoReplyReceivedEvent.ToScriptEvent(m, vc, (uint)circuitCode));
                 viewerCircuit.MessageRouting.Add(MessageType.ParcelObjectOwnersReply, (m) => ParcelObjectOwnersReplyReceivedEvent.ToScriptEvent(m, vc, (uint)circuitCode));
+                viewerCircuit.MessageRouting.Add(MessageType.ParcelProperties, (m) => ParcelPropertiesReceivedEvent.ToScriptEvent(m, vc, (uint)circuitCode));
                 viewerCircuit.MessageRouting.Add(MessageType.PayPriceReply, (m) => PayPriceReplyReceivedEvent.ToScriptEvent(m, vc, (uint)circuitCode));
                 viewerCircuit.MessageRouting.Add(MessageType.PreloadSound, (m) => PreloadSoundReceivedEvent.ToScriptEvent(m, vc, (uint)circuitCode));
                 viewerCircuit.MessageRouting.Add(MessageType.RegionHandshake, (m) => RegionHandshakeReceivedEvent.HandleRegionHandshake(m, vc, (uint)circuitCode));
