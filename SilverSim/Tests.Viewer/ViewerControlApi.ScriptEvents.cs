@@ -22,6 +22,7 @@
 using SilverSim.Scene.Types.Script.Events;
 using SilverSim.Scripting.Lsl;
 using SilverSim.Scripting.Lsl.Api.ByteString;
+using SilverSim.Scripting.Lsl.Api.Hashtable;
 using SilverSim.Types;
 using SilverSim.Viewer.Messages;
 using SilverSim.Viewer.Messages.Agent;
@@ -42,6 +43,7 @@ using SilverSim.Viewer.Messages.Object;
 using SilverSim.Viewer.Messages.Parcel;
 using SilverSim.Viewer.Messages.Region;
 using SilverSim.Viewer.Messages.Script;
+using SilverSim.Viewer.Messages.Simulator;
 using SilverSim.Viewer.Messages.Sound;
 using SilverSim.Viewer.Messages.Telehub;
 using SilverSim.Viewer.Messages.Teleport;
@@ -2679,6 +2681,54 @@ namespace SilverSim.Tests.Viewer
             int mediaLoop);
         #endregion
 
+        #region simstats_received
+        [TranslatedScriptEvent("simstats_received")]
+        public class SimStatsReceivedEvent : IScriptEvent
+        {
+            [TranslatedScriptEventParameter(0)]
+            public ViewerAgentAccessor Agent;
+            [TranslatedScriptEventParameter(1)]
+            public int RegionX;
+            [TranslatedScriptEventParameter(2)]
+            public int RegionY;
+            [TranslatedScriptEventParameter(3)]
+            public int RegionFlags;
+            [TranslatedScriptEventParameter(4)]
+            public HashtableApi.Hashtable Stat = new HashtableApi.Hashtable();
+            [TranslatedScriptEventParameter(5)]
+            public int PID;
+            [TranslatedScriptEventParameter(6)]
+            public AnArray RegionFlagsExtended = new AnArray();
+
+            public static void ToScriptEvent(Message m, ViewerConnection vc, ViewerAgentAccessor agent)
+            {
+                var msg = (SimStats)m;
+                var ev = new SimStatsReceivedEvent
+                {
+                    Agent = agent,
+                    RegionX = (int)msg.RegionX,
+                    RegionY = (int)msg.RegionY,
+                    RegionFlags = (int)msg.RegionFlags,
+                    PID = msg.PID
+                };
+                foreach(SimStats.Data d in msg.Stat)
+                {
+                    ev.Stat.Add(d.StatID.ToString(), new Real(d.StatValue));
+                }
+
+                foreach(ulong d in msg.RegionFlagsExtended)
+                {
+                    ev.RegionFlagsExtended.Add(new LongInteger((long)d));
+                }
+                vc.PostEvent(ev);
+            }
+        }
+
+        [APIExtension(ExtensionName, "simstats_received")]
+        [StateEventDelegate]
+        public delegate void SimStatsReceived(ViewerAgentAccessor agent, int regionX, int regionY, int regionFlags, HashtableApi.Hashtable stat, int pid, AnArray regionFlagsExtended);
+        #endregion
+
         [TranslatedScriptEventsInfo]
         public static readonly Type[] TranslatedEvents = new Type[] {
             typeof(AgentDataUpdateReceivedEvent),
@@ -2734,6 +2784,7 @@ namespace SilverSim.Tests.Viewer
             typeof(ScriptRunningReplyReceivedEvent),
             typeof(ScriptTeleportRequestReceivedEvent),
             typeof(SetFollowCamPropertiesReceivedEvent),
+            typeof(SimStatsReceivedEvent),
             typeof(SimulatorViewerTimeMessageReceived),
             typeof(SoundTriggerReceivedEvent),
             typeof(TelehubInfoReceivedEvent),

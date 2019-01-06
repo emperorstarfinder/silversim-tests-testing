@@ -414,6 +414,7 @@ namespace SilverSim.Tests.Viewer
                 viewerCircuit.MessageRouting.Add(MessageType.ScriptRunningReply, (m) => ScriptRunningReplyReceivedEvent.ToScriptEvent(m, vc, accessor));
                 viewerCircuit.MessageRouting.Add(MessageType.ScriptTeleportRequest, (m) => ScriptTeleportRequestReceivedEvent.ToScriptEvent(m, vc, accessor));
                 viewerCircuit.MessageRouting.Add(MessageType.SetFollowCamProperties, (m) => SetFollowCamPropertiesReceivedEvent.ToScriptEvent(m, vc, accessor));
+                viewerCircuit.MessageRouting.Add(MessageType.SimStats, (m) => SimStatsReceivedEvent.ToScriptEvent(m, vc, accessor));
                 viewerCircuit.MessageRouting.Add(MessageType.SoundTrigger, (m) => SoundTriggerReceivedEvent.ToScriptEvent(m, vc, accessor));
                 viewerCircuit.MessageRouting.Add(MessageType.TelehubInfo, (m) => TelehubInfoReceivedEvent.ToScriptEvent((TelehubInfo)m, vc, accessor));
                 viewerCircuit.MessageRouting.Add(MessageType.TeleportFailed, (m) => TeleportFailedReceivedEvent.ToScriptEvent(m, vc, accessor));
