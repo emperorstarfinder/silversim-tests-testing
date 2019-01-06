@@ -523,6 +523,41 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "SendRequestMultipleObjects")]
+        public void SendRequestMultipleObjects(
+            ScriptInstance instance,
+            ViewerAgentAccessor agent,
+            AnArray objectData)
+        {
+            if(objectData.Count % 2 != 0)
+            {
+                return;
+            }
+            lock (instance)
+            {
+                ViewerConnection vc;
+                ViewerCircuit viewerCircuit;
+                if (m_Clients.TryGetValue(agent.AgentID, out vc) &&
+                    vc.ViewerCircuits.TryGetValue((uint)agent.CircuitCode, out viewerCircuit))
+                {
+                    var m = new RequestMultipleObjects
+                    {
+                        AgentID = agent.AgentID,
+                        SessionID = agent.SessionId
+                    };
+                    for(int i = 0; i < objectData.Count; i += 2)
+                    {
+                        m.ObjectData.Add(new RequestMultipleObjects.ObjectDataEntry
+                        {
+                            CacheMissType = (RequestMultipleObjects.CacheMissType)objectData[i].AsInt,
+                            LocalID = objectData[i + 1].AsUInt
+                        });
+                    }
+                    viewerCircuit.SendMessage(m);
+                }
+            }
+        }
+
         [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "SendObjectExportSelected")]
         public void SendObjectExportSelected(
             ScriptInstance instance,
