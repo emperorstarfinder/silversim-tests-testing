@@ -1322,7 +1322,6 @@ namespace SilverSim.Tests.Viewer
             public Vector3 Velocity;
             public Vector3 AngularVelocity;
             public Vector3 Acceleration;
-            //public ByteArrayApi.ByteArray ObjectData = new ByteArrayApi.ByteArray();
             public int ParentID;
             public int UpdateFlags;
             public VcObjectShape ObjectShape = new VcObjectShape();
