@@ -1318,7 +1318,7 @@ namespace SilverSim.Tests.Viewer
             public Vector3 Acceleration;
             //public ByteArrayApi.ByteArray ObjectData = new ByteArrayApi.ByteArray();
             public int ParentID;
-            public PrimitiveFlags UpdateFlags;
+            public int UpdateFlags;
             public VcObjectShape ObjectShape = new VcObjectShape();
             public TextureEntryContainer TextureEntry = new TextureEntryContainer();
             public ByteArrayApi.ByteArray TextureAnim = new ByteArrayApi.ByteArray();
@@ -1362,7 +1362,7 @@ namespace SilverSim.Tests.Viewer
                     AngularVelocity = new Vector3(d.ObjectData, 48);
                 }
                 ParentID = (int)d.ParentID;
-                UpdateFlags = d.UpdateFlags;
+                UpdateFlags = (int)d.UpdateFlags;
                 ObjectShape = new VcObjectShape
                 {
                     LocalID = (int)d.LocalID,
