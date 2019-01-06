@@ -118,7 +118,6 @@ namespace SilverSim.Tests.Viewer
             ScriptInstance instance,
             ViewerAgentAccessor agent,
             int objectLocalID,
-            Vector3 grabOffset,
             AnArray objectData)
         {
             lock (instance)
