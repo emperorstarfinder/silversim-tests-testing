@@ -1009,7 +1009,10 @@ namespace SilverSim.Tests.Viewer
                     };
                     for (int i = 0; i < objectData.Count; i += 4)
                     {
-                        var d = new MultipleObjectUpdate.ObjectDataEntry();
+                        var d = new MultipleObjectUpdate.ObjectDataEntry
+                        {
+                            ObjectLocalID = objectData[i].AsUInt
+                        };
                         IValue position = objectData[i + 1];
                         IValue rotation = objectData[i + 2];
                         IValue scale = objectData[i + 3];
@@ -1017,14 +1020,17 @@ namespace SilverSim.Tests.Viewer
                         if(position is Vector3)
                         {
                             dataSize += 12;
+                            d.Flags |= MultipleObjectUpdate.UpdateFlags.UpdatePosition;
                         }
                         if (rotation is Quaternion)
                         {
                             dataSize += 12;
+                            d.Flags |= MultipleObjectUpdate.UpdateFlags.UpdateRotation;
                         }
                         if (scale is Vector3)
                         {
                             dataSize += 12;
+                            d.Flags |= MultipleObjectUpdate.UpdateFlags.UpdateScale;
                         }
 
                         byte[] datablock = new byte[dataSize];
