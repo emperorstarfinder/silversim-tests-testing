@@ -19,9 +19,13 @@
 // obligated to do so. If you do not wish to do so, delete this
 // exception statement from your version.
 
+using SilverSim.Scene.Types.Script;
 using SilverSim.Scripting.Lsl;
+using SilverSim.Tests.Viewer.UDP;
 using SilverSim.Types;
+using SilverSim.Viewer.Messages.Object;
 using System;
+using System.Collections.Generic;
 
 namespace SilverSim.Tests.Viewer
 {
@@ -222,135 +226,215 @@ namespace SilverSim.Tests.Viewer
                 }
             }
 
-            public byte[] GetBytes()
+            public byte[] GetFlexibleData()
             {
-                int extraParamsNum = 0;
-                int totalBytesLength = 1;
-                if(HasFlexible)
-                {
-                    ++extraParamsNum;
-                    totalBytesLength += 16;
-                    totalBytesLength += 2 + 4;
-                }
-
-                if (HasSculpt)
-                {
-                    ++extraParamsNum;
-                    totalBytesLength += 17;
-                    totalBytesLength += 2 + 4;
-                }
-
-                if (HasProjection)
-                {
-                    ++extraParamsNum;
-                    totalBytesLength += 28;
-                    totalBytesLength += 2 + 4;
-                }
-
-                if (MeshFlags != 0)
-                {
-                    ++extraParamsNum;
-                    totalBytesLength += 4;
-                    totalBytesLength += 2 + 4;
-                }
-
-                if (HasLight)
-                {
-                    ++extraParamsNum;
-                    totalBytesLength += 16;
-                    totalBytesLength += 2 + 4;
-                }
-
-                var updatebytes = new byte[totalBytesLength];
-                int i = 0;
-                updatebytes[i++] = (byte)extraParamsNum;
-
+                byte[] updatebytes = null;
                 if (HasFlexible)
                 {
-                    updatebytes[i++] = FlexiEP % 256;
-                    updatebytes[i++] = FlexiEP / 256;
-
-                    updatebytes[i++] = 16;
-                    updatebytes[i++] = 0;
-                    updatebytes[i++] = 0;
-                    updatebytes[i++] = 0;
-
-                    updatebytes[i++] = (byte)((byte)((byte)(FlexiTension * 10.01f) & 0x7F) | (byte)((FlexiSoftness & 2) << 6));
-                    updatebytes[i++] = (byte)((byte)((byte)(FlexiFriction * 10.01f) & 0x7F) | (byte)((FlexiSoftness & 1) << 7));
-                    updatebytes[i++] = (byte)((FlexiGravity + 10.0f) * 10.01f);
-                    updatebytes[i++] = (byte)(FlexiWind * 10.01f);
-                    FlexiForce.ToBytes(updatebytes, i);
-                    i += 12;
+                    updatebytes = new byte[16];
+                    updatebytes[0] = (byte)((byte)((byte)(FlexiTension * 10.01f) & 0x7F) | (byte)((FlexiSoftness & 2) << 6));
+                    updatebytes[1] = (byte)((byte)((byte)(FlexiFriction * 10.01f) & 0x7F) | (byte)((FlexiSoftness & 1) << 7));
+                    updatebytes[2] = (byte)((FlexiGravity + 10.0f) * 10.01f);
+                    updatebytes[3] = (byte)(FlexiWind * 10.01f);
+                    FlexiForce.ToBytes(updatebytes, 4);
                 }
+                return updatebytes;
+            }
 
+            public byte[] GetSculptData()
+            {
+                byte[] updatebytes = null;
                 if (HasSculpt)
                 {
-                    updatebytes[i++] = SculptEP % 256;
-                    updatebytes[i++] = SculptEP / 256;
-                    updatebytes[i++] = 17;
-                    updatebytes[i++] = 0;
-                    updatebytes[i++] = 0;
-                    updatebytes[i++] = 0;
-                    SculptMap.AsUUID.ToBytes(updatebytes, i);
-                    i += 16;
-                    updatebytes[i++] = (byte)SculptType;
+                    updatebytes = new byte[17];
+                    SculptMap.AsUUID.ToBytes(updatebytes, 0);
+                    updatebytes[16] = (byte)SculptType;
                 }
+                return updatebytes;
+            }
 
+            public byte[] GetLightData()
+            {
+                byte[] updatebytes = null;
                 if (HasLight)
                 {
-                    updatebytes[i++] = LightEP % 256;
-                    updatebytes[i++] = LightEP / 256;
-                    updatebytes[i++] = 16;
-                    updatebytes[i++] = 0;
-                    updatebytes[i++] = 0;
-                    updatebytes[i++] = 0;
+                    updatebytes = new byte[16];
                     Color color = new Color(LightColor);
-                    Buffer.BlockCopy(color.AsByte, 0, updatebytes, i, 3);
+                    Buffer.BlockCopy(color.AsByte, 0, updatebytes, 0, 3);
 
-                    updatebytes[i + 3] = (byte)(LightIntensity * 255f);
-                    i += 4;
-                    Float2LEBytes((float)LightRadius, updatebytes, i);
-                    i += 4;
-                    Float2LEBytes((float)LightCutoff, updatebytes, i);
-                    i += 4;
-                    Float2LEBytes((float)LightFalloff, updatebytes, i);
-                    i += 4;
+                    updatebytes[3] = (byte)(LightIntensity * 255f);
+                    Float2LEBytes((float)LightRadius, updatebytes, 4);
+                    Float2LEBytes((float)LightCutoff, updatebytes, 8);
+                    Float2LEBytes((float)LightFalloff, updatebytes, 12);
                 }
+                return updatebytes;
+            }
 
+            public byte[] GetProjectData()
+            {
+                byte[] updatebytes = null;
                 if (HasProjection)
                 {
-                    /* full block */
-                    updatebytes[i++] = (ProjectionEP % 256);
-                    updatebytes[i++] = (ProjectionEP / 256);
-                    updatebytes[i++] = 28;
-                    updatebytes[i++] = 0;
-                    updatebytes[i++] = 0;
-                    updatebytes[i++] = 0;
-                    ProjectionTexture.AsUUID.ToBytes(updatebytes, i);
-                    i += 16;
-                    Float2LEBytes((float)ProjectionFOV, updatebytes, i);
-                    i += 4;
-                    Float2LEBytes((float)ProjectionFocus, updatebytes, i);
-                    i += 4;
-                    Float2LEBytes((float)ProjectionAmbience, updatebytes, i);
+                    updatebytes = new byte[28];
+                    ProjectionTexture.AsUUID.ToBytes(updatebytes, 0);
+                    Float2LEBytes((float)ProjectionFOV, updatebytes, 16);
+                    Float2LEBytes((float)ProjectionFocus, updatebytes, 20);
+                    Float2LEBytes((float)ProjectionAmbience, updatebytes, 24);
                 }
+                return updatebytes;
+            }
 
+            public byte[] GetEMeshData()
+            {
+                byte[] updatebytes = null;
                 if (MeshFlags != 0)
                 {
-                    /* full block */
-                    updatebytes[i++] = (ExtendedMeshEP % 256);
-                    updatebytes[i++] = (ExtendedMeshEP / 256);
-                    updatebytes[i++] = 4;
-                    updatebytes[i++] = 0;
-                    updatebytes[i++] = 0;
-                    updatebytes[i++] = 0;
-                    updatebytes[i++] = (byte)(((uint)MeshFlags) & 0xFF);
-                    updatebytes[i++] = (byte)((((uint)MeshFlags) >> 8) & 0xFF);
-                    updatebytes[i++] = (byte)((((uint)MeshFlags) >> 16) & 0xFF);
-                    updatebytes[i++] = (byte)((((uint)MeshFlags) >> 24) & 0xFF);
+                    updatebytes = new byte[4];
+                    updatebytes[0] = (byte)(((uint)MeshFlags) & 0xFF);
+                    updatebytes[1] = (byte)((((uint)MeshFlags) >> 8) & 0xFF);
+                    updatebytes[2] = (byte)((((uint)MeshFlags) >> 16) & 0xFF);
+                    updatebytes[3] = (byte)((((uint)MeshFlags) >> 24) & 0xFF);
                 }
-
                 return updatebytes;
+            }
+        }
+
+        [APIExtension(ExtensionName, "vcextraparamsdata")]
+        [APIDisplayName("vcextraparamsdata")]
+        [APIAccessibleMembers]
+        [APIIsVariableType]
+        [Serializable]
+        [APICloneOnAssignment]
+        public class VcExtraParamsData
+        {
+            public int LocalID;
+            public int Flags;
+            public VcExtraParams ExtraParams = new VcExtraParams();
+
+            public VcExtraParamsData()
+            {
+            }
+
+            public VcExtraParamsData(VcExtraParamsData src)
+            {
+                LocalID = src.LocalID;
+                Flags = src.Flags;
+                ExtraParams = new VcExtraParams(src.ExtraParams);
+            }
+        }
+
+        [APIExtension(ExtensionName)]
+        public const int VC_EXTRA_PARAMS_DATA_SET_FLEXI_EP = 0x0001;
+        [APIExtension(ExtensionName)]
+        public const int VC_EXTRA_PARAMS_DATA_SET_LIGHT_EP = 0x0002;
+        [APIExtension(ExtensionName)]
+        public const int VC_EXTRA_PARAMS_DATA_SET_SCULPT_EP = 0x0004;
+        [APIExtension(ExtensionName)]
+        public const int VC_EXTRA_PARAMS_DATA_SET_PROJECTION_EP = 0x0008;
+        [APIExtension(ExtensionName)]
+        public const int VC_EXTRA_PARAMS_DATA_SET_EXTENDEDMESH_EP = 0x0010;
+
+        [APIExtension(ExtensionName, "vcextraparamsdatalist")]
+        [APIDisplayName("vcextraparamsdatalist")]
+        [APIAccessibleMembers]
+        [APICloneOnAssignment]
+        [APIIsVariableType]
+        [Serializable]
+        public class VcExtraParamsDataList : List<VcExtraParamsData>
+        {
+            public int Length => Count;
+        }
+
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction)]
+        public void Add(VcExtraParamsDataList list, VcExtraParamsData data)
+        {
+            list.Add(new VcExtraParamsData(data));
+        }
+
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "SendObjectExtraParams")]
+        public void SendObjectExtraParams(
+            ScriptInstance instance,
+            ViewerAgentAccessor agent,
+            VcExtraParamsDataList objectData)
+        {
+            lock (instance)
+            {
+                ViewerConnection vc;
+                ViewerCircuit viewerCircuit;
+                if (m_Clients.TryGetValue(agent.AgentID, out vc) &&
+                    vc.ViewerCircuits.TryGetValue((uint)agent.CircuitCode, out viewerCircuit) &&
+                    objectData.Count % 3 == 0)
+                {
+                    var m = new ObjectExtraParams
+                    {
+                        AgentID = agent.AgentID,
+                        SessionID = viewerCircuit.SessionID,
+                    };
+                    foreach (VcExtraParamsData d in objectData)
+                    {
+                        if((d.Flags & VC_EXTRA_PARAMS_DATA_SET_FLEXI_EP) != 0)
+                        {
+                            byte[] data = d.ExtraParams.GetFlexibleData();
+                            m.ObjectData.Add(new ObjectExtraParams.Data
+                            {
+                                ObjectLocalID = (uint)d.LocalID,
+                                ParamType = 0x0010,
+                                ParamInUse = data != null,
+                                ParamSize = (uint)data?.Length,
+                                ParamData = data ?? new byte[0]
+                            });
+                        }
+                        if ((d.Flags & VC_EXTRA_PARAMS_DATA_SET_LIGHT_EP) != 0)
+                        {
+                            byte[] data = d.ExtraParams.GetLightData();
+                            m.ObjectData.Add(new ObjectExtraParams.Data
+                            {
+                                ObjectLocalID = (uint)d.LocalID,
+                                ParamType = 0x0020,
+                                ParamInUse = data != null,
+                                ParamSize = (uint)data?.Length,
+                                ParamData = data ?? new byte[0]
+                            });
+                        }
+                        if ((d.Flags & VC_EXTRA_PARAMS_DATA_SET_SCULPT_EP) != 0)
+                        {
+                            byte[] data = d.ExtraParams.GetSculptData();
+                            m.ObjectData.Add(new ObjectExtraParams.Data
+                            {
+                                ObjectLocalID = (uint)d.LocalID,
+                                ParamType = 0x0030,
+                                ParamInUse = data != null,
+                                ParamSize = (uint)data?.Length,
+                                ParamData = data ?? new byte[0]
+                            });
+                        }
+                        if ((d.Flags & VC_EXTRA_PARAMS_DATA_SET_PROJECTION_EP) != 0)
+                        {
+                            byte[] data = d.ExtraParams.GetLightData();
+                            m.ObjectData.Add(new ObjectExtraParams.Data
+                            {
+                                ObjectLocalID = (uint)d.LocalID,
+                                ParamType = 0x0040,
+                                ParamInUse = data != null,
+                                ParamSize = (uint)data?.Length,
+                                ParamData = data ?? new byte[0]
+                            });
+                        }
+                        if ((d.Flags & VC_EXTRA_PARAMS_DATA_SET_EXTENDEDMESH_EP) != 0)
+                        {
+                            byte[] data = d.ExtraParams.GetEMeshData();
+                            m.ObjectData.Add(new ObjectExtraParams.Data
+                            {
+                                ObjectLocalID = (uint)d.LocalID,
+                                ParamType = 0x0070,
+                                ParamInUse = data != null,
+                                ParamSize = (uint)data?.Length,
+                                ParamData = data ?? new byte[0]
+                            });
+                        }
+                    }
+                    viewerCircuit.SendMessage(m);
+                }
             }
         }
     }
