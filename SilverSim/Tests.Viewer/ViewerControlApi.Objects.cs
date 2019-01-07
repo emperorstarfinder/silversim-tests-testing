@@ -1334,7 +1334,7 @@ namespace SilverSim.Tests.Viewer
             public double TextAlpha;
             public string MediaURL = string.Empty;
             public ParticleSystemContainer ParticleSystem = new ParticleSystemContainer();
-            public ByteArrayApi.ByteArray ExtraParams = new ByteArrayApi.ByteArray();
+            public VcExtraParams ExtraParams = new VcExtraParams();
             public LSLKey LoopedSound = new LSLKey();
             public LSLKey OwnerID = new LSLKey();
             public double Gain;
@@ -1400,7 +1400,7 @@ namespace SilverSim.Tests.Viewer
                 TextAlpha = d.TextColor.A;
                 MediaURL = d.MediaURL;
                 ParticleSystem = new ParticleSystemContainer(d.PSBlock);
-                ExtraParams = new ByteArrayApi.ByteArray(d.ExtraParams);
+                ExtraParams = new VcExtraParams(d.ExtraParams);
                 LoopedSound = d.LoopedSound;
                 OwnerID = d.OwnerID;
                 Gain = d.Gain;
@@ -1501,7 +1501,7 @@ namespace SilverSim.Tests.Viewer
                 }
                 byte[] extraparam = new byte[offset - extrastart];
                 Buffer.BlockCopy(compressed, extrastart, extraparam, 0, offset - extrastart);
-                data.ExtraParams = new ByteArrayApi.ByteArray(extraparam);
+                data.ExtraParams = new VcExtraParams(extraparam);
 
                 if((compressedFlags & ObjectUpdateCompressed.CompressedFlags.HasSound) != 0)
                 {
