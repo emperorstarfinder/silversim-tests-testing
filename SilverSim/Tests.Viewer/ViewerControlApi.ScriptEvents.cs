@@ -1953,6 +1953,20 @@ namespace SilverSim.Tests.Viewer
                     vc.PostEvent(ev);
                 }
                 ObjectUpdateCompressed ouc = m as ObjectUpdateCompressed;
+                if(ouc != null)
+                {
+                    var ev = new ObjectUpdateReceivedEvent
+                    {
+                        Agent = agent,
+                        TimeDilation = ouc.TimeDilation / 65535.0
+                    };
+
+                    foreach (ObjectUpdateCompressed.ObjData d in ouc.ObjectData)
+                    {
+                        ev.ObjectList.Add(new VcObjectData(d.Data, d.UpdateFlags));
+                    }
+                    vc.PostEvent(ev);
+                }
             }
         }
 

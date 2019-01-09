@@ -1302,6 +1302,11 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
+        [APIExtension(ExtensionName)]
+        public const int VC_UPDATE_TYPE_FULL = 0;
+        [APIExtension(ExtensionName)]
+        public const int VC_UPDATE_TYPE_COMPRESSED = 1;
+
         [APIExtension(ExtensionName, "objectdata")]
         [APIDisplayName("objectdata")]
         [APIIsVariableType]
@@ -1309,6 +1314,7 @@ namespace SilverSim.Tests.Viewer
         public sealed class VcObjectData
         {
             public int LocalID;
+            public int UpdateType;
 
             public int State;
             public LSLKey FullID = new LSLKey();
@@ -1350,6 +1356,7 @@ namespace SilverSim.Tests.Viewer
 
             public VcObjectData(UnreliableObjectUpdate.ObjData d)
             {
+                UpdateType = VC_UPDATE_TYPE_FULL;
                 LocalID = (int)d.LocalID;
                 State = d.State;
                 FullID = d.FullID;
@@ -1411,35 +1418,34 @@ namespace SilverSim.Tests.Viewer
                 JointAxisOrAnchor = d.JointAxisOrAnchor;
             }
 
-            public static VcObjectData FromUpdateCompressed(byte[] compressed)
+            public VcObjectData(byte[] compressed, uint updateFlags)
             {
-                var data = new VcObjectData
-                {
-                    FullID = new UUID(compressed, 0),
-                    LocalID = (int)LEToUInt32(compressed, 16),
-                    PCode = compressed[20],
-                    State = compressed[21],
-                    CRC = (int)LEToUInt32(compressed, 22),
-                    Material = compressed[26],
-                    ClickAction = compressed[27],
-                    Scale = new Vector3(compressed, 28),
-                    Position = new Vector3(compressed, 40),
-                    Rotation = new Quaternion(compressed, 52, true),
-                    OwnerID = new UUID(compressed, 68), /* 68 + 16 */
-                };
+                UpdateFlags = (int)updateFlags;
+                UpdateType = VC_UPDATE_TYPE_COMPRESSED;
+                FullID = new UUID(compressed, 0);
+                LocalID = (int)LEToUInt32(compressed, 16);
+                PCode = compressed[20];
+                State = compressed[21];
+                CRC = (int)LEToUInt32(compressed, 22);
+                Material = compressed[26];
+                ClickAction = compressed[27];
+                Scale = new Vector3(compressed, 28);
+                Position = new Vector3(compressed, 40);
+                Rotation = new Quaternion(compressed, 52, true);
+                OwnerID = new UUID(compressed, 68); /* 68 + 16 */
                 int offset = 84;
                 var compressedFlags = (ObjectUpdateCompressed.CompressedFlags)LEToUInt32(compressed, 64);
 
                 if ((compressedFlags & ObjectUpdateCompressed.CompressedFlags.HasAngularVelocity) != 0)
                 {
-                    data.AngularVelocity = new Vector3(compressed, offset);
+                    AngularVelocity = new Vector3(compressed, offset);
                     offset += 12;
                 }
 
                 if((compressedFlags & ObjectUpdateCompressed.CompressedFlags.HasParent) != 0)
                 {
                     Array.Reverse(compressed, offset, 4);
-                    data.ParentID = (int)BitConverter.ToUInt32(compressed, offset);
+                    ParentID = (int)BitConverter.ToUInt32(compressed, offset);
                     offset += 4;
                 }
 
@@ -1460,7 +1466,7 @@ namespace SilverSim.Tests.Viewer
                     for(endpos = offset; compressed[endpos] != 0; ++endpos)
                     {
                     }
-                    data.Text = compressed.FromUTF8Bytes(offset, endpos - offset);
+                    Text = compressed.FromUTF8Bytes(offset, endpos - offset);
                     offset = endpos + 1;
                     ColorAlpha textcolor = new ColorAlpha
                     {
@@ -1469,8 +1475,8 @@ namespace SilverSim.Tests.Viewer
                         B_AsByte = compressed[offset + 2],
                         A_AsByte = (byte)(255 - compressed[offset + 3])
                     };
-                    data.TextColor = textcolor;
-                    data.TextAlpha = textcolor.A;
+                    TextColor = textcolor;
+                    TextAlpha = textcolor.A;
                     offset += 4;
                 }
 
@@ -1480,7 +1486,7 @@ namespace SilverSim.Tests.Viewer
                     for (endpos = offset; compressed[endpos] != 0; ++endpos)
                     {
                     }
-                    data.MediaURL = compressed.FromUTF8Bytes(offset, endpos - offset);
+                    MediaURL = compressed.FromUTF8Bytes(offset, endpos - offset);
                     offset = endpos + 1;
                 }
 
@@ -1489,7 +1495,7 @@ namespace SilverSim.Tests.Viewer
                     byte[] particledata = new byte[86];
                     Buffer.BlockCopy(compressed, offset, particledata, 0, 86);
                     offset += 86;
-                    data.ParticleSystem = new ParticleSystemContainer(particledata);
+                    ParticleSystem = new ParticleSystemContainer(particledata);
                 }
 
                 int extrastart = offset;
@@ -1501,24 +1507,24 @@ namespace SilverSim.Tests.Viewer
                 }
                 byte[] extraparam = new byte[offset - extrastart];
                 Buffer.BlockCopy(compressed, extrastart, extraparam, 0, offset - extrastart);
-                data.ExtraParams = new VcExtraParams(extraparam);
+                ExtraParams = new VcExtraParams(extraparam);
 
                 if((compressedFlags & ObjectUpdateCompressed.CompressedFlags.HasSound) != 0)
                 {
-                    data.LoopedSound = new UUID(compressed, offset);
+                    LoopedSound = new UUID(compressed, offset);
                     offset += 16;
                     if (!BitConverter.IsLittleEndian)
                     {
                         Array.Reverse(compressed, offset, 4);
                     }
-                    data.Gain = BitConverter.ToSingle(compressed, offset);
+                    Gain = BitConverter.ToSingle(compressed, offset);
                     offset += 4;
-                    data.Flags = compressed[offset++];
+                    Flags = compressed[offset++];
                     if (!BitConverter.IsLittleEndian)
                     {
                         Array.Reverse(compressed, offset, 4);
                     }
-                    data.Radius = BitConverter.ToSingle(compressed, offset);
+                    Radius = BitConverter.ToSingle(compressed, offset);
                     offset += 4;
                 }
 
@@ -1529,12 +1535,12 @@ namespace SilverSim.Tests.Viewer
                     for (endpos = offset; compressed[endpos] != 0; ++endpos)
                     {
                     }
-                    data.NameValue = compressed.FromUTF8Bytes(offset, endpos - offset);
+                    NameValue = compressed.FromUTF8Bytes(offset, endpos - offset);
                     offset = endpos + 1;
                 }
 
                 /* Shape */
-                data.ObjectShape = new VcObjectShape
+                ObjectShape = new VcObjectShape
                 {
                     PathCurve = compressed[offset],
                     PathBegin = LEToUInt16(compressed, offset + 1),
@@ -1559,7 +1565,7 @@ namespace SilverSim.Tests.Viewer
 
                 int textureEntrySize = (int)LEToUInt32(compressed, offset);
                 offset += 4;
-                data.TextureEntry = new TextureEntryContainer(new TextureEntry(compressed, offset, textureEntrySize));
+                TextureEntry = new TextureEntryContainer(new TextureEntry(compressed, offset, textureEntrySize));
                 offset += textureEntrySize;
 
                 if((compressedFlags & ObjectUpdateCompressed.CompressedFlags.TextureAnimation) != 0)
@@ -1568,10 +1574,8 @@ namespace SilverSim.Tests.Viewer
                     offset += 4;
                     byte[] texAnimData = new byte[textureAnimEntrySize];
                     Buffer.BlockCopy(compressed, offset, texAnimData, 0, textureAnimEntrySize);
-                    data.TextureAnim = new ByteArrayApi.ByteArray(texAnimData);
-                    offset += textureAnimEntrySize;
+                    TextureAnim = new ByteArrayApi.ByteArray(texAnimData);
                 }
-                return data;
             }
         }
 
