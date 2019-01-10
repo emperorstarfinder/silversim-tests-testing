@@ -1499,11 +1499,11 @@ namespace SilverSim.Tests.Viewer
                 }
 
                 int extrastart = offset;
-                uint elemcount = compressed[offset + 1];
+                uint elemcount = compressed[offset++];
                 while(elemcount-- != 0)
                 {
-                    int blocklen = (int)LEToUInt32(compressed, offset);
-                    offset += 4 + blocklen;
+                    int blocklen = (int)LEToUInt32(compressed, offset + 2);
+                    offset += 6 + blocklen;
                 }
                 byte[] extraparam = new byte[offset - extrastart];
                 Buffer.BlockCopy(compressed, extrastart, extraparam, 0, offset - extrastart);
