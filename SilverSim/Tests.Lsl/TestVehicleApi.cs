@@ -88,17 +88,17 @@ namespace SilverSim.Tests.Lsl
                 Size = Vector3.One
             };
 
-            public void GetObjectDetails(List<IValue>.Enumerator enumerator, AnArray paramList)
+            public void GetObjectDetails(IEnumerator<IValue> enumerator, AnArray paramList)
             {
                 /* intentionally left empty */
             }
 
-            public void GetPrimitiveParams(List<IValue>.Enumerator enumerator, AnArray paramList)
+            public void GetPrimitiveParams(IEnumerator<IValue> enumerator, AnArray paramList)
             {
                 /* intentionally left empty */
             }
 
-            public void GetPrimitiveParams(List<IValue>.Enumerator enumerator, AnArray paramList, CultureInfo cultureInfo)
+            public void GetPrimitiveParams(IEnumerator<IValue> enumerator, AnArray paramList, CultureInfo cultureInfo)
             {
                 /* intentionally left empty */
             }
