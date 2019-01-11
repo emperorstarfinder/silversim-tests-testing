@@ -51,6 +51,8 @@ namespace SilverSim.Tests.Viewer
 
             public byte[] GetBytes() => m_TextureEntry.GetBytes();
 
+            public TextureEntryFaceContainer Default => new TextureEntryFaceContainer(m_TextureEntry.DefaultTexture);
+
             public TextureEntryFaceContainer this[int index] => new TextureEntryFaceContainer(m_TextureEntry[(uint)index]);
         }
 
@@ -75,6 +77,7 @@ namespace SilverSim.Tests.Viewer
         [APIExtension(ExtensionName, "textureentryface")]
         [APIDisplayName("textureentryface")]
         [APIAccessibleMembers]
+        [APIIsVariableType]
         public sealed class TextureEntryFaceContainer
         {
             private TextureEntryFace m_Face;
