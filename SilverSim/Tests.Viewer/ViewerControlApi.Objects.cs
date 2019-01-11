@@ -91,6 +91,7 @@ namespace SilverSim.Tests.Viewer
                         RayStart = rayStart,
                         RayEnd = rayEnd,
                         RayEndIsIntersection = rayEndIsIntersection != 0,
+                        RayTargetID = rayTargetID,
                         Scale = scale,
                         Rotation = rotation,
                         State = (byte)state});
