@@ -308,6 +308,25 @@ namespace SilverSim.Tests.Lsl
             }
         }
 
+        [APIExtension("Testing", "_test_GetAnimeshState")]
+        public int GetAnimeshState(ScriptInstance instance, LSLKey key)
+        {
+            lock (instance)
+            {
+                ObjectPart part;
+                if (instance.Part.ObjectGroup.Scene.Primitives.TryGetValue(key.AsUUID, out part))
+                {
+                    ObjectPart.PrimitiveShape shape = part.Shape;
+                    if (shape.SculptType == PrimitiveSculptType.Mesh &&
+                        shape.Type == PrimitiveShapeType.Sculpt)
+                    {
+                        return ((part.ExtendedMesh.Flags & ExtendedMeshParams.MeshFlags.AnimatedMeshEnabled) != 0).ToLSLBoolean();
+                    }
+                }
+            }
+            return 0;
+        }
+
         [APIExtension("Testing", "_test_InjectScript")]
         public int InjectScript(ScriptInstance instance, string name, string filename, int startparameter)
         {
