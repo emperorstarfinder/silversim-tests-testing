@@ -411,7 +411,7 @@ namespace SilverSim.Tests.Viewer
                         }
                         if ((d.Flags & VC_EXTRA_PARAMS_DATA_SET_PROJECTION_EP) != 0)
                         {
-                            byte[] data = d.ExtraParams.GetLightData();
+                            byte[] data = d.ExtraParams.GetProjectData();
                             m.ObjectData.Add(new ObjectExtraParams.Data
                             {
                                 ObjectLocalID = (uint)d.LocalID,
