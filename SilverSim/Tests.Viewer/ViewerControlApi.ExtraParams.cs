@@ -103,6 +103,8 @@ namespace SilverSim.Tests.Viewer
                 ProjectionFOV = src.ProjectionFOV;
                 ProjectionFocus = src.ProjectionFocus;
                 ProjectionAmbience = src.ProjectionAmbience;
+
+                MeshFlags = src.MeshFlags;
             }
 
             public VcExtraParams(byte[] extraparams)
