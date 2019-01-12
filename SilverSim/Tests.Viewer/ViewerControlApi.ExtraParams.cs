@@ -381,7 +381,7 @@ namespace SilverSim.Tests.Viewer
                                 ObjectLocalID = (uint)d.LocalID,
                                 ParamType = 0x0010,
                                 ParamInUse = data != null,
-                                ParamSize = (uint)data?.Length,
+                                ParamSize = data != null ? (uint)data.Length : 0,
                                 ParamData = data ?? new byte[0]
                             });
                         }
@@ -393,7 +393,7 @@ namespace SilverSim.Tests.Viewer
                                 ObjectLocalID = (uint)d.LocalID,
                                 ParamType = 0x0020,
                                 ParamInUse = data != null,
-                                ParamSize = (uint)data?.Length,
+                                ParamSize = data != null ? (uint)data.Length : 0,
                                 ParamData = data ?? new byte[0]
                             });
                         }
@@ -405,7 +405,7 @@ namespace SilverSim.Tests.Viewer
                                 ObjectLocalID = (uint)d.LocalID,
                                 ParamType = 0x0030,
                                 ParamInUse = data != null,
-                                ParamSize = (uint)data?.Length,
+                                ParamSize = data != null ? (uint)data.Length : 0,
                                 ParamData = data ?? new byte[0]
                             });
                         }
@@ -417,7 +417,7 @@ namespace SilverSim.Tests.Viewer
                                 ObjectLocalID = (uint)d.LocalID,
                                 ParamType = 0x0040,
                                 ParamInUse = data != null,
-                                ParamSize = (uint)data?.Length,
+                                ParamSize = data != null ? (uint)data.Length : 0,
                                 ParamData = data ?? new byte[0]
                             });
                         }
@@ -429,7 +429,7 @@ namespace SilverSim.Tests.Viewer
                                 ObjectLocalID = (uint)d.LocalID,
                                 ParamType = 0x0070,
                                 ParamInUse = data != null,
-                                ParamSize = (uint)data?.Length,
+                                ParamSize = data != null ? (uint)data.Length : 0,
                                 ParamData = data ?? new byte[0]
                             });
                         }
