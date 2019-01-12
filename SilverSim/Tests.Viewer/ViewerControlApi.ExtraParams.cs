@@ -55,7 +55,7 @@ namespace SilverSim.Tests.Viewer
             public Vector3 FlexiForce;
 
             public int HasSculpt;
-            public LSLKey SculptMap;
+            public LSLKey SculptMap = new LSLKey(UUID.Zero);
             public int SculptType;
 
             public int HasLight;
@@ -66,7 +66,7 @@ namespace SilverSim.Tests.Viewer
             public double LightFalloff;
 
             public int HasProjection;
-            public LSLKey ProjectionTexture;
+            public LSLKey ProjectionTexture = new LSLKey(UUID.Zero);
             public double ProjectionFOV;
             public double ProjectionFocus;
             public double ProjectionAmbience;
