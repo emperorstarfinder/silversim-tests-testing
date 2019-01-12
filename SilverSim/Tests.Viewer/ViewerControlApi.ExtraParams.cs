@@ -46,7 +46,7 @@ namespace SilverSim.Tests.Viewer
             private const ushort MeshEP = 0x60;
             private const ushort ExtendedMeshEP = 0x70;
 
-            public bool HasFlexible;
+            public int HasFlexible;
             public double FlexiGravity;
             public double FlexiFriction;
             public int FlexiSoftness;
@@ -54,18 +54,18 @@ namespace SilverSim.Tests.Viewer
             public double FlexiTension;
             public Vector3 FlexiForce;
 
-            public bool HasSculpt;
+            public int HasSculpt;
             public LSLKey SculptMap;
             public int SculptType;
 
-            public bool HasLight;
+            public int HasLight;
             public Vector3 LightColor;
             public double LightIntensity;
             public double LightRadius;
             public double LightCutoff;
             public double LightFalloff;
 
-            public bool HasProjection;
+            public int HasProjection;
             public LSLKey ProjectionTexture;
             public double ProjectionFOV;
             public double ProjectionFocus;
@@ -133,7 +133,7 @@ namespace SilverSim.Tests.Viewer
                             {
                                 break;
                             }
-                            HasFlexible = true;
+                            HasFlexible = true.ToLSLBoolean();
                             FlexiSoftness = 0;
                             if((extraparams[1] & 0x80) != 0)
                             {
@@ -155,7 +155,7 @@ namespace SilverSim.Tests.Viewer
                             {
                                 break;
                             }
-                            HasSculpt = true;
+                            HasSculpt = true.ToLSLBoolean();
                             SculptMap = new UUID(extraparams, offset);
                             SculptType = extraparams[offset + 16];
                             break;
@@ -165,7 +165,7 @@ namespace SilverSim.Tests.Viewer
                             {
                                 break;
                             }
-                            HasLight = true;
+                            HasLight = true.ToLSLBoolean();
                             LightColor = new Vector3(extraparams[offset] / 255.0, extraparams[offset + 1] / 255.0, extraparams[offset + 2] / 255.0);
                             LightIntensity = extraparams[offset + 3] / 255.0;
                             LightRadius = LEBytes2Float(extraparams, offset + 4);
@@ -178,7 +178,7 @@ namespace SilverSim.Tests.Viewer
                             {
                                 break;
                             }
-                            HasProjection = true;
+                            HasProjection = true.ToLSLBoolean();
                             ProjectionTexture = new UUID(extraparams, offset);
                             ProjectionFOV = LEBytes2Float(extraparams, 16);
                             ProjectionFocus = LEBytes2Float(extraparams, 20);
@@ -229,7 +229,7 @@ namespace SilverSim.Tests.Viewer
             public byte[] GetFlexibleData()
             {
                 byte[] updatebytes = null;
-                if (HasFlexible)
+                if (HasFlexible != 0)
                 {
                     updatebytes = new byte[16];
                     updatebytes[0] = (byte)((byte)((byte)(FlexiTension * 10.01f) & 0x7F) | (byte)((FlexiSoftness & 2) << 6));
@@ -244,7 +244,7 @@ namespace SilverSim.Tests.Viewer
             public byte[] GetSculptData()
             {
                 byte[] updatebytes = null;
-                if (HasSculpt)
+                if (HasSculpt != 0)
                 {
                     updatebytes = new byte[17];
                     SculptMap.AsUUID.ToBytes(updatebytes, 0);
@@ -256,7 +256,7 @@ namespace SilverSim.Tests.Viewer
             public byte[] GetLightData()
             {
                 byte[] updatebytes = null;
-                if (HasLight)
+                if (HasLight != 0)
                 {
                     updatebytes = new byte[16];
                     Color color = new Color(LightColor);
@@ -273,7 +273,7 @@ namespace SilverSim.Tests.Viewer
             public byte[] GetProjectData()
             {
                 byte[] updatebytes = null;
-                if (HasProjection)
+                if (HasProjection != 0)
                 {
                     updatebytes = new byte[28];
                     ProjectionTexture.AsUUID.ToBytes(updatebytes, 0);
