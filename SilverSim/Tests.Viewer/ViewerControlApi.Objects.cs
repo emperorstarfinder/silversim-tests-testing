@@ -1333,7 +1333,7 @@ namespace SilverSim.Tests.Viewer
             public int UpdateFlags;
             public VcObjectShape ObjectShape = new VcObjectShape();
             public TextureEntryContainer TextureEntry = new TextureEntryContainer();
-            public ByteArrayApi.ByteArray TextureAnim = new ByteArrayApi.ByteArray();
+            public TextureAnimationEntryContainer TextureAnim = new TextureAnimationEntryContainer();
             public string NameValue = string.Empty;
             public ByteArrayApi.ByteArray Data = new ByteArrayApi.ByteArray();
             public string Text = string.Empty;
@@ -1400,7 +1400,7 @@ namespace SilverSim.Tests.Viewer
                     ProfileHollow = d.ProfileHollow
                 };
                 TextureEntry = new TextureEntryContainer(new TextureEntry(d.TextureEntry));
-                TextureAnim = new ByteArrayApi.ByteArray(d.TextureAnim);
+                TextureAnim = new TextureAnimationEntryContainer(d.TextureAnim);
                 NameValue = d.NameValue;
                 Data = new ByteArrayApi.ByteArray(d.Data);
                 Text = d.Text;
@@ -1575,7 +1575,7 @@ namespace SilverSim.Tests.Viewer
                     offset += 4;
                     byte[] texAnimData = new byte[textureAnimEntrySize];
                     Buffer.BlockCopy(compressed, offset, texAnimData, 0, textureAnimEntrySize);
-                    TextureAnim = new ByteArrayApi.ByteArray(texAnimData);
+                    TextureAnim = new TextureAnimationEntryContainer(texAnimData);
                 }
             }
         }
