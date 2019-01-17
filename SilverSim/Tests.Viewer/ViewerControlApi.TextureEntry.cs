@@ -30,6 +30,7 @@ namespace SilverSim.Tests.Viewer
         [APIExtension(ExtensionName, "textureentry")]
         [APIDisplayName("textureentry")]
         [APIAccessibleMembers]
+        [APIIsVariableType]
         public sealed class TextureEntryContainer
         {
             private TextureEntry m_TextureEntry;
