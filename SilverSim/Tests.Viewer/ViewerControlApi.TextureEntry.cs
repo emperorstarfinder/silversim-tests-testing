@@ -87,20 +87,20 @@ namespace SilverSim.Tests.Viewer
         [APIExtension(ExtensionName)]
         public const int VC_MAPPING_TYPE_DEFAULT = 0;
         [APIExtension(ExtensionName)]
-        public const int VC_MAPPING_TYPE_PLANAR = 2;
+        public const int VC_MAPPING_TYPE_PLANAR = 1;
         [APIExtension(ExtensionName)]
-        public const int VC_MAPPING_TYPE_SPHERICAL = 4;
+        public const int VC_MAPPING_TYPE_SPHERICAL = 2;
         [APIExtension(ExtensionName)]
-        public const int VC_MAPPING_TYPE_CYLINDRICAL = 6;
+        public const int VC_MAPPING_TYPE_CYLINDRICAL = 3;
 
         [APIExtension(ExtensionName)]
         public const int VC_SHININESS_NONE = 0;
         [APIExtension(ExtensionName)]
-        public const int VC_SHININESS_LOW = 64;
+        public const int VC_SHININESS_LOW = 1;
         [APIExtension(ExtensionName)]
-        public const int VC_SHININESS_MEDIUM = 128;
+        public const int VC_SHININESS_MEDIUM = 2;
         [APIExtension(ExtensionName)]
-        public const int VC_SHININESS_HIGH = 192;
+        public const int VC_SHININESS_HIGH = 3;
 
         [APIExtension(ExtensionName, "textureentryface")]
         [APIDisplayName("textureentryface")]
