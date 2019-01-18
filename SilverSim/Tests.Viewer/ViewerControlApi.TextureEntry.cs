@@ -20,6 +20,7 @@
 // exception statement from your version.
 
 using SilverSim.Scripting.Lsl;
+using SilverSim.Scripting.Lsl.Api.ByteString;
 using SilverSim.Types;
 using SilverSim.Types.Primitive;
 
@@ -51,11 +52,37 @@ namespace SilverSim.Tests.Viewer
             }
 
             public byte[] GetBytes() => m_TextureEntry.GetBytes();
+            public byte[] GetBytes(bool fullbrightdisable, double glowlimitintensity) => m_TextureEntry.GetBytes(fullbrightdisable, (float)glowlimitintensity);
 
             public TextureEntryFaceContainer Default => new TextureEntryFaceContainer(m_TextureEntry.DefaultTexture);
 
             public TextureEntryFaceContainer this[int index] => new TextureEntryFaceContainer(m_TextureEntry[(uint)index]);
+
+            public ByteArrayApi.ByteArray Bytes
+            {
+                get
+                {
+                    return new ByteArrayApi.ByteArray(GetBytes());
+                }
+
+                set
+                {
+                    m_TextureEntry = new TextureEntry(value.Data);
+                }
+            }
+
+            public void OptimizeDefault(int numFaces)
+            {
+                m_TextureEntry.OptimizeDefault(numFaces);
+            }
         }
+
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "GetBytesLimited")]
+        public ByteArrayApi.ByteArray TEGetBytesLimited(TextureEntryContainer te, int fullbrightdisable, double glowlimitintensity)
+            => new ByteArrayApi.ByteArray(te.GetBytes(fullbrightdisable != 0, glowlimitintensity));
+
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "OptimizeDefault")]
+        public void TEOptimizeDefault(TextureEntryContainer te, int numFaces) => te.OptimizeDefault(numFaces);
 
         [APIExtension(ExtensionName)]
         public const int VC_MAPPING_TYPE_DEFAULT = 0;

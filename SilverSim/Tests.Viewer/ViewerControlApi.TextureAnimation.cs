@@ -20,6 +20,7 @@
 // exception statement from your version.
 
 using SilverSim.Scripting.Lsl;
+using SilverSim.Scripting.Lsl.Api.ByteString;
 using SilverSim.Types.Primitive;
 using System;
 
@@ -126,6 +127,18 @@ namespace SilverSim.Tests.Viewer
                 set
                 {
                     m_TextureAnimationEntry.Rate = (float)value;
+                }
+            }
+
+            public ByteArrayApi.ByteArray Bytes
+            {
+                get
+                {
+                    return new ByteArrayApi.ByteArray(m_TextureAnimationEntry.GetBytes());
+                }
+                set
+                {
+                    m_TextureAnimationEntry = new TextureAnimationEntry(value.Data, 0);
                 }
             }
         }
