@@ -2845,7 +2845,6 @@ namespace SilverSim.Tests.Viewer
         [StateEventDelegate]
         public delegate void ObjectPropertiesReceived(
             ViewerAgentAccessor agent,
-            int requestFlags,
             VcObjectPropertiesDataList propertieslist);
         #endregion
 
