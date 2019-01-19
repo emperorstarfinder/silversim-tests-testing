@@ -2744,6 +2744,28 @@ namespace SilverSim.Tests.Viewer
         #endregion
 
         #region objectpropertiesfamily_received
+        [APIExtension(ExtensionName, "objectpropertiesfamilydata")]
+        [APIDisplayName("objectpropertiesfamilydata")]
+        [APIAccessibleMembers]
+        [APIIsVariableType]
+        public sealed class VcObjectPropertiesFamilyData
+        {
+            public string Name = string.Empty;
+            public string Description = string.Empty;
+            public LSLKey OwnerID = new LSLKey();
+            public LSLKey GroupID = new LSLKey();
+            public int BaseMask;
+            public int OwnerMask;
+            public int GroupMask;
+            public int EveryoneMask;
+            public int NextOwnerMask;
+            public int OwnershipCost;
+            public int SaleType;
+            public int SalePrice;
+            public int Category;
+            public LSLKey LastOwnerID = new LSLKey();
+        }
+
         [TranslatedScriptEvent("objectpropertiesfamily_received")]
         public class ObjectPropertiesFamilyReceivedEvent : IScriptEvent
         {
@@ -2754,33 +2776,7 @@ namespace SilverSim.Tests.Viewer
             [TranslatedScriptEventParameter(2)]
             public LSLKey ObjectID;
             [TranslatedScriptEventParameter(3)]
-            public string Name;
-            [TranslatedScriptEventParameter(4)]
-            public string Description;
-            [TranslatedScriptEventParameter(5)]
-            public LSLKey OwnerID;
-            [TranslatedScriptEventParameter(6)]
-            public LSLKey GroupID;
-            [TranslatedScriptEventParameter(7)]
-            public int BaseMask;
-            [TranslatedScriptEventParameter(8)]
-            public int OwnerMask;
-            [TranslatedScriptEventParameter(9)]
-            public int GroupMask;
-            [TranslatedScriptEventParameter(10)]
-            public int EveryoneMask;
-            [TranslatedScriptEventParameter(11)]
-            public int NextOwnerMask;
-            [TranslatedScriptEventParameter(12)]
-            public int OwnershipCost;
-            [TranslatedScriptEventParameter(13)]
-            public int SaleType;
-            [TranslatedScriptEventParameter(14)]
-            public int SalePrice;
-            [TranslatedScriptEventParameter(15)]
-            public int Category;
-            [TranslatedScriptEventParameter(16)]
-            public LSLKey LastOwnerID;
+            public VcObjectPropertiesFamilyData Data;
 
             public static void ToScriptEvent(Message m, ViewerConnection vc, ViewerAgentAccessor agent)
             {
@@ -2790,20 +2786,23 @@ namespace SilverSim.Tests.Viewer
                     Agent = agent,
                     RequestFlags = (int)msg.RequestFlags,
                     ObjectID = msg.ObjectID,
-                    OwnerID = msg.OwnerID,
-                    GroupID = msg.GroupID,
-                    BaseMask = (int)msg.BaseMask,
-                    OwnerMask = (int)msg.OwnerMask,
-                    GroupMask = (int)msg.GroupMask,
-                    EveryoneMask = (int)msg.EveryoneMask,
-                    NextOwnerMask = (int)msg.NextOwnerMask,
-                    OwnershipCost = msg.OwnershipCost,
-                    SaleType = (int)msg.SaleType,
-                    SalePrice = msg.SalePrice,
-                    Category = (int)msg.Category,
-                    LastOwnerID = msg.LastOwnerID,
-                    Name = msg.Name,
-                    Description = msg.Description
+                    Data = new VcObjectPropertiesFamilyData
+                    {
+                        OwnerID = msg.OwnerID,
+                        GroupID = msg.GroupID,
+                        BaseMask = (int)msg.BaseMask,
+                        OwnerMask = (int)msg.OwnerMask,
+                        GroupMask = (int)msg.GroupMask,
+                        EveryoneMask = (int)msg.EveryoneMask,
+                        NextOwnerMask = (int)msg.NextOwnerMask,
+                        OwnershipCost = msg.OwnershipCost,
+                        SaleType = (int)msg.SaleType,
+                        SalePrice = msg.SalePrice,
+                        Category = (int)msg.Category,
+                        LastOwnerID = msg.LastOwnerID,
+                        Name = msg.Name,
+                        Description = msg.Description
+                    }
                 });
             }
         }
@@ -2814,20 +2813,7 @@ namespace SilverSim.Tests.Viewer
             ViewerAgentAccessor agent,
             int requestFlags,
             LSLKey objectID,
-            string name,
-            string description,
-            LSLKey ownerID,
-            LSLKey groupID,
-            int baseMask,
-            int ownerMask,
-            int groupMask,
-            int everyoneMask,
-            int nextOwnerMask,
-            int ownershipCost,
-            int saleType,
-            int salePrice,
-            int category,
-            LSLKey lastOwnerID);
+            VcObjectPropertiesFamilyData data);
         #endregion
 
         #region objectpropertiesfamily_received

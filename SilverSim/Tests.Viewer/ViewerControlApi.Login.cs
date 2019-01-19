@@ -394,6 +394,8 @@ namespace SilverSim.Tests.Viewer
                 viewerCircuit.MessageRouting.Add(MessageType.LogoutReply, (m) => HandleLogoutReply(m, vc, accessor));
                 viewerCircuit.MessageRouting.Add(MessageType.MoneyBalanceReply, (m) => MoneyBalanceReplyReceivedEvent.ToScriptEvent(m, vc, accessor));
                 viewerCircuit.MessageRouting.Add(MessageType.ObjectAnimation, (m) => ObjectAnimationReceivedEvent.ToScriptEvent(m, vc, accessor));
+                viewerCircuit.MessageRouting.Add(MessageType.ObjectProperties, (m) => ObjectPropertiesReceivedEvent.ToScriptEvent(m, vc, accessor));
+                viewerCircuit.MessageRouting.Add(MessageType.ObjectPropertiesFamily, (m) => ObjectPropertiesFamilyReceivedEvent.ToScriptEvent(m, vc, accessor));
                 viewerCircuit.MessageRouting.Add(MessageType.ObjectUpdate, (m) => ObjectUpdateReceivedEvent.ToScriptEvent(m, vc, accessor));
                 viewerCircuit.MessageRouting.Add(MessageType.ObjectUpdateCompressed, (m) => ObjectUpdateReceivedEvent.ToScriptEvent(m, vc, accessor));
                 viewerCircuit.MessageRouting.Add(MessageType.OfflineNotification, (m) => OfflineNotificationReceivedEvent.ToScriptEvent(m, vc, accessor));
