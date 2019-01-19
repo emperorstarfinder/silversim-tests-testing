@@ -109,6 +109,14 @@ namespace SilverSim.Tests.Viewer
                     Buffer.BlockCopy(m_PSBlock, 0, psblock, 0, m_PSBlock.Length);
                     return new ByteArrayApi.ByteArray(psblock);
                 }
+                set
+                {
+                    var ps = new ParticleSystem(value.Data, 0);
+                    byte[] psblock = new byte[value.Data.Length];
+                    Buffer.BlockCopy(value.Data, 0, psblock, 0, psblock.Length);
+                    m_ParticleSystem = ps;
+                    m_PSBlock = psblock;
+                }
             }
         }
     }
