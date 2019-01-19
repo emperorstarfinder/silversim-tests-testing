@@ -75,6 +75,8 @@ namespace SilverSim.Tests.Viewer
             {
                 m_TextureEntry.OptimizeDefault(numFaces);
             }
+
+            public bool ContainsKey(int index) => index >= 0 && m_TextureEntry.ContainsKey((uint)index);
         }
 
         [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "GetBytesLimited")]
@@ -83,6 +85,9 @@ namespace SilverSim.Tests.Viewer
 
         [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "OptimizeDefault")]
         public void TEOptimizeDefault(TextureEntryContainer te, int numFaces) => te.OptimizeDefault(numFaces);
+
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "ContainsKey")]
+        public int ContainsKey(TextureEntryContainer te, int face) => te.ContainsKey(face).ToLSLBoolean();
 
         [APIExtension(ExtensionName)]
         public const int VC_MAPPING_TYPE_DEFAULT = 0;
