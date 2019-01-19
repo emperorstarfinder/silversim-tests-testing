@@ -399,6 +399,9 @@ namespace SilverSim.Tests.Viewer
                     m_PSBlock = psblock;
                 }
             }
+
+            [APIExtension(ExtensionName)]
+            public static implicit operator bool(ParticleSystemContainer ps) => ps.m_PSBlock.Length != 0;
         }
     }
 }
