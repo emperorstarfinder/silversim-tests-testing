@@ -39,55 +39,336 @@ namespace SilverSim.Tests.Viewer
             private ParticleSystem m_ParticleSystem;
             private byte[] m_PSBlock;
 
-            public int Flags => (int)m_ParticleSystem.PartFlags;
+            public int Flags
+            {
+                get
+                {
+                    return (int)m_ParticleSystem.PartFlags;
+                }
+                set
+                {
+                    m_ParticleSystem.PartFlags = (uint)Flags;
+                    m_PSBlock = m_ParticleSystem.GetBytes();
+                }
+            }
 
-            public int SourcePattern => (int)m_ParticleSystem.Pattern;
+            public int SourcePattern
+            {
+                get
+                {
+                    return (int)m_ParticleSystem.Pattern;
+                }
+                set
+                {
+                    m_ParticleSystem.Pattern = (ParticleSystem.SourcePattern)value;
+                    m_PSBlock = m_ParticleSystem.GetBytes();
+                }
+            }
 
-            public double MaxAge => m_ParticleSystem.MaxAge;
+            public double MaxAge
+            {
+                get
+                {
+                    return m_ParticleSystem.MaxAge;
+                }
+                set
+                {
+                    m_ParticleSystem.MaxAge = (float)value;
+                    m_PSBlock = m_ParticleSystem.GetBytes();
+                }
+            }
 
-            public double InnerAngle => m_ParticleSystem.InnerAngle;
+            public double InnerAngle
+            {
+                get
+                {
+                    return m_ParticleSystem.InnerAngle;
+                }
+                set
+                {
+                    m_ParticleSystem.InnerAngle = (float)value;
+                    m_PSBlock = m_ParticleSystem.GetBytes();
+                }
+            }
 
-            public double OuterAngle => m_ParticleSystem.OuterAngle;
+            public double OuterAngle
+            {
+                get
+                {
+                    return m_ParticleSystem.OuterAngle;
+                }
+                set
+                {
+                    m_ParticleSystem.OuterAngle = (float)value;
+                    m_PSBlock = m_ParticleSystem.GetBytes();
+                }
+            }
 
-            public double BurstRate => m_ParticleSystem.BurstRate;
+            public double BurstRate
+            {
+                get
+                {
+                    return m_ParticleSystem.BurstRate;
+                }
+                set
+                {
+                    m_ParticleSystem.BurstRate = (float)value;
+                    m_PSBlock = m_ParticleSystem.GetBytes();
+                }
+            }
 
-            public double BurstSpeedMin => m_ParticleSystem.BurstSpeedMin;
+            public double BurstSpeedMin
+            {
+                get
+                {
+                    return m_ParticleSystem.BurstSpeedMin;
+                }
+                set
+                {
+                    m_ParticleSystem.BurstSpeedMin = (float)value;
+                    m_PSBlock = m_ParticleSystem.GetBytes();
+                }
+            }
 
-            public double BurstSpeedMax => m_ParticleSystem.BurstSpeedMax;
+            public double BurstSpeedMax
+            {
+                get
+                {
+                    return m_ParticleSystem.BurstSpeedMax;
+                }
+                set
+                {
+                    m_ParticleSystem.BurstSpeedMax = (float)value;
+                    m_PSBlock = m_ParticleSystem.GetBytes();
+                }
+            }
 
-            public int BurstPartCount => m_ParticleSystem.BurstPartCount;
+            public int BurstPartCount
+            {
+                get
+                {
+                    return m_ParticleSystem.BurstPartCount;
+                }
+                set
+                {
+                    m_ParticleSystem.BurstPartCount = (byte)value;
+                    m_PSBlock = m_ParticleSystem.GetBytes();
+                }
+            }
 
-            public Vector3 AngularVelocity => m_ParticleSystem.AngularVelocity;
+            public Vector3 AngularVelocity
+            {
+                get
+                {
+                    return m_ParticleSystem.AngularVelocity;
+                }
+                set
+                {
+                    m_ParticleSystem.AngularVelocity = value;
+                    m_PSBlock = m_ParticleSystem.GetBytes();
+                }
+            }
 
-            public Vector3 PartAcceleration => m_ParticleSystem.PartAcceleration;
+            public Vector3 PartAcceleration
+            {
+                get
+                {
+                    return m_ParticleSystem.PartAcceleration;
+                }
+                set
+                {
+                    m_ParticleSystem.PartAcceleration = value;
+                    m_PSBlock = m_ParticleSystem.GetBytes();
+                }
+            }
 
-            public LSLKey TextureID => m_ParticleSystem.Texture;
+            public LSLKey TextureID
+            {
+                get
+                {
+                    return m_ParticleSystem.Texture;
+                }
+                set
+                {
+                    m_ParticleSystem.Texture = value;
+                    m_PSBlock = m_ParticleSystem.GetBytes();
+                }
+            }
 
-            public LSLKey TargetID => m_ParticleSystem.Target;
+            public LSLKey TargetID
+            {
+                get
+                {
+                    return m_ParticleSystem.Target;
+                }
+                set
+                {
+                    m_ParticleSystem.Target = value;
+                    m_PSBlock = m_ParticleSystem.GetBytes();
+                }
+            }
 
-            public int PartDataFlags => (int)m_ParticleSystem.PartDataFlags;
+            public int PartDataFlags
+            {
+                get
+                {
+                    return (int)m_ParticleSystem.PartDataFlags;
+                }
+                set
+                {
+                    m_ParticleSystem.PartDataFlags = (ParticleSystem.ParticleDataFlags)value;
+                    m_PSBlock = m_ParticleSystem.GetBytes();
+                }
+            }
 
-            public double PartMaxAge => m_ParticleSystem.PartMaxAge;
+            public double PartMaxAge
+            {
+                get
+                {
+                    return m_ParticleSystem.PartMaxAge;
+                }
+                set
+                {
+                    m_ParticleSystem.PartMaxAge = (float)value;
+                    m_PSBlock = m_ParticleSystem.GetBytes();
+                }
+            }
 
-            public Vector3 PartStartColor => m_ParticleSystem.PartStartColor;
+            public Vector3 PartStartColor
+            {
+                get
+                {
+                    return m_ParticleSystem.PartStartColor;
+                }
+                set
+                {
+                    m_ParticleSystem.PartStartColor.R = value.X;
+                    m_ParticleSystem.PartStartColor.G = value.Y;
+                    m_ParticleSystem.PartStartColor.B = value.Z;
+                    m_PSBlock = m_ParticleSystem.GetBytes();
+                }
+            }
 
-            public double PartStartAlpha => m_ParticleSystem.PartStartColor.A;
+            public double PartStartAlpha
+            {
+                get
+                {
+                    return m_ParticleSystem.PartStartColor.A;
+                }
+                set
+                {
+                    m_ParticleSystem.PartStartColor.A = value;
+                    m_PSBlock = m_ParticleSystem.GetBytes();
+                }
+            }
 
-            public Vector3 PartEndColor => m_ParticleSystem.PartEndColor;
+            public Vector3 PartEndColor
+            {
+                get
+                {
+                    return m_ParticleSystem.PartEndColor;
+                }
+                set
+                {
+                    m_ParticleSystem.PartEndColor.R = value.X;
+                    m_ParticleSystem.PartEndColor.G = value.Y;
+                    m_ParticleSystem.PartEndColor.B = value.Z;
+                    m_PSBlock = m_ParticleSystem.GetBytes();
+                }
+            }
 
-            public double PartEndAlpha => m_ParticleSystem.PartEndColor.A;
+            public double PartEndAlpha
+            {
+                get
+                {
+                    return m_ParticleSystem.PartEndColor.A;
+                }
+                set
+                {
+                    m_ParticleSystem.PartEndColor.A = value;
+                    m_PSBlock = m_ParticleSystem.GetBytes();
+                }
+            }
 
-            public Vector3 PartStartScale => new Vector3(m_ParticleSystem.PartStartScaleX, m_ParticleSystem.PartStartScaleY, 0);
+            public Vector3 PartStartScale
+            {
+                get
+                {
+                    return new Vector3(m_ParticleSystem.PartStartScaleX, m_ParticleSystem.PartStartScaleY, 0);
+                }
+                set
+                {
+                    m_ParticleSystem.PartStartScaleX = (float)value.X;
+                    m_ParticleSystem.PartStartScaleY = (float)value.Y;
+                    m_PSBlock = m_ParticleSystem.GetBytes();
+                }
+            }
 
-            public Vector3 PartEndScale => new Vector3(m_ParticleSystem.PartEndScaleX, m_ParticleSystem.PartEndScaleY, 0);
+            public Vector3 PartEndScale
+            {
+                get
+                {
+                    return new Vector3(m_ParticleSystem.PartEndScaleX, m_ParticleSystem.PartEndScaleY, 0);
+                }
+                set
+                {
+                    m_ParticleSystem.PartEndScaleX = (float)value.X;
+                    m_ParticleSystem.PartEndScaleY = (float)value.Y;
+                    m_PSBlock = m_ParticleSystem.GetBytes();
+                }
+            }
 
-            public double PartStartGlow => m_ParticleSystem.PartStartGlow;
+            public double PartStartGlow
+            {
+                get
+                {
+                    return m_ParticleSystem.PartStartGlow;
+                }
+                set
+                {
+                    m_ParticleSystem.PartStartGlow = (float)value;
+                    m_PSBlock = m_ParticleSystem.GetBytes();
+                }
+            }
 
-            public double PartEndGlow => m_ParticleSystem.PartEndGlow;
+            public double PartEndGlow
+            {
+                get
+                {
+                    return m_ParticleSystem.PartEndGlow;
+                }
+                set
+                {
+                    m_ParticleSystem.PartEndGlow = (float)value;
+                    m_PSBlock = m_ParticleSystem.GetBytes();
+                }
+            }
 
-            public int BlendFuncSource => (int)m_ParticleSystem.BlendFuncSource;
+            public int BlendFuncSource
+            {
+                get
+                {
+                    return (int)m_ParticleSystem.BlendFuncSource;
+                }
+                set
+                {
+                    m_ParticleSystem.BlendFuncSource = (ParticleSystem.BlendFunc)value;
+                    m_PSBlock = m_ParticleSystem.GetBytes();
+                }
+            }
 
-            public int BlendFuncDest => (int)m_ParticleSystem.BlendFuncDest;
+            public int BlendFuncDest
+            {
+                get
+                {
+                    return (int)m_ParticleSystem.BlendFuncDest;
+                }
+                set
+                {
+                    m_ParticleSystem.BlendFuncDest = (ParticleSystem.BlendFunc)value;
+                    m_PSBlock = m_ParticleSystem.GetBytes();
+                }
+            }
 
             public ParticleSystemContainer()
             {
