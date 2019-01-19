@@ -19,6 +19,7 @@
 // obligated to do so. If you do not wish to do so, delete this
 // exception statement from your version.
 
+using SilverSim.Scene.Types.Object.Localization;
 using SilverSim.Scene.Types.Script;
 using SilverSim.Scripting.Lsl;
 using SilverSim.Scripting.Lsl.Api.ByteString;
@@ -1625,6 +1626,188 @@ namespace SilverSim.Tests.Viewer
                 }
 
                 public VcObjectData Current => Src[Position];
+
+                object IEnumerator.Current => Current;
+
+                public void Dispose()
+                {
+                }
+
+                public bool MoveNext() => ++Position < Src.Count;
+
+                public void Reset() => Position = -1;
+            }
+
+            public LSLEnumerator GetLslForeachEnumerator() => new LSLEnumerator(this);
+        }
+
+        [APIExtension(ExtensionName, "objectpropertiesdata")]
+        [APIDisplayName("objectpropertiesdata")]
+        [APIAccessibleMembers]
+        [APIIsVariableType]
+        public sealed class VcObjectPropertiesData
+        {
+            public LSLKey ObjectID = new LSLKey();
+            public LSLKey CreatorID = new LSLKey();
+            public LSLKey OwnerID = new LSLKey();
+            public LSLKey GroupID = new LSLKey();
+            public long CreationDate;
+            public int BaseMask;
+            public int OwnerMask;
+            public int GroupMask;
+            public int EveryoneMask;
+            public int NextOwnerMask;
+            public int OwnershipCost;
+            public int SaleType;
+            public int SalePrice;
+            public int AggregatePerms;
+            public int AggregatePermTextures;
+            public int AggregatePermTexturesOwner;
+            public int Category;
+            public int InventorySerial;
+            public LSLKey ItemID = new LSLKey();
+            public LSLKey FolderID = new LSLKey();
+            public LSLKey FromTaskID = new LSLKey();
+            public LSLKey LastOwnerID = new LSLKey();
+            public string Name = string.Empty;
+            public string Description = string.Empty;
+            public string TouchText = string.Empty;
+            public string SitText = string.Empty;
+
+            public VcObjectPropertiesData()
+            {
+            }
+
+            public VcObjectPropertiesData(byte[] data)
+            {
+                if(data.Length < (int)ObjectPartLocalizedInfo.PropertiesFixedBlockOffset.BlockLength)
+                {
+                    return;
+                }
+                ObjectID = new UUID(data, (int)ObjectPartLocalizedInfo.PropertiesFixedBlockOffset.ObjectID);
+                CreatorID = new UUID(data, (int)ObjectPartLocalizedInfo.PropertiesFixedBlockOffset.CreatorID);
+                OwnerID = new UUID(data, (int)ObjectPartLocalizedInfo.PropertiesFixedBlockOffset.OwnerID);
+                GroupID = new UUID(data, (int)ObjectPartLocalizedInfo.PropertiesFixedBlockOffset.GroupID);
+                CreationDate = BytesToUInt32(data, (int)ObjectPartLocalizedInfo.PropertiesFixedBlockOffset.CreationDate);
+                BaseMask = BytesToInt32(data, (int)ObjectPartLocalizedInfo.PropertiesFixedBlockOffset.BaseMask);
+                OwnerMask = BytesToInt32(data, (int)ObjectPartLocalizedInfo.PropertiesFixedBlockOffset.OwnerMask);
+                GroupMask = BytesToInt32(data, (int)ObjectPartLocalizedInfo.PropertiesFixedBlockOffset.GroupMask);
+                EveryoneMask = BytesToInt32(data, (int)ObjectPartLocalizedInfo.PropertiesFixedBlockOffset.EveryoneMask);
+                NextOwnerMask = BytesToInt32(data, (int)ObjectPartLocalizedInfo.PropertiesFixedBlockOffset.NextOwnerMask);
+                OwnershipCost = BytesToInt32(data, (int)ObjectPartLocalizedInfo.PropertiesFixedBlockOffset.OwnershipCost);
+                SaleType = data[(int)ObjectPartLocalizedInfo.PropertiesFixedBlockOffset.SaleType];
+                SalePrice = BytesToInt32(data, (int)ObjectPartLocalizedInfo.PropertiesFixedBlockOffset.SalePrice);
+                AggregatePerms = data[(int)ObjectPartLocalizedInfo.PropertiesFixedBlockOffset.AggregatePerms];
+                AggregatePermTextures = data[(int)ObjectPartLocalizedInfo.PropertiesFixedBlockOffset.AggregatePermTextures];
+                AggregatePermTexturesOwner = data[(int)ObjectPartLocalizedInfo.PropertiesFixedBlockOffset.AggregatePermTexturesOwner];
+                Category = BytesToInt32(data, (int)ObjectPartLocalizedInfo.PropertiesFixedBlockOffset.Category);
+                InventorySerial = BytesToUInt16(data, (int)ObjectPartLocalizedInfo.PropertiesFixedBlockOffset.InventorySerial);
+                ItemID = new UUID(data, (int)ObjectPartLocalizedInfo.PropertiesFixedBlockOffset.ItemID);
+                FolderID = new UUID(data, (int)ObjectPartLocalizedInfo.PropertiesFixedBlockOffset.FolderID);
+                FromTaskID = new UUID(data, (int)ObjectPartLocalizedInfo.PropertiesFixedBlockOffset.FromTaskID);
+                LastOwnerID = new UUID(data, (int)ObjectPartLocalizedInfo.PropertiesFixedBlockOffset.LastOwnerID);
+                int pos = (int)ObjectPartLocalizedInfo.PropertiesFixedBlockOffset.BlockLength;
+                if(pos < data.Length)
+                {
+                    int strLen = data[pos++];
+                    int remLen = Math.Min(strLen, data.Length - pos);
+                    if (remLen > 0)
+                    {
+                        Name = data.FromUTF8Bytes(pos, remLen);
+                    }
+                    pos += remLen;
+                }
+                if (pos < data.Length)
+                {
+                    int strLen = data[pos++];
+                    int remLen = Math.Min(strLen, data.Length - pos);
+                    if (remLen > 0)
+                    {
+                        Description = data.FromUTF8Bytes(pos, remLen);
+                    }
+                    pos += remLen;
+                }
+                if (pos < data.Length)
+                {
+                    int strLen = data[pos++];
+                    int remLen = Math.Min(strLen, data.Length - pos);
+                    if (remLen > 0)
+                    {
+                        TouchText = data.FromUTF8Bytes(pos, remLen);
+                    }
+                    pos += remLen;
+                }
+                if (pos < data.Length)
+                {
+                    int strLen = data[pos++];
+                    int remLen = Math.Min(strLen, data.Length - pos);
+                    if (remLen > 0)
+                    {
+                        SitText = data.FromUTF8Bytes(pos, remLen);
+                    }
+                    pos += remLen;
+                }
+            }
+
+            private static uint BytesToUInt32(byte[] data, int pos)
+            {
+                byte[] b = data;
+                if(!BitConverter.IsLittleEndian)
+                {
+                    b = new byte[4];
+                    Buffer.BlockCopy(data, pos, b, 0, 4);
+                    data = b;
+                    pos = 0;
+                }
+                return BitConverter.ToUInt32(b, pos);
+            }
+
+            private static ushort BytesToUInt16(byte[] data, int pos)
+            {
+                byte[] b = data;
+                if (!BitConverter.IsLittleEndian)
+                {
+                    b = new byte[2];
+                    Buffer.BlockCopy(data, pos, b, 0, 2);
+                    data = b;
+                    pos = 0;
+                }
+                return BitConverter.ToUInt16(b, pos);
+            }
+
+            private static int BytesToInt32(byte[] data, int pos)
+            {
+                byte[] b = data;
+                if (!BitConverter.IsLittleEndian)
+                {
+                    b = new byte[4];
+                    Buffer.BlockCopy(data, pos, b, 0, 4);
+                    data = b;
+                    pos = 0;
+                }
+                return BitConverter.ToInt32(b, pos);
+            }
+        }
+
+        [APIExtension(ExtensionName, "objectpropertieslist")]
+        [APIDisplayName("objectpropertieslist")]
+        [APIAccessibleMembers("Count", "Length")]
+        [APIIsVariableType]
+        public class VcObjectPropertiesDataList : List<VcObjectPropertiesData>
+        {
+            public int Length => Count;
+
+            public sealed class LSLEnumerator : IEnumerator<VcObjectPropertiesData>
+            {
+                private readonly VcObjectPropertiesDataList Src;
+                private int Position = -1;
+
+                public LSLEnumerator(VcObjectPropertiesDataList src)
+                {
+                    Src = src;
+                }
+
+                public VcObjectPropertiesData Current => Src[Position];
 
                 object IEnumerator.Current => Current;
 

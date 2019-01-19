@@ -2743,6 +2743,126 @@ namespace SilverSim.Tests.Viewer
         public delegate void SimStatsReceived(ViewerAgentAccessor agent, int regionX, int regionY, int regionFlags, HashtableApi.Hashtable stat, int pid, AnArray regionFlagsExtended);
         #endregion
 
+        #region objectpropertiesfamily_received
+        [TranslatedScriptEvent("objectpropertiesfamily_received")]
+        public class ObjectPropertiesFamilyReceivedEvent : IScriptEvent
+        {
+            [TranslatedScriptEventParameter(0)]
+            public ViewerAgentAccessor Agent;
+            [TranslatedScriptEventParameter(1)]
+            public int RequestFlags;
+            [TranslatedScriptEventParameter(2)]
+            public LSLKey ObjectID;
+            [TranslatedScriptEventParameter(3)]
+            public string Name;
+            [TranslatedScriptEventParameter(4)]
+            public string Description;
+            [TranslatedScriptEventParameter(5)]
+            public LSLKey OwnerID;
+            [TranslatedScriptEventParameter(6)]
+            public LSLKey GroupID;
+            [TranslatedScriptEventParameter(7)]
+            public int BaseMask;
+            [TranslatedScriptEventParameter(8)]
+            public int OwnerMask;
+            [TranslatedScriptEventParameter(9)]
+            public int GroupMask;
+            [TranslatedScriptEventParameter(10)]
+            public int EveryoneMask;
+            [TranslatedScriptEventParameter(11)]
+            public int NextOwnerMask;
+            [TranslatedScriptEventParameter(12)]
+            public int OwnershipCost;
+            [TranslatedScriptEventParameter(13)]
+            public int SaleType;
+            [TranslatedScriptEventParameter(14)]
+            public int SalePrice;
+            [TranslatedScriptEventParameter(15)]
+            public int Category;
+            [TranslatedScriptEventParameter(16)]
+            public LSLKey LastOwnerID;
+
+            public static void ToScriptEvent(Message m, ViewerConnection vc, ViewerAgentAccessor agent)
+            {
+                var msg = (ObjectPropertiesFamily)m;
+                vc.PostEvent(new ObjectPropertiesFamilyReceivedEvent
+                {
+                    Agent = agent,
+                    RequestFlags = (int)msg.RequestFlags,
+                    ObjectID = msg.ObjectID,
+                    OwnerID = msg.OwnerID,
+                    GroupID = msg.GroupID,
+                    BaseMask = (int)msg.BaseMask,
+                    OwnerMask = (int)msg.OwnerMask,
+                    GroupMask = (int)msg.GroupMask,
+                    EveryoneMask = (int)msg.EveryoneMask,
+                    NextOwnerMask = (int)msg.NextOwnerMask,
+                    OwnershipCost = msg.OwnershipCost,
+                    SaleType = (int)msg.SaleType,
+                    SalePrice = msg.SalePrice,
+                    Category = (int)msg.Category,
+                    LastOwnerID = msg.LastOwnerID,
+                    Name = msg.Name,
+                    Description = msg.Description
+                });
+            }
+        }
+
+        [APIExtension(ExtensionName, "objectpropertiesfamily_received")]
+        [StateEventDelegate]
+        public delegate void ObjectPropertiesFamilyReceived(
+            ViewerAgentAccessor agent,
+            int requestFlags,
+            LSLKey objectID,
+            string name,
+            string description,
+            LSLKey ownerID,
+            LSLKey groupID,
+            int baseMask,
+            int ownerMask,
+            int groupMask,
+            int everyoneMask,
+            int nextOwnerMask,
+            int ownershipCost,
+            int saleType,
+            int salePrice,
+            int category,
+            LSLKey lastOwnerID);
+        #endregion
+
+        #region objectpropertiesfamily_received
+        [TranslatedScriptEvent("objectproperties_received")]
+        public class ObjectPropertiesReceivedEvent : IScriptEvent
+        {
+            [TranslatedScriptEventParameter(0)]
+            public ViewerAgentAccessor Agent;
+            [TranslatedScriptEventParameter(1)]
+            public VcObjectPropertiesDataList ObjectProperties = new VcObjectPropertiesDataList();
+
+            public static void ToScriptEvent(Message m, ViewerConnection vc, ViewerAgentAccessor agent)
+            {
+                var msg = (ObjectProperties)m;
+                var ev = new ObjectPropertiesReceivedEvent
+                {
+                    Agent = agent,
+                };
+
+                foreach(byte[] d in msg.ObjectData)
+                {
+                    ev.ObjectProperties.Add(new VcObjectPropertiesData(d));
+                }
+                vc.PostEvent(ev);
+            }
+        }
+
+        [APIExtension(ExtensionName, "objectproperties_received")]
+        [StateEventDelegate]
+        public delegate void ObjectPropertiesReceived(
+            ViewerAgentAccessor agent,
+            int requestFlags,
+            VcObjectPropertiesDataList propertieslist);
+        #endregion
+
         [TranslatedScriptEventsInfo]
         public static readonly Type[] TranslatedEvents = new Type[] {
             typeof(AgentDataUpdateReceivedEvent),
@@ -2777,6 +2897,8 @@ namespace SilverSim.Tests.Viewer
             typeof(MoneyBalanceReplyReceivedEvent),
             typeof(ObjectAnimationReceivedEvent),
             typeof(ObjectPhysicsPropertiesReceivedEvent),
+            typeof(ObjectPropertiesFamilyReceivedEvent),
+            typeof(ObjectPropertiesReceivedEvent),
             typeof(ObjectUpdateReceivedEvent),
             typeof(OfflineNotificationReceivedEvent),
             typeof(OnlineNotificationReceivedEvent),
