@@ -284,6 +284,112 @@ namespace SilverSim.Tests.Lsl
             }
         }
 
+        [APIExtension("Testing", "_test_InjectCollision")]
+        public void InjectCollisionStart(ScriptInstance instance, 
+            LSLKey targetPrim, 
+            LSLKey sourceLinkset,
+            string name,
+            int objType,
+            Vector3 position,
+            Quaternion rotation,
+            Vector3 velocity,
+            int linkNumber)
+        {
+            lock (instance)
+            {
+                ObjectPart part;
+                if (instance.Part.ObjectGroup.Scene.Primitives.TryGetValue(targetPrim, out part))
+                {
+                    var di = new DetectInfo
+                    {
+                        Key = sourceLinkset,
+                        Name = name,
+                        Group = UGI.Unknown,
+                        ObjType = (DetectedTypeFlags)objType,
+                        Owner = instance.Part.Owner,
+                        Position = position,
+                        Rotation = rotation,
+                        Velocity = velocity,
+                        LinkNumber = linkNumber
+                    };
+                    var ev = new CollisionEvent { Type = CollisionEvent.CollisionType.Start };
+                    ev.Detected.Add(di);
+                    part.PostEvent(ev);
+                }
+            }
+        }
+
+
+        [APIExtension("Testing", "_test_InjectCollision")]
+        public void InjectCollision(ScriptInstance instance,
+            LSLKey targetPrim,
+            LSLKey sourceLinkset,
+            string name,
+            int objType,
+            Vector3 position,
+            Quaternion rotation,
+            Vector3 velocity,
+            int linkNumber)
+        {
+            lock (instance)
+            {
+                ObjectPart part;
+                if (instance.Part.ObjectGroup.Scene.Primitives.TryGetValue(targetPrim, out part))
+                {
+                    var di = new DetectInfo
+                    {
+                        Key = sourceLinkset,
+                        Name = name,
+                        Group = UGI.Unknown,
+                        ObjType = (DetectedTypeFlags)objType,
+                        Owner = instance.Part.Owner,
+                        Position = position,
+                        Rotation = rotation,
+                        Velocity = velocity,
+                        LinkNumber = linkNumber
+                    };
+                    var ev = new CollisionEvent { Type = CollisionEvent.CollisionType.Continuous };
+                    ev.Detected.Add(di);
+                    part.PostEvent(ev);
+                }
+            }
+        }
+
+
+        [APIExtension("Testing", "_test_InjectCollisionEnd")]
+        public void InjectCollisionEnd(ScriptInstance instance,
+            LSLKey targetPrim,
+            LSLKey sourceLinkset,
+            string name,
+            int objType,
+            Vector3 position,
+            Quaternion rotation,
+            Vector3 velocity,
+            int linkNumber)
+        {
+            lock (instance)
+            {
+                ObjectPart part;
+                if (instance.Part.ObjectGroup.Scene.Primitives.TryGetValue(targetPrim, out part))
+                {
+                    var di = new DetectInfo
+                    {
+                        Key = sourceLinkset,
+                        Name = name,
+                        Group = UGI.Unknown,
+                        ObjType = (DetectedTypeFlags)objType,
+                        Owner = instance.Part.Owner,
+                        Position = position,
+                        Rotation = rotation,
+                        Velocity = velocity,
+                        LinkNumber = linkNumber
+                    };
+                    var ev = new CollisionEvent { Type = CollisionEvent.CollisionType.End };
+                    ev.Detected.Add(di);
+                    part.PostEvent(ev);
+                }
+            }
+        }
 
         [APIExtension("Testing", "_test_EnableAnimesh")]
         public void EnableAnimesh(ScriptInstance instance, LSLKey key, int enable)
