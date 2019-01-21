@@ -284,7 +284,7 @@ namespace SilverSim.Tests.Lsl
             }
         }
 
-        [APIExtension("Testing", "_test_InjectCollision")]
+        [APIExtension("Testing", "_test_InjectCollisionStart")]
         public void InjectCollisionStart(ScriptInstance instance, 
             LSLKey targetPrim, 
             LSLKey sourceLinkset,
