@@ -698,9 +698,6 @@ namespace SilverSim.Tests.Scripting
 
         public bool Run()
         {
-            bool success = true;
-            int successcnt = 0;
-
             m_Log.InfoFormat("Testing Execution of {1} ({0})", m_AssetID, m_ScriptFile);
             IScriptAssembly scriptAssembly = null;
             try
@@ -710,7 +707,6 @@ namespace SilverSim.Tests.Scripting
                     scriptAssembly = CompilerRegistry.ScriptCompilers.Compile(AppDomain.CurrentDomain, UGUI.Unknown, m_AssetID, reader, includeOpen: OpenFile);
                 }
                 m_Log.InfoFormat("Compilation of {1} ({0}) successful", m_AssetID, m_ScriptFile);
-                ++successcnt;
             }
             catch (CompilerException e)
             {
@@ -767,17 +763,13 @@ namespace SilverSim.Tests.Scripting
             catch(Exception e)
             {
                 m_Log.ErrorFormat("Running of {1} ({0}) failed: Failed to start region ID {2}: {3}: {4}\n{5}", m_AssetID, m_ScriptFile, m_RegionID, e.GetType().FullName, e.Message, e.StackTrace);
-                success = false;
-                scene = null;
+                return false;
             }
 
             try
             {
-                if (success)
-                {
-                    m_Scenes.Add(scene);
-                    scene.LoadSceneSync();
-                }
+                m_Scenes.Add(scene);
+                scene.LoadSceneSync();
             }
             catch(Exception e)
             {
@@ -787,23 +779,20 @@ namespace SilverSim.Tests.Scripting
 
             try
             {
-                if(success)
+                ExperienceServiceInterface experienceService = scene.ExperienceService;
+                if(experienceService != null)
                 {
-                    ExperienceServiceInterface experienceService = scene.ExperienceService;
-                    if(experienceService != null)
+                    experienceService.Add(new ExperienceInfo
                     {
-                        experienceService.Add(new ExperienceInfo
-                        {
-                            ID = m_ExperienceID,
-                            Creator = m_ScriptOwner,
-                            Owner = m_ScriptOwner,
-                            Properties = ExperiencePropertyFlags.Grid /* make this grid-wide since otherwise we have to configure a lot more */
-                        });
-                    }
-                    else
-                    {
-                        m_ExperienceID = UEI.Unknown;
-                    }
+                        ID = m_ExperienceID,
+                        Creator = m_ScriptOwner,
+                        Owner = m_ScriptOwner,
+                        Properties = ExperiencePropertyFlags.Grid /* make this grid-wide since otherwise we have to configure a lot more */
+                    });
+                }
+                else
+                {
+                    m_ExperienceID = UEI.Unknown;
                 }
             }
             catch(Exception e)
@@ -838,100 +827,94 @@ namespace SilverSim.Tests.Scripting
                 }
             }
 
-            if(success)
-            {
-                m_Runner.OtherThreadResult = false;
+            m_Runner.OtherThreadResult = false;
 
-                foreach (string additionalObject in m_AdditionalObjectConfigs)
+            foreach (string additionalObject in m_AdditionalObjectConfigs)
+            {
+                m_Log.InfoFormat("Adding object from section {0}", additionalObject);
+                if(!TryAddAdditionalObject(scene, additionalObject))
                 {
-                    m_Log.InfoFormat("Adding object from section {0}", additionalObject);
-                    if(!TryAddAdditionalObject(scene, additionalObject))
-                    {
-                        success = false;
-                        break;
-                    }
+                    m_Log.Info("Failed to add object");
+                    return false;
                 }
             }
+
             try
             {
-                if (success)
+                var grp = new ObjectGroup
                 {
-                    {
-                        var grp = new ObjectGroup
-                        {
-                            RezzingObjectID = m_RezzingObjID
-                        };
-                        var part = new ObjectPart(m_ObjectID);
-                        grp.Add(1, part.ID, part);
-                        part.ObjectGroup = grp;
-                        grp.Owner = m_ObjectOwner;
-                        grp.LastOwner = m_ObjectLastOwner;
-                        part.Creator = m_ObjectCreator;
-                        part.Name = m_ObjectName;
-                        part.Description = m_ObjectDescription;
-                        part.GlobalPosition = m_Position;
-                        part.GlobalRotation = m_Rotation;
-                        part.BaseMask = m_ObjectPermissionsBase;
-                        part.OwnerMask = m_ObjectPermissionsOwner;
-                        part.NextOwnerMask = m_ObjectPermissionsNext;
-                        part.EveryoneMask = m_ObjectPermissionsEveryone;
-                        part.GroupMask = m_ObjectPermissionsGroup;
+                    RezzingObjectID = m_RezzingObjID
+                };
+                var part = new ObjectPart(m_ObjectID);
+                grp.Add(1, part.ID, part);
+                part.ObjectGroup = grp;
+                grp.Owner = m_ObjectOwner;
+                grp.LastOwner = m_ObjectLastOwner;
+                part.Creator = m_ObjectCreator;
+                part.Name = m_ObjectName;
+                part.Description = m_ObjectDescription;
+                part.GlobalPosition = m_Position;
+                part.GlobalRotation = m_Rotation;
+                part.BaseMask = m_ObjectPermissionsBase;
+                part.OwnerMask = m_ObjectPermissionsOwner;
+                part.NextOwnerMask = m_ObjectPermissionsNext;
+                part.EveryoneMask = m_ObjectPermissionsEveryone;
+                part.GroupMask = m_ObjectPermissionsGroup;
 
-                        var item = new ObjectPartInventoryItem(m_ItemID)
-                        {
-                            AssetType = AssetType.LSLText,
-                            AssetID = m_AssetID,
-                            InventoryType = InventoryType.LSL,
-                            LastOwner = m_ScriptLastOwner,
-                            Creator = m_ScriptCreator,
-                            Owner = m_ScriptOwner,
-                            Name = m_ScriptName,
-                            Description = m_ScriptDescription
-                        };
-                        item.Permissions.Base = m_ScriptPermissionsBase;
-                        item.Permissions.Current = m_ScriptPermissionsOwner;
-                        item.Permissions.EveryOne = m_ScriptPermissionsEveryone;
-                        item.Permissions.Group = m_ScriptPermissionsGroup;
-                        item.Permissions.NextOwner = m_ScriptPermissionsNext;
-                        item.ExperienceID = m_ExperienceID;
+                var item = new ObjectPartInventoryItem(m_ItemID)
+                {
+                    AssetType = AssetType.LSLText,
+                    AssetID = m_AssetID,
+                    InventoryType = InventoryType.LSL,
+                    LastOwner = m_ScriptLastOwner,
+                    Creator = m_ScriptCreator,
+                    Owner = m_ScriptOwner,
+                    Name = m_ScriptName,
+                    Description = m_ScriptDescription
+                };
+                item.Permissions.Base = m_ScriptPermissionsBase;
+                item.Permissions.Current = m_ScriptPermissionsOwner;
+                item.Permissions.EveryOne = m_ScriptPermissionsEveryone;
+                item.Permissions.Group = m_ScriptPermissionsGroup;
+                item.Permissions.NextOwner = m_ScriptPermissionsNext;
+                item.ExperienceID = m_ExperienceID;
 
-                        scene.Add(grp);
+                scene.Add(grp);
 
-                        foreach(string invconfig in m_AdditionalInventoryConfigs)
-                        {
-                            AddAdditionalInventory(part, invconfig);
-                        }
-                        ChatServiceInterface chatService = scene.GetService<ChatServiceInterface>();
-                        if (chatService != null)
-                        {
-                            chatService.AddRegionListener(PUBLIC_CHANNEL, string.Empty, UUID.Zero, "", GetUUID, null, PublicChannelLog);
-                            chatService.AddRegionListener(DEBUG_CHANNEL, string.Empty, UUID.Zero, "", GetUUID, null, DebugChannelLog);
-                        }
-                        byte[] serializedState;
-                        m_ScriptStates.TryGetValue(item.ID, out serializedState);
-                        ScriptInstance scriptInstance = scriptAssembly.Instantiate(part, item, serializedState);
-                        part.Inventory.Add(item);
-                        item.ScriptInstance = scriptInstance;
-                        item.ScriptInstance.Start(m_StartParameter);
-                    }
-                    if (Debugger.IsAttached)
-                    {
-                        m_RunTimeoutEvent.WaitOne();
-                    }
-                    else
-                    {
-                        m_KillTimer = new Timer(KillTimerCbk, null, m_TimeoutMs + 5000, Timeout.Infinite);
-                        m_RunTimeoutEvent.WaitOne(m_TimeoutMs);
-                    }
-                    return m_Runner.OtherThreadResult;
+                foreach (string invconfig in m_AdditionalInventoryConfigs)
+                {
+                    AddAdditionalInventory(part, invconfig);
                 }
+                ChatServiceInterface chatService = scene.GetService<ChatServiceInterface>();
+                if (chatService != null)
+                {
+                    chatService.AddRegionListener(PUBLIC_CHANNEL, string.Empty, UUID.Zero, "", GetUUID, null, PublicChannelLog);
+                    chatService.AddRegionListener(DEBUG_CHANNEL, string.Empty, UUID.Zero, "", GetUUID, null, DebugChannelLog);
+                }
+                byte[] serializedState;
+                m_ScriptStates.TryGetValue(item.ID, out serializedState);
+                ScriptInstance scriptInstance = scriptAssembly.Instantiate(part, item, serializedState);
+                part.Inventory.Add(item);
+                item.ScriptInstance = scriptInstance;
+                item.ScriptInstance.Start(m_StartParameter);
+                m_Log.Info("Script started");
+
+                if (Debugger.IsAttached)
+                {
+                    m_RunTimeoutEvent.WaitOne();
+                }
+                else
+                {
+                    m_KillTimer = new Timer(KillTimerCbk, null, m_TimeoutMs + 5000, Timeout.Infinite);
+                    m_RunTimeoutEvent.WaitOne(m_TimeoutMs);
+                }
+                return m_Runner.OtherThreadResult;
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 m_Log.Error("Starting script failed", e);
                 return false;
             }
-            return success;
         }
 
         private void KillTimerCbk(object o)
