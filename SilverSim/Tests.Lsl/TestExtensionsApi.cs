@@ -233,13 +233,13 @@ namespace SilverSim.Tests.Lsl
                 catch (CompilerException e)
                 {
                     m_Log.ErrorFormat("Compilation of injected {1} ({0}) failed: {2}", assetid, name, e.Message);
-                    m_Log.WarnFormat("Stack Trace:\n{0}", e.StackTrace.ToString());
+                    m_Log.WarnFormat("Stack Trace:\n{0}", e.StackTrace);
                     return 0;
                 }
                 catch (Exception e)
                 {
                     m_Log.ErrorFormat("Compilation of injected {1} ({0}) failed: {2}", assetid, name, e.Message);
-                    m_Log.WarnFormat("Stack Trace:\n{0}", e.StackTrace.ToString());
+                    m_Log.WarnFormat("Stack Trace:\n{0}", e.StackTrace);
                     return 0;
                 }
 
@@ -251,7 +251,7 @@ namespace SilverSim.Tests.Lsl
                 catch (Exception e)
                 {
                     m_Log.ErrorFormat("Instancing of injected {1} ({0}) failed: {2}", assetid, name, e.Message);
-                    m_Log.WarnFormat("Stack Trace:\n{0}", e.StackTrace.ToString());
+                    m_Log.WarnFormat("Stack Trace:\n{0}", e.StackTrace);
                     return 0;
                 }
                 instance.Part.Inventory.Add(item);
@@ -263,7 +263,7 @@ namespace SilverSim.Tests.Lsl
                 catch (Exception e)
                 {
                     m_Log.ErrorFormat("Starting of injected {1} ({0}) failed: {2}", assetid, name, e.Message);
-                    m_Log.WarnFormat("Stack Trace:\n{0}", e.StackTrace.ToString());
+                    m_Log.WarnFormat("Stack Trace:\n{0}", e.StackTrace);
                     return 0;
                 }
                 return 1;
@@ -468,13 +468,13 @@ namespace SilverSim.Tests.Lsl
                 catch (CompilerException e)
                 {
                     m_Log.ErrorFormat("Compilation of injected {1} ({0}) failed: {2}", assetid, name, e.Message);
-                    m_Log.WarnFormat("Stack Trace:\n{0}", e.StackTrace.ToString());
+                    m_Log.WarnFormat("Stack Trace:\n{0}", e.StackTrace);
                     return 0;
                 }
                 catch (Exception e)
                 {
                     m_Log.ErrorFormat("Compilation of injected {1} ({0}) failed: {2}", assetid, name, e.Message);
-                    m_Log.WarnFormat("Stack Trace:\n{0}", e.StackTrace.ToString());
+                    m_Log.WarnFormat("Stack Trace:\n{0}", e.StackTrace);
                     return 0;
                 }
 
@@ -486,7 +486,7 @@ namespace SilverSim.Tests.Lsl
                 catch(Exception e)
                 {
                     m_Log.ErrorFormat("Instancing of injected {1} ({0}) failed: {2}", assetid, name, e.Message);
-                    m_Log.WarnFormat("Stack Trace:\n{0}", e.StackTrace.ToString());
+                    m_Log.WarnFormat("Stack Trace:\n{0}", e.StackTrace);
                     return 0;
                 }
                 instance.Part.Inventory.Add(item);
@@ -498,7 +498,7 @@ namespace SilverSim.Tests.Lsl
                 catch (Exception e)
                 {
                     m_Log.ErrorFormat("Starting of injected {1} ({0}) failed: {2}", assetid, name, e.Message);
-                    m_Log.WarnFormat("Stack Trace:\n{0}", e.StackTrace.ToString());
+                    m_Log.WarnFormat("Stack Trace:\n{0}", e.StackTrace);
                     return 0;
                 }
                 return 1;
