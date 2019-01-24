@@ -30,7 +30,7 @@ namespace SilverSim.Tests.Viewer
 {
     public partial class ViewerControlApi
     {
-        [APIExtension("ViewerControl", APIUseAsEnum.MemberFunction)]
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction)]
         public void SendAgentPause(
             ScriptInstance instance,
             ViewerAgentAccessor agent,
@@ -53,7 +53,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension("ViewerControl", APIUseAsEnum.MemberFunction)]
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction)]
         public void SendAgentResume(
             ScriptInstance instance,
             ViewerAgentAccessor agent,
@@ -76,7 +76,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension("ViewerControl", APIUseAsEnum.MemberFunction)]
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction)]
         public void SendSetAlwaysRun(
             ScriptInstance instance,
             ViewerAgentAccessor agent,
@@ -99,12 +99,77 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension("ViewerControl")]
+        [APIExtension(ExtensionName)]
         public const int VC_AGENT_UPDATE_FLAGS_HIDE_TITLE = 1;
-        [APIExtension("ViewerControl")]
+        [APIExtension(ExtensionName)]
         public const int VC_AGENT_UPDATE_FLAGS_CLIENT_AUTOPILOT = 2;
 
-        [APIExtension("ViewerControl", APIUseAsEnum.MemberFunction)]
+        [APIExtension(ExtensionName)]
+        public const int VC_AGENT_CONTROL_FLAGS_AT_POS = 1 << 0;
+        [APIExtension(ExtensionName)]
+        public const int VC_AGENT_CONTROL_FLAGS_AT_NEG = 1 << 1;
+        [APIExtension(ExtensionName)]
+        public const int VC_AGENT_CONTROL_FLAGS_LEFT_POS = 1 << 2;
+        [APIExtension(ExtensionName)]
+        public const int VC_AGENT_CONTROL_FLAGS_LEFT_NEG = 1 << 3;
+        [APIExtension(ExtensionName)]
+        public const int VC_AGENT_CONTROL_FLAGS_UP_POS = 1 << 4;
+        [APIExtension(ExtensionName)]
+        public const int VC_AGENT_CONTROL_FLAGS_UP_NEG = 1 << 5;
+        [APIExtension(ExtensionName)]
+        public const int VC_AGENT_CONTROL_FLAGS_PITCH_POS = 1 << 6;
+        [APIExtension(ExtensionName)]
+        public const int VC_AGENT_CONTROL_FLAGS_PITCH_NEG = 1 << 7;
+        [APIExtension(ExtensionName)]
+        public const int VC_AGENT_CONTROL_FLAGS_YAW_POS = 1 << 8;
+        [APIExtension(ExtensionName)]
+        public const int VC_AGENT_CONTROL_FLAGS_YAW_NEG = 1 << 9;
+        [APIExtension(ExtensionName)]
+        public const int VC_AGENT_CONTROL_FLAGS_FAST_AT = 1 << 10;
+        [APIExtension(ExtensionName)]
+        public const int VC_AGENT_CONTROL_FLAGS_FAST_LEFT = 1 << 11;
+        [APIExtension(ExtensionName)]
+        public const int VC_AGENT_CONTROL_FLAGS_FAST_UP = 1 << 12;
+        [APIExtension(ExtensionName)]
+        public const int VC_AGENT_CONTROL_FLAGS_FLY = 1 << 13;
+        [APIExtension(ExtensionName)]
+        public const int VC_AGENT_CONTROL_FLAGS_STOP = 1 << 14;
+        [APIExtension(ExtensionName)]
+        public const int VC_AGENT_CONTROL_FLAGS_FINISH_ANIM = 1 << 15;
+        [APIExtension(ExtensionName)]
+        public const int VC_AGENT_CONTROL_FLAGS_STAND_UP = 1 << 16;
+        [APIExtension(ExtensionName)]
+        public const int VC_AGENT_CONTROL_FLAGS_SIT_ON_GROUND = 1 << 17;
+        [APIExtension(ExtensionName)]
+        public const int VC_AGENT_CONTROL_FLAGS_MOUSE_LOOK = 1 << 18;
+        [APIExtension(ExtensionName)]
+        public const int VC_AGENT_CONTROL_FLAGS_NUDGE_AT_POS = 1 << 19;
+        [APIExtension(ExtensionName)]
+        public const int VC_AGENT_CONTROL_FLAGS_NUDGE_AT_NEG = 1 << 20;
+        [APIExtension(ExtensionName)]
+        public const int VC_AGENT_CONTROL_FLAGS_NUDGE_LEFT_POS = 1 << 21;
+        [APIExtension(ExtensionName)]
+        public const int VC_AGENT_CONTROL_FLAGS_NUDGE_LEFT_NEG = 1 << 22;
+        [APIExtension(ExtensionName)]
+        public const int VC_AGENT_CONTROL_FLAGS_NUDGE_UP_POS = 1 << 23;
+        [APIExtension(ExtensionName)]
+        public const int VC_AGENT_CONTROL_FLAGS_NUDGE_UP_NEG = 1 << 24;
+        [APIExtension(ExtensionName)]
+        public const int VC_AGENT_CONTROL_FLAGS_TURN_LEFT = 1 << 25;
+        [APIExtension(ExtensionName)]
+        public const int VC_AGENT_CONTROL_FLAGS_TURN_RIGHT = 1 << 26;
+        [APIExtension(ExtensionName)]
+        public const int VC_AGENT_CONTROL_FLAGS_AWAY = 1 << 27;
+        [APIExtension(ExtensionName)]
+        public const int VC_AGENT_CONTROL_FLAGS_LBUTTON_DOWN = 1 << 28;
+        [APIExtension(ExtensionName)]
+        public const int VC_AGENT_CONTROL_FLAGS_LBUTTON_UP = 1 << 29;
+        [APIExtension(ExtensionName)]
+        public const int VC_AGENT_CONTROL_FLAGS_MOUSE_LOOK_LBUTTON_DOWN = 1 << 30;
+        [APIExtension(ExtensionName)]
+        public const int VC_AGENT_CONTROL_FLAGS_MOUSE_LOOK_LBUTTON_UP = 1 << 31;
+
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction)]
         public void SendAgentUpdate(
             ScriptInstance instance,
             ViewerAgentAccessor agent,
