@@ -30,7 +30,7 @@ namespace SilverSim.Tests.Viewer
 {
     public partial class ViewerControlApi
     {
-        [APIExtension("ViewerControl", APIUseAsEnum.MemberFunction, "SendAgentPause")]
+        [APIExtension("ViewerControl", APIUseAsEnum.MemberFunction)]
         public void SendAgentPause(
             ScriptInstance instance,
             ViewerAgentAccessor agent,
@@ -53,7 +53,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension("ViewerControl", APIUseAsEnum.MemberFunction, "SendAgentResume")]
+        [APIExtension("ViewerControl", APIUseAsEnum.MemberFunction)]
         public void SendAgentResume(
             ScriptInstance instance,
             ViewerAgentAccessor agent,
@@ -76,7 +76,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension("ViewerControl", APIUseAsEnum.MemberFunction, "SendSetAlwaysRun")]
+        [APIExtension("ViewerControl", APIUseAsEnum.MemberFunction)]
         public void SendSetAlwaysRun(
             ScriptInstance instance,
             ViewerAgentAccessor agent,
@@ -99,7 +99,12 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension("ViewerControl", APIUseAsEnum.MemberFunction, "SendAgentUpdate")]
+        [APIExtension("ViewerControl")]
+        public const int VC_AGENT_UPDATE_FLAGS_HIDE_TITLE = 1;
+        [APIExtension("ViewerControl")]
+        public const int VC_AGENT_UPDATE_FLAGS_CLIENT_AUTOPILOT = 2;
+
+        [APIExtension("ViewerControl", APIUseAsEnum.MemberFunction)]
         public void SendAgentUpdate(
             ScriptInstance instance,
             ViewerAgentAccessor agent,
@@ -134,7 +139,7 @@ namespace SilverSim.Tests.Viewer
                         CameraUpAxis = cameraUpAxis,
                         Far = far,
                         ControlFlags = (ControlFlags)controlFlags,
-                        Flags = (byte)flags
+                        Flags = (AgentUpdateFlags)flags
                     });
                 }
             }
