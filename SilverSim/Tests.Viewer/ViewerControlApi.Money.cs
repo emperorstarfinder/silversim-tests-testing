@@ -28,7 +28,7 @@ namespace SilverSim.Tests.Viewer
 {
     public partial class ViewerControlApi
     {
-        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "SendMoneyBalanceRequest")]
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction)]
         public void SendMoneyBalanceRequest(
             ScriptInstance instance, 
             ViewerAgentAccessor agent,
@@ -51,7 +51,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension("ViewerControl", APIUseAsEnum.MemberFunction, "SendMoneyTransferRequest")]
+        [APIExtension("ViewerControl", APIUseAsEnum.MemberFunction)]
         public void SendMoneyTransferRequest(
             ScriptInstance instance,
             ViewerAgentAccessor agent,

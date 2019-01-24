@@ -34,7 +34,7 @@ namespace SilverSim.Tests.Viewer
 {
     public partial class ViewerControlApi
     {
-        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "SendTelehubConnect")]
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction)]
         public void SendTelehubConnect(
             ScriptInstance instance,
             ViewerAgentAccessor agent,
@@ -59,7 +59,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "SendTelehubDelete")]
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction)]
         public void SendTelehubDelete(
             ScriptInstance instance,
             ViewerAgentAccessor agent)
@@ -82,8 +82,8 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "SendTelehubInfoRequest")]
-        public void SendTelehubRequest(
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction)]
+        public void SendTelehubInfoRequest(
             ScriptInstance instance,
             ViewerAgentAccessor agent,
             LSLKey transactionID)
@@ -107,7 +107,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "SendTelehubSpawnpointAdd")]
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction)]
         public void SendTelehubSpawnpointAdd(
             ScriptInstance instance,
             ViewerAgentAccessor agent,
@@ -132,7 +132,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "SendTelehubSpawnpointRemove")]
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction)]
         public void SendTelehubSpawnpointRemove(
             ScriptInstance instance,
             ViewerAgentAccessor agent,

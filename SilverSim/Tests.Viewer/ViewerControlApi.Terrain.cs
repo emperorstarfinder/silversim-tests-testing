@@ -65,7 +65,7 @@ namespace SilverSim.Tests.Viewer
         [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "Add")]
         public void AddModifyLandParcelData(ModifyLandParcelDataList list, ModifyLandParcelData data) => list.Add(data);
 
-        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "SendModifyLand")]
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction)]
         public void SendModifyLand(
             ScriptInstance instance,
             ViewerAgentAccessor agent,
@@ -109,7 +109,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "SendTerrainBake")]
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction)]
         public void SendTerrainBake(
             ScriptInstance instance,
             ViewerAgentAccessor agent)
@@ -133,7 +133,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "SendTerrainRevert")]
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction)]
         public void SendTerrainRevert(
             ScriptInstance instance,
             ViewerAgentAccessor agent)
@@ -157,7 +157,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "SendTerrainSwap")]
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction)]
         public void SendTerrainSwap(
             ScriptInstance instance,
             ViewerAgentAccessor agent)

@@ -29,7 +29,7 @@ namespace SilverSim.Tests.Viewer
 {
     public partial class ViewerControlApi
     {
-        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "SendUUIDGroupNameRequest")]
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction)]
         public void SendUUIDGroupNameRequest(ScriptInstance instance, ViewerAgentAccessor agent, AnArray ids)
         {
             lock (instance)
@@ -49,7 +49,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "SendUUIDNameRequest")]
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction)]
         public void SendUUIDNameRequest(ScriptInstance instance, ViewerAgentAccessor agent, AnArray ids)
         {
             lock (instance)

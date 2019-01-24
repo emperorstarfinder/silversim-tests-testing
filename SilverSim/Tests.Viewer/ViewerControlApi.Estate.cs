@@ -34,7 +34,7 @@ namespace SilverSim.Tests.Viewer
 {
     public partial class ViewerControlApi
     {
-        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "SendEstateCovenantRequest")]
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction)]
         public void SendEstateCovenantRequest(
             ScriptInstance instance,
             ViewerAgentAccessor agent)
@@ -55,7 +55,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "SendSimWideDeletes")]
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction)]
         public void SendSimWideDeletes(
             ScriptInstance instance,
             ViewerAgentAccessor agent,
@@ -80,8 +80,8 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "SendEstateChangeCovenantID")]
-        public void SendEstateSimulatorMessage(
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction)]
+        public void SendEstateChangeCovenantID(
             ScriptInstance instance,
             ViewerAgentAccessor agent,
             LSLKey id)
@@ -105,7 +105,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "SendEstateGetInfo")]
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction)]
         public void SendEstateGetInfo(
             ScriptInstance instance,
             ViewerAgentAccessor agent,
@@ -174,7 +174,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "SendRegionRestart")]
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction)]
         public void SendRegionRestart(
             ScriptInstance instance,
             ViewerAgentAccessor agent,
@@ -199,7 +199,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "SendEstateSimulatorMessage")]
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction)]
         public void SendEstateSimulatorMessage(
             ScriptInstance instance,
             ViewerAgentAccessor agent,
@@ -229,7 +229,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "SendEstateInstantMessage")]
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction)]
         public void SendEstateInstantMessage(
             ScriptInstance instance,
             ViewerAgentAccessor agent,
@@ -259,7 +259,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "SendSetRegionDebug")]
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction)]
         public void SendSetRegionDebug(
             ScriptInstance instance,
             ViewerAgentAccessor agent,
@@ -288,7 +288,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "SendSetRegionInfo")]
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction)]
         public void SendSetRegionInfo(
             ScriptInstance instance,
             ViewerAgentAccessor agent,

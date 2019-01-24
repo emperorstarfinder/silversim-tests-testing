@@ -29,7 +29,7 @@ namespace SilverSim.Tests.Viewer
 {
     public partial class ViewerControlApi
     {
-        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "SendObjectGrab")]
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction)]
         public void SendObjectGrab(
             ScriptInstance instance,
             ViewerAgentAccessor agent,
@@ -69,7 +69,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "SendObjectGrabUpdate")]
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction)]
         public void SendObjectGrabUpdate(
             ScriptInstance instance,
             ViewerAgentAccessor agent,
@@ -113,7 +113,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "SendObjectDeGrab")]
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction)]
         public void SendObjectDeGrab(
             ScriptInstance instance,
             ViewerAgentAccessor agent,
@@ -151,7 +151,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "SendObjectSelect")]
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction)]
         public void SendObjectSelect(
             ScriptInstance instance,
             ViewerAgentAccessor agent,
@@ -178,7 +178,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "SendObjectDeselect")]
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction)]
         public void SendObjectDeselect(
             ScriptInstance instance,
             ViewerAgentAccessor agent,
@@ -205,7 +205,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "SendRequestPayPrice")]
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction)]
         public void SendRequestPayPrice(
             ScriptInstance instance,
             ViewerAgentAccessor agent,

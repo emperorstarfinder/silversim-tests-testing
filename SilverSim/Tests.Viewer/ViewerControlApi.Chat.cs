@@ -55,26 +55,26 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension("ViewerControl")]
+        [APIExtension(ExtensionName)]
         public const int CHAT_TYPE_WHISPER = 0;
-        [APIExtension("ViewerControl")]
+        [APIExtension(ExtensionName)]
         public const int CHAT_TYPE_SAY = 1;
-        [APIExtension("ViewerControl")]
+        [APIExtension(ExtensionName)]
         public const int CHAT_TYPE_SHOUT = 2;
-        [APIExtension("ViewerControl")]
+        [APIExtension(ExtensionName)]
         public const int CHAT_TYPE_START_TYPING = 4;
-        [APIExtension("ViewerControl")]
+        [APIExtension(ExtensionName)]
         public const int CHAT_TYPE_STOP_TYPING = 5;
-        [APIExtension("ViewerControl")]
+        [APIExtension(ExtensionName)]
         public const int CHAT_TYPE_DEBUG_CHANNEL = 6;
-        [APIExtension("ViewerControl")]
+        [APIExtension(ExtensionName)]
         public const int CHAT_TYPE_REGION = 7;
-        [APIExtension("ViewerControl")]
+        [APIExtension(ExtensionName)]
         public const int CHAT_TYPE_OWNER = 8;
-        [APIExtension("ViewerControl")]
+        [APIExtension(ExtensionName)]
         public const int CHAT_TYPE_BROADCAST = 0xFF;
 
-        [APIExtension("ViewerControl", APIUseAsEnum.MemberFunction, "SendChatFromViewer")]
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction)]
         public void SendChatFromViewer(
             ScriptInstance instance,
             ViewerAgentAccessor agent,
@@ -101,88 +101,88 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension("ViewerControl")]
+        [APIExtension(ExtensionName)]
         public const int DIALOG_MESSAGE_FROM_AGENT = 0;
-        [APIExtension("ViewerControl")]
+        [APIExtension(ExtensionName)]
         public const int DIALOG_MESSAGE_BOX = 1;
-        [APIExtension("ViewerControl")]
+        [APIExtension(ExtensionName)]
         public const int DIALOG_GROUP_INVITATION = 3;
-        [APIExtension("ViewerControl")]
+        [APIExtension(ExtensionName)]
         public const int DIALOG_INVENTORY_OFFERED = 4;
-        [APIExtension("ViewerControl")]
+        [APIExtension(ExtensionName)]
         public const int DIALOG_INVENTORY_ACCEPTED = 5;
-        [APIExtension("ViewerControl")]
+        [APIExtension(ExtensionName)]
         public const int DIALOG_INVENTORY_DECLINED = 6;
-        [APIExtension("ViewerControl")]
+        [APIExtension(ExtensionName)]
         public const int DIALOG_GROUP_VOTE = 7;
-        [APIExtension("ViewerControl")]
+        [APIExtension(ExtensionName)]
         public const int DIALOG_TASK_INVENTORY_OFFERED = 9;
-        [APIExtension("ViewerControl")]
+        [APIExtension(ExtensionName)]
         public const int DIALOG_TASK_INVENTORY_ACCEPTED = 10;
-        [APIExtension("ViewerControl")]
+        [APIExtension(ExtensionName)]
         public const int DIALOG_TASK_INVENTORY_DECLINED = 11;
-        [APIExtension("ViewerControl")]
+        [APIExtension(ExtensionName)]
         public const int DIALOG_NEW_USER_DEFAULT = 12;
-        [APIExtension("ViewerControl")]
+        [APIExtension(ExtensionName)]
         public const int DIALOG_SESION_ADD = 13;
-        [APIExtension("ViewerControl")]
+        [APIExtension(ExtensionName)]
         public const int DIALOG_SESSION_OFFLINE_ADD = 14;
-        [APIExtension("ViewerControl")]
+        [APIExtension(ExtensionName)]
         public const int DIALOG_SESSION_GROUP_START = 15;
-        [APIExtension("ViewerControl")]
+        [APIExtension(ExtensionName)]
         public const int DIALOG_SESSION_CARDLESS_START = 16;
-        [APIExtension("ViewerControl")]
+        [APIExtension(ExtensionName)]
         public const int DIALOG_SESSION_SEND = 17;
-        [APIExtension("ViewerControl")]
+        [APIExtension(ExtensionName)]
         public const int DIALOG_SESSION_DROP = 18;
-        [APIExtension("ViewerControl")]
+        [APIExtension(ExtensionName)]
         public const int DIALOG_MESSAGE_FROM_OBJECT = 19;
-        [APIExtension("ViewerControl")]
+        [APIExtension(ExtensionName)]
         public const int DIALOG_BUSY_AUTO_RESPONSE = 20;
-        [APIExtension("ViewerControl")]
+        [APIExtension(ExtensionName)]
         public const int DIALOG_CONSOLE_AND_CHAT_HISTORY = 21;
-        [APIExtension("ViewerControl")]
+        [APIExtension(ExtensionName)]
         public const int DIALOG_REQUEST_TELEPORT = 22;
-        [APIExtension("ViewerControl")]
+        [APIExtension(ExtensionName)]
         public const int DIALOG_ACCEPT_TELEPORT = 23;
-        [APIExtension("ViewerControl")]
+        [APIExtension(ExtensionName)]
         public const int DIALOG_DENY_TELEPORT = 24;
-        [APIExtension("ViewerControl")]
+        [APIExtension(ExtensionName)]
         public const int DIALOG_GODLIKE_REQUEST_TELEPORT = 25;
-        [APIExtension("ViewerControl")]
+        [APIExtension(ExtensionName)]
         public const int DIALOG_REQUEST_LURE = 26;
-        [APIExtension("ViewerControl")]
+        [APIExtension(ExtensionName)]
         public const int DIALOG_GOTO_URL = 28;
-        [APIExtension("ViewerControl")]
+        [APIExtension(ExtensionName)]
         public const int DIALOG_SESION_911_START = 29;
-        [APIExtension("ViewerControl")]
+        [APIExtension(ExtensionName)]
         public const int DIALOG_LURE_911 = 30;
-        [APIExtension("ViewerControl")]
+        [APIExtension(ExtensionName)]
         public const int DIALOG_FROM_TASK_AS_ALERT = 31;
-        [APIExtension("ViewerControl")]
+        [APIExtension(ExtensionName)]
         public const int DIALOG_GROUP_NOTICE = 32;
-        [APIExtension("ViewerControl")]
+        [APIExtension(ExtensionName)]
         public const int DIALOG_GROUP_NOTICE_INVENTORY_ACCEPTED = 33;
-        [APIExtension("ViewerControl")]
+        [APIExtension(ExtensionName)]
         public const int DIALOG_GROUP_NOTICE_INVENTORY_DECLINED = 34;
-        [APIExtension("ViewerControl")]
+        [APIExtension(ExtensionName)]
         public const int DIALOG_GROUP_INVITATION_ACCEPT = 35;
-        [APIExtension("ViewerControl")]
+        [APIExtension(ExtensionName)]
         public const int DIALOG_GROUP_INVITATION_DECLINE = 36;
-        [APIExtension("ViewerControl")]
+        [APIExtension(ExtensionName)]
         public const int DIALOG_GROUP_NOTICE_REQUESTED = 37;
-        [APIExtension("ViewerControl")]
+        [APIExtension(ExtensionName)]
         public const int DIALOG_FRIENDSHIP_OFFERED = 38;
-        [APIExtension("ViewerControl")]
+        [APIExtension(ExtensionName)]
         public const int DIALOG_FRIENDSHIP_ACCEPTED = 39;
-        [APIExtension("ViewerControl")]
+        [APIExtension(ExtensionName)]
         public const int DIALOG_FRIENDSHIP_DECLINED = 40;
-        [APIExtension("ViewerControl")]
+        [APIExtension(ExtensionName)]
         public const int DIALOG_START_TYPING = 41;
-        [APIExtension("ViewerControl")]
+        [APIExtension(ExtensionName)]
         public const int DIALOG_STOP_TYPING = 42;
 
-        [APIExtension("ViewerControl", APIUseAsEnum.MemberFunction, "SendInstantMessage")]
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction)]
         public void SendInstantMessage(
             ScriptInstance instance,
             ViewerAgentAccessor agent,
@@ -227,8 +227,8 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension("ViewerControl", APIUseAsEnum.MemberFunction, "SendRetrieveInstantMessages")]
-        public void RetrieveInstantMessages(
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction)]
+        public void SendRetrieveInstantMessages(
             ScriptInstance instance,
             ViewerAgentAccessor agent)
         {

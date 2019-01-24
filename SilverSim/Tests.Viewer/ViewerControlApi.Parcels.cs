@@ -30,7 +30,7 @@ namespace SilverSim.Tests.Viewer
 {
     public partial class ViewerControlApi
     {
-        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "SendParcelInfoRequest")]
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction)]
         public void SendParcelInfoRequest(
             ScriptInstance instance,
             ViewerAgentAccessor agent,
@@ -53,7 +53,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "SendParcelObjectOwnersRequest")]
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction)]
         public void SendParcelObjectOwnersRequest(
             ScriptInstance instance,
             ViewerAgentAccessor agent,
@@ -76,7 +76,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "SendParcelAccessListRequest")]
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction)]
         public void SendParcelAccessListRequest(
             ScriptInstance instance,
             ViewerAgentAccessor agent,
@@ -103,7 +103,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "SendParcelAccessListUpdate")]
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction)]
         public void SendParcelAccessListUpdate(
             ScriptInstance instance,
             ViewerAgentAccessor agent,
@@ -146,7 +146,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "SendParcelBuy")]
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction)]
         public void SendParcelBuy(
             ScriptInstance instance,
             ViewerAgentAccessor agent,
@@ -181,7 +181,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "SendParcelBuyPass")]
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction)]
         public void SendParcelBuyPass(
             ScriptInstance instance,
             ViewerAgentAccessor agent,
@@ -204,7 +204,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "SendParcelDeedToGroup")]
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction)]
         public void SendParcelDeedToGroup(
             ScriptInstance instance,
             ViewerAgentAccessor agent,
@@ -229,7 +229,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "SendParcelDisableObjects")]
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction)]
         public void SendParcelDisableObjects(
             ScriptInstance instance,
             ViewerAgentAccessor agent,
@@ -268,7 +268,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "SendParcelReturnObjects")]
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction)]
         public void SendParcelReturnObjects(
             ScriptInstance instance,
             ViewerAgentAccessor agent,
@@ -307,7 +307,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "SendParcelSelectObjects")]
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction)]
         public void SendParcelSelectObjects(
             ScriptInstance instance,
             ViewerAgentAccessor agent,
@@ -340,7 +340,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "SendParcelDivide")]
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction)]
         public void SendParcelDivide(
             ScriptInstance instance,
             ViewerAgentAccessor agent,
@@ -370,7 +370,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "SendParcelJoin")]
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction)]
         public void SendParcelJoin(
             ScriptInstance instance,
             ViewerAgentAccessor agent,
@@ -400,7 +400,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "SendParcelDwellRequest")]
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction)]
         public void SendParcelDwellRequest(
             ScriptInstance instance,
             ViewerAgentAccessor agent,
@@ -425,7 +425,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "SendParcelGodForceOwner")]
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction)]
         public void SendParcelGodForceOwner(
             ScriptInstance instance,
             ViewerAgentAccessor agent,
@@ -450,7 +450,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
         
-        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "SendParcelGodMarkAsContent")]
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction)]
         public void SendParcelGodMarkAsContent(
             ScriptInstance instance,
             ViewerAgentAccessor agent,
@@ -473,7 +473,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "SendParcelReclaim")]
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction)]
         public void SendParcelReclaim(
             ScriptInstance instance,
             ViewerAgentAccessor agent,
@@ -496,7 +496,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "SendParcelRelease")]
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction)]
         public void SendParcelRelease(
             ScriptInstance instance,
             ViewerAgentAccessor agent,
@@ -519,7 +519,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "SendParcelSetOtherCleanTime")]
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction)]
         public void SendParcelSetOtherCleanTime(
             ScriptInstance instance,
             ViewerAgentAccessor agent,
@@ -543,6 +543,5 @@ namespace SilverSim.Tests.Viewer
                 }
             }
         }
-
     }
 }

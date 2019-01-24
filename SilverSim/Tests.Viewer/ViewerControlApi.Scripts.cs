@@ -29,7 +29,7 @@ namespace SilverSim.Tests.Viewer
 {
     public partial class ViewerControlApi
     {
-        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "SendForceScriptControlRelease")]
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction)]
         public void SendForceScriptControlRelease(
             ScriptInstance instance,
             ViewerAgentAccessor agent)
@@ -50,7 +50,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "SendGetScriptRunning")]
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction)]
         public void SendGetScriptRunning(
             ScriptInstance instance,
             ViewerAgentAccessor agent,
@@ -73,7 +73,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "SendRevokePermissions")]
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction)]
         public void SendRevokePermissions(
             ScriptInstance instance,
             ViewerAgentAccessor agent,
@@ -98,7 +98,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "SendScriptAnswerYes")]
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction)]
         public void SendScriptAnswerYes(
             ScriptInstance instance,
             ViewerAgentAccessor agent,
@@ -125,7 +125,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "SendScriptDialogReply")]
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction)]
         public void SendScriptDialogReply(
             ScriptInstance instance,
             ViewerAgentAccessor agent,
@@ -154,7 +154,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "SendScriptReset")]
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction)]
         public void SendScriptReset(
             ScriptInstance instance,
             ViewerAgentAccessor agent,
@@ -179,7 +179,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "SendSetScriptRunning")]
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction)]
         public void SendSetScriptRunning(
             ScriptInstance instance,
             ViewerAgentAccessor agent,

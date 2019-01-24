@@ -37,7 +37,7 @@ namespace SilverSim.Tests.Viewer
 {
     public partial class ViewerControlApi
     {
-        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "SendObjectAdd")]
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction)]
         public void SendObjectAdd(
             ScriptInstance instance,
             ViewerAgentAccessor agent,
@@ -100,7 +100,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "SendBuyObjectInventory")]
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction)]
         public void SendBuyObjectInventory(
             ScriptInstance instance,
             ViewerAgentAccessor agent,
@@ -127,7 +127,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "SendObjectBuy")]
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction)]
         public void SendObjectBuy(
             ScriptInstance instance,
             ViewerAgentAccessor agent,
@@ -186,7 +186,7 @@ namespace SilverSim.Tests.Viewer
         [APIExtension(ExtensionName)]
         public const int DEREZ_ACTION_RETURN_TO_LAST_OWNER = 10;
 
-        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "SendDeRezObject")]
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction)]
         public void SendDeRezObject(
             ScriptInstance instance,
             ViewerAgentAccessor agent,
@@ -219,7 +219,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "SendDetachAttachmentIntoInv")]
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction)]
         public void SendDetachAttachmentIntoInv(
             ScriptInstance instance,
             ViewerAgentAccessor agent,
@@ -241,7 +241,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "SendObjectCategory")]
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction)]
         public void SendObjectCategory(
             ScriptInstance instance,
             ViewerAgentAccessor agent,
@@ -273,7 +273,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "SendObjectClickAction")]
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction)]
         public void SendObjectClickAction(
             ScriptInstance instance,
             ViewerAgentAccessor agent,
@@ -305,7 +305,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "SendObjectDelete")]
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction)]
         public void SendObjectDelete(
             ScriptInstance instance,
             ViewerAgentAccessor agent,
@@ -334,7 +334,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "SendObjectDelink")]
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction)]
         public void SendObjectDelink(
             ScriptInstance instance,
             ViewerAgentAccessor agent,
@@ -361,7 +361,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "SendObjectDescription")]
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction)]
         public void SendObjectDescription(
             ScriptInstance instance,
             ViewerAgentAccessor agent,
@@ -393,7 +393,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "SendObjectDetach")]
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction)]
         public void SendObjectDetach(
             ScriptInstance instance,
             ViewerAgentAccessor agent,
@@ -420,7 +420,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "SendObjectDrop")]
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction)]
         public void SendObjectDrop(
             ScriptInstance instance,
             ViewerAgentAccessor agent,
@@ -447,7 +447,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "SendObjectDuplicate")]
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction)]
         public void SendObjectDuplicate(
             ScriptInstance instance,
             ViewerAgentAccessor agent,
@@ -480,7 +480,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "SendObjectDuplicateOnRay")]
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction)]
         public void SendObjectDuplicateOnRay(
             ScriptInstance instance,
             ViewerAgentAccessor agent,
@@ -525,7 +525,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "SendRequestMultipleObjects")]
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction)]
         public void SendRequestMultipleObjects(
             ScriptInstance instance,
             ViewerAgentAccessor agent,
@@ -560,7 +560,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "SendObjectExportSelected")]
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction)]
         public void SendObjectExportSelected(
             ScriptInstance instance,
             ViewerAgentAccessor agent,
@@ -590,7 +590,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "SendObjectFlagUpdate")]
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction)]
         public void SendObjectFlagUpdate(
             ScriptInstance instance,
             ViewerAgentAccessor agent,
@@ -620,7 +620,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "SendObjectFlagUpdate")]
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction)]
         public void SendObjectFlagUpdate(
             ScriptInstance instance,
             ViewerAgentAccessor agent,
@@ -663,7 +663,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "SendObjectGroup")]
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction)]
         public void SendObjectGroup(
             ScriptInstance instance,
             ViewerAgentAccessor agent,
@@ -729,7 +729,7 @@ namespace SilverSim.Tests.Viewer
         [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "Add")]
         public void AddObjectImageData(ObjectImageDataList list, ObjectImageData data) => list.Add(data);
 
-        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "SendObjectImage")]
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction)]
         public void SendObjectImage(
             ScriptInstance instance,
             ViewerAgentAccessor agent,
@@ -762,7 +762,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "SendObjectIncludeInSearch")]
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction)]
         public void SendObjectIncludeInSearch(
             ScriptInstance instance,
             ViewerAgentAccessor agent,
@@ -795,7 +795,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "SendObjectLink")]
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction)]
         public void SendObjectLink(
             ScriptInstance instance,
             ViewerAgentAccessor agent,
@@ -822,7 +822,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "SendObjectMaterial")]
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction)]
         public void SendObjectMaterial(
             ScriptInstance instance,
             ViewerAgentAccessor agent,
@@ -855,7 +855,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "SendObjectName")]
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction)]
         public void SendObjectName(
             ScriptInstance instance,
             ViewerAgentAccessor agent,
@@ -888,7 +888,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "SendObjectOwner")]
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction)]
         public void SendObjectOwner(
             ScriptInstance instance,
             ViewerAgentAccessor agent,
@@ -921,7 +921,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "SendObjectPermissions")]
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction)]
         public void SendObjectPermissions(
             ScriptInstance instance,
             ViewerAgentAccessor agent,
@@ -957,7 +957,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "SendObjectPhysicsProperties")]
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction)]
         public void SendObjectPhysicsProperties(
             ScriptInstance instance,
             ViewerAgentAccessor agent,
@@ -989,7 +989,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "SendMultipleObjectUpdate")]
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction)]
         public void SendMultipleObjectUpdate(
             ScriptInstance instance,
             ViewerAgentAccessor agent,
@@ -1059,7 +1059,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "SendObjectPosition")]
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction)]
         public void SendObjectPosition(
             ScriptInstance instance,
             ViewerAgentAccessor agent,
@@ -1091,7 +1091,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "SendObjectRotation")]
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction)]
         public void SendObjectRotation(
             ScriptInstance instance,
             ViewerAgentAccessor agent,
@@ -1123,7 +1123,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "SendObjectSaleInfo")]
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction)]
         public void SendObjectSaleInfo(
             ScriptInstance instance,
             ViewerAgentAccessor agent,
@@ -1156,7 +1156,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "SendObjectScale")]
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction)]
         public void SendObjectScale(
             ScriptInstance instance,
             ViewerAgentAccessor agent,
@@ -1188,7 +1188,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "SendRequestObjectPropertiesFamily")]
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction)]
         public void SendRequestObjectPropertiesFamily(
             ScriptInstance instance,
             ViewerAgentAccessor agent,
@@ -1256,7 +1256,7 @@ namespace SilverSim.Tests.Viewer
         [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "Add")]
         public void AddObjectShapeData(VcObjectShapeList list, VcObjectShape data) => list.Add(data);
 
-        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "SendObjectShape")]
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction)]
         public void SendObjectShape(
             ScriptInstance instance,
             ViewerAgentAccessor agent,

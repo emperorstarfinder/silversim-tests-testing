@@ -472,7 +472,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "SendRequestGodlikePowers")]
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction)]
         public void SendRequestGodlikePowers(ScriptInstance instance, ViewerAgentAccessor agent, int isgodlike, LSLKey token)
         {
             lock (instance)

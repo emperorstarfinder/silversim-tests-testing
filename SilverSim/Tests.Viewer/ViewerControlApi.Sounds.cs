@@ -29,7 +29,7 @@ namespace SilverSim.Tests.Viewer
 {
     public partial class ViewerControlApi
     {
-        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "SendSoundTrigger")]
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction)]
         public void SendSoundTrigger(
             ScriptInstance instance,
             ViewerAgentAccessor agent,

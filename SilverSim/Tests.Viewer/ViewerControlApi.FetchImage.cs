@@ -186,7 +186,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "RequestTextureViaCircuit")]
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction)]
         public int RequestTextureViaCircuit(
             ScriptInstance instance,
             ViewerAgentAccessor agent,
@@ -224,7 +224,7 @@ namespace SilverSim.Tests.Viewer
             }
         }
 
-        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "AbortTextureViaCircuit")]
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction)]
         public int AbortTextureViaCircuit(
             ScriptInstance instance,
             ViewerAgentAccessor agent,
@@ -270,7 +270,7 @@ namespace SilverSim.Tests.Viewer
             public string TextureUrl;
         }
 
-        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction, "RequestTextureViaCap")]
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction)]
         public void RequestTextureViaCap(
             ScriptInstance instance,
             ViewerAgentAccessor agent,
