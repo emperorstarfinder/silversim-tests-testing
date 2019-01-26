@@ -29,6 +29,7 @@ using SilverSim.Types;
 using SilverSim.Types.StructuredData.Llsd;
 using SilverSim.Viewer.Messages;
 using SilverSim.Viewer.Messages.Circuit;
+using SilverSim.Viewer.Messages.Console;
 using SilverSim.Viewer.Messages.Object;
 using SilverSim.Viewer.Messages.Parcel;
 using System;
@@ -170,6 +171,15 @@ namespace SilverSim.Tests.Viewer
                                             ChannelCredentials = msg.ChannelCredentials
                                         });
                                     }
+                                    else if(msgtype == "SimConsoleResponse")
+                                    {
+                                        var msg = (SimConsoleResponse)m;
+                                        m_ViewerConnection.PostEvent(new SimConsoleResponseReceivedEvent
+                                        {
+                                            Agent = m_ViewerAgent,
+                                            Response = msg.Message
+                                        });
+                                    }
                                     else if(m_MessageRouting.TryGetValue(m.Number, out handle))
                                     {
                                         handle(m);
@@ -192,6 +202,21 @@ namespace SilverSim.Tests.Viewer
                 }
             }
         }
+
+        [TranslatedScriptEvent("simconsoleresponse_received")]
+        public class SimConsoleResponseReceivedEvent : IScriptEvent
+        {
+            [TranslatedScriptEventParameter(0)]
+            public ViewerAgentAccessor Agent;
+            [TranslatedScriptEventParameter(1)]
+            public string Response;
+        }
+
+        [APIExtension(ExtensionName, "simconsoleresponse_received")]
+        [StateEventDelegate]
+        public delegate void SimConsoleResponseReceived(
+            ViewerAgentAccessor agent,
+            string response);
 
         [TranslatedScriptEvent("parcelvoiceinfo_received")]
         public class ParcelVoiceInfoReceivedEvent : IScriptEvent

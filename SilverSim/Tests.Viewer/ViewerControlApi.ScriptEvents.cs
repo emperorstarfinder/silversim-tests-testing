@@ -2905,6 +2905,7 @@ namespace SilverSim.Tests.Viewer
             typeof(ScriptRunningReplyReceivedEvent),
             typeof(ScriptTeleportRequestReceivedEvent),
             typeof(SetFollowCamPropertiesReceivedEvent),
+            typeof(SimConsoleResponseReceivedEvent),
             typeof(SimStatsReceivedEvent),
             typeof(SimulatorViewerTimeMessageReceived),
             typeof(SoundTriggerReceivedEvent),
