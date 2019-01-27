@@ -19,6 +19,8 @@
 // obligated to do so. If you do not wish to do so, delete this
 // exception statement from your version.
 
+using SilverSim.Scene.Types.Agent;
+using SilverSim.Scene.Types.Physics;
 using SilverSim.Scene.Types.Script;
 using SilverSim.Scripting.Lsl;
 using SilverSim.Tests.Viewer.UDP;
@@ -208,6 +210,22 @@ namespace SilverSim.Tests.Viewer
                     });
                 }
             }
+        }
+
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction)]
+        public int GetActiveAgentControlFlags(ScriptInstance instance, ViewerAgentAccessor agent)
+        {
+            ControlFlags flags = ControlFlags.None;
+            lock(instance)
+            {
+                IAgent ag;
+                if(instance.Part.ObjectGroup.Scene.RootAgents.TryGetValue(agent.AgentID, out ag))
+                {
+                    var physagent = ag.PhysicsActors[agent.RegionID] as IAgentPhysicsObject;
+                    flags = physagent?.GetControlFlags() ?? ControlFlags.None;
+                }
+            }
+            return (int)flags;
         }
     }
 }
