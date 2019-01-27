@@ -1173,13 +1173,58 @@ namespace SilverSim.Tests.Viewer
         #endregion
 
         #region scriptcontrolchange_received
+        [APIExtension(ExtensionName, "scriptcontrolchangedata")]
+        [APIDisplayName("scriptcontrolchangedata")]
+        [APIAccessibleMembers]
+        [APIIsVariableType]
+        public class ScriptControlChangeData
+        {
+            public int TakeControls;
+            public int Controls;
+            public int PassToAgent;
+        }
+
+        [APIExtension(ExtensionName, "scriptcontrolchangedatalist")]
+        [APIDisplayName("scriptcontrolchangedatalist")]
+        [APIAccessibleMembers]
+        [APIIsVariableType]
+        public class ScriptControlChangeDataList : List<ScriptControlChangeData>
+        {
+            public int Length => Count;
+
+            public sealed class LSLEnumerator : IEnumerator<ScriptControlChangeData>
+            {
+                private readonly ScriptControlChangeDataList Src;
+                private int Position = -1;
+
+                public LSLEnumerator(ScriptControlChangeDataList src)
+                {
+                    Src = src;
+                }
+
+                public ScriptControlChangeData Current => Src[Position];
+
+                object IEnumerator.Current => Current;
+
+                public void Dispose()
+                {
+                }
+
+                public bool MoveNext() => ++Position < Src.Count;
+
+                public void Reset() => Position = -1;
+            }
+
+            public LSLEnumerator GetLslForeachEnumerator() => new LSLEnumerator(this);
+        }
+
         [TranslatedScriptEvent("scriptcontrolchange_received")]
         public class ScriptControlChangeReceivedEvent : IScriptEvent
         {
             [TranslatedScriptEventParameter(0)]
             public ViewerAgentAccessor Agent;
             [TranslatedScriptEventParameter(1)]
-            public AnArray ControlData = new AnArray();
+            public ScriptControlChangeDataList ControlData = new ScriptControlChangeDataList();
 
             public static void ToScriptEvent(Message m, ViewerConnection vc, ViewerAgentAccessor agent)
             {
@@ -1190,9 +1235,12 @@ namespace SilverSim.Tests.Viewer
                 };
                 foreach (ScriptControlChange.DataEntry d in res.Data)
                 {
-                    ev.ControlData.Add(d.TakeControls.ToLSLBoolean());
-                    ev.ControlData.Add((int)d.Controls);
-                    ev.ControlData.Add(d.PassToAgent.ToLSLBoolean());
+                    ev.ControlData.Add(new ScriptControlChangeData
+                    {
+                        TakeControls = d.TakeControls.ToLSLBoolean(),
+                        Controls = (int)d.Controls,
+                        PassToAgent = d.PassToAgent.ToLSLBoolean()
+                    });
                 }
                 vc.PostEvent(ev);
             }
@@ -1200,7 +1248,7 @@ namespace SilverSim.Tests.Viewer
 
         [APIExtension(ExtensionName, "scriptcontrolchange_received")]
         [StateEventDelegate]
-        public delegate void ScriptControlChangeReceived(ViewerAgentAccessor agent, AnArray controlData);
+        public delegate void ScriptControlChangeReceived(ViewerAgentAccessor agent, ScriptControlChangeDataList controlData);
         #endregion
 
         #region preloadsound_received
