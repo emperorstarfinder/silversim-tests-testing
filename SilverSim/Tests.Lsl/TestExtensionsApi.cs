@@ -270,6 +270,10 @@ namespace SilverSim.Tests.Lsl
             }
         }
 
+        [APIExtension("Testing", "_test_InjectScript")]
+        public int InjectScript(ScriptInstance instance, string name, string filename, int startparameter) =>
+            InjectScript(instance, name, filename, startparameter, UUID.Zero);
+
         [APIExtension("Testing", "_test_GetInventoryItemID")]
         public LSLKey GetInventoryKey(ScriptInstance instance, string item)
         {
@@ -431,78 +435,6 @@ namespace SilverSim.Tests.Lsl
                 }
             }
             return 0;
-        }
-
-        [APIExtension("Testing", "_test_InjectScript")]
-        public int InjectScript(ScriptInstance instance, string name, string filename, int startparameter)
-        {
-            lock(instance)
-            {
-                ObjectPartInventoryItem item = new ObjectPartInventoryItem(UUID.Random, instance.Item)
-                {
-                    Name = name
-                };
-                UUID assetid = UUID.Random;
-                item.AssetID = assetid;
-
-
-
-                IScriptAssembly scriptAssembly = null;
-                try
-                {
-                    using (var reader = new StreamReader(filename, new UTF8Encoding(false)))
-                    {
-                        m_AssetService.Store(new AssetData
-                        {
-                            ID = assetid,
-                            Type = AssetType.LSLText,
-                            Data = reader.ReadToEnd().ToUTF8Bytes()
-                        });
-                    }
-                    using (var reader = new StreamReader(filename, new UTF8Encoding(false)))
-                    {
-                        scriptAssembly = CompilerRegistry.ScriptCompilers.Compile(AppDomain.CurrentDomain, UGUI.Unknown, assetid, reader, includeOpen: instance.Part.OpenScriptInclude);
-                    }
-                    m_Log.InfoFormat("Compilation of injected {1} ({0}) successful", assetid, name);
-                }
-                catch (CompilerException e)
-                {
-                    m_Log.ErrorFormat("Compilation of injected {1} ({0}) failed: {2}", assetid, name, e.Message);
-                    m_Log.WarnFormat("Stack Trace:\n{0}", e.StackTrace);
-                    return 0;
-                }
-                catch (Exception e)
-                {
-                    m_Log.ErrorFormat("Compilation of injected {1} ({0}) failed: {2}", assetid, name, e.Message);
-                    m_Log.WarnFormat("Stack Trace:\n{0}", e.StackTrace);
-                    return 0;
-                }
-
-                ScriptInstance scriptInstance;
-                try
-                {
-                    scriptInstance = scriptAssembly.Instantiate(instance.Part, item);
-                }
-                catch(Exception e)
-                {
-                    m_Log.ErrorFormat("Instancing of injected {1} ({0}) failed: {2}", assetid, name, e.Message);
-                    m_Log.WarnFormat("Stack Trace:\n{0}", e.StackTrace);
-                    return 0;
-                }
-                instance.Part.Inventory.Add(item);
-                item.ScriptInstance = scriptInstance;
-                try
-                {
-                    item.ScriptInstance.Start(startparameter);
-                }
-                catch (Exception e)
-                {
-                    m_Log.ErrorFormat("Starting of injected {1} ({0}) failed: {2}", assetid, name, e.Message);
-                    m_Log.WarnFormat("Stack Trace:\n{0}", e.StackTrace);
-                    return 0;
-                }
-                return 1;
-            }
         }
     }
 }
