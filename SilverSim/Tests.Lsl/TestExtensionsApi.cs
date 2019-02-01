@@ -91,7 +91,8 @@ namespace SilverSim.Tests.Lsl
                     FirstName = firstName,
                     LastName = lastName,
                     ID = key.AsUUID,
-                    HomeURI = new Uri(m_Loader.HomeURI, UriKind.Absolute)
+                    HomeURI = new Uri(m_Loader.HomeURI, UriKind.Absolute),
+                    IsAuthoritative = true
                 });
             }
         }
