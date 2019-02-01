@@ -24,6 +24,7 @@ using Nini.Config;
 using SilverSim.Main.Common;
 using SilverSim.Scene.Types.Object;
 using SilverSim.Scene.Types.Object.Parameters;
+using SilverSim.Scene.Types.Scene;
 using SilverSim.Scene.Types.Script;
 using SilverSim.Scene.Types.Script.Events;
 using SilverSim.Scripting.Common;
@@ -33,6 +34,7 @@ using SilverSim.Tests.Extensions;
 using SilverSim.Tests.Scripting;
 using SilverSim.Types;
 using SilverSim.Types.Asset;
+using SilverSim.Types.Parcel;
 using SilverSim.Types.Primitive;
 using System;
 using System.Collections.Generic;
@@ -95,6 +97,54 @@ namespace SilverSim.Tests.Lsl
                     IsAuthoritative = true
                 });
             }
+        }
+
+        [APIExtension("Testing", "_test_GetLandAccessList")]
+        [ForcedSleep(0.1)]
+        public AnArray GetLandAccessList(ScriptInstance instance)
+        {
+            var res = new AnArray();
+            lock (instance)
+            {
+                ObjectPart part = instance.Part;
+                ObjectGroup grp = part.ObjectGroup;
+                SceneInterface scene = grp.Scene;
+                ParcelInfo pInfo;
+                if (scene.Parcels.TryGetValue(grp.GlobalPosition, out pInfo))
+                {
+                    foreach (ParcelAccessEntry pae in scene.Parcels.WhiteList[scene.ID, pInfo.ID])
+                    {
+                        res.Add(new LSLKey(pae.Accessor.ID));
+                        res.Add(pae.Accessor.HomeURI?.ToString() ?? string.Empty);
+                        res.Add(new LongInteger(pae.ExpiresAt.AsLong));
+                    }
+                }
+            }
+            return res;
+        }
+
+        [APIExtension("Testing", "_test_GetLandBanList")]
+        [ForcedSleep(0.1)]
+        public AnArray GetLandBanList(ScriptInstance instance)
+        {
+            var res = new AnArray();
+            lock (instance)
+            {
+                ObjectPart part = instance.Part;
+                ObjectGroup grp = part.ObjectGroup;
+                SceneInterface scene = grp.Scene;
+                ParcelInfo pInfo;
+                if (scene.Parcels.TryGetValue(grp.GlobalPosition, out pInfo))
+                {
+                    foreach(ParcelAccessEntry pae in scene.Parcels.BlackList[scene.ID, pInfo.ID])
+                    {
+                        res.Add(new LSLKey(pae.Accessor.ID));
+                        res.Add(pae.Accessor.HomeURI?.ToString() ?? string.Empty);
+                        res.Add(new LongInteger(pae.ExpiresAt.AsLong));
+                    }
+                }
+            }
+            return res;
         }
 
         [APIExtension("Testing", "_test_ObjectKey2LocalId")]
