@@ -81,6 +81,21 @@ namespace SilverSim.Tests.Lsl
             }
         }
 
+        [APIExtension("Testing", "_test_AddAvatarName")]
+        public void TestAddAvatarName(ScriptInstance instance, LSLKey key, string firstName, string lastName)
+        {
+            lock(instance)
+            {
+                instance.Part.ObjectGroup.Scene.AvatarNameService.Store(new UGUIWithName
+                {
+                    FirstName = firstName,
+                    LastName = lastName,
+                    ID = key.AsUUID,
+                    HomeURI = new Uri(m_Loader.HomeURI, UriKind.Absolute)
+                });
+            }
+        }
+
         [APIExtension("Testing", "_test_ObjectKey2LocalId")]
         public int TestObjectKey2LocalId(ScriptInstance instance, LSLKey key)
         {
