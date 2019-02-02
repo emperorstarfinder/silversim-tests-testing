@@ -99,6 +99,21 @@ namespace SilverSim.Tests.Lsl
             }
         }
 
+        [APIExtension("Testing", "_test_AddGroupName")]
+        public void TestAddGroupName(ScriptInstance instance, LSLKey key, string groupName)
+        {
+            lock (instance)
+            {
+                instance.Part.ObjectGroup.Scene.GroupsNameService.Store(new UGI
+                {
+                    GroupName = groupName,
+                    ID = key.AsUUID,
+                    HomeURI = new Uri(m_Loader.HomeURI, UriKind.Absolute),
+                    IsAuthoritative = true
+                });
+            }
+        }
+
         [APIExtension("Testing", "_test_GetLandPassList")]
         [ForcedSleep(0.1)]
         public AnArray GetLandPassList(ScriptInstance instance)
