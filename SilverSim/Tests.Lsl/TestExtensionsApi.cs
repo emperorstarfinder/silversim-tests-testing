@@ -99,9 +99,9 @@ namespace SilverSim.Tests.Lsl
             }
         }
 
-        [APIExtension("Testing", "_test_GetLandAccessList")]
+        [APIExtension("Testing", "_test_GetLandPassList")]
         [ForcedSleep(0.1)]
-        public AnArray GetLandAccessList(ScriptInstance instance)
+        public AnArray GetLandPassList(ScriptInstance instance)
         {
             var res = new AnArray();
             lock (instance)
