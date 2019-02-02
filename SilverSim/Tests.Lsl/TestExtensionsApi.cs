@@ -30,6 +30,7 @@ using SilverSim.Scene.Types.Script.Events;
 using SilverSim.Scripting.Common;
 using SilverSim.Scripting.Lsl;
 using SilverSim.ServiceInterfaces.Asset;
+using SilverSim.ServiceInterfaces.Estate;
 using SilverSim.Tests.Extensions;
 using SilverSim.Tests.Scripting;
 using SilverSim.Types;
@@ -114,8 +115,84 @@ namespace SilverSim.Tests.Lsl
             }
         }
 
+        [APIExtension("Testing", "_test_GetEstateAllowedAgentsList")]
+        public AnArray GetEstateAllowedAgentsList(ScriptInstance instance)
+        {
+            var res = new AnArray();
+            lock (instance)
+            {
+                ObjectPart part = instance.Part;
+                ObjectGroup grp = part.ObjectGroup;
+                SceneInterface scene = grp.Scene;
+                EstateServiceInterface estateService = scene.EstateService;
+                foreach (UGUI agent in estateService.EstateAccess.All[scene.ParentEstateID])
+                {
+                    res.Add(new LSLKey(agent.ID));
+                    res.Add(agent.HomeURI?.ToString() ?? string.Empty);
+                }
+            }
+            return res;
+        }
+
+        [APIExtension("Testing", "_test_GetEstateBannedAgentsList")]
+        public AnArray GetEstateBannedAgentsList(ScriptInstance instance)
+        {
+            var res = new AnArray();
+            lock (instance)
+            {
+                ObjectPart part = instance.Part;
+                ObjectGroup grp = part.ObjectGroup;
+                SceneInterface scene = grp.Scene;
+                EstateServiceInterface estateService = scene.EstateService;
+                foreach (UGUI agent in estateService.EstateBans.All[scene.ParentEstateID])
+                {
+                    res.Add(new LSLKey(agent.ID));
+                    res.Add(agent.HomeURI?.ToString() ?? string.Empty);
+                }
+            }
+            return res;
+        }
+
+        [APIExtension("Testing", "_test_GetEstateAllowedGroupsList")]
+        public AnArray GetEstateAllowedGroupsList(ScriptInstance instance)
+        {
+            var res = new AnArray();
+            lock (instance)
+            {
+                ObjectPart part = instance.Part;
+                ObjectGroup grp = part.ObjectGroup;
+                SceneInterface scene = grp.Scene;
+                EstateServiceInterface estateService = scene.EstateService;
+                foreach (UGI group in estateService.EstateGroup.All[scene.ParentEstateID])
+                {
+                    res.Add(new LSLKey(group.ID));
+                    res.Add(group.GroupName);
+                    res.Add(group.HomeURI?.ToString() ?? string.Empty);
+                }
+            }
+            return res;
+        }
+
+        [APIExtension("Testing", "_test_GetEstateManagersList")]
+        public AnArray GetEstateManagersList(ScriptInstance instance)
+        {
+            var res = new AnArray();
+            lock (instance)
+            {
+                ObjectPart part = instance.Part;
+                ObjectGroup grp = part.ObjectGroup;
+                SceneInterface scene = grp.Scene;
+                EstateServiceInterface estateService = scene.EstateService;
+                foreach (UGUI agent in estateService.EstateManager.All[scene.ParentEstateID])
+                {
+                    res.Add(new LSLKey(agent.ID));
+                    res.Add(agent.HomeURI?.ToString() ?? string.Empty);
+                }
+            }
+            return res;
+        }
+
         [APIExtension("Testing", "_test_GetLandPassList")]
-        [ForcedSleep(0.1)]
         public AnArray GetLandPassList(ScriptInstance instance)
         {
             var res = new AnArray();
@@ -139,7 +216,6 @@ namespace SilverSim.Tests.Lsl
         }
 
         [APIExtension("Testing", "_test_GetLandBanList")]
-        [ForcedSleep(0.1)]
         public AnArray GetLandBanList(ScriptInstance instance)
         {
             var res = new AnArray();
