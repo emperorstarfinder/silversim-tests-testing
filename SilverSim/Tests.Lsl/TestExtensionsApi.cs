@@ -116,7 +116,7 @@ namespace SilverSim.Tests.Lsl
                     {
                         res.Add(new LSLKey(pae.Accessor.ID));
                         res.Add(pae.Accessor.HomeURI?.ToString() ?? string.Empty);
-                        res.Add(new LongInteger(pae.ExpiresAt.AsLong));
+                        res.Add(new LongInteger(pae.ExpiresAt?.AsLong ?? 0));
                     }
                 }
             }
@@ -140,7 +140,7 @@ namespace SilverSim.Tests.Lsl
                     {
                         res.Add(new LSLKey(pae.Accessor.ID));
                         res.Add(pae.Accessor.HomeURI?.ToString() ?? string.Empty);
-                        res.Add(new LongInteger(pae.ExpiresAt.AsLong));
+                        res.Add(new LongInteger(pae.ExpiresAt?.AsLong ?? 0));
                     }
                 }
             }
