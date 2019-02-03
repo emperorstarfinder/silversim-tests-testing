@@ -106,22 +106,27 @@ namespace SilverSim.Tests.Inventory
             if (a.Permissions.Base != b.Permissions.Base)
             {
                 mismatches.Add("Permissions.Base");
+                m_Log.InfoFormat("Mismatch Permissions.Base {0} != {1}", a.Permissions.Base, b.Permissions.Base);
             }
             if (a.Permissions.Current != b.Permissions.Current)
             {
                 mismatches.Add("Permissions.Current");
+                m_Log.InfoFormat("Mismatch Permissions.Current {0} != {1}", a.Permissions.Current, b.Permissions.Current);
             }
             if (a.Permissions.NextOwner != b.Permissions.NextOwner)
             {
                 mismatches.Add("Permissions.NextOwner");
+                m_Log.InfoFormat("Mismatch Permissions.NextOwner {0} != {1}", a.Permissions.NextOwner, b.Permissions.NextOwner);
             }
             if (a.Permissions.Group != b.Permissions.Group)
             {
                 mismatches.Add("Permissions.Group");
+                m_Log.InfoFormat("Mismatch Permissions.Group {0} != {1}", a.Permissions.Group, b.Permissions.Group);
             }
             if (a.Permissions.EveryOne != b.Permissions.EveryOne)
             {
                 mismatches.Add("Permissions.EveryOne");
+                m_Log.InfoFormat("Mismatch Permissions.EveryOne {0} != {1}", a.Permissions.EveryOne, b.Permissions.EveryOne);
             }
             if (a.ParentFolderID != b.ParentFolderID)
             {
@@ -318,8 +323,8 @@ namespace SilverSim.Tests.Inventory
                 CreationDate = Date.Now
             };
             testItem.Permissions.Base = InventoryPermissionsMask.Every;
-            testItem.Permissions.Current = InventoryPermissionsMask.All;
-            testItem.Permissions.NextOwner = InventoryPermissionsMask.Copy;
+            testItem.Permissions.Current = InventoryPermissionsMask.Copy | InventoryPermissionsMask.Transfer;
+            testItem.Permissions.NextOwner = InventoryPermissionsMask.Copy | InventoryPermissionsMask.Move;
             testItem.Permissions.Group = InventoryPermissionsMask.Damage;
             testItem.Permissions.EveryOne = InventoryPermissionsMask.Move;
             m_InventoryService.Item.Add(testItem);
