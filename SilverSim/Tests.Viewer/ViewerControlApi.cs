@@ -157,6 +157,7 @@ namespace SilverSim.Tests.Viewer
         private CommandRegistry m_Commands;
         private CapsHttpRedirector m_CapsRedirector;
         private List<IProtocolExtender> m_PacketHandlerPlugins = new List<IProtocolExtender>();
+        private readonly bool m_RequiresInventoryIDAsIMSessionID;
 
         public ShutdownOrder ShutdownOrder => ShutdownOrder.BeforeLogoutAgents;
 
@@ -170,6 +171,7 @@ namespace SilverSim.Tests.Viewer
 
         public ViewerControlApi(IConfig ownSection)
         {
+            m_RequiresInventoryIDAsIMSessionID = ownSection.GetBoolean("RequiresInventoryIDAsIMSessionID", false);
             m_AgentInventoryServiceName = ownSection.GetString("InventoryService");
             m_AgentAssetServiceName = ownSection.GetString("AssetService");
             m_AgentProfileServiceName = ownSection.GetString("ProfileService", string.Empty);
@@ -189,10 +191,12 @@ namespace SilverSim.Tests.Viewer
 
             public LocalUserAgentService(
                 UserSessionServiceInterface userSessionService, 
-                UserAccountServiceInterface userAccountService)
+                UserAccountServiceInterface userAccountService,
+                bool requiresInventoryIDAsIMSessionID)
             {
                 m_UserSessionService = userSessionService;
                 m_UserAccountService = userAccountService;
+                RequiresInventoryIDAsIMSessionID = requiresInventoryIDAsIMSessionID;
             }
 
             bool IDisplayNameAccessor.TryGetValue(UGUI agent, out string displayname)
@@ -202,6 +206,8 @@ namespace SilverSim.Tests.Viewer
             }
 
             bool IDisplayNameAccessor.ContainsKey(UGUI agent) => false;
+
+            public override bool RequiresInventoryIDAsIMSessionID { get; }
 
             string IDisplayNameAccessor.this[UGUI agent]
             {
@@ -309,7 +315,7 @@ namespace SilverSim.Tests.Viewer
                 loader.GetService(m_AgentGroupsServiceName, out m_AgentGroupsService);
             }
             m_UserAccountService = loader.GetService<UserAccountServiceInterface>(m_UserAccountServiceName);
-            m_AgentUserAgentService = new LocalUserAgentService(m_UserSessionService, m_UserAccountService);
+            m_AgentUserAgentService = new LocalUserAgentService(m_UserSessionService, m_UserAccountService, m_RequiresInventoryIDAsIMSessionID);
 
             HomeURI = loader.HomeURI;
             m_Scenes = loader.Scenes;
