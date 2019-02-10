@@ -711,13 +711,13 @@ namespace SilverSim.Tests.Scripting
             catch (CompilerException e)
             {
                 m_Log.ErrorFormat("Compilation of {1} ({0}) failed: {2}", m_AssetID, m_ScriptFile, e.Message);
-                m_Log.WarnFormat("Stack Trace:\n{0}", e.StackTrace.ToString());
+                m_Log.WarnFormat("Stack Trace:\n{0}", e.StackTrace);
                 return false;
             }
             catch (Exception e)
             {
                 m_Log.ErrorFormat("Compilation of {1} ({0}) failed: {2}", m_AssetID, m_ScriptFile, e.Message);
-                m_Log.WarnFormat("Stack Trace:\n{0}", e.StackTrace.ToString());
+                m_Log.WarnFormat("Stack Trace:\n{0}", e.StackTrace);
                 return false;
             }
 
