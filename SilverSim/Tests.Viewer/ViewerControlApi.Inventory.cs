@@ -20,6 +20,7 @@
 // exception statement from your version.
 
 using SilverSim.AISv3.Client;
+using SilverSim.Scene.Types.Agent;
 using SilverSim.Scene.Types.Script;
 using SilverSim.Scripting.Lsl;
 using SilverSim.Scripting.Lsl.Api.Agents.Properties;
@@ -27,6 +28,8 @@ using SilverSim.Scripting.Lsl.Api.Hashtable;
 using SilverSim.Tests.Viewer.Inventory;
 using SilverSim.Tests.Viewer.UDP;
 using SilverSim.Types;
+using SilverSim.Types.Asset;
+using SilverSim.Types.Inventory;
 
 namespace SilverSim.Tests.Viewer
 {
@@ -143,6 +146,59 @@ namespace SilverSim.Tests.Viewer
 
                 return new AgentInventoryApi.AgentInventory();
             }
+        }
+
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction)]
+        public LSLKey AddInventoryItem(
+            ScriptInstance instance, 
+            ViewerAgentAccessor agent,
+            LSLKey parentFolderID,
+            string name,
+            string description,
+            int inventoryType,
+            int assetType,
+            UUID assetID,
+            int invFlags,
+            int basePerm,
+            int ownerPerm,
+            int groupPerm,
+            int everyOnePerm,
+            int nextOwnerPerm)
+        {
+            UUID itemID = UUID.Zero;
+            lock (instance)
+            {
+                ViewerConnection vc;
+                ViewerCircuit viewerCircuit;
+                IAgent actagent;
+                if (m_Clients.TryGetValue(agent.AgentID, out vc) &&
+                    vc.ViewerCircuits.TryGetValue((uint)agent.CircuitCode, out viewerCircuit) &&
+                    instance.Part.ObjectGroup.Scene.RootAgents.TryGetValue(agent.AgentID, out actagent))
+                {
+                    itemID = UUID.Random;
+                    var item = new InventoryItem(itemID)
+                    {
+                        Name = name,
+                        Description = description,
+                        InventoryType = (InventoryType)inventoryType,
+                        AssetType = (AssetType)assetType,
+                        AssetID = assetID,
+                        Creator = UGUI.Unknown,
+                        Owner = actagent.Owner,
+                        CreationDate = Date.Now,
+                        LastOwner = actagent.Owner,
+                        Flags = (InventoryFlags)invFlags,
+                        ParentFolderID = parentFolderID.AsUUID
+                    };
+                    item.Permissions.Base = (InventoryPermissionsMask)basePerm;
+                    item.Permissions.Current = (InventoryPermissionsMask)ownerPerm;
+                    item.Permissions.Group = (InventoryPermissionsMask)groupPerm;
+                    item.Permissions.EveryOne = (InventoryPermissionsMask)everyOnePerm;
+                    item.Permissions.NextOwner = (InventoryPermissionsMask)nextOwnerPerm;
+                    actagent.InventoryService.Item.Add(item);
+                }
+            }
+            return itemID;
         }
     }
 }
