@@ -149,6 +149,26 @@ namespace SilverSim.Tests.Viewer
         }
 
         [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction)]
+        public void CheckInventory(
+            ScriptInstance instance,
+            ViewerAgentAccessor agent)
+        {
+            lock (instance)
+            {
+                ViewerConnection vc;
+                ViewerCircuit viewerCircuit;
+                IAgent actagent;
+                InventoryFolder folder;
+                if (m_Clients.TryGetValue(agent.AgentID, out vc) &&
+                    vc.ViewerCircuits.TryGetValue((uint)agent.CircuitCode, out viewerCircuit) &&
+                    instance.Part.ObjectGroup.Scene.RootAgents.TryGetValue(agent.AgentID, out actagent))
+                {
+                    actagent.InventoryService.CheckInventory(agent.AgentID);
+                }
+            }
+        }
+
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction)]
         public LSLKey GetFolderForType(
             ScriptInstance instance,
             ViewerAgentAccessor agent,
