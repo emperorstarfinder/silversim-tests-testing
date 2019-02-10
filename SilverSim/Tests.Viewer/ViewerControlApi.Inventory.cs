@@ -149,6 +149,30 @@ namespace SilverSim.Tests.Viewer
         }
 
         [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction)]
+        public LSLKey GetFolderForType(
+            ScriptInstance instance,
+            ViewerAgentAccessor agent,
+            int assetType)
+        {
+            UUID folderID = UUID.Zero;
+            lock (instance)
+            {
+                ViewerConnection vc;
+                ViewerCircuit viewerCircuit;
+                IAgent actagent;
+                InventoryFolder folder;
+                if (m_Clients.TryGetValue(agent.AgentID, out vc) &&
+                    vc.ViewerCircuits.TryGetValue((uint)agent.CircuitCode, out viewerCircuit) &&
+                    instance.Part.ObjectGroup.Scene.RootAgents.TryGetValue(agent.AgentID, out actagent) &&
+                    actagent.InventoryService.Folder.TryGetValue(agent.AgentID, (AssetType)assetType, out folder))
+                {
+                    folderID = folder.ID;
+                }
+            }
+            return folderID;
+        }
+
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction)]
         public LSLKey AddInventoryItem(
             ScriptInstance instance, 
             ViewerAgentAccessor agent,
@@ -157,7 +181,7 @@ namespace SilverSim.Tests.Viewer
             string description,
             int inventoryType,
             int assetType,
-            UUID assetID,
+            LSLKey assetID,
             int invFlags,
             int basePerm,
             int ownerPerm,
@@ -199,6 +223,126 @@ namespace SilverSim.Tests.Viewer
                 }
             }
             return itemID;
+        }
+
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction)]
+        public int GetInventoryItemBasePerm(
+            ScriptInstance instance,
+            ViewerAgentAccessor agent,
+            LSLKey itemID)
+        {
+            int perm = 0;
+            lock (instance)
+            {
+                ViewerConnection vc;
+                ViewerCircuit viewerCircuit;
+                IAgent actagent;
+                InventoryItem item;
+                if (m_Clients.TryGetValue(agent.AgentID, out vc) &&
+                    vc.ViewerCircuits.TryGetValue((uint)agent.CircuitCode, out viewerCircuit) &&
+                    instance.Part.ObjectGroup.Scene.RootAgents.TryGetValue(agent.AgentID, out actagent) &&
+                    actagent.InventoryService.Item.TryGetValue(agent.AgentID, itemID.AsUUID, out item))
+                {
+                    perm = (int)item.Permissions.Base;
+                }
+            }
+            return perm;
+        }
+
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction)]
+        public int GetInventoryItemOwnerPerm(
+            ScriptInstance instance,
+            ViewerAgentAccessor agent,
+            LSLKey itemID)
+        {
+            int perm = 0;
+            lock (instance)
+            {
+                ViewerConnection vc;
+                ViewerCircuit viewerCircuit;
+                IAgent actagent;
+                InventoryItem item;
+                if (m_Clients.TryGetValue(agent.AgentID, out vc) &&
+                    vc.ViewerCircuits.TryGetValue((uint)agent.CircuitCode, out viewerCircuit) &&
+                    instance.Part.ObjectGroup.Scene.RootAgents.TryGetValue(agent.AgentID, out actagent) &&
+                    actagent.InventoryService.Item.TryGetValue(agent.AgentID, itemID.AsUUID, out item))
+                {
+                    perm = (int)item.Permissions.Current;
+                }
+            }
+            return perm;
+        }
+
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction)]
+        public int GetInventoryItemGroupPerm(
+            ScriptInstance instance,
+            ViewerAgentAccessor agent,
+            LSLKey itemID)
+        {
+            int perm = 0;
+            lock (instance)
+            {
+                ViewerConnection vc;
+                ViewerCircuit viewerCircuit;
+                IAgent actagent;
+                InventoryItem item;
+                if (m_Clients.TryGetValue(agent.AgentID, out vc) &&
+                    vc.ViewerCircuits.TryGetValue((uint)agent.CircuitCode, out viewerCircuit) &&
+                    instance.Part.ObjectGroup.Scene.RootAgents.TryGetValue(agent.AgentID, out actagent) &&
+                    actagent.InventoryService.Item.TryGetValue(agent.AgentID, itemID.AsUUID, out item))
+                {
+                    perm = (int)item.Permissions.Group;
+                }
+            }
+            return perm;
+        }
+
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction)]
+        public int GetInventoryItemEveryOnePerm(
+            ScriptInstance instance,
+            ViewerAgentAccessor agent,
+            LSLKey itemID)
+        {
+            int perm = 0;
+            lock (instance)
+            {
+                ViewerConnection vc;
+                ViewerCircuit viewerCircuit;
+                IAgent actagent;
+                InventoryItem item;
+                if (m_Clients.TryGetValue(agent.AgentID, out vc) &&
+                    vc.ViewerCircuits.TryGetValue((uint)agent.CircuitCode, out viewerCircuit) &&
+                    instance.Part.ObjectGroup.Scene.RootAgents.TryGetValue(agent.AgentID, out actagent) &&
+                    actagent.InventoryService.Item.TryGetValue(agent.AgentID, itemID.AsUUID, out item))
+                {
+                    perm = (int)item.Permissions.EveryOne;
+                }
+            }
+            return perm;
+        }
+
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction)]
+        public int GetInventoryItemNextOwnerPerm(
+            ScriptInstance instance,
+            ViewerAgentAccessor agent,
+            LSLKey itemID)
+        {
+            int perm = 0;
+            lock (instance)
+            {
+                ViewerConnection vc;
+                ViewerCircuit viewerCircuit;
+                IAgent actagent;
+                InventoryItem item;
+                if (m_Clients.TryGetValue(agent.AgentID, out vc) &&
+                    vc.ViewerCircuits.TryGetValue((uint)agent.CircuitCode, out viewerCircuit) &&
+                    instance.Part.ObjectGroup.Scene.RootAgents.TryGetValue(agent.AgentID, out actagent) &&
+                    actagent.InventoryService.Item.TryGetValue(agent.AgentID, itemID.AsUUID, out item))
+                {
+                    perm = (int)item.Permissions.NextOwner;
+                }
+            }
+            return perm;
         }
     }
 }

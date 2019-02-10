@@ -182,6 +182,17 @@ namespace SilverSim.Tests.Viewer
         [APIExtension(ExtensionName)]
         public const int DIALOG_STOP_TYPING = 42;
 
+        [APIExtension(ExtensionName, "vcBuildInventoryOfferedData")]
+        public ByteArrayApi.ByteArray BuildInventoryOfferedData(
+            int assetType,
+            LSLKey assetID)
+        {
+            byte[] b = new byte[17];
+            b[0] = (byte)assetType;
+            assetID.AsUUID.ToBytes(b, 1);
+            return new ByteArrayApi.ByteArray(b);
+        }
+
         [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction)]
         public void SendInstantMessage(
             ScriptInstance instance,
