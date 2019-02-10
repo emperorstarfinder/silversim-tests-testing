@@ -158,7 +158,6 @@ namespace SilverSim.Tests.Viewer
                 ViewerConnection vc;
                 ViewerCircuit viewerCircuit;
                 IAgent actagent;
-                InventoryFolder folder;
                 if (m_Clients.TryGetValue(agent.AgentID, out vc) &&
                     vc.ViewerCircuits.TryGetValue((uint)agent.CircuitCode, out viewerCircuit) &&
                     instance.Part.ObjectGroup.Scene.RootAgents.TryGetValue(agent.AgentID, out actagent))
