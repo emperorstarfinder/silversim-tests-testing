@@ -60,7 +60,7 @@ namespace SilverSim.Tests.Viewer
     [ScriptApiName("ViewerControl")]
     [PluginName("ViewerControl")]
     [Description("LSL Viewer Control API")]
-    public partial class ViewerControlApi : IScriptApi, IPlugin, IPluginShutdown
+    public partial class ViewerControlApi : IScriptApi, IPlugin, IPluginShutdown, IUserAgentServicePlugin, IInventoryServicePlugin, IAssetServicePlugin
     {
         static readonly ILog m_Log = LogManager.GetLogger("VIEWER CONTROL");
         public const string ExtensionName = "ViewerControl";
@@ -141,6 +141,7 @@ namespace SilverSim.Tests.Viewer
         private readonly string m_UserAccountServiceName;
         private readonly string m_AgentExperienceServiceName;
         private readonly string m_AgentGroupsServiceName;
+        private readonly bool m_EnableServicePlugins;
 
         private InventoryServiceInterface m_AgentInventoryService;
         private AssetServiceInterface m_AgentAssetService;
@@ -160,6 +161,14 @@ namespace SilverSim.Tests.Viewer
         private readonly bool m_RequiresInventoryIDAsIMSessionID;
 
         public ShutdownOrder ShutdownOrder => ShutdownOrder.BeforeLogoutAgents;
+
+        public string Name => "ViewerControl";
+
+        UserAgentServiceInterface IUserAgentServicePlugin.Instantiate(string url) => m_AgentUserAgentService;
+        InventoryServiceInterface IInventoryServicePlugin.Instantiate(string url) => m_AgentInventoryService;
+        AssetServiceInterface IAssetServicePlugin.Instantiate(string url) => m_AgentAssetService;
+        public bool IsProtocolSupported(string url) => m_EnableServicePlugins;
+        public bool IsProtocolSupported(string url, Dictionary<string, string> cachedheaders) => m_EnableServicePlugins;
 
         public void Shutdown()
         {
@@ -182,18 +191,22 @@ namespace SilverSim.Tests.Viewer
             m_UserAccountServiceName = ownSection.GetString("UserAccountService");
             m_AgentExperienceServiceName = ownSection.GetString("ExperienceService", string.Empty);
             m_AgentGroupsServiceName = ownSection.GetString("GroupsService", string.Empty);
+            m_EnableServicePlugins = ownSection.GetBoolean("EnableServicePlugins", true);
         }
 
         private sealed class LocalUserAgentService : UserAgentServiceInterface, IDisplayNameAccessor
         {
-            readonly UserSessionServiceInterface m_UserSessionService;
-            readonly UserAccountServiceInterface m_UserAccountService;
+            private readonly UserSessionServiceInterface m_UserSessionService;
+            private readonly UserAccountServiceInterface m_UserAccountService;
+            private readonly string m_BaseURI;
 
             public LocalUserAgentService(
                 UserSessionServiceInterface userSessionService, 
                 UserAccountServiceInterface userAccountService,
-                bool requiresInventoryIDAsIMSessionID)
+                bool requiresInventoryIDAsIMSessionID,
+                string baseuri)
             {
+                m_BaseURI = baseuri;
                 m_UserSessionService = userSessionService;
                 m_UserAccountService = userAccountService;
                 RequiresInventoryIDAsIMSessionID = requiresInventoryIDAsIMSessionID;
@@ -241,10 +254,13 @@ namespace SilverSim.Tests.Viewer
                 throw new NotImplementedException();
             }
 
-            public override ServerURIs GetServerURLs(UGUI user)
+            public override ServerURIs GetServerURLs(UGUI user) => new ServerURIs(new Dictionary<string, string>
             {
-                throw new KeyNotFoundException();
-            }
+                ["AssetServerURI"] = m_BaseURI,
+                ["InventoryServerURI"] = m_BaseURI,
+                ["IMServerURI"] = m_BaseURI,
+                ["HomeURI"] = m_BaseURI
+            });
 
             public override UserInfo GetUserInfo(UGUI user)
             {
@@ -293,6 +309,8 @@ namespace SilverSim.Tests.Viewer
 
         public void Startup(ConfigurationLoader loader)
         {
+            HomeURI = loader.HomeURI;
+
             m_AgentInventoryService = loader.GetService<InventoryServiceInterface>(m_AgentInventoryServiceName);
             m_AgentAssetService = loader.GetService<AssetServiceInterface>(m_AgentAssetServiceName);
             if (m_AgentProfileServiceName?.Length != 0)
@@ -315,9 +333,8 @@ namespace SilverSim.Tests.Viewer
                 loader.GetService(m_AgentGroupsServiceName, out m_AgentGroupsService);
             }
             m_UserAccountService = loader.GetService<UserAccountServiceInterface>(m_UserAccountServiceName);
-            m_AgentUserAgentService = new LocalUserAgentService(m_UserSessionService, m_UserAccountService, m_RequiresInventoryIDAsIMSessionID);
+            m_AgentUserAgentService = new LocalUserAgentService(m_UserSessionService, m_UserAccountService, m_RequiresInventoryIDAsIMSessionID, HomeURI);
 
-            HomeURI = loader.HomeURI;
             m_Scenes = loader.Scenes;
             m_Commands = loader.CommandRegistry;
             m_CapsRedirector = loader.CapsRedirector;
