@@ -99,6 +99,24 @@ namespace SilverSim.Tests.Viewer
         }
 
         [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction)]
+        public AgentInventoryApi.AgentInventory GetLocalAgentInventory(
+            ScriptInstance instance,
+            ViewerAgentAccessor agent)
+        {
+            lock (instance)
+            {
+                ViewerConnection vc;
+                ViewerCircuit viewerCircuit;
+                if (m_Clients.TryGetValue(agent.AgentID, out vc) &&
+                    vc.ViewerCircuits.TryGetValue((uint)agent.CircuitCode, out viewerCircuit))
+                {
+                    return new AgentInventoryApi.AgentInventory(instance, m_AgentInventoryService, new UGUI(viewerCircuit.AgentID), false);
+                }
+                return new AgentInventoryApi.AgentInventory();
+            }
+        }
+
+        [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction)]
         public AgentInventoryApi.AgentInventory GetLibraryInventory(
             ScriptInstance instance,
             ViewerAgentAccessor agent,
