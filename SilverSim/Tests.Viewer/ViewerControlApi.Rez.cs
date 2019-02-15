@@ -79,6 +79,23 @@ namespace SilverSim.Tests.Viewer
             public int RayEndIsIntersection;
             public int RezSelected;
             public int RemoveItem;
+
+            public RayRezObjectData()
+            {
+            }
+
+            public RayRezObjectData(RayRezObjectData src)
+                : base(src)
+            {
+                FromTaskID = src.FromTaskID;
+                BypassRaycast = src.BypassRaycast;
+                RayStart = src.RayStart;
+                RayEnd = src.RayEnd;
+                RayTargetID = new LSLKey(src.RayTargetID);
+                RayEndIsIntersection = src.RayEndIsIntersection;
+                RezSelected = src.RezSelected;
+                RemoveItem = src.RemoveItem;
+            }
         }
 
         [APIExtension(ExtensionName, APIUseAsEnum.MemberFunction)]
