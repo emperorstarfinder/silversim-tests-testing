@@ -2864,7 +2864,7 @@ namespace SilverSim.Tests.Viewer
             VcObjectPropertiesFamilyData data);
         #endregion
 
-        #region objectpropertiesfamily_received
+        #region objectproperties_received
         [TranslatedScriptEvent("objectproperties_received")]
         public class ObjectPropertiesReceivedEvent : IScriptEvent
         {

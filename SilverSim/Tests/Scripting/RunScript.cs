@@ -409,7 +409,7 @@ namespace SilverSim.Tests.Scripting
             m_AvatarNameService.Store(creator);
             m_AvatarNameService.Store(owner);
             m_AvatarNameService.Store(lastOwner);
-            var item = new ObjectPartInventoryItem
+            var item = new ObjectPartInventoryItem(new UUID(config.GetString("ItemID", UUID.Random.ToString())))
             {
                 Name = config.GetString("Name"),
                 Description = config.GetString("Description", string.Empty),
