@@ -2896,6 +2896,89 @@ namespace SilverSim.Tests.Viewer
             VcObjectPropertiesDataList propertieslist);
         #endregion
 
+        #region bulkupdateinventory_received
+        [TranslatedScriptEvent("bulkupdateinventory_received")]
+        public class BulkUpdateInventoryReceivedEvent : IScriptEvent
+        {
+            [TranslatedScriptEventParameter(0)]
+            public ViewerAgentAccessor Agent;
+            [TranslatedScriptEventParameter(1)]
+            public LSLKey TransactionID = UUID.Zero;
+            [TranslatedScriptEventParameter(2)]
+            public AgentUpdateInventoryFolderList Folders = new AgentUpdateInventoryFolderList();
+            [TranslatedScriptEventParameter(3)]
+            public AgentUpdateInventoryItemList Items = new AgentUpdateInventoryItemList();
+
+            public static void ToScriptEvent(Message m, ViewerConnection vc, ViewerAgentAccessor agent)
+            {
+                var msg = (BulkUpdateInventory)m;
+                var ev = new BulkUpdateInventoryReceivedEvent
+                {
+                    Agent = agent,
+                    TransactionID = msg.TransactionID
+                };
+
+                foreach (BulkUpdateInventory.FolderDataEntry d in msg.FolderData)
+                {
+                    ev.Folders.Add(new AgentUpdateInventoryFolder(d));
+                }
+                foreach (BulkUpdateInventory.ItemDataEntry d in msg.ItemData)
+                {
+                    ev.Items.Add(new AgentUpdateInventoryItem(d));
+                }
+                vc.PostEvent(ev);
+            }
+        }
+
+        [APIExtension(ExtensionName, "bulkupdateinventory_received")]
+        [StateEventDelegate]
+        public delegate void BulkUpdateInventoryReceived(
+            ViewerAgentAccessor agent,
+            LSLKey transactionID,
+            AgentUpdateInventoryFolderList folders,
+            AgentUpdateInventoryItemList items);
+        #endregion
+
+        #region updatecreateinventoryitem_received
+        [TranslatedScriptEvent("updatecreateinventoryitem_received")]
+        public class UpdateCreateInventoryItemReceivedEvent : IScriptEvent
+        {
+            [TranslatedScriptEventParameter(0)]
+            public ViewerAgentAccessor Agent;
+            [TranslatedScriptEventParameter(1)]
+            public int SimApproved;
+            [TranslatedScriptEventParameter(2)]
+            public LSLKey TransactionID = UUID.Zero;
+            [TranslatedScriptEventParameter(3)]
+            public AgentUpdateInventoryItemList Items = new AgentUpdateInventoryItemList();
+
+            public static void ToScriptEvent(Message m, ViewerConnection vc, ViewerAgentAccessor agent)
+            {
+                var msg = (UpdateCreateInventoryItem)m;
+                var ev = new UpdateCreateInventoryItemReceivedEvent
+                {
+                    Agent = agent,
+                    SimApproved = msg.SimApproved.ToLSLBoolean(),
+                    TransactionID = msg.TransactionID
+                };
+
+                foreach (UpdateCreateInventoryItem.ItemDataEntry d in msg.ItemData)
+                {
+                    ev.Items.Add(new AgentUpdateInventoryItem(d));
+                }
+                vc.PostEvent(ev);
+            }
+        }
+
+        [APIExtension(ExtensionName, "updatecreateinventoryitem_received")]
+        [StateEventDelegate]
+        public delegate void UpdateCreateInventoryItemReceived(
+            ViewerAgentAccessor agent,
+            int simapproved,
+            LSLKey transactionID,
+            AgentUpdateInventoryItemList items);
+        #endregion
+
         [TranslatedScriptEventsInfo]
         public static readonly Type[] TranslatedEvents = new Type[] {
             typeof(AgentDataUpdateReceivedEvent),
@@ -2905,6 +2988,7 @@ namespace SilverSim.Tests.Viewer
             typeof(AttachedSoundReceivedEvent),
             typeof(AvatarAnimationReceivedEvent),
             typeof(AvatarSitResponseReceivedEvent),
+            typeof(BulkUpdateInventoryReceivedEvent),
             typeof(CameraConstraintReceivedEvent),
             typeof(ChangeUserRightsReceivedEvent),
             typeof(ChatFromSimulatorReceivedEvent),
@@ -2962,6 +3046,7 @@ namespace SilverSim.Tests.Viewer
             typeof(TeleportProgressReceivedEvent),
             typeof(TeleportStartReceivedEvent),
             typeof(TeleportFailedReceivedEvent),
+            typeof(UpdateCreateInventoryItemReceivedEvent),
             typeof(UUIDGroupNameReplyReceivedEvent),
             typeof(UUIDNameReplyReceivedEvent),
             typeof(ViewerFrozenMessageReceivedEvent)

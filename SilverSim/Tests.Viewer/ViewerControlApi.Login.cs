@@ -425,6 +425,9 @@ namespace SilverSim.Tests.Viewer
                 viewerCircuit.MessageRouting.Add(MessageType.TeleportStart, (m) => TeleportStartReceivedEvent.ToScriptEvent(m, vc, accessor));
                 viewerCircuit.MessageRouting.Add(MessageType.UUIDGroupNameReply, (m) => UUIDGroupNameReplyReceivedEvent.ToScriptEvent(m, vc, accessor));
                 viewerCircuit.MessageRouting.Add(MessageType.UUIDNameReply, (m) => UUIDNameReplyReceivedEvent.ToScriptEvent(m, vc, accessor));
+
+                viewerCircuit.OnBulkUpdateInventory += (m) => BulkUpdateInventoryReceivedEvent.ToScriptEvent(m, vc, accessor);
+                viewerCircuit.OnUpdateCreateInventoryItem += (m) => UpdateCreateInventoryItemReceivedEvent.ToScriptEvent(m, vc, accessor);
                 vc.ViewerCircuits.Add((uint)circuitCode, viewerCircuit);
                 viewerCircuit.SendMessage(useCircuit);
                 return accessor;

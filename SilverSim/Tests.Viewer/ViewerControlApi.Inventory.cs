@@ -30,6 +30,10 @@ using SilverSim.Tests.Viewer.UDP;
 using SilverSim.Types;
 using SilverSim.Types.Asset;
 using SilverSim.Types.Inventory;
+using SilverSim.Viewer.Messages.Inventory;
+using System;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace SilverSim.Tests.Viewer
 {
@@ -381,5 +385,185 @@ namespace SilverSim.Tests.Viewer
             }
             return perm;
         }
+
+        [APIExtension(ExtensionName, "updateinventoryfolder")]
+        [APIDisplayName("updateinventoryfolder")]
+        [APIIsVariableType]
+        [APIAccessibleMembers]
+        public sealed class AgentUpdateInventoryFolder
+        {
+            public LSLKey ID = UUID.Zero;
+            public LSLKey ParentFolderID = UUID.Zero;
+            public int DefaultType;
+            public string Name = string.Empty;
+
+            public AgentUpdateInventoryFolder()
+            {
+            }
+
+            public AgentUpdateInventoryFolder(BulkUpdateInventory.FolderDataEntry e)
+            {
+                ID = e.FolderID;
+                ParentFolderID = e.ParentID;
+                DefaultType = (int)e.DefaultType;
+                Name = e.Name;
+            }
+        }
+
+        [APIExtension(ExtensionName, "updateinventoryfolderlist")]
+        [APIDisplayName("updateinventoryfolderlist")]
+        [APIAccessibleMembers("Count", "Length")]
+        [APIIsVariableType]
+        public class AgentUpdateInventoryFolderList : List<AgentUpdateInventoryFolder>
+        {
+            public int Length => Count;
+
+            public sealed class LSLEnumerator : IEnumerator<AgentUpdateInventoryFolder>
+            {
+                private readonly AgentUpdateInventoryFolderList Src;
+                private int Position = -1;
+
+                public LSLEnumerator(AgentUpdateInventoryFolderList src)
+                {
+                    Src = src;
+                }
+
+                public AgentUpdateInventoryFolder Current => Src[Position];
+
+                object IEnumerator.Current => Current;
+
+                public void Dispose()
+                {
+                }
+
+                public bool MoveNext() => ++Position < Src.Count;
+
+                public void Reset() => Position = -1;
+            }
+
+            public LSLEnumerator GetLslForeachEnumerator() => new LSLEnumerator(this);
+        }
+
+        [APIExtension(ExtensionName, "updateinventoryitem")]
+        [APIDisplayName("updateinventoryitem")]
+        [APIIsVariableType]
+        [APIAccessibleMembers]
+        public sealed class AgentUpdateInventoryItem
+        {
+            public int CallbackID;
+            public int BaseMask;
+            public int OwnerMask;
+            public int GroupMask;
+            public int EveryoneMask;
+            public int NextOwnerMask;
+
+            public LSLKey ParentFolderID = UUID.Zero;
+            public LSLKey AssetID = UUID.Zero;
+            public int IsGroupOwned;
+            public LSLKey GroupID = UUID.Zero;
+            public int SalePrice;
+            public int SaleType;
+            public int AssetType;
+            public LSLKey CreatorID = UUID.Zero;
+            public LSLKey OwnerID = UUID.Zero;
+            public int Flags;
+            public int InventoryType;
+            public long CreationDate;
+            public LSLKey ID = UUID.Zero;
+
+            public string Name = string.Empty;
+            public string Description = string.Empty;
+
+            public AgentUpdateInventoryItem()
+            {
+            }
+
+            public AgentUpdateInventoryItem(BulkUpdateInventory.ItemDataEntry e)
+            {
+                CallbackID = (int)e.CallbackID;
+                BaseMask = (int)e.BaseMask;
+                OwnerMask = (int)e.OwnerMask;
+                GroupMask = (int)e.GroupMask;
+                EveryoneMask = (int)e.EveryoneMask;
+                NextOwnerMask = (int)e.NextOwnerMask;
+
+                ParentFolderID = e.FolderID;
+                AssetID = e.AssetID;
+                IsGroupOwned = e.IsGroupOwned.ToLSLBoolean();
+                GroupID = e.GroupID;
+                SalePrice = e.SalePrice;
+                SaleType = (int)e.SaleType;
+                AssetType = (int)e.Type;
+                CreatorID = e.CreatorID;
+                OwnerID = e.OwnerID;
+                Flags = (int)e.Flags;
+                InventoryType = (int)e.InvType;
+                CreationDate = e.CreationDate;
+                ID = e.ItemID;
+                Name = e.Name;
+                Description = e.Description;
+            }
+
+            public AgentUpdateInventoryItem(UpdateCreateInventoryItem.ItemDataEntry e)
+            {
+                CallbackID = (int)e.CallbackID;
+                BaseMask = (int)e.BaseMask;
+                OwnerMask = (int)e.OwnerMask;
+                GroupMask = (int)e.GroupMask;
+                EveryoneMask = (int)e.EveryoneMask;
+                NextOwnerMask = (int)e.NextOwnerMask;
+
+                ParentFolderID = e.FolderID;
+                AssetID = e.AssetID;
+                IsGroupOwned = e.IsGroupOwned.ToLSLBoolean();
+                GroupID = e.GroupID;
+                SalePrice = e.SalePrice;
+                SaleType = (int)e.SaleType;
+                AssetType = (int)e.Type;
+                CreatorID = e.CreatorID;
+                OwnerID = e.OwnerID;
+                Flags = (int)e.Flags;
+                InventoryType = (int)e.InvType;
+                CreationDate = e.CreationDate;
+                ID = e.ItemID;
+                Name = e.Name;
+                Description = e.Description;
+            }
+        }
+
+        [APIExtension(ExtensionName, "updateinventoryitemlist")]
+        [APIDisplayName("updateinventoryitemlist")]
+        [APIAccessibleMembers("Count", "Length")]
+        [APIIsVariableType]
+        public class AgentUpdateInventoryItemList : List<AgentUpdateInventoryItem>
+        {
+            public int Length => Count;
+
+            public sealed class LSLEnumerator : IEnumerator<AgentUpdateInventoryItem>
+            {
+                private readonly AgentUpdateInventoryItemList Src;
+                private int Position = -1;
+
+                public LSLEnumerator(AgentUpdateInventoryItemList src)
+                {
+                    Src = src;
+                }
+
+                public AgentUpdateInventoryItem Current => Src[Position];
+
+                object IEnumerator.Current => Current;
+
+                public void Dispose()
+                {
+                }
+
+                public bool MoveNext() => ++Position < Src.Count;
+
+                public void Reset() => Position = -1;
+            }
+
+            public LSLEnumerator GetLslForeachEnumerator() => new LSLEnumerator(this);
+        }
+
     }
 }
