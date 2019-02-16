@@ -140,6 +140,10 @@ namespace SilverSim.Tests.Viewer.UDP
             RemoteEndPoint = remoteEndPoint;
             SessionID = sessionID;
             AgentID = agentID;
+            MessageRouting.Add(MessageType.UpdateCreateInventoryItem, (m) => OnUpdateCreateInventoryItem?.Invoke(m));
+            MessageRouting.Add(MessageType.BulkUpdateInventory, (m) => OnBulkUpdateInventory?.Invoke(m));
+            MessageRouting.Add(MessageType.UpdateInventoryFolder, (m) => OnUpdateInventoryFolder?.Invoke(m));
+            MessageRouting.Add(MessageType.UpdateInventoryItem, (m) => OnUpdateInventoryItem?.Invoke(m));
         }
 
         protected override void CheckForNewDataToSend()
@@ -165,6 +169,14 @@ namespace SilverSim.Tests.Viewer.UDP
         public Dictionary<GridInstantMessageDialog, Action<Message>> IMMessageRouting { get; } = new Dictionary<GridInstantMessageDialog, Action<Message>>();
 
         public Dictionary<MessageType, Action<Message>> MessageRouting { get; } = new Dictionary<MessageType, Action<Message>>();
+
+        public event Action<Message> OnBulkUpdateInventory;
+
+        public event Action<Message> OnUpdateCreateInventoryItem;
+
+        public event Action<Message> OnUpdateInventoryFolder;
+
+        public event Action<Message> OnUpdateInventoryItem;
 
         public Message Receive(int timeout)
         {
