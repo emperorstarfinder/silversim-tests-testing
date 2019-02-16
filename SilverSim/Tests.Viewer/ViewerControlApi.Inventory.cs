@@ -31,7 +31,6 @@ using SilverSim.Types;
 using SilverSim.Types.Asset;
 using SilverSim.Types.Inventory;
 using SilverSim.Viewer.Messages.Inventory;
-using System;
 using System.Collections;
 using System.Collections.Generic;
 
