@@ -24,12 +24,7 @@ using SilverSim.Scene.Types.Script;
 using SilverSim.Scripting.Lsl;
 using SilverSim.Types;
 using SilverSim.Types.StructuredData.Llsd;
-using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SilverSim.Tests.Viewer
 {
@@ -46,6 +41,32 @@ namespace SilverSim.Tests.Viewer
                     {
                         { "language", langname },
                         { "language_is_public", ispublic != 0 }
+                    }, sout);
+                })
+                {
+                    TimeoutMs = 20000
+                }.ExecuteStatusRequest();
+            }
+        }
+
+        [APIExtension(ExtensionName, "capsCopyInventoryFromNotecard")]
+        public int CapsCopyInventoryFromNotecard(ScriptInstance instance, string uri, LSLKey destinationFolderID, LSLKey notecardId, LSLKey notecardInventoryId, int callbackId) =>
+            CapsCopyInventoryFromNotecard(instance, uri, destinationFolderID, UUID.Zero, notecardId, notecardInventoryId, callbackId);
+
+        [APIExtension(ExtensionName, "capsCopyInventoryFromNotecard")]
+        public int CapsCopyInventoryFromNotecard(ScriptInstance instance, string uri, LSLKey destinationFolderID, LSLKey objectId, LSLKey notecardId, LSLKey notecardInventoryId, int callbackId)
+        {
+            lock (instance)
+            {
+                return (int)new HttpClient.Post(uri, "application/llsd+xml", (Stream sout) =>
+                {
+                    LlsdXml.Serialize(new Map
+                    {
+                        { "object-id", objectId.AsUUID },
+                        { "notecard-id", notecardId.AsUUID },
+                        { "item-id", notecardInventoryId.AsUUID },
+                        { "folder-id", destinationFolderID.AsUUID },
+                        { "callback-id", callbackId }
                     }, sout);
                 })
                 {
