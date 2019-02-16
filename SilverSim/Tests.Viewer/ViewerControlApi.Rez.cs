@@ -39,14 +39,14 @@ namespace SilverSim.Tests.Viewer
         [APICloneOnAssignment]
         public class RezObjectData
         {
-            public LSLKey ItemID = new LSLKey();
+            public LSLKey ItemID = UUID.Zero;
             public int AttachmentPoint;
             public int ItemFlags;
             public int GroupMask;
             public int EveryoneMask;
             public int NextOwnerMask;
-            public string Name;
-            public string Description;
+            public string Name = string.Empty;
+            public string Description = string.Empty;
 
             public RezObjectData()
             {
@@ -71,7 +71,7 @@ namespace SilverSim.Tests.Viewer
         [APIAccessibleMembers]
         public class RayRezObjectData : RezObjectData
         {
-            public LSLKey FromTaskID;
+            public LSLKey FromTaskID = UUID.Zero;
             public int BypassRaycast;
             public Vector3 RayStart = Vector3.Zero;
             public Vector3 RayEnd = Vector3.Zero;
@@ -219,7 +219,9 @@ namespace SilverSim.Tests.Viewer
                         },
                         InventoryData = new RezObject.InventoryDataS
                         {
-                            ItemID = itemID
+                            ItemID = itemID,
+                            Name = string.Empty,
+                            Description = string.Empty
                         }
                     });
                 }
