@@ -162,6 +162,8 @@ namespace SilverSim.Tests.Viewer.UDP
 
         public Dictionary<string, Action<Message>> GenericMessageRouting { get; } = new Dictionary<string, Action<Message>>();
 
+        public Dictionary<string, Action<Message>> LargeGenericMessageRouting { get; } = new Dictionary<string, Action<Message>>();
+
         public Dictionary<string, Action<Message>> GodlikeMessageRouting { get; } = new Dictionary<string, Action<Message>>();
 
         public Dictionary<GridInstantMessageDialog, Action<Message>> IMMessageRouting { get; } = new Dictionary<GridInstantMessageDialog, Action<Message>>();
@@ -276,6 +278,18 @@ namespace SilverSim.Tests.Viewer.UDP
                 {
                     var genMsg = (GenericMessage)m;
                     if (GenericMessageRouting.TryGetValue(genMsg.Method, out mdel))
+                    {
+                        mdel(m);
+                    }
+                    else if (EnableReceiveQueue)
+                    {
+                        ReceiveQueue.Enqueue(m);
+                    }
+                }
+                else if (m.Number == MessageType.LargeGenericMessage)
+                {
+                    var genMsg = (LargeGenericMessage)m;
+                    if (LargeGenericMessageRouting.TryGetValue(genMsg.Method, out mdel))
                     {
                         mdel(m);
                     }
