@@ -48,6 +48,7 @@ using SilverSim.Types;
 using SilverSim.Types.Account;
 using SilverSim.Types.Agent;
 using SilverSim.Types.Grid;
+using SilverSim.Types.IM;
 using SilverSim.Types.ServerURIs;
 using SilverSim.Viewer.Core;
 using System;
@@ -194,6 +195,14 @@ namespace SilverSim.Tests.Viewer
             m_EnableServicePlugins = ownSection.GetBoolean("EnableServicePlugins", true);
         }
 
+        private sealed class LocalUserIMService : IMServiceInterface
+        {
+            public override void Send(GridInstantMessage im)
+            {
+                /* intentionally left empty */
+            }
+        }
+
         private sealed class LocalUserAgentService : UserAgentServiceInterface, IDisplayNameAccessor
         {
             private readonly UserSessionServiceInterface m_UserSessionService;
@@ -303,6 +312,10 @@ namespace SilverSim.Tests.Viewer
             {
                 return new List<UUID>();
             }
+
+            private static readonly LocalUserIMService m_IMService = new LocalUserIMService();
+
+            public override IMServiceInterface GetIMService(UUID agentid) => m_IMService;
         }
 
         private string HomeURI;
